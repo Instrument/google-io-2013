@@ -1,2 +1,6 @@
 .sass-cache
 .DS_Store
+.bundle
+Gemfile.lock
+bin/
+js/*.min.js
