@@ -73,15 +73,17 @@ ww.app.Core.prototype.loadMode = function(mode, onComplete) {
 
 // iframe.contentWindow.postMessage('sup', '*');
 
-var app = new ww.app.Core();
-app.registerMode('cat', 83);
-app.registerMode('dog', 84);
-app.start();
+window['jQuery'](function() {
+	var app = new ww.app.Core();
+	app.registerMode('cat', 83);
+	app.registerMode('dog', 84);
+	app.start();
 
-window['catMe'] = function catMe() {
-  app.loadModeByName('cat');
-};
+	window['catMe'] = function catMe() {
+	  app.loadModeByName('cat');
+	};
 
-window['dogMe'] = function dogMe() {
-  app.loadModeByName('dog');
-};
+	window['dogMe'] = function dogMe() {
+	  app.loadModeByName('dog');
+	};
+});
