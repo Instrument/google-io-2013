@@ -1,0 +1,11 @@
+/* line 3, ../sass/app.scss */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* line 8, ../sass/app.scss */
+iframe {
+  border: 0;
+  background: transparent;
+}

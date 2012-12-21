@@ -1,7 +1,14 @@
 goog.provide('ww.mode');
 
-ww.mode.Core = function() {
+/**
+ * @constructor
+ */
+ww.mode.Core = function(name) {
+  this.name_ = name;
 };
 
-ww.mode.Mode = function() {
+ww.mode.Core.prototype['start'] = function() {
+  window.parent.postMessage(this.name_ + '.ready', '*');
 };
+
+goog.exportSymbol('ww.mode.Core', ww.mode.Core);
