@@ -2,5 +2,5 @@
 .DS_Store
 .bundle
 Gemfile.lock
-bin/
+/bin/
 js/*.min.js
