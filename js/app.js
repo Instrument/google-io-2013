@@ -3,6 +3,9 @@ goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
 
+/** @define {boolean} */
+var DEBUG_MODE = false;
+ 
 /**
  * @constructor
  */

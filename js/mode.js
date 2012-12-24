@@ -1,14 +1,42 @@
 goog.provide('ww.mode');
+goog.require('ww.mode.CatMode');
+goog.require('ww.mode.DogMode');
 
-/**
- * @constructor
- */
-ww.mode.Core = function(name) {
-  this.name_ = name;
+/** @define {boolean} */
+var DEBUG_MODE = false;
+
+ww.mode.modes_ = {};
+
+ww.mode.register = function(name, klass) {
+  ww.mode.modes_[name] = klass;
 };
 
-ww.mode.Core.prototype['start'] = function() {
-  window.parent.postMessage(this.name_ + '.ready', '*');
+ww.mode.findModeByName = function(name) {
+  return ww.mode.modes_[name];
 };
 
-goog.exportSymbol('ww.mode.Core', ww.mode.Core);
+ww.mode.register('cat', ww.mode.CatMode);
+ww.mode.register('dog', ww.mode.DogMode);
+
+jQuery(function() {
+  var parts = window.location.href.split('/');
+  var page = parts[parts.length-1];
+  var scriptName = page.replace('.html', '');
+
+  var klass = ww.mode.findModeByName(scriptName);
+  
+  // Initialize
+  var controller = new klass();
+
+  if (DEBUG_MODE) {
+    var focusCheckbox = $('<input type="checkbox">').appendTo(document.body);
+    focusCheckbox.css({ 'position': 'absolute', 'top': 0, 'right': 0 });
+    focusCheckbox.change(function () {
+      if (focusCheckbox.prop('checked')) {
+        controller['focus']();
+      } else {
+        controller['unfocus']();
+      }
+    });
+  }
+});
