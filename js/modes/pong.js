@@ -65,9 +65,9 @@ ww.mode.PongMode.prototype.init = function() {
    * Create ball.
    */
   this.ball = new Particle();
-  this.ball['moveTo'](new Vector(startX, 0));
-  var world = this.getPhysicsWorld_();
   this.ball['setRadius'](50);
+  this.ball['moveTo'](new Vector(startX, this.ball['radius']));
+  var world = this.getPhysicsWorld_();
   this.ball['vel'] = new Vector(-1, 1);
   world['particles'].push(this.ball);
 };
