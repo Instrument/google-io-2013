@@ -69,30 +69,43 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     this.addDebugUI_();
   }
 
+  this.letterI = $('#letter-i');
+  this.letterO = $('#letter-o');
+
   // Short-cuts to activating letters for basics setup.
-  $('#letter-i').live('click', goog.bind(this.activateI, this));
-  $('#letter-o').live('click', goog.bind(this.activateO, this));
-  $(document).keypress(goog.bind(function(e) {
+  var evt;
+  if (Modernizr['touch']) {
+    evt = 'tap';
+  } else {
+    evt = 'click';
+  }
+
+  this.letterI.bind(evt, goog.bind(this.activateI, this));
+  this.letterO.bind(evt, goog.bind(this.activateO, this));
+
+  var self;
+  $(document).keypress(function(e) {
     if (e.keyCode === 105) {
-      this.activateI();
+      self.activateI();
       return false;
     } else if (e.keyCode === 111) {
-      this.activateO();
+      self.activateO();
       return false;
     }
-  }, this));
+  });
+
+  this.window_ = $(window);
+  this.width_ = 0;
+  this.height_ = 0;
+
+  // TODO: Throttle
+  this.window_.resize(goog.bind(this.onResize, this));
+  this.onResize();
 
   this.init();
 
   // Mark this mode as ready.
-  this['ready']();
-};
-
-/**
- * Initialize (or re-initialize) the mode
- */
-ww.mode.Core.prototype.init = function() {
-  this.log('Init');
+  this.ready();
 };
 
 /**
@@ -106,44 +119,62 @@ ww.mode.Core.prototype.log = function(msg) {
 };
 
 /**
- * Add play/pause/restart UI.
- * @private
+ * Initialize (or re-initialize) the mode
  */
-ww.mode.Core.prototype.addDebugUI_ = function() {
-  var self = this;
-
-  var focusElem = document.createElement('button');
-  focusElem.innerHTML = "Focus";
-  focusElem.onclick = function() {
-    self['focus']();
-  };
-
-  var unfocusElem = document.createElement('button');
-  unfocusElem.innerHTML = "Unfocus";
-  unfocusElem.onclick = function() {
-    self['unfocus']();
-  };
-
-  var restartElem = document.createElement('button');
-  restartElem.innerHTML = "Restart";
-  restartElem.onclick = function() {
-    self.init();
-  };
-
-  var containerElem = document.createElement('div');
-  containerElem.style.position = 'absolute';
-  containerElem.style.bottom = 0;
-  containerElem.style.left = 0;
-  containerElem.style.right = 0;
-  containerElem.style.height = '30px';
-  containerElem.style.background = 'rgba(0,0,0,0.2)';
-
-  containerElem.appendChild(focusElem);
-  containerElem.appendChild(unfocusElem);
-  containerElem.appendChild(restartElem);
-
-  document.body.appendChild(containerElem);
+ww.mode.Core.prototype.init = function() {
+  this.log('Init');
 };
+
+/**
+ * Handles a browser window resize.
+ */
+ww.mode.Core.prototype.onResize = function() {
+  this.width_ = this.window_.width();
+  this.height_ = this.window_.height();
+  this.log('Resize ' + this.width_ + 'x' + this.height_);
+};
+
+if (DEBUG_MODE) {
+  /**
+   * Add play/pause/restart UI.
+   * @private
+   */
+  ww.mode.Core.prototype.addDebugUI_ = function() {
+    var self = this;
+
+    var focusElem = document.createElement('button');
+    focusElem.innerHTML = "Focus";
+    focusElem.onclick = function() {
+      self['focus']();
+    };
+
+    var unfocusElem = document.createElement('button');
+    unfocusElem.innerHTML = "Unfocus";
+    unfocusElem.onclick = function() {
+      self['unfocus']();
+    };
+
+    var restartElem = document.createElement('button');
+    restartElem.innerHTML = "Restart";
+    restartElem.onclick = function() {
+      self.init();
+    };
+
+    var containerElem = document.createElement('div');
+    containerElem.style.position = 'absolute';
+    containerElem.style.bottom = 0;
+    containerElem.style.left = 0;
+    containerElem.style.right = 0;
+    containerElem.style.height = '30px';
+    containerElem.style.background = 'rgba(0,0,0,0.2)';
+
+    containerElem.appendChild(focusElem);
+    containerElem.appendChild(unfocusElem);
+    containerElem.appendChild(restartElem);
+
+    document.body.appendChild(containerElem);
+  };
+}
 
 /**
  * Begin running rAF, but only if mode needs it.
@@ -152,7 +183,7 @@ ww.mode.Core.prototype.startRendering = function() {
   // No-op if mode doesn't need rAF
   if (!this.wantsRenderLoop_) { return; }
 
-  this.lastTime_ = Date.now();
+  this.lastTime_ = new Date().getTime();
 
   // Only start rAF if we're not already rendering.
   if (!this.shouldRenderNextFrame_) {
@@ -176,12 +207,14 @@ ww.mode.Core.prototype.stopRendering = function() {
  * then schedule the next frame if we need it.
  */
 ww.mode.Core.prototype.renderFrame_ = function() {
-  var currentTime = Date.now();
+  var currentTime = new Date().getTime();
   var delta = currentTime - this.lastTime_;
 
-  /**
-   * TODO: Lock max delta to avoid massive jumps.
-   */
+  // Reduce large gaps (returning from background tab) to
+  // a single frame.
+  if (delta > 500) {
+    delta = 16.7;
+  }
 
   if (this.wantsPhysics) {
     this.stepPhysics(delta);
@@ -203,7 +236,9 @@ ww.mode.Core.prototype.renderFrame_ = function() {
  * Redraw without stepping (for resizes).
  */
 ww.mode.Core.prototype.redraw = function() {
-  this.onFrame(0);
+  if (this.wantsDrawing_) {
+    this.onFrame(0);
+  }
 };
 
 /**
@@ -211,13 +246,13 @@ ww.mode.Core.prototype.redraw = function() {
  * @param {Number} delta Ms since last draw.
  */
 ww.mode.Core.prototype.onFrame = function(delta) {
-  // no-rop
+  // no-op
 };
 
 /**
  * Tell parent frame that this mode is ready.
  */
-ww.mode.Core.prototype['ready'] = function() {
+ww.mode.Core.prototype.ready = function() {
   window['currentMode'] = this;
 
   this.log('Is ready');
