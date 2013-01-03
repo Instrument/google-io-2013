@@ -87,11 +87,15 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   $(document).keypress(function(e) {
     if (e.keyCode === 105) {
       self.activateI();
-      return false;
     } else if (e.keyCode === 111) {
       self.activateO();
-      return false;
+    } else {
+      return;
     }
+
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
   });
 
   this.window_ = $(window);
@@ -344,13 +348,23 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
 };
 
 /**
+ * Get a physics world.
+ * @private
+ * @return {Physics} The shared audio context.
+ */
+ww.mode.Core.prototype.getPhysicsWorld_ = function() {
+  this.physicsWorld_ = this.physicsWorld_ || new window['Physics']();
+  return this.physicsWorld_;
+};
+
+/**
  * Step forward in time for physics.
  * @param {Number} delta Ms since last step.
  */
 ww.mode.Core.prototype.stepPhysics = function(delta) {
   if (delta > 0) {
-    this.physicsWorld_ = this.physicsWorld_ || new window['Physics']();
-    this.physicsWorld_.step();
+    var world = this.getPhysicsWorld_();
+    world.step();
   }
 };
 
@@ -390,6 +404,7 @@ ww.mode.Core.prototype.playSound = function(filename) {
  */
 ww.mode.CatMode.prototype.activateI = function() {
   // no-op
+  this.log('Activated "I"');
 };
 
 /**
@@ -397,4 +412,5 @@ ww.mode.CatMode.prototype.activateI = function() {
  */
 ww.mode.CatMode.prototype.activateO = function() {
   // no-op
+  this.log('Activated "O"');
 };
