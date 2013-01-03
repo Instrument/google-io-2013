@@ -44,7 +44,7 @@ ww.mode.CatMode.prototype.init = function() {
 };
 
 ww.mode.CatMode.prototype['onclickBlah'] = function() {
-  this.playSound('/sounds/cat/cat-1.mp3');
+  this.playSound('cat-1.mp3');
 };
 
 ww.mode.CatMode.prototype.draw = function() {

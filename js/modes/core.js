@@ -251,12 +251,15 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
   request.responseType = 'arraybuffer';
 
   // Decode asynchronously
-  var self;
+  var self = this;
   request.onload = function() {
-    audioContext.decodeAudioData(request.response, function(buffer) {
+    var audioContext = this.getAudioContext_();
+    audioContext['decodeAudioData'](request.response, function(buffer) {
       self.soundBuffers_[url] = buffer;
       gotSound(self.soundBuffers_[url]);
-    }, onError);
+    }, function() {
+      debugger;
+    });
   };
   request.send();
 };
@@ -267,23 +270,25 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
  * @return {AudioContext} The shared audio context.
  */
 ww.mode.Core.prototype.getAudioContext_ = function() {
-  this.audioContext_ = this.audioContext_ || new window.AudioContext();
+  this.audioContext_ = this.audioContext_ || new window['AudioContext']();
   return this.audioContext_;
 };
 
 /**
  * Play a sound by url.
- * @param {String} url Audio file URL.
+ * @param {String} filename Audio file name.
  */
-ww.mode.Core.prototype.playSound = function(url) {
+ww.mode.Core.prototype.playSound = function(filename) {
   if (!this.wantsAudio_) { return; }
+
+  var url = '../sounds/' + this.name_ + '/' + filename;
 
   var audioContext = this.getAudioContext_();
 
   this.getSoundBuffer_(url, function(buffer) {
-    var source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioContext.destination);
-    source.noteOn(0);
+    var source = audioContext['createBufferSource']();
+    source['buffer'] = buffer;
+    source['connect'](audioContext['destination']);
+    source['noteOn'](0);
   });
 };
