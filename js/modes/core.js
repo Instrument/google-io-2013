@@ -52,7 +52,7 @@ ww.mode.Core = function(name, wantsRenderLoop) {
     this.addDebugUI_();
   }
 
-  this['init']();
+  this.init();
 
   // Mark this mode as ready.
   this['ready']();
@@ -61,7 +61,7 @@ ww.mode.Core = function(name, wantsRenderLoop) {
 /**
  * Initialize (or re-initialize) the mode
  */
-ww.mode.Core.prototype['init'] = function() {
+ww.mode.Core.prototype.init = function() {
   this.log('Init');
 };
 
@@ -97,7 +97,7 @@ ww.mode.Core.prototype.addDebugUI_ = function() {
   var restartElem = document.createElement('button');
   restartElem.innerHTML = "Restart";
   restartElem.onclick = function() {
-    self['init']();
+    self.init();
   };
 
   var containerElem = document.createElement('div');
