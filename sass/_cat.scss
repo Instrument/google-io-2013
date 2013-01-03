@@ -1,3 +1,6 @@
+$break-small: 480px;
+$break-large: 1200px;
+
 #letter-i,
 #letter-o {
   background-color: transparent;
@@ -8,6 +11,14 @@
   display: inline-block;
   height: 100%;
   width: 40%;
+
+  @include screen(1200px) {
+    width: 60%;
+  }
+
+  @include screen(320px) {
+    width: 70%;
+  }
 }
 
 #letter-i {
