@@ -56,7 +56,7 @@ ww.mode.Core = function(name, wantsRenderLoop, wantsAudio) {
   this.shouldRenderNextFrame_ = false;
 
   // Bind a copy of render method for rAF
-  this.boundDraw_ = goog.bind(this.renderFrame_, this);
+  this.boundRenderFrame_ = goog.bind(this.renderFrame_, this);
 
   if (DEBUG_MODE) {
     this.addDebugUI_();
@@ -135,7 +135,7 @@ ww.mode.Core.prototype.startRendering = function() {
   // Only start rAF if we're not already rendering.
   if (!this.shouldRenderNextFrame_) {
     this.shouldRenderNextFrame_ = true;
-    this.boundDraw_();
+    this.boundRenderFrame_();
   }
 };
 
@@ -155,18 +155,18 @@ ww.mode.Core.prototype.stopRendering = function() {
  */
 ww.mode.Core.prototype.renderFrame_ = function() {
   // Call the mode's draw method.
-  this['draw']();
+  this.draw();
 
   // Schedule the next frame.
-  if (!this.shouldRenderNextFrame_) {
-    requestAnimationFrame(this.boundDraw_);
+  if (this.shouldRenderNextFrame_) {
+    requestAnimationFrame(this.boundRenderFrame_);
   }
 };
 
 /**
  * Draw a single frame.
  */
-ww.mode.Core.prototype['draw'] = function() {
+ww.mode.Core.prototype.draw = function() {
   // No-op, by default.
 };
 
