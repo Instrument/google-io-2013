@@ -5,17 +5,17 @@ goog.provide('ww.mode.CatMode');
  * @constructor
  */
 ww.mode.CatMode = function() {
-  goog.base(this, 'cat', true);
+  goog.base(this, 'cat', true, true);
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
-
 
 /**
  * Function to initialize the current mode.
  * Creates canvas contexts and sets their size.
- * @private
  */
-ww.mode.CatMode.prototype._init = function() {
+ww.mode.CatMode.prototype.init = function() {
+  goog.base(this, 'init');
+
   var canvasOne = document.getElementById('canvas-one');
   var canvasTwo = document.getElementById('canvas-two');
   var canvasThree = document.getElementById('canvas-three');
@@ -40,4 +40,8 @@ ww.mode.CatMode.prototype._init = function() {
 
   $('canvasThree').attr('width', window.innerWidth);
   $('canvasThree').attr('height', window.innerHeight);
-}
+};
+
+ww.mode.CatMode.prototype.onFrame = function(delta) {
+  goog.base(this, 'onFrame');
+};

@@ -1,6 +1,7 @@
 goog.provide('ww.mode');
 goog.require('ww.mode.CatMode');
 goog.require('ww.mode.DogMode');
+goog.require('ww.mode.PongMode');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -17,6 +18,7 @@ ww.mode.findModeByName = function(name) {
 
 ww.mode.register('cat', ww.mode.CatMode);
 ww.mode.register('dog', ww.mode.DogMode);
+ww.mode.register('pong', ww.mode.PongMode);
 
 jQuery(function() {
   var parts = window.location.href.split('/');
@@ -27,16 +29,4 @@ jQuery(function() {
   
   // Initialize
   var controller = new klass();
-
-  if (DEBUG_MODE) {
-    var focusCheckbox = $('<input type="checkbox">').appendTo(document.body);
-    focusCheckbox.css({ 'position': 'absolute', 'top': 0, 'right': 0 });
-    focusCheckbox.change(function () {
-      if (focusCheckbox.prop('checked')) {
-        controller['focus']();
-      } else {
-        controller['unfocus']();
-      }
-    });
-  }
 });
