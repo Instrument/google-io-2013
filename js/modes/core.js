@@ -31,15 +31,25 @@ goog.provide('ww.mode.Core');
         };
 }());
 
+window['AudioContext'] = (
+  window['AudioContext'] ||
+  window['webkitAudioContext'] ||
+  null
+);
+
 /**
  * @constructor
  * @param {String} name Name of the mode.
  * @param {Boolean} wantsRenderLoop Whether this mode needs rAF.
+ * @param {Boolean} wantsAudio Whether this mode needs webAudio.
  */
-ww.mode.Core = function(name, wantsRenderLoop) {
+ww.mode.Core = function(name, wantsRenderLoop, wantsAudio) {
   this.name_ = name;
 
   this.hasFocus = false;
+
+  // By default, modes don't need audio.
+  this.wantsAudio_ = (wantsAudio && window['AudioContext']) || false;
 
   // By default, modes don't need rAF.
   this.wantsRenderLoop_ = wantsRenderLoop || false;
@@ -220,4 +230,60 @@ ww.mode.Core.prototype['unfocus'] = function() {
  */
 ww.mode.Core.prototype['didUnfocus'] = function() {
   // no-op
+};
+
+/**
+ * Load a sound buffer (binary audio file).
+ * @private
+ * @param {String} url Audio file URL.
+ * @param {Function} gotSound On-load callback.
+ */
+ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
+  this.soundBuffers_ = this.soundBuffers_ || {};
+
+  if (this.soundBuffers_[url]) {
+    gotSound(this.soundBuffers_[url]);
+    return;
+  }
+
+  var request = new XMLHttpRequest();
+  request.open('GET', url, true);
+  request.responseType = 'arraybuffer';
+
+  // Decode asynchronously
+  var self;
+  request.onload = function() {
+    audioContext.decodeAudioData(request.response, function(buffer) {
+      self.soundBuffers_[url] = buffer;
+      gotSound(self.soundBuffers_[url]);
+    }, onError);
+  };
+  request.send();
+};
+
+/**
+ * Get an audio context.
+ * @private
+ * @return {AudioContext} The shared audio context.
+ */
+ww.mode.Core.prototype.getAudioContext_ = function() {
+  this.audioContext_ = this.audioContext_ || new window.AudioContext();
+  return this.audioContext_;
+};
+
+/**
+ * Play a sound by url.
+ * @param {String} url Audio file URL.
+ */
+ww.mode.Core.prototype.playSound = function(url) {
+  if (!this.wantsAudio_) { return; }
+
+  var audioContext = this.getAudioContext_();
+
+  this.getSoundBuffer_(url, function(buffer) {
+    var source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    source.noteOn(0);
+  });
 };

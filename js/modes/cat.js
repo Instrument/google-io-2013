@@ -5,7 +5,7 @@ goog.provide('ww.mode.CatMode');
  * @constructor
  */
 ww.mode.CatMode = function() {
-  goog.base(this, 'cat', true);
+  goog.base(this, 'cat', true, true);
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
 
@@ -41,4 +41,8 @@ ww.mode.CatMode.prototype.init = function() {
 
   $('canvasThree').attr('width', window.innerWidth);
   $('canvasThree').attr('height', window.innerHeight);
+};
+
+ww.mode.CatMode.prototype['onclickBlah'] = function() {
+  this.playSound('/sounds/cat/cat-1.mp3');
 };
