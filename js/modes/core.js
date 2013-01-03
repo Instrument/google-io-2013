@@ -228,7 +228,7 @@ ww.mode.Core.prototype.renderFrame_ = function() {
     delta = 16.7;
   }
 
-  if (this.wantsPhysics) {
+  if (this.wantsPhysics_) {
     this.stepPhysics(delta);
   }
 

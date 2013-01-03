@@ -9,10 +9,17 @@ ww.mode.ExplodeMode = function() {
 };
 goog.inherits(ww.mode.ExplodeMode, ww.mode.Core);
 
-// ww.mode.CatMode.prototype.activateI = function() {
-//   this.playSound('cat-1.mp3');
-// };
+ww.mode.ExplodeMode.prototype.init = function() {
+  goog.base(this, 'init');
 
-// ww.mode.CatMode.prototype.activateO = function() {
-//   this.playSound('cat-2.mp3');
-// };
+  $(document.body).css({
+    backgroundImage: 'url(../img/explode/1.gif)',
+    backgroundRepeat: 'no-repeat',
+    'background-size': '100% 100%'
+  });
+
+  // var self = this;
+  // setInterval(function() {
+  //   self.playSound('bomb.wav');
+  // }, 1000);
+};

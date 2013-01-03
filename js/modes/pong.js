@@ -68,7 +68,8 @@ ww.mode.PongMode.prototype.init = function() {
   this.ball['setRadius'](50);
   this.ball['moveTo'](new Vector(startX, this.ball['radius']));
   var world = this.getPhysicsWorld_();
-  this.ball['vel'] = new Vector(-1, 1);
+  world['viscosity'] = 0;
+  this.ball['vel'] = new Vector(-21, 21);
   world['particles'].push(this.ball);
 };
 
@@ -94,7 +95,7 @@ ww.mode.PongMode.prototype.drawI = function() {
 
   this.ctxOne.closePath();
   this.ctxOne.fill();
-}
+};
 
 ww.mode.PongMode.prototype.moveBall = function(target) {
   if (target['pos']['x'] < target['radius'] || target['pos']['x'] > this.screenWidthPixels - target['radius']) {
@@ -104,7 +105,7 @@ ww.mode.PongMode.prototype.moveBall = function(target) {
   if (target['pos']['y'] > this.screenHeightPixels - target['radius'] || target['pos']['y'] < target['radius']) {
     target['vel']['y'] *= -1;
   }
-}
+};
 
 ww.mode.PongMode.prototype.drawBall = function(target) {
   this.ctxOne.beginPath();
@@ -114,7 +115,7 @@ ww.mode.PongMode.prototype.drawBall = function(target) {
   this.ctxOne.fill();
 
   this.ctxOne.closePath();
-}
+};
 
 ww.mode.PongMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
