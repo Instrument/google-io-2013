@@ -132,6 +132,8 @@ ww.mode.Core.prototype.startRendering = function() {
   // No-op if mode doesn't need rAF
   if (!this.wantsRenderLoop_) { return; }
 
+  this.lastTime_ = Date.now();
+
   // Only start rAF if we're not already rendering.
   if (!this.shouldRenderNextFrame_) {
     this.shouldRenderNextFrame_ = true;
@@ -154,8 +156,17 @@ ww.mode.Core.prototype.stopRendering = function() {
  * then schedule the next frame if we need it.
  */
 ww.mode.Core.prototype.renderFrame_ = function() {
+  var currentTime = Date.now();
+  var delta = currentTime - this.lastTime_;
+
+  /**
+   * TODO: Lock max delta to avoid massive jumps.
+   */
+
   // Call the mode's draw method.
-  this.draw();
+  this.onFrame(delta);
+
+  this.lastTime_ = currentTime;
 
   // Schedule the next frame.
   if (this.shouldRenderNextFrame_) {
@@ -164,9 +175,17 @@ ww.mode.Core.prototype.renderFrame_ = function() {
 };
 
 /**
- * Draw a single frame.
+ * Redraw without stepping (for resizes).
  */
-ww.mode.Core.prototype.draw = function() {
+ww.mode.Core.prototype.redraw = function() {
+  this.onFrame(0);
+};
+
+/**
+ * Draw a single frame.
+ * @param {Number} delta Ms since last draw.
+ */
+ww.mode.Core.prototype.onFrame = function(delta) {
   // No-op, by default.
 };
 
@@ -258,7 +277,7 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
       self.soundBuffers_[url] = buffer;
       gotSound(self.soundBuffers_[url]);
     }, function() {
-      debugger;
+      // debugger;
     });
   };
   request.send();

@@ -9,7 +9,6 @@ ww.mode.CatMode = function() {
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
 
-
 /**
  * Function to initialize the current mode.
  * Creates canvas contexts and sets their size.
@@ -43,11 +42,6 @@ ww.mode.CatMode.prototype.init = function() {
   $('canvasThree').attr('height', window.innerHeight);
 };
 
-ww.mode.CatMode.prototype['onclickBlah'] = function() {
-  this.playSound('cat-1.mp3');
-};
-
-ww.mode.CatMode.prototype.draw = function() {
-  goog.base(this, 'draw');
-  console.log('test');
+ww.mode.CatMode.prototype.onFrame = function(delta) {
+  goog.base(this, 'onFrame');
 };

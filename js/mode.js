@@ -27,16 +27,4 @@ jQuery(function() {
   
   // Initialize
   var controller = new klass();
-
-  if (DEBUG_MODE) {
-    var focusCheckbox = $('<input type="checkbox">').appendTo(document.body);
-    focusCheckbox.css({ 'position': 'absolute', 'top': 0, 'right': 0 });
-    focusCheckbox.change(function () {
-      if (focusCheckbox.prop('checked')) {
-        controller['focus']();
-      } else {
-        controller['unfocus']();
-      }
-    });
-  }
 });
