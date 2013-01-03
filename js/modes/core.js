@@ -40,10 +40,11 @@ window['AudioContext'] = (
 /**
  * @constructor
  * @param {String} name Name of the mode.
- * @param {Boolean} wantsRenderLoop Whether this mode needs rAF.
  * @param {Boolean} wantsAudio Whether this mode needs webAudio.
+ * @param {Boolean} wantsDrawing Whether this mode needs to draw onFrame.
+ * @param {Boolean} wantsPhysics Whether this mode needs physics.
  */
-ww.mode.Core = function(name, wantsRenderLoop, wantsAudio) {
+ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   this.name_ = name;
 
   this.hasFocus = false;
@@ -51,8 +52,14 @@ ww.mode.Core = function(name, wantsRenderLoop, wantsAudio) {
   // By default, modes don't need audio.
   this.wantsAudio_ = (wantsAudio && window['AudioContext']) || false;
 
+  // By default, modes don't need audio.
+  this.wantsDrawing_ = wantsDrawing || false;
+
+  // By default, modes don't need audio.
+  this.wantsPhysics_ = wantsPhysics || false;
+
   // By default, modes don't need rAF.
-  this.wantsRenderLoop_ = wantsRenderLoop || false;
+  this.wantsRenderLoop_ = this.wantsDrawing_ || this.wantsPhysics_ || false;
   this.shouldRenderNextFrame_ = false;
 
   // Bind a copy of render method for rAF
@@ -61,6 +68,19 @@ ww.mode.Core = function(name, wantsRenderLoop, wantsAudio) {
   if (DEBUG_MODE) {
     this.addDebugUI_();
   }
+
+  // Short-cuts to activating letters for basics setup.
+  $('#letter-i').live('click', goog.bind(this.activateI, this));
+  $('#letter-o').live('click', goog.bind(this.activateO, this));
+  $(document).keypress(goog.bind(function(e) {
+    if (e.keyCode === 105) {
+      this.activateI();
+      return false;
+    } else if (e.keyCode === 111) {
+      this.activateO();
+      return false;
+    }
+  }, this));
 
   this.init();
 
@@ -163,8 +183,11 @@ ww.mode.Core.prototype.renderFrame_ = function() {
    * TODO: Lock max delta to avoid massive jumps.
    */
 
-  // Call the mode's draw method.
-  this.onFrame(delta);
+  this.stepPhysics(delta);
+
+  if (this.wantsDrawing_) {
+    this.onFrame(delta);
+  }
 
   this.lastTime_ = currentTime;
 
@@ -186,7 +209,7 @@ ww.mode.Core.prototype.redraw = function() {
  * @param {Number} delta Ms since last draw.
  */
 ww.mode.Core.prototype.onFrame = function(delta) {
-  // No-op, by default.
+  // no-rop
 };
 
 /**
@@ -284,6 +307,17 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
 };
 
 /**
+ * Step forward in time for physics.
+ * @param {Number} delta Ms since last step.
+ */
+ww.mode.Core.prototype.stepPhysics = function(delta) {
+  if (this.wantsPhysics_ && (delta > 0)) {
+    this.physicsWorld_ = this.physicsWorld_ || new window['Physics']();
+    this.physicsWorld_.step();
+  }
+};
+
+/**
  * Get an audio context.
  * @private
  * @return {AudioContext} The shared audio context.
@@ -302,6 +336,8 @@ ww.mode.Core.prototype.playSound = function(filename) {
 
   var url = '../sounds/' + this.name_ + '/' + filename;
 
+  this.log('Requested sound "' + filename + '" from "' + url + '"');
+
   var audioContext = this.getAudioContext_();
 
   this.getSoundBuffer_(url, function(buffer) {
@@ -310,4 +346,18 @@ ww.mode.Core.prototype.playSound = function(filename) {
     source['connect'](audioContext['destination']);
     source['noteOn'](0);
   });
+};
+
+/**
+ * Method called when activating the I.
+ */
+ww.mode.CatMode.prototype.activateI = function() {
+  // no-op
+};
+
+/**
+ * Method called when activating the O.
+ */
+ww.mode.CatMode.prototype.activateO = function() {
+  // no-op
 };
