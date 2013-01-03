@@ -1,0 +1,39 @@
+#letter-i,
+#letter-o {
+  background-color: transparent;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(100% auto);
+  @include box-sizing(border-box);
+  display: inline-block;
+  height: 100%;
+  width: 40%;
+}
+
+#letter-i {
+  background-image: image-url('cat/cat-letter-i.png');
+}
+
+#letter-o {
+  background-image: image-url('cat/cat-letter-o.png');
+}
+
+#letter-i-container,
+#letter-o-container {
+  @include box-sizing(border-box);
+  bottom: 0;
+  position: absolute;
+  top: 0;
+}
+
+#letter-i-container {
+  text-align: right;
+  left: 0;
+  right: 50%;
+}
+
+#letter-o-container {
+  text-align: left;
+  left: 50%;
+  right: 0;
+}

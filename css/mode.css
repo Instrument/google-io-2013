@@ -1,5 +1,73 @@
 /* line 3, ../sass/mode.scss */
+canvas {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* line 11, ../sass/mode.scss */
+html, body {
+  height: 100%;
+  min-height: 100%;
+}
+
+/* line 16, ../sass/mode.scss */
 body {
   margin: 0;
   padding: 0;
+}
+
+/* line 2, ../sass/_cat.scss */
+#letter-i,
+#letter-o {
+  background-color: transparent;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  -webkit-background-size: 100% auto;
+  -moz-background-size: 100% auto;
+  -o-background-size: 100% auto;
+  background-size: 100% auto;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 100%;
+  width: 40%;
+}
+
+/* line 13, ../sass/_cat.scss */
+#letter-i {
+  background-image: url('../img/cat/cat-letter-i.png?1357242087');
+}
+
+/* line 17, ../sass/_cat.scss */
+#letter-o {
+  background-image: url('../img/cat/cat-letter-o.png?1357242078');
+}
+
+/* line 22, ../sass/_cat.scss */
+#letter-i-container,
+#letter-o-container {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  bottom: 0;
+  position: absolute;
+  top: 0;
+}
+
+/* line 29, ../sass/_cat.scss */
+#letter-i-container {
+  text-align: right;
+  left: 0;
+  right: 50%;
+}
+
+/* line 35, ../sass/_cat.scss */
+#letter-o-container {
+  text-align: left;
+  left: 50%;
+  right: 0;
 }
