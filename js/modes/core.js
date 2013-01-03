@@ -127,6 +127,10 @@ ww.mode.Core.prototype.log = function(msg) {
  */
 ww.mode.Core.prototype.init = function() {
   this.log('Init');
+
+  if (this.wantsPhysics_) {
+    this.resetPhysicsWorld_();
+  }
 };
 
 /**
@@ -355,6 +359,18 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
 ww.mode.Core.prototype.getPhysicsWorld_ = function() {
   this.physicsWorld_ = this.physicsWorld_ || new window['Physics']();
   return this.physicsWorld_;
+};
+
+/**
+ * Clear world.
+ * @private
+ */
+ww.mode.Core.prototype.resetPhysicsWorld_ = function() {
+  if (this.physicsWorld_ && this.physicsWorld_['destroy']) {
+    this.physicsWorld_['destroy']();
+  }
+
+  this.physicsWorld_ = null;
 };
 
 /**
