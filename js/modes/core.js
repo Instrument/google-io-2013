@@ -183,7 +183,9 @@ ww.mode.Core.prototype.renderFrame_ = function() {
    * TODO: Lock max delta to avoid massive jumps.
    */
 
-  this.stepPhysics(delta);
+  if (this.wantsPhysics) {
+    this.stepPhysics(delta);
+  }
 
   if (this.wantsDrawing_) {
     this.onFrame(delta);
@@ -311,7 +313,7 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
  * @param {Number} delta Ms since last step.
  */
 ww.mode.Core.prototype.stepPhysics = function(delta) {
-  if (this.wantsPhysics_ && (delta > 0)) {
+  if (delta > 0) {
     this.physicsWorld_ = this.physicsWorld_ || new window['Physics']();
     this.physicsWorld_.step();
   }
