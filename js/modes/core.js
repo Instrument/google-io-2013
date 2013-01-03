@@ -107,7 +107,9 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   this.height_ = 0;
 
   // TODO: Throttle
-  this.window_.resize(goog.bind(this.onResize, this));
+  this.window_.resize(function() {
+    self.onResize(true);
+  });
   this.onResize();
 
   this.init();
@@ -139,11 +141,22 @@ ww.mode.Core.prototype.init = function() {
 
 /**
  * Handles a browser window resize.
+ * @param {Boolean} redraw Whether resize redraws.
  */
-ww.mode.Core.prototype.onResize = function() {
+ww.mode.Core.prototype.onResize = function(redraw) {
   this.width_ = this.window_.width();
   this.height_ = this.window_.height();
   this.log('Resize ' + this.width_ + 'x' + this.height_);
+
+  if (this.paperCanvas_) {
+    this.paperCanvas_.width = this.width_;
+    this.paperCanvas_.height = this.height_;
+    paper['view']['setViewSize'](this.width_, this.height_);
+  }
+
+  if (redraw) {
+    this.redraw();
+  }
 };
 
 if (DEBUG_MODE) {
@@ -258,7 +271,10 @@ ww.mode.Core.prototype.redraw = function() {
  * @param {Number} delta Ms since last draw.
  */
 ww.mode.Core.prototype.onFrame = function(delta) {
-  // no-op
+  // Render paper if we're using it
+  if (this.paperCanvas_) {
+    paper['view']['draw']();
+  }
 };
 
 /**
@@ -385,6 +401,14 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
   if (delta > 0) {
     var world = this.getPhysicsWorld_();
     world.step();
+
+    for (var i = 0; i < world['particles'].length; i++) {
+      var p = world['particles'][i];
+      if (p['drawObj'] || p['drawObj']['position']) {
+        p['drawObj']['position']['x'] = p['pos']['x'];
+        p['drawObj']['position']['y'] = p['pos']['y'];
+      }
+    }
   }
 };
 
@@ -422,7 +446,7 @@ ww.mode.Core.prototype.playSound = function(filename) {
 /**
  * Method called when activating the I.
  */
-ww.mode.CatMode.prototype.activateI = function() {
+ww.mode.Core.prototype.activateI = function() {
   // no-op
   this.log('Activated "I"');
 };
@@ -430,7 +454,24 @@ ww.mode.CatMode.prototype.activateI = function() {
 /**
  * Method called when activating the O.
  */
-ww.mode.CatMode.prototype.activateO = function() {
+ww.mode.Core.prototype.activateO = function() {
   // no-op
   this.log('Activated "O"');
+};
+
+/**
+ * Get a canvas for use with paperjs.
+ * @return {Element} The canvas element.
+ */
+ww.mode.Core.prototype.getPaperCanvas_ = function() {
+  if (!this.paperCanvas_) {
+    this.paperCanvas_ = document.createElement('canvas');
+    this.paperCanvas_.width = this.width_;
+    this.paperCanvas_.height = this.height_;
+    $(document.body).prepend(this.paperCanvas_);
+
+    paper['setup'](this.paperCanvas_);
+  }
+
+  return this.paperCanvas;
 };

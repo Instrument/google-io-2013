@@ -17,6 +17,9 @@ goog.inherits(ww.mode.PongMode, ww.mode.Core);
 ww.mode.PongMode.prototype.init = function() {
   goog.base(this, 'init');
 
+  // Prep paperjs
+  this.getPaperCanvas_();
+
   /**
    * Assign each canvas element to a variable.
    */
@@ -61,20 +64,22 @@ ww.mode.PongMode.prototype.init = function() {
 
   var startX = this.screenCenterX + (this.screenWidthPixels / 4);
 
+  var world = this.getPhysicsWorld_();
+  world['viscosity'] = 0;
+
   /**
    * Create ball.
    */
+  var rad = 50;
+  var paperBall = new paper['Path']['Circle'](new paper['Point'](startX, rad), rad);
+  paperBall.fillColor = 'black';
+
   this.ball = new Particle();
-  this.ball['setRadius'](50);
-  this.ball['moveTo'](new Vector(startX, this.ball['radius']));
-  var world = this.getPhysicsWorld_();
-  world['viscosity'] = 0;
+  this.ball['setRadius'](rad);
+  this.ball['moveTo'](new Vector(startX, rad));
+  this.ball['drawObj'] = paperBall;
   this.ball['vel'] = new Vector(-21, 21);
   world['particles'].push(this.ball);
-};
-
-ww.mode.PongMode.prototype['onclickBlah'] = function() {
-  this.playSound('/sounds/cat/cat-1.mp3');
 };
 
 ww.mode.PongMode.prototype.drawI = function() {
@@ -107,16 +112,6 @@ ww.mode.PongMode.prototype.moveBall = function(target) {
   }
 };
 
-ww.mode.PongMode.prototype.drawBall = function(target) {
-  this.ctxOne.beginPath();
-
-  this.ctxOne.arc(target['pos']['x'], target['pos']['y'], target['radius'], 0, Math.PI * 2);
-
-  this.ctxOne.fill();
-
-  this.ctxOne.closePath();
-};
-
 ww.mode.PongMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
@@ -138,5 +133,4 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
 
   this.drawI();
   // this.moveBall(this.ball);
-  this.drawBall(this.ball);
 };
