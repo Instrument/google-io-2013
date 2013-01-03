@@ -80,10 +80,14 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     evt = 'click';
   }
 
-  this.letterI.bind(evt, goog.bind(this.activateI, this));
-  this.letterO.bind(evt, goog.bind(this.activateO, this));
+  var self = this;
+  this.letterI.bind(evt, function() {
+    self.activateI();
+  });
+  this.letterO.bind(evt, function() {
+    self.activateO();
+  });
 
-  var self;
   $(document).keypress(function(e) {
     if (e.keyCode === 105) {
       self.activateI();
