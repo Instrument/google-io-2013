@@ -21,48 +21,66 @@ ww.mode.PongMode.prototype.init = function() {
   /**
    * Assign each canvas element to a variable.
    */
-  var canvasOne = document.getElementById('canvas-one');
-  var canvasTwo = document.getElementById('canvas-two');
-  var canvasThree = document.getElementById('canvas-three');
+  this.canvasOne;
+  this.canvasTwo;
+  this.canvasThree;
+
+  canvasOne = document.getElementById('canvas-one');
+  canvasTwo = document.getElementById('canvas-two');
+  canvasThree = document.getElementById('canvas-three');
 
   /**
    * Assign each canvas context to a variable if the elements exist.
    */
+  this.ctxOne;
+  this.ctxTwo;
+  this.ctxThree;
+
   if(canvasOne.getContext) {
-    var ctxOne = canvasOne.getContext('2d');
+    ctxOne = canvasOne.getContext('2d');
   }
 
   if(canvasTwo.getContext) {
-    var ctxTwo = canvasTwo.getContext('2d');
+    ctxTwo = canvasTwo.getContext('2d');
   }
 
   if(canvasThree.getContext) {
-    var ctxThree = canvasThree.getContext('2d');
+    ctxThree = canvasThree.getContext('2d');
   }
 
   /**
    * Set each canvas element to be the size of the viewport.
    */
-  $('canvasOne').attr('width', window.innerWidth);
-  $('canvasOne').attr('height', window.innerHeight);
+  $(canvasOne).attr('width', window.innerWidth);
+  $(canvasOne).attr('height', window.innerHeight);
 
-  $('canvasTwo').attr('width', window.innerWidth);
-  $('canvasTwo').attr('height', window.innerHeight);
+  $(canvasTwo).attr('width', window.innerWidth);
+  $(canvasTwo).attr('height', window.innerHeight);
 
-  $('canvasThree').attr('width', window.innerWidth);
-  $('canvasThree').attr('height', window.innerHeight);
+  $(canvasThree).attr('width', window.innerWidth);
+  $(canvasThree).attr('height', window.innerHeight);
 
   /**
-   * Gets the center of the screen.
+   * Gets the width of the viewport and its center point.
    */
-  var screenCenterX = window.innerWidth / 2;
-  var screenCenterY = window.innerHeight / 2;
+  this.screenWidthPixels;
+  this.screenHeightPixels;
+  this.screenCenterX;
+  this.screenCenterY;
+
+  screenWidthPixels = window.innerWidth;
+  screenHeightPixels = window.innerHeight;
+  screenCenterX = screenWidthPixels / 2;
+  screenCenterY = screenHeightPixels / 2;
 
   /**
    * Sets the mouse position to start at the screen center.
    */
-  var mouseX = screenCenterX;
-  var mouseY = screenCenterY;
+  this.mouseX;
+  this.mouseY;
+
+  mouseX = screenCenterX;
+  mouseY = screenCenterY;
 };
 
 ww.mode.PongMode.prototype['onclickBlah'] = function() {
@@ -70,15 +88,35 @@ ww.mode.PongMode.prototype['onclickBlah'] = function() {
 };
 
 ww.mode.PongMode.drawI = function() {
+  ctxOne.fillStyle = 'black';
   ctxOne.beginPath();
 
-  ctxOne.moveTo(mouseX, mouseY);
+  var iWidth = 20;
+  var iHeight = 200;
+
+  var startX = screenCenterX - (screenWidthPixels / 4);
+  var startY = mouseY - 100;
+
+  if (startY < 1) {
+    startY = 1;
+  }
+
+  ctxOne.rect(startX, mouseY - iHeight / 2, iWidth, iHeight);
 
   ctxOne.fill();
 }
 
-ww.mode.PongMode.prototype.draw = function() {
-  goog.base(this, 'draw');
+ww.mode.PongMode.prototype.onFrame = function() {
+  goog.base(this, 'onFrame');
+
+  $(canvasOne).attr('width', window.innerWidth);
+  $(canvasOne).attr('height', window.innerHeight);
+
+  $(canvasTwo).attr('width', window.innerWidth);
+  $(canvasTwo).attr('height', window.innerHeight);
+
+  $(canvasThree).attr('width', window.innerWidth);
+  $(canvasThree).attr('height', window.innerHeight);
 
   $(document).mousemove(function(e){
     mouseX = e.pageX;
