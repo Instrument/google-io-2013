@@ -9,6 +9,18 @@ ww.mode.PongMode = function() {
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
 
+/**
+ * A ball object with position and veloctity.
+ * Creates canvas contexts and sets their size.
+ * Sets initial variables.
+ */
+ww.mode.PongMode.prototype.ball = function(pX, pY, vX, vY, radius) {
+  this.pX = screenCenterX + (screenWidthPixels / 4);
+  this.pY = screenCenterY;
+  this.vX = -1;
+  this.vY = 1;
+  this.radius = 50;
+}
 
 /**
  * Function to initialize the current mode.
