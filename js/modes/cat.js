@@ -42,3 +42,7 @@ ww.mode.CatMode.prototype.init = function() {
   $('canvasThree').attr('width', window.innerWidth);
   $('canvasThree').attr('height', window.innerHeight);
 };
+
+ww.mode.CatMode.prototype['draw'] = function() {
+  console.log('test');
+};
