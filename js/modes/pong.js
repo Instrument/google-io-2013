@@ -28,9 +28,9 @@ ww.mode.PongMode.prototype.init = function() {
   /**
    * Assign each canvas context to a variable if the elements exist.
    */
-  this.ctxOne = canvasOne.getContext('2d');
-  this.ctxTwo = canvasTwo.getContext('2d');
-  this.ctxThree = canvasThree.getContext('2d');
+  this.ctxOne = this.canvasOne.getContext('2d');
+  this.ctxTwo = this.canvasTwo.getContext('2d');
+  this.ctxThree = this.canvasThree.getContext('2d');
 
   /**
    * Set each canvas element to be the size of the viewport.
@@ -50,85 +50,92 @@ ww.mode.PongMode.prototype.init = function() {
 
   this.screenWidthPixels = window.innerWidth;
   this.screenHeightPixels = window.innerHeight;
-  this.screenCenterX = screenWidthPixels / 2;
-  this.screenCenterY = screenHeightPixels / 2;
+  this.screenCenterX = this.screenWidthPixels / 2;
+  this.screenCenterY = this.screenHeightPixels / 2;
 
   /**
    * Sets the mouse position to start at the screen center.
    */
-  this.mouseX = screenCenterX;
-  this.mouseY = screenCenterY;
+  this.mouseX = this.screenCenterX;
+  this.mouseY = this.screenCenterY;
+
+  var startX = this.screenCenterX + (this.screenWidthPixels / 4);
 
   /**
    * Create ball.
    */
   this.ball = new Particle();
-  this.ball.moveTo(new Vector(screenCenterX + (screenWidthPixels / 4), 0));
+  this.ball['moveTo'](new Vector(startX, 0));
   var world = this.getPhysicsWorld_();
-  this.ball.setRadius(50);
-  this.ball.vel = new Vector(-1, 1);
-  world.particles.push(this.ball);
+  this.ball['setRadius'](50);
+  this.ball['vel'] = new Vector(-1, 1);
+  world['particles'].push(this.ball);
 };
 
 ww.mode.PongMode.prototype['onclickBlah'] = function() {
   this.playSound('/sounds/cat/cat-1.mp3');
 };
 
-ww.mode.PongMode.drawI = function() {
-  ctxOne.fillStyle = 'black';
-  ctxOne.beginPath();
+ww.mode.PongMode.prototype.drawI = function() {
+  this.ctxOne.fillStyle = 'black';
+  this.ctxOne.beginPath();
 
   var iWidth = 20;
   var iHeight = 200;
 
-  var startX = screenCenterX - (screenWidthPixels / 4);
+  var startX = this.screenCenterX - (this.screenWidthPixels / 4);
   var startY = mouseY - 100;
 
   if (startY < 1) {
     startY = 1;
   }
 
-  ctxOne.rect(startX, mouseY - iHeight / 2, iWidth, iHeight);
+  this.ctxOne.rect(startX, this.mouseY - iHeight / 2, iWidth, iHeight);
 
-  ctxOne.closePath();
-  ctxOne.fill();
+  this.ctxOne.closePath();
+  this.ctxOne.fill();
 }
 
-ww.mode.PongMode.moveBall = function(ball) {
-  if (ball.pos.x <= 0) {
-    ball.vel.x *= -1;
+ww.mode.PongMode.prototype.moveBall = function(target) {
+  if (target['pos']['x'] < target['radius'] || target['pos']['x'] > this.screenWidthPixels - target['radius']) {
+    target['vel']['x'] *= -1;
   }
-  ball.pos.y;
+
+  if (target['pos']['y'] > this.screenHeightPixels - target['radius'] || target['pos']['y'] < target['radius']) {
+    target['vel']['y'] *= -1;
+  }
 }
 
-ww.mode.PongMode.drawBall = function(ball) {
-  ctxOne.beginPath();
+ww.mode.PongMode.prototype.drawBall = function(target) {
+  this.ctxOne.beginPath();
 
-  ctxOne.arc(ball.pos.x, ball.pos.y, ball.radius, 0, Math.PI * 2);
+  this.ctxOne.arc(target['pos']['x'], target['pos']['y'], target['radius'], 0, Math.PI * 2);
 
-  ctxOne.fill();
+  this.ctxOne.fill();
 
-  ctxOne.closePath();
+  this.ctxOne.closePath();
 }
 
-ww.mode.PongMode.prototype.onFrame = function() {
-  goog.base(this, 'onFrame');
+ww.mode.PongMode.prototype.onFrame = function(delta) {
+  goog.base(this, 'onFrame', delta);
 
-  $(canvasOne).attr('width', window.innerWidth);
-  $(canvasOne).attr('height', window.innerHeight);
+  $(this.canvasOne).attr('width', window.innerWidth);
+  $(this.canvasOne).attr('height', window.innerHeight);
 
-  $(canvasTwo).attr('width', window.innerWidth);
-  $(canvasTwo).attr('height', window.innerHeight);
+  $(this.canvasTwo).attr('width', window.innerWidth);
+  $(this.canvasTwo).attr('height', window.innerHeight);
 
-  $(canvasThree).attr('width', window.innerWidth);
-  $(canvasThree).attr('height', window.innerHeight);
+  $(this.canvasThree).attr('width', window.innerWidth);
+  $(this.canvasThree).attr('height', window.innerHeight);
+
+  var self = this;
 
   $(document).mousemove(function(e){
-    mouseX = e.pageX;
-    mouseY = e.pageY;
+    self.mouseX = e.pageX;
+    self.mouseY = e.pageY;
   });
 
-  ww.mode.PongMode.drawI();
-  ww.mode.PongMode.moveBall(ball);
-  ww.mode.PongMode.drawBall(ball);
+  this.drawI();
+  // this.moveBall(this.ball);
+  this.drawBall(this.ball);
 };
