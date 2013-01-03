@@ -48,14 +48,71 @@ ww.mode.Core = function(name, wantsRenderLoop) {
   // Bind a copy of render method for rAF
   this.boundDraw_ = goog.bind(this.renderFrame_, this);
 
+  if (DEBUG_MODE) {
+    this.addDebugUI_();
+  }
+
+  this['init']();
+
   // Mark this mode as ready.
-  this.ready();
+  this['ready']();
 };
 
+/**
+ * Initialize (or re-initialize) the mode
+ */
+ww.mode.Core.prototype['init'] = function() {
+  this.log('Init');
+};
+
+/**
+ * Log a message.
+ * @param {String} msg The message to log.
+ */
 ww.mode.Core.prototype.log = function(msg) {
   if (DEBUG_MODE) {
     console.log(this.name_ + ': ' + msg);
   }
+};
+
+/**
+ * Add play/pause/restart UI.
+ * @private
+ */
+ww.mode.Core.prototype.addDebugUI_ = function() {
+  var self = this;
+
+  var focusElem = document.createElement('button');
+  focusElem.innerHTML = "Focus";
+  focusElem.onclick = function() {
+    self['focus']();
+  };
+
+  var unfocusElem = document.createElement('button');
+  unfocusElem.innerHTML = "Unfocus";
+  unfocusElem.onclick = function() {
+    self['unfocus']();
+  };
+
+  var restartElem = document.createElement('button');
+  restartElem.innerHTML = "Restart";
+  restartElem.onclick = function() {
+    self['init']();
+  };
+
+  var containerElem = document.createElement('div');
+  containerElem.style.position = 'absolute';
+  containerElem.style.bottom = 0;
+  containerElem.style.left = 0;
+  containerElem.style.right = 0;
+  containerElem.style.height = '30px';
+  containerElem.style.background = 'rgba(0,0,0,0.2)';
+
+  containerElem.appendChild(focusElem);
+  containerElem.appendChild(unfocusElem);
+  containerElem.appendChild(restartElem);
+
+  document.body.appendChild(containerElem);
 };
 
 /**
@@ -106,7 +163,7 @@ ww.mode.Core.prototype['draw'] = function() {
 /**
  * Tell parent frame that this mode is ready.
  */
-ww.mode.Core.prototype.ready = function() {
+ww.mode.Core.prototype['ready'] = function() {
   window['currentMode'] = this;
 
   this.log('Is ready');
@@ -115,20 +172,52 @@ ww.mode.Core.prototype.ready = function() {
   window.parent.postMessage(this.name_ + '.ready', '*');
 };
 
+/**
+ * Focus this mode (start rendering).
+ */
 ww.mode.Core.prototype['focus'] = function() {
   if (this.hasFocus) { return; }
 
   this.log('Got focus');
+  this.hasFocus = true;
 
   // Try to start rAF if requested.
   this.startRendering();
+
+  var self = this;
+  setTimeout(function() {
+    self['didFocus']();
+  }, 10);
 };
 
+/**
+ * Event is called after a mode focused.
+ */
+ww.mode.Core.prototype['didFocus'] = function() {
+  // no-op
+};
+
+/**
+ * Unfocus this mode (stop rendering).
+ */
 ww.mode.Core.prototype['unfocus'] = function() {
   if (!this.hasFocus) { return; }
 
   this.log('Lost focus');
+  this.hasFocus = false;
 
   // Try to stop rAF if requested.
   this.stopRendering();
+
+  var self = this;
+  setTimeout(function() {
+    self['didUnfocus']();
+  }, 10);
+};
+
+/**
+ * Event is called after a mode unfocused.
+ */
+ww.mode.Core.prototype['didUnfocus'] = function() {
+  // no-op
 };
