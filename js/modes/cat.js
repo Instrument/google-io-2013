@@ -8,3 +8,36 @@ ww.mode.CatMode = function() {
   goog.base(this, 'cat', true);
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
+
+
+/**
+ * Function to initialize the current mode.
+ * Creates canvas contexts and sets their size.
+ * @private
+ */
+ww.mode.CatMode.prototype._init = function() {
+  var canvasOne = document.getElementById('canvas-one');
+  var canvasTwo = document.getElementById('canvas-two');
+  var canvasThree = document.getElementById('canvas-three');
+
+  if(canvasOne.getContext) {
+    var ctxOne = canvasOne.getContext('2d');
+  }
+
+  if(canvasTwo.getContext) {
+    var ctxTwo = canvasTwo.getContext('2d');
+  }
+
+  if(canvasThree.getContext) {
+    var ctxThree = canvasThree.getContext('2d');
+  }
+
+  $('canvasOne').attr('width', window.innerWidth);
+  $('canvasOne').attr('height', window.innerHeight);
+
+  $('canvasTwo').attr('width', window.innerWidth);
+  $('canvasTwo').attr('height', window.innerHeight);
+
+  $('canvasThree').attr('width', window.innerWidth);
+  $('canvasThree').attr('height', window.innerHeight);
+}
