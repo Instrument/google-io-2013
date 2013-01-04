@@ -6,6 +6,13 @@ goog.provide('ww.mode.PongMode');
  */
 ww.mode.PongMode = function() {
   goog.base(this, 'pong', true, true, true);
+
+  var self = this;
+
+  $(document).mousemove(function(e){
+    self.mouseX = e.pageX;
+    self.mouseY = e.pageY;
+  });
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
 
@@ -83,19 +90,21 @@ ww.mode.PongMode.prototype.init = function() {
   this.ball['setRadius'](rad);
   this.ball['moveTo'](new Vector(this.startXBall, rad));
   this.ball['drawObj'] = paperBall;
-  this.ball['vel'] = new Vector(-21, 21);
+  this.ball['vel'] = new Vector(-50, 50);
   world['particles'].push(this.ball);
 };
 
-ww.mode.PongMode.prototype.drawI = function() {
+ww.mode.PongMode.prototype.drawPaddle = function() {
   this.ctxOne.fillStyle = 'black';
   this.ctxOne.beginPath();
+
+  this.paddleY = this.mouseY - this.paddleHeight / 2;
 
   if (this.startY < 1) {
     this.startY = 1;
   }
 
-  this.ctxOne.rect(this.paddleX, this.mouseY - this.paddleHeight / 2,
+  this.ctxOne.rect(this.paddleX, this.paddleY,
     this.paddleWidth, this.paddleHeight);
 
   this.ctxOne.closePath();
@@ -130,6 +139,16 @@ ww.mode.PongMode.prototype.moveBall = function(target) {
   }
 };
 
+ww.mode.PongMode.prototype.drawBall = function(target) {
+  this.ctxOne.beginPath();
+
+  this.ctxOne.arc(target['pos']['x'], target['pos']['y'], target['radius'], 0, Math.PI * 2);
+
+  this.ctxOne.fill();
+
+  this.ctxOne.closePath();
+};
+
 ww.mode.PongMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
@@ -142,13 +161,6 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
   $(this.canvasThree).attr('width', window.innerWidth);
   $(this.canvasThree).attr('height', window.innerHeight);
 
-  var self = this;
-
-  $(document).mousemove(function(e){
-    self.mouseX = e.pageX;
-    self.mouseY = e.pageY;
-  });
-
-  this.drawI();
+  this.drawPaddle();
   this.moveBall(this.ball);
 };
