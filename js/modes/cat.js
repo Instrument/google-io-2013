@@ -18,19 +18,12 @@ ww.mode.CatMode.setRotate = function(elm, deg) {
   });
 };
 
-ww.mode.CatMode.setScale = function(elm, scale) {
-  $(elm).css({
-    '-webkit-transform': 'scale(' + scale + ')',
-    '-moz-transform': 'scale(' + scale + ')',
-    '-ms-transform': 'scale(' + scale + ')',
-    'transform': 'scale(' + scale + ')'
-  });
-};
-
 ww.mode.CatMode.prototype.activateI = function() {
-  this.playSound('cat-1.mp3');
+  var self = this;
 
-  $('#letter-i').animate({ rotate: -20 },
+  self.playSound('cat-1.mp3');
+
+  self.letterI.animate({ rotate: -20 },
     {
       duration: 100,
       easing: 'easeInOutBounce',
@@ -58,23 +51,15 @@ ww.mode.CatMode.prototype.activateI = function() {
 };
 
 ww.mode.CatMode.prototype.activateO = function() {
-  this.playSound('cat-2.mp3');
+  var self = this;
 
-  $('#letter-o').animate({ scale: 1.25 },
-    {
-      duration: 200,
-      easing: 'easeInOutBounce',
-      step: function(now, fx) {
-        ww.mode.CatMode.setScale(this, now);
-      }
-    }
-  ).animate({ scale: 1 },
-    {
-      duration: 100,
-      easing: 'easeInOutBounce',
-      step: function(now, fx) {
-        ww.mode.CatMode.setScale(this, now);
-      }
-    }
-  );
+  self.playSound('cat-2.mp3');
+
+  self.letterO.addClass('selected');
+  
+  var timer = setTimeout(function() {
+    self.letterO.removeClass('selected');
+    clearTimeout(timer);
+    timer = null;
+  }, 190);
 };
