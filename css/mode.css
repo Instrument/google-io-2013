@@ -19,7 +19,7 @@ body {
   padding: 0;
 }
 
-/* line 5, ../sass/_cat.scss */
+/* line 31, ../sass/mode.scss */
 #letter-i,
 #letter-o {
   background-color: transparent;
@@ -37,36 +37,21 @@ body {
   width: 40%;
 }
 @media screen and (max-width: 1024px) {
-  /* line 5, ../sass/_cat.scss */
+  /* line 31, ../sass/mode.scss */
   #letter-i,
   #letter-o {
     width: 60%;
   }
 }
 @media screen and (max-width: 320px) {
-  /* line 5, ../sass/_cat.scss */
+  /* line 31, ../sass/mode.scss */
   #letter-i,
   #letter-o {
     width: 70%;
   }
 }
 
-/* line 24, ../sass/_cat.scss */
-#letter-i {
-  background-image: url('../img/cat/cat-letter-i.png?1357242087');
-  -webkit-transform-origin: 50% 0px;
-  -moz-transform-origin: 50% 0px;
-  -ms-transform-origin: 50% 0px;
-  -o-transform-origin: 50% 0px;
-  transform-origin: 50% 0px;
-}
-
-/* line 29, ../sass/_cat.scss */
-#letter-o {
-  background-image: url('../img/cat/cat-letter-o.png?1357242078');
-}
-
-/* line 34, ../sass/_cat.scss */
+/* line 51, ../sass/mode.scss */
 #letter-i-container,
 #letter-o-container {
   -webkit-box-sizing: border-box;
@@ -82,16 +67,36 @@ body {
   top: 0;
 }
 
-/* line 42, ../sass/_cat.scss */
+/* line 59, ../sass/mode.scss */
 #letter-i-container {
   text-align: right;
   left: 0;
   right: 50%;
 }
 
-/* line 48, ../sass/_cat.scss */
+/* line 65, ../sass/mode.scss */
 #letter-o-container {
   text-align: left;
   left: 50%;
   right: 0;
+}
+
+/* line 1, ../sass/_cat.scss */
+.cat #letter-i {
+  background-image: url('../img/cat/cat-letter-i.png?1357247339');
+  -webkit-transform-origin: 50% 0px;
+  -moz-transform-origin: 50% 0px;
+  -ms-transform-origin: 50% 0px;
+  -o-transform-origin: 50% 0px;
+  transform-origin: 50% 0px;
+}
+/* line 6, ../sass/_cat.scss */
+.cat #letter-o {
+  background-image: url('../img/cat/cat-letter-o.png?1357247339');
+}
+
+/* line 1, ../sass/_home.scss */
+.home #letter-i, .home #letter-o {
+  font-size: 200px;
+  color: black;
 }

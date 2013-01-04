@@ -1,4 +1,5 @@
 goog.provide('ww.mode.Core');
+goog.require('goog.events');
 
 /**
  * RequestAnimationFrame polyfill.
@@ -69,6 +70,19 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     this.addDebugUI_();
   }
 
+  var self = this;
+
+  goog.events.listen(window, 'message', function(evt) {
+    var data = evt.getBrowserEvent().data;
+    self.log('Got message: ' + data['name'], data);
+
+    if (data['name'] === 'focus') {
+      self['focus']();
+    } else if (data['name'] === 'unfocus') {
+      self['unfocus']();
+    }
+  });
+
   this.letterI = $('#letter-i');
   this.letterO = $('#letter-o');
 
@@ -80,7 +94,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     evt = 'click';
   }
 
-  var self = this;
   this.letterI.bind(evt, function() {
     self.activateI();
   });
@@ -112,6 +125,8 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   });
   this.onResize();
 
+  $(document.body).addClass(this.name_);
+
   this.init();
 
   // Mark this mode as ready.
@@ -123,8 +138,12 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
  * @param {String} msg The message to log.
  */
 ww.mode.Core.prototype.log = function(msg) {
-  if (DEBUG_MODE) {
-    console.log(this.name_ + ': ' + msg);
+  if (DEBUG_MODE && console && console.log) {
+    var args = Array.prototype.slice.call(arguments);
+    if (typeof args[0] === 'string') {
+      args[0] = this.name_ + ': ' + args[0];
+    }
+    console.log.apply(console, args);
   }
 };
 
@@ -286,7 +305,22 @@ ww.mode.Core.prototype.ready = function() {
   this.log('Is ready');
 
   // Notify parent frame that we are ready.
-  window.parent.postMessage(this.name_ + '.ready', '*');
+  this.sendMessage_(this.name_ + '.ready');
+};
+
+/**
+ * Send the parent a message.
+ * @private
+ * @param {String} msgName DNS-style message path.
+ * @param {Object} value The data to send.
+ */
+ww.mode.Core.prototype.sendMessage_ = function(msgName, value) {
+  if (window.parent && window.parent.postMessage) {
+    window.parent.postMessage({
+      'name': msgName,
+      'data': value
+    }, '*');
+  }
 };
 
 /**

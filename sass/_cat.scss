@@ -1,26 +1,3 @@
-$break-small: 320px;
-$break-large: 1024px;
-
-#letter-i,
-#letter-o {
-  background-color: transparent;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  @include background-size(100% auto);
-  @include box-sizing(border-box);
-  display: inline-block;
-  height: 100%;
-  width: 40%;
-
-  @include screen($break-large) {
-    width: 60%;
-  }
-
-  @include screen($break-small) {
-    width: 70%;
-  }
-}
-
 #letter-i {
   background-image: image-url('cat/cat-letter-i.png');
   @include transform-origin(50% 0px, false);
@@ -28,25 +5,4 @@ $break-large: 1024px;
 
 #letter-o {
   background-image: image-url('cat/cat-letter-o.png');
-}
-
-#letter-i-container,
-#letter-o-container {
-  @include box-sizing(border-box);
-  bottom: 0;
-  position: absolute;
-  @include transform(translate3d(0, 0, 0));
-  top: 0;
-}
-
-#letter-i-container {
-  text-align: right;
-  left: 0;
-  right: 50%;
-}
-
-#letter-o-container {
-  text-align: left;
-  left: 50%;
-  right: 0;
 }
