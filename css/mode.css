@@ -1,4 +1,4 @@
-/* line 4, ../sass/mode.scss */
+/* line 5, ../sass/mode.scss */
 canvas {
   bottom: 0;
   left: 0;
@@ -7,13 +7,13 @@ canvas {
   top: 0;
 }
 
-/* line 12, ../sass/mode.scss */
+/* line 13, ../sass/mode.scss */
 html, body {
   height: 100%;
   min-height: 100%;
 }
 
-/* line 17, ../sass/mode.scss */
+/* line 18, ../sass/mode.scss */
 body {
   margin: 0;
   padding: 0;
@@ -36,7 +36,7 @@ body {
   height: 100%;
   width: 40%;
 }
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1024px) {
   /* line 5, ../sass/_cat.scss */
   #letter-i,
   #letter-o {
@@ -54,14 +54,19 @@ body {
 /* line 24, ../sass/_cat.scss */
 #letter-i {
   background-image: url('../img/cat/cat-letter-i.png?1357242087');
+  -webkit-transform-origin: 50% 0px;
+  -moz-transform-origin: 50% 0px;
+  -ms-transform-origin: 50% 0px;
+  -o-transform-origin: 50% 0px;
+  transform-origin: 50% 0px;
 }
 
-/* line 28, ../sass/_cat.scss */
+/* line 29, ../sass/_cat.scss */
 #letter-o {
   background-image: url('../img/cat/cat-letter-o.png?1357242078');
 }
 
-/* line 33, ../sass/_cat.scss */
+/* line 34, ../sass/_cat.scss */
 #letter-i-container,
 #letter-o-container {
   -webkit-box-sizing: border-box;
@@ -69,17 +74,22 @@ body {
   box-sizing: border-box;
   bottom: 0;
   position: absolute;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
   top: 0;
 }
 
-/* line 40, ../sass/_cat.scss */
+/* line 42, ../sass/_cat.scss */
 #letter-i-container {
   text-align: right;
   left: 0;
   right: 50%;
 }
 
-/* line 46, ../sass/_cat.scss */
+/* line 48, ../sass/_cat.scss */
 #letter-o-container {
   text-align: left;
   left: 50%;

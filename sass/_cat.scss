@@ -1,5 +1,5 @@
-$break-small: 480px;
-$break-large: 1200px;
+$break-small: 320px;
+$break-large: 1024px;
 
 #letter-i,
 #letter-o {
@@ -12,17 +12,18 @@ $break-large: 1200px;
   height: 100%;
   width: 40%;
 
-  @include screen(1200px) {
+  @include screen($break-large) {
     width: 60%;
   }
 
-  @include screen(320px) {
+  @include screen($break-small) {
     width: 70%;
   }
 }
 
 #letter-i {
   background-image: image-url('cat/cat-letter-i.png');
+  @include transform-origin(50% 0px, false);
 }
 
 #letter-o {
@@ -34,6 +35,7 @@ $break-large: 1200px;
   @include box-sizing(border-box);
   bottom: 0;
   position: absolute;
+  @include transform(translate3d(0, 0, 0));
   top: 0;
 }
 
