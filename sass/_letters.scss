@@ -1,3 +1,26 @@
+$break-small: 320px;
+$break-large: 1024px;
+
+#letter-i,
+#letter-o {
+  background-color: transparent;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(100% auto);
+  @include box-sizing(border-box);
+  display: inline-block;
+  height: 100%;
+  width: 40%;
+
+  @include screen($break-large) {
+    width: 60%;
+  }
+
+  @include screen($break-small) {
+    width: 70%;
+  }
+}
+
 #letter-i {
 
   .bacon-mode & {
@@ -11,7 +34,6 @@
 }
 
 #letter-o {
-  background-image: image-url('cat/cat-letter-o.png');
 
   .bacon-mode & {
     

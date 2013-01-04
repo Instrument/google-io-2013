@@ -19,7 +19,39 @@ body {
   padding: 0;
 }
 
-/* line 7, ../sass/_letters.scss */
+/* line 5, ../sass/_letters.scss */
+#letter-i,
+#letter-o {
+  background-color: transparent;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  -webkit-background-size: 100% auto;
+  -moz-background-size: 100% auto;
+  -o-background-size: 100% auto;
+  background-size: 100% auto;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 100%;
+  width: 40%;
+}
+@media screen and (max-width: 1024px) {
+  /* line 5, ../sass/_letters.scss */
+  #letter-i,
+  #letter-o {
+    width: 60%;
+  }
+}
+@media screen and (max-width: 320px) {
+  /* line 5, ../sass/_letters.scss */
+  #letter-i,
+  #letter-o {
+    width: 70%;
+  }
+}
+
+/* line 30, ../sass/_letters.scss */
 .cat-mode #letter-i {
   background-image: url('../img/cat/cat-letter-i.png?1357247339');
   -webkit-transform-origin: 50% 0px;
@@ -29,11 +61,7 @@ body {
   transform-origin: 50% 0px;
 }
 
-/* line 13, ../sass/_letters.scss */
-#letter-o {
-  background-image: url('../img/cat/cat-letter-o.png?1357247339');
-}
-/* line 20, ../sass/_letters.scss */
+/* line 42, ../sass/_letters.scss */
 .cat-mode #letter-o {
   background-image: url('../img/cat/cat-letter-o.png?1357247339');
   -webkit-transform: scale(1);
@@ -46,7 +74,7 @@ body {
   -o-transition: all 190ms ease-out;
   transition: all 190ms ease-out;
 }
-/* line 25, ../sass/_letters.scss */
+/* line 47, ../sass/_letters.scss */
 .cat-mode #letter-o.selected {
   -webkit-transform: scale(1.25);
   -moz-transform: scale(1.25);
@@ -55,7 +83,7 @@ body {
   transform: scale(1.25);
 }
 
-/* line 32, ../sass/_letters.scss */
+/* line 54, ../sass/_letters.scss */
 #letter-i-container,
 #letter-o-container {
   bottom: 0;
@@ -71,18 +99,24 @@ body {
   top: 0;
 }
 
-/* line 40, ../sass/_letters.scss */
+/* line 62, ../sass/_letters.scss */
 #letter-i-container {
   left: 0;
   right: 50%;
   text-align: right;
 }
 
-/* line 46, ../sass/_letters.scss */
+/* line 68, ../sass/_letters.scss */
 #letter-o-container {
   left: 50%;
   right: 0;
   text-align: left;
+}
+
+/* line 2, ../sass/_home.scss */
+.home-mode #letter-i, .home-mode #letter-o {
+  font-size: 200px;
+  color: black;
 }
 
 /* line 1, ../sass/_pinata.scss */

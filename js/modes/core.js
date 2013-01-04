@@ -125,7 +125,7 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   });
   this.onResize();
 
-  $(document.body).addClass(this.name_ + '-mode');
+  // $(document.body).addClass(this.name_ + '-mode');
 
   this.init();
 
