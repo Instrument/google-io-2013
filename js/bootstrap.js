@@ -22,7 +22,8 @@ var DEBUG_MODE = false;
 		{ 'url': prefix + 'js/vendor/paper.js', 'key': 'paper' },
 		{ 'url': prefix + 'js/vendor/physics.js', 'key': 'physics' },
 		{ 'url': prefix + 'js/vendor/tuna.js', 'key': 'tuna' },
-		{ 'url': prefix + 'js/vendor/hammer.js', 'key': 'hammer' }
+		{ 'url': prefix + 'js/vendor/hammer.js', 'key': 'hammer' },
+		{ 'url': prefix + 'js/vendor/stats.min.js', 'key': 'stats' }
 	)['then'](function() {
 		var level2 = [
 			{ 'url': prefix + 'js/vendor/jquery.hammer.js', 'key': 'jquery.hammer' },

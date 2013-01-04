@@ -466,6 +466,9 @@ ww.mode.Core.prototype.activateO = function() {
 ww.mode.Core.prototype.getPaperCanvas_ = function() {
   if (!this.paperCanvas_) {
     this.paperCanvas_ = document.createElement('canvas');
+    if (DEBUG_MODE) {
+      this.paperCanvas_.setAttribute('stats', 'true');
+    }
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
     $(document.body).prepend(this.paperCanvas_);
