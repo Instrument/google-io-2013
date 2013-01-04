@@ -75,13 +75,16 @@ ww.mode.PongMode.prototype.init = function() {
   /**
    * Create paddle.
    */
+  var paddleWidth = 20;
+  var paddleHeight = 200;
   var paddleX = this.screenCenterX - (this.screenWidthPixels / 4);
-  var paddleY = this.mouseY - this.paddleHeight / 2;
+  var paddleY = this.mouseY - paddleHeight / 2;
 
-   var paperPaddle = new paper['Rectangle'](new paper['Point'](this.paddleX,
-    this.paddleY), 20, 200);
-   paperPaddle['fillColor'] = 'black';
-   console.log('test');
+  var paddleTopLeft = new paper['Point'](paddleX, paddleY);
+  var paddleSize = new paper['Size'](paddleWidth, paddleHeight);
+  this.paddle = new paper['Rectangle'](paddleTopLeft, paddleSize);
+  this.paperPaddle = new paper['Path']['Rectangle'](this.paddle);
+  this.paperPaddle['fillColor'] = 'black';
 
   /**
    * Create ball.
@@ -94,7 +97,7 @@ ww.mode.PongMode.prototype.init = function() {
 
   this.ball = new Particle();
   this.ball['setRadius'](rad);
-  this.ball['moveTo'](new Vector(this.startXBall, rad));
+  this.ball['moveTo'](new Vector(startXBall, rad));
   this.ball['drawObj'] = paperBall;
   this.ball['vel'] = new Vector(-50, 50);
   world['particles'].push(this.ball);
@@ -149,11 +152,12 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
   $(this.canvasThree).attr('width', window.innerWidth);
   $(this.canvasThree).attr('height', window.innerHeight);
 
-  var currentPaddleY = this.paddleY;
-  var targetPaddleY = this.mouseY - this.paddleHeight / 2;
-  paperPaddle['top'] = currentPaddleY + ((targetPaddleY - currentPaddleY)
-    * 0.5 * (delta/100));
+  var currentPaddleY = this.mouseY - this.paddle['size']['_height'] / 2;
+  var targetPaddleY = this.mouseY - this.paddle['size']['_height'] / 2;
+  this.paperPaddle['position']['_y'] = currentPaddleY +
+    ((targetPaddleY - currentPaddleY) * 0.5 * (delta/100));
 
-  this.drawPaddle();
+
+  // this.drawPaddle();
   this.moveBall(this.ball);
 };
