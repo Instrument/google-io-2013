@@ -76,7 +76,7 @@ ww.mode.PongMode.prototype.init = function() {
    * Create ball.
    */
   var rad = 50;
-  var paperBall = new paper['Path']['Circle'](new paper['Point'](startX, rad), rad);
+  var paperBall = new paper['Path']['Circle'](new paper['Point'](this.startXBall, rad), rad);
   paperBall.fillColor = 'black';
 
   this.ball = new Particle();
