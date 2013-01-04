@@ -3,6 +3,8 @@ goog.require('ww.mode.CatMode');
 goog.require('ww.mode.DogMode');
 goog.require('ww.mode.PongMode');
 goog.require('ww.mode.ExplodeMode');
+goog.require('ww.mode.PinataMode');
+goog.require('ww.mode.BaconMode');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -21,6 +23,8 @@ ww.mode.register('cat', ww.mode.CatMode);
 ww.mode.register('dog', ww.mode.DogMode);
 ww.mode.register('pong', ww.mode.PongMode);
 ww.mode.register('explode', ww.mode.ExplodeMode);
+ww.mode.register('pinata', ww.mode.PinataMode);
+ww.mode.register('bacon', ww.mode.BaconMode);
 
 jQuery(function() {
   var parts = window.location.href.split('/');

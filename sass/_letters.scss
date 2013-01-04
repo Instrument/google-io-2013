@@ -41,6 +41,12 @@ $break-large: 1024px;
   
   .cat-mode & {
     background-image: image-url('cat/cat-letter-o.png');
+    @include transform(scale(1));
+    @include transition(all 190ms ease-out);
+
+    &.selected {
+      @include transform(scale(1.25));
+    }
   }
 }
 
