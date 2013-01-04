@@ -151,5 +151,4 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
 
   this.drawI();
   this.moveBall(this.ball);
-  this.drawBall(this.ball);
 };
