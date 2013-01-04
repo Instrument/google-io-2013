@@ -1,0 +1,72 @@
+$break-small: 320px;
+$break-large: 1024px;
+
+#letter-i,
+#letter-o {
+  background-color: transparent;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(100% auto);
+  @include box-sizing(border-box);
+  display: inline-block;
+  height: 100%;
+  width: 40%;
+
+  @include screen($break-large) {
+    width: 60%;
+  }
+
+  @include screen($break-small) {
+    width: 70%;
+  }
+}
+
+#letter-i {
+
+  .bacon-mode & {
+
+  }
+  
+  .cat-mode & {
+    background-image: image-url('cat/cat-letter-i.png');
+    @include transform-origin(50% 0px, false);
+  }
+}
+
+#letter-o {
+
+  .bacon-mode & {
+    
+  }
+  
+  .cat-mode & {
+    background-image: image-url('cat/cat-letter-o.png');
+    @include transform(scale(1));
+    @include transition(all 190ms ease-out);
+
+    &.selected {
+      @include transform(scale(1.25));
+    }
+  }
+}
+
+#letter-i-container,
+#letter-o-container {
+  bottom: 0;
+  @include box-sizing(border-box);
+  position: absolute;
+  @include transform(translate3d(0, 0, 0));
+  top: 0;
+}
+
+#letter-i-container {
+  left: 0;
+  right: 50%;
+  text-align: right;
+}
+
+#letter-o-container {
+  left: 50%;
+  right: 0;
+  text-align: left;
+}

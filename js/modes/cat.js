@@ -9,36 +9,57 @@ ww.mode.CatMode = function() {
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
 
+ww.mode.CatMode.setRotate = function(elm, deg) {
+  $(elm).css({
+    '-webkit-transform': 'rotate(' + deg + 'deg)',
+    '-moz-transform': 'rotate(' + deg + 'deg)',
+    '-ms-transform': 'rotate(' + deg + 'deg)',
+    'transform': 'rotate(' + deg + 'deg)'
+  });
+};
 
-/**
- * Function to initialize the current mode.
- * Creates canvas contexts and sets their size.
- */
-ww.mode.CatMode.prototype.init = function() {
-  goog.base(this, 'init');
+ww.mode.CatMode.prototype.activateI = function() {
+  var self = this;
 
-  var canvasOne = document.getElementById('canvas-one');
-  var canvasTwo = document.getElementById('canvas-two');
-  var canvasThree = document.getElementById('canvas-three');
+  self.playSound('cat-1.mp3');
 
-  if(canvasOne.getContext) {
-    var ctxOne = canvasOne.getContext('2d');
-  }
+  self.letterI.animate({ rotate: -20 },
+    {
+      duration: 100,
+      easing: 'easeInOutBounce',
+      step: function(now, fx) {
+        ww.mode.CatMode.setRotate(this, now);
+      }
+    }
+  ).animate({ rotate: 20 },
+    {
+      duration: 200,
+      easing: 'easeInOutBounce',
+      step: function(now, fx) {
+        ww.mode.CatMode.setRotate(this, now);
+      }
+    }
+  ).animate({ rotate: 0 },
+    {
+      duration: 100,
+      easing: 'easeInOutBounce',
+      step: function(now, fx) {
+        ww.mode.CatMode.setRotate(this, now);
+      }
+    }
+  );
+};
 
-  if(canvasTwo.getContext) {
-    var ctxTwo = canvasTwo.getContext('2d');
-  }
+ww.mode.CatMode.prototype.activateO = function() {
+  var self = this;
 
-  if(canvasThree.getContext) {
-    var ctxThree = canvasThree.getContext('2d');
-  }
+  self.playSound('cat-2.mp3');
 
-  $('canvasOne').attr('width', window.innerWidth);
-  $('canvasOne').attr('height', window.innerHeight);
-
-  $('canvasTwo').attr('width', window.innerWidth);
-  $('canvasTwo').attr('height', window.innerHeight);
-
-  $('canvasThree').attr('width', window.innerWidth);
-  $('canvasThree').attr('height', window.innerHeight);
+  self.letterO.addClass('selected');
+  
+  var timer = setTimeout(function() {
+    self.letterO.removeClass('selected');
+    clearTimeout(timer);
+    timer = null;
+  }, 190);
 };

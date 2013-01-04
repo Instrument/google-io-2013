@@ -1,0 +1,36 @@
+#pinata-party-box {
+  height: 100%;
+  position: relative;
+  @include transform(translate3d(0, 0, 0));
+  width: 100%;
+
+  img {
+    height: auto;
+    width: 100%;
+  }
+}
+
+#pinata {
+  margin: 0 auto;
+  width: 15%;
+}
+
+#pinata-stick {
+  left: 50%;
+  margin: 0 0 0 -13px;
+  padding: 10px;
+  position: absolute;
+  @include transform(rotate(0));
+  @include transform-origin(center bottom, false);
+  @include transition(all 190ms ease-out);
+  top: 0;
+  width: 25px;
+
+  &.whack-off {
+    @include transform(rotate(-20deg));
+  }
+
+  &.whack-on {
+    @include transform(rotate(20deg));
+  }
+}
