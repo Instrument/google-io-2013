@@ -62,7 +62,12 @@ ww.mode.PongMode.prototype.init = function() {
   this.mouseX = this.screenCenterX;
   this.mouseY = this.screenCenterY;
 
-  var startX = this.screenCenterX + (this.screenWidthPixels / 4);
+  this.paddleWidth = 20;
+  this.paddleHeight = 200;
+
+  this.paddleX = this.screenCenterX - (this.screenWidthPixels / 4);
+  this.paddleY = this.mouseY - this.paddleHeight / 2;
+  this.startXBall = this.screenCenterX + (this.screenWidthPixels / 4);
 
   var world = this.getPhysicsWorld_();
   world['viscosity'] = 0;
@@ -71,12 +76,12 @@ ww.mode.PongMode.prototype.init = function() {
    * Create ball.
    */
   var rad = 50;
-  var paperBall = new paper['Path']['Circle'](new paper['Point'](startX, rad), rad);
+  var paperBall = new paper['Path']['Circle'](new paper['Point'](this.startXBall, rad), rad);
   paperBall.fillColor = 'black';
 
   this.ball = new Particle();
   this.ball['setRadius'](rad);
-  this.ball['moveTo'](new Vector(startX, rad));
+  this.ball['moveTo'](new Vector(this.startXBall, rad));
   this.ball['drawObj'] = paperBall;
   this.ball['vel'] = new Vector(-21, 21);
   world['particles'].push(this.ball);
@@ -86,29 +91,42 @@ ww.mode.PongMode.prototype.drawI = function() {
   this.ctxOne.fillStyle = 'black';
   this.ctxOne.beginPath();
 
-  var iWidth = 20;
-  var iHeight = 200;
-
-  var startX = this.screenCenterX - (this.screenWidthPixels / 4);
-  var startY = mouseY - 100;
-
-  if (startY < 1) {
-    startY = 1;
+  if (this.startY < 1) {
+    this.startY = 1;
   }
 
-  this.ctxOne.rect(startX, this.mouseY - iHeight / 2, iWidth, iHeight);
+  this.ctxOne.rect(this.paddleX, this.mouseY - this.paddleHeight / 2,
+    this.paddleWidth, this.paddleHeight);
 
   this.ctxOne.closePath();
   this.ctxOne.fill();
 };
 
 ww.mode.PongMode.prototype.moveBall = function(target) {
-  if (target['pos']['x'] < target['radius'] || target['pos']['x'] > this.screenWidthPixels - target['radius']) {
+  /**
+   * Window boundary collision detection.
+   */
+  if (target['pos']['x'] < target['radius']
+    || target['pos']['x'] > this.screenWidthPixels - target['radius']) {
     target['vel']['x'] *= -1;
   }
 
   if (target['pos']['y'] > this.screenHeightPixels - target['radius'] || target['pos']['y'] < target['radius']) {
     target['vel']['y'] *= -1;
+  }
+
+  /**
+   * Paddle collision detection.
+   */
+  var paddleTop = (this.paddleY - this.paddleHeight / 2) - target['radius'];
+  var paddleBottom = this.paddleY + this.paddleHeight / 2 + target['radius'];
+
+  this.paddleY = this.mouseY - this.paddleHeight / 2;
+
+  if (target['pos']['x'] < (this.paddleX + target['radius'])
+      + this.paddleWidth / 2
+    && (target['pos']['y'] > paddleTop && target['pos']['y'] < paddleBottom)) {
+    target['vel']['x'] *= -1;
   }
 };
 
@@ -132,5 +150,6 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
   });
 
   this.drawI();
-  // this.moveBall(this.ball);
+  this.moveBall(this.ball);
+  this.drawBall(this.ball);
 };
