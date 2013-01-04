@@ -139,16 +139,6 @@ ww.mode.PongMode.prototype.moveBall = function(target) {
   }
 };
 
-ww.mode.PongMode.prototype.drawBall = function(target) {
-  this.ctxOne.beginPath();
-
-  this.ctxOne.arc(target['pos']['x'], target['pos']['y'], target['radius'], 0, Math.PI * 2);
-
-  this.ctxOne.fill();
-
-  this.ctxOne.closePath();
-};
-
 ww.mode.PongMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
