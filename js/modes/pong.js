@@ -69,22 +69,28 @@ ww.mode.PongMode.prototype.init = function() {
   this.mouseX = this.screenCenterX;
   this.mouseY = this.screenCenterY;
 
-  this.paddleWidth = 20;
-  this.paddleHeight = 200;
-
-  this.paddleX = this.screenCenterX - (this.screenWidthPixels / 4);
-  this.paddleY = this.mouseY - this.paddleHeight / 2;
-  this.startXBall = this.screenCenterX + (this.screenWidthPixels / 4);
-
   var world = this.getPhysicsWorld_();
   world['viscosity'] = 0;
 
   /**
+   * Create paddle.
+   */
+  var paddleX = this.screenCenterX - (this.screenWidthPixels / 4);
+  var paddleY = this.mouseY - this.paddleHeight / 2;
+
+   var paperPaddle = new paper['Rectangle'](new paper['Point'](this.paddleX,
+    this.paddleY), 20, 200);
+   paperPaddle['fillColor'] = 'black';
+   console.log('test');
+
+  /**
    * Create ball.
    */
+  var startXBall = this.screenCenterX + (this.screenWidthPixels / 4);
   var rad = 50;
-  var paperBall = new paper['Path']['Circle'](new paper['Point'](this.startXBall, rad), rad);
-  paperBall.fillColor = 'black';
+  var paperBall = new paper['Path']['Circle'](new paper['Point'](startXBall,
+    rad), rad);
+  paperBall['fillColor'] = 'black';
 
   this.ball = new Particle();
   this.ball['setRadius'](rad);
@@ -145,7 +151,8 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
 
   var currentPaddleY = this.paddleY;
   var targetPaddleY = this.mouseY - this.paddleHeight / 2;
-  this.paddleY = currentPaddleY + ((targetPaddleY - currentPaddleY) * 0.5 * (delta/100));
+  paperPaddle['top'] = currentPaddleY + ((targetPaddleY - currentPaddleY)
+    * 0.5 * (delta/100));
 
   this.drawPaddle();
   this.moveBall(this.ball);
