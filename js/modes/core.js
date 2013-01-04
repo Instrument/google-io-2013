@@ -69,30 +69,53 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     this.addDebugUI_();
   }
 
+  this.letterI = $('#letter-i');
+  this.letterO = $('#letter-o');
+
   // Short-cuts to activating letters for basics setup.
-  $('#letter-i').live('click', goog.bind(this.activateI, this));
-  $('#letter-o').live('click', goog.bind(this.activateO, this));
-  $(document).keypress(goog.bind(function(e) {
+  var evt;
+  if (Modernizr['touch']) {
+    evt = 'tap';
+  } else {
+    evt = 'click';
+  }
+
+  var self = this;
+  this.letterI.bind(evt, function() {
+    self.activateI();
+  });
+  this.letterO.bind(evt, function() {
+    self.activateO();
+  });
+
+  $(document).keypress(function(e) {
     if (e.keyCode === 105) {
-      this.activateI();
-      return false;
+      self.activateI();
     } else if (e.keyCode === 111) {
-      this.activateO();
-      return false;
+      self.activateO();
+    } else {
+      return;
     }
-  }, this));
+
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
+
+  this.window_ = $(window);
+  this.width_ = 0;
+  this.height_ = 0;
+
+  // TODO: Throttle
+  this.window_.resize(function() {
+    self.onResize(true);
+  });
+  this.onResize();
 
   this.init();
 
   // Mark this mode as ready.
-  this['ready']();
-};
-
-/**
- * Initialize (or re-initialize) the mode
- */
-ww.mode.Core.prototype.init = function() {
-  this.log('Init');
+  this.ready();
 };
 
 /**
@@ -106,44 +129,77 @@ ww.mode.Core.prototype.log = function(msg) {
 };
 
 /**
- * Add play/pause/restart UI.
- * @private
+ * Initialize (or re-initialize) the mode
  */
-ww.mode.Core.prototype.addDebugUI_ = function() {
-  var self = this;
+ww.mode.Core.prototype.init = function() {
+  this.log('Init');
 
-  var focusElem = document.createElement('button');
-  focusElem.innerHTML = "Focus";
-  focusElem.onclick = function() {
-    self['focus']();
-  };
-
-  var unfocusElem = document.createElement('button');
-  unfocusElem.innerHTML = "Unfocus";
-  unfocusElem.onclick = function() {
-    self['unfocus']();
-  };
-
-  var restartElem = document.createElement('button');
-  restartElem.innerHTML = "Restart";
-  restartElem.onclick = function() {
-    self.init();
-  };
-
-  var containerElem = document.createElement('div');
-  containerElem.style.position = 'absolute';
-  containerElem.style.bottom = 0;
-  containerElem.style.left = 0;
-  containerElem.style.right = 0;
-  containerElem.style.height = '30px';
-  containerElem.style.background = 'rgba(0,0,0,0.2)';
-
-  containerElem.appendChild(focusElem);
-  containerElem.appendChild(unfocusElem);
-  containerElem.appendChild(restartElem);
-
-  document.body.appendChild(containerElem);
+  if (this.wantsPhysics_) {
+    this.resetPhysicsWorld_();
+  }
 };
+
+/**
+ * Handles a browser window resize.
+ * @param {Boolean} redraw Whether resize redraws.
+ */
+ww.mode.Core.prototype.onResize = function(redraw) {
+  this.width_ = this.window_.width();
+  this.height_ = this.window_.height();
+  this.log('Resize ' + this.width_ + 'x' + this.height_);
+
+  if (this.paperCanvas_) {
+    this.paperCanvas_.width = this.width_;
+    this.paperCanvas_.height = this.height_;
+    paper['view']['setViewSize'](this.width_, this.height_);
+  }
+
+  if (redraw) {
+    this.redraw();
+  }
+};
+
+if (DEBUG_MODE) {
+  /**
+   * Add play/pause/restart UI.
+   * @private
+   */
+  ww.mode.Core.prototype.addDebugUI_ = function() {
+    var self = this;
+
+    var focusElem = document.createElement('button');
+    focusElem.innerHTML = "Focus";
+    focusElem.onclick = function() {
+      self['focus']();
+    };
+
+    var unfocusElem = document.createElement('button');
+    unfocusElem.innerHTML = "Unfocus";
+    unfocusElem.onclick = function() {
+      self['unfocus']();
+    };
+
+    var restartElem = document.createElement('button');
+    restartElem.innerHTML = "Restart";
+    restartElem.onclick = function() {
+      self.init();
+    };
+
+    var containerElem = document.createElement('div');
+    containerElem.style.position = 'absolute';
+    containerElem.style.bottom = 0;
+    containerElem.style.left = 0;
+    containerElem.style.right = 0;
+    containerElem.style.height = '30px';
+    containerElem.style.background = 'rgba(0,0,0,0.2)';
+
+    containerElem.appendChild(focusElem);
+    containerElem.appendChild(unfocusElem);
+    containerElem.appendChild(restartElem);
+
+    document.body.appendChild(containerElem);
+  };
+}
 
 /**
  * Begin running rAF, but only if mode needs it.
@@ -152,7 +208,7 @@ ww.mode.Core.prototype.startRendering = function() {
   // No-op if mode doesn't need rAF
   if (!this.wantsRenderLoop_) { return; }
 
-  this.lastTime_ = Date.now();
+  this.lastTime_ = new Date().getTime();
 
   // Only start rAF if we're not already rendering.
   if (!this.shouldRenderNextFrame_) {
@@ -176,14 +232,16 @@ ww.mode.Core.prototype.stopRendering = function() {
  * then schedule the next frame if we need it.
  */
 ww.mode.Core.prototype.renderFrame_ = function() {
-  var currentTime = Date.now();
+  var currentTime = new Date().getTime();
   var delta = currentTime - this.lastTime_;
 
-  /**
-   * TODO: Lock max delta to avoid massive jumps.
-   */
+  // Reduce large gaps (returning from background tab) to
+  // a single frame.
+  if (delta > 500) {
+    delta = 16.7;
+  }
 
-  if (this.wantsPhysics) {
+  if (this.wantsPhysics_) {
     this.stepPhysics(delta);
   }
 
@@ -203,7 +261,9 @@ ww.mode.Core.prototype.renderFrame_ = function() {
  * Redraw without stepping (for resizes).
  */
 ww.mode.Core.prototype.redraw = function() {
-  this.onFrame(0);
+  if (this.wantsDrawing_) {
+    this.onFrame(0);
+  }
 };
 
 /**
@@ -211,13 +271,16 @@ ww.mode.Core.prototype.redraw = function() {
  * @param {Number} delta Ms since last draw.
  */
 ww.mode.Core.prototype.onFrame = function(delta) {
-  // no-rop
+  // Render paper if we're using it
+  if (this.paperCanvas_) {
+    paper['view']['draw']();
+  }
 };
 
 /**
  * Tell parent frame that this mode is ready.
  */
-ww.mode.Core.prototype['ready'] = function() {
+ww.mode.Core.prototype.ready = function() {
   window['currentMode'] = this;
 
   this.log('Is ready');
@@ -309,13 +372,43 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
 };
 
 /**
+ * Get a physics world.
+ * @private
+ * @return {Physics} The shared audio context.
+ */
+ww.mode.Core.prototype.getPhysicsWorld_ = function() {
+  this.physicsWorld_ = this.physicsWorld_ || new window['Physics']();
+  return this.physicsWorld_;
+};
+
+/**
+ * Clear world.
+ * @private
+ */
+ww.mode.Core.prototype.resetPhysicsWorld_ = function() {
+  if (this.physicsWorld_ && this.physicsWorld_['destroy']) {
+    this.physicsWorld_['destroy']();
+  }
+
+  this.physicsWorld_ = null;
+};
+
+/**
  * Step forward in time for physics.
  * @param {Number} delta Ms since last step.
  */
 ww.mode.Core.prototype.stepPhysics = function(delta) {
   if (delta > 0) {
-    this.physicsWorld_ = this.physicsWorld_ || new window['Physics']();
-    this.physicsWorld_.step();
+    var world = this.getPhysicsWorld_();
+    world.step();
+
+    for (var i = 0; i < world['particles'].length; i++) {
+      var p = world['particles'][i];
+      if (p['drawObj'] || p['drawObj']['position']) {
+        p['drawObj']['position']['x'] = p['pos']['x'];
+        p['drawObj']['position']['y'] = p['pos']['y'];
+      }
+    }
   }
 };
 
@@ -353,13 +446,35 @@ ww.mode.Core.prototype.playSound = function(filename) {
 /**
  * Method called when activating the I.
  */
-ww.mode.CatMode.prototype.activateI = function() {
+ww.mode.Core.prototype.activateI = function() {
   // no-op
+  this.log('Activated "I"');
 };
 
 /**
  * Method called when activating the O.
  */
-ww.mode.CatMode.prototype.activateO = function() {
+ww.mode.Core.prototype.activateO = function() {
   // no-op
+  this.log('Activated "O"');
+};
+
+/**
+ * Get a canvas for use with paperjs.
+ * @return {Element} The canvas element.
+ */
+ww.mode.Core.prototype.getPaperCanvas_ = function() {
+  if (!this.paperCanvas_) {
+    this.paperCanvas_ = document.createElement('canvas');
+    if (DEBUG_MODE) {
+      this.paperCanvas_.setAttribute('stats', 'true');
+    }
+    this.paperCanvas_.width = this.width_;
+    this.paperCanvas_.height = this.height_;
+    $(document.body).prepend(this.paperCanvas_);
+
+    paper['setup'](this.paperCanvas_);
+  }
+
+  return this.paperCanvas;
 };
