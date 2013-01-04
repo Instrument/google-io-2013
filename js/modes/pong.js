@@ -145,7 +145,7 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
 
   var currentPaddleY = this.paddleY;
   var targetPaddleY = this.mouseY - this.paddleHeight / 2;
-  this.paddleY = currentPaddleY + ((targetPaddleY - currentPaddleY) * 0.1);
+  this.paddleY = currentPaddleY + ((targetPaddleY - currentPaddleY) * 0.5 * (delta/100));
 
   this.drawPaddle();
   this.moveBall(this.ball);
