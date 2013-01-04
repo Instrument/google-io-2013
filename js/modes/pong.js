@@ -98,12 +98,6 @@ ww.mode.PongMode.prototype.drawPaddle = function() {
   this.ctxOne.fillStyle = 'black';
   this.ctxOne.beginPath();
 
-  this.paddleY = this.mouseY - this.paddleHeight / 2;
-
-  if (this.startY < 1) {
-    this.startY = 1;
-  }
-
   this.ctxOne.rect(this.paddleX, this.paddleY,
     this.paddleWidth, this.paddleHeight);
 
@@ -130,8 +124,6 @@ ww.mode.PongMode.prototype.moveBall = function(target) {
   var paddleTop = (this.paddleY - this.paddleHeight / 2) - target['radius'];
   var paddleBottom = this.paddleY + this.paddleHeight / 2 + target['radius'];
 
-  this.paddleY = this.mouseY - this.paddleHeight / 2;
-
   if (target['pos']['x'] < (this.paddleX + target['radius'])
       + this.paddleWidth / 2
     && (target['pos']['y'] > paddleTop && target['pos']['y'] < paddleBottom)) {
@@ -150,6 +142,10 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
 
   $(this.canvasThree).attr('width', window.innerWidth);
   $(this.canvasThree).attr('height', window.innerHeight);
+
+  var currentPaddleY = this.paddleY;
+  var targetPaddleY = this.mouseY - this.paddleHeight / 2;
+  this.paddleY = currentPaddleY + ((targetPaddleY - currentPaddleY) * 0.1);
 
   this.drawPaddle();
   this.moveBall(this.ball);
