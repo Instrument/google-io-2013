@@ -70,6 +70,14 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     this.addDebugUI_();
   }
 
+  $(document.body).css({ minHeight: window.innerHeight + 100 });
+  setTimeout(function(){
+    window.scrollTo(0, 1);
+    setTimeout(function(){
+      $(document.body).css({ minHeight: 'auto' });
+    }, 20);
+  }, 0);
+
   var self = this;
 
   goog.events.listen(window, 'message', function(evt) {
@@ -87,17 +95,12 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   this.letterO = $('#letter-o');
 
   // Short-cuts to activating letters for basics setup.
-  var evt;
-  if (Modernizr['touch']) {
-    evt = 'tap';
-  } else {
-    evt = 'click';
-  }
-
-  this.letterI.bind(evt, function() {
+  var hammerOpts = { 'prevent_default': true };
+  this.letterI.bind('tap', hammerOpts, function() {
     self.activateI();
   });
-  this.letterO.bind(evt, function() {
+
+  this.letterO.bind('tap', hammerOpts, function() {
     self.activateO();
   });
 
@@ -124,6 +127,21 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     self.onResize(true);
   });
   this.onResize();
+
+  // Catch top-level touch events and cancel them to avoid
+  // mobile browser scroll.
+  if (Modernizr['touch']) {
+    $(document.body)
+      .css(Modernizr.prefixed("userSelect"), "none")
+      .css(Modernizr.prefixed("touchCallout"), "none")
+      .css(Modernizr.prefixed("userDrag"), "none")
+      .css(Modernizr.prefixed("tapHighlightColor"), "rgba(0,0,0,0)");
+
+    // $(document).bind('touchmove', function(evt) {
+    //   evt.preventDefault();
+    //   evt.stopPropagation();
+    // });
+  }
 
   // $(document.body).addClass(this.name_ + '-mode');
 
@@ -187,29 +205,32 @@ if (DEBUG_MODE) {
     var self = this;
 
     var focusElem = document.createElement('button');
+    focusElem.style.fontSize = '15px';
     focusElem.innerHTML = "Focus";
     focusElem.onclick = function() {
       self['focus']();
     };
 
     var unfocusElem = document.createElement('button');
+    unfocusElem.style.fontSize = '15px';
     unfocusElem.innerHTML = "Unfocus";
     unfocusElem.onclick = function() {
       self['unfocus']();
     };
 
     var restartElem = document.createElement('button');
+    restartElem.style.fontSize = '15px';
     restartElem.innerHTML = "Restart";
     restartElem.onclick = function() {
       self.init();
     };
 
     var containerElem = document.createElement('div');
-    containerElem.style.position = 'absolute';
+    containerElem.style.position = 'fixed';
     containerElem.style.bottom = 0;
     containerElem.style.left = 0;
     containerElem.style.right = 0;
-    containerElem.style.height = '30px';
+    containerElem.style.height = '40px';
     containerElem.style.background = 'rgba(0,0,0,0.2)';
 
     containerElem.appendChild(focusElem);
@@ -335,16 +356,13 @@ ww.mode.Core.prototype['focus'] = function() {
   // Try to start rAF if requested.
   this.startRendering();
 
-  var self = this;
-  setTimeout(function() {
-    self['didFocus']();
-  }, 10);
+  this.didFocus();
 };
 
 /**
  * Event is called after a mode focused.
  */
-ww.mode.Core.prototype['didFocus'] = function() {
+ww.mode.Core.prototype.didFocus = function() {
   // no-op
 };
 
@@ -360,16 +378,13 @@ ww.mode.Core.prototype['unfocus'] = function() {
   // Try to stop rAF if requested.
   this.stopRendering();
 
-  var self = this;
-  setTimeout(function() {
-    self['didUnfocus']();
-  }, 10);
+  this.didUnfocus();
 };
 
 /**
  * Event is called after a mode unfocused.
  */
-ww.mode.Core.prototype['didUnfocus'] = function() {
+ww.mode.Core.prototype.didUnfocus = function() {
   // no-op
 };
 
@@ -500,9 +515,6 @@ ww.mode.Core.prototype.activateO = function() {
 ww.mode.Core.prototype.getPaperCanvas_ = function() {
   if (!this.paperCanvas_) {
     this.paperCanvas_ = document.createElement('canvas');
-    if (DEBUG_MODE) {
-      this.paperCanvas_.setAttribute('stats', 'true');
-    }
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
     $(document.body).prepend(this.paperCanvas_);
@@ -510,5 +522,5 @@ ww.mode.Core.prototype.getPaperCanvas_ = function() {
     paper['setup'](this.paperCanvas_);
   }
 
-  return this.paperCanvas;
+  return this.paperCanvas_;
 };

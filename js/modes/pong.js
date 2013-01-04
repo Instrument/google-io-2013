@@ -6,13 +6,6 @@ goog.provide('ww.mode.PongMode');
  */
 ww.mode.PongMode = function() {
   goog.base(this, 'pong', true, true, true);
-
-  var self = this;
-
-  $(document).mousemove(function(e){
-    self.mouseX = e.pageX;
-    self.mouseY = e.pageY;
-  });
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
 
@@ -26,33 +19,6 @@ ww.mode.PongMode.prototype.init = function() {
 
   // Prep paperjs
   this.getPaperCanvas_();
-
-  /**
-   * Assign each canvas element to a variable.
-   */
-
-  this.canvasOne = document.getElementById('canvas-one');
-  this.canvasTwo = document.getElementById('canvas-two');
-  this.canvasThree = document.getElementById('canvas-three');
-
-  /**
-   * Assign each canvas context to a variable if the elements exist.
-   */
-  this.ctxOne = this.canvasOne.getContext('2d');
-  this.ctxTwo = this.canvasTwo.getContext('2d');
-  this.ctxThree = this.canvasThree.getContext('2d');
-
-  /**
-   * Set each canvas element to be the size of the viewport.
-   */
-  $(this.canvasOne).attr('width', window.innerWidth);
-  $(this.canvasOne).attr('height', window.innerHeight);
-
-  $(this.canvasTwo).attr('width', window.innerWidth);
-  $(this.canvasTwo).attr('height', window.innerHeight);
-
-  $(this.canvasThree).attr('width', window.innerWidth);
-  $(this.canvasThree).attr('height', window.innerHeight);
 
   /**
    * Gets the width of the viewport and its center point.
@@ -86,6 +52,14 @@ ww.mode.PongMode.prototype.init = function() {
   this.paperPaddle = new paper['Path']['Rectangle'](this.paddle);
   this.paperPaddle['fillColor'] = 'black';
 
+  this.topWall = new paper['Path']['Rectangle'](
+    new paper['Rectangle'](
+      new paper['Point'](0, 0),
+      new paper['Size'](window.innerWidth, 10)
+    )
+  );
+  this.topWall['fillColor'] = 'orange';
+
   /**
    * Create ball.
    */
@@ -95,31 +69,46 @@ ww.mode.PongMode.prototype.init = function() {
     rad), rad);
   paperBall['fillColor'] = 'black';
 
+  var ballSpeed = 100;
   this.ball = new Particle();
   this.ball['setRadius'](rad);
   this.ball['moveTo'](new Vector(startXBall, rad));
   this.ball['drawObj'] = paperBall;
-  this.ball['vel'] = new Vector(-50, 50);
+  this.ball['vel'] = new Vector(-ballSpeed, ballSpeed);
   world['particles'].push(this.ball);
 };
 
-ww.mode.PongMode.prototype.drawPaddle = function() {
-  this.ctxOne.fillStyle = 'black';
-  this.ctxOne.beginPath();
+ww.mode.PongMode.prototype.didFocus = function() {
+  goog.base(this, 'didFocus');
 
-  this.ctxOne.rect(this.paddleX, this.paddleY,
-    this.paddleWidth, this.paddleHeight);
+  var self = this;
+  var canvas = this.getPaperCanvas_();
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
 
-  this.ctxOne.closePath();
-  this.ctxOne.fill();
+  $(canvas).bind(evt, function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    self.mouseX = e.pageX;
+    self.mouseY = e.pageY;
+  });
 };
 
-ww.mode.PongMode.prototype.moveBall = function(target) {
+ww.mode.PongMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
+
+  var canvas = this.getPaperCanvas_();
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+
+  $(canvas).unbind(evt);
+};
+
+ww.mode.PongMode.prototype.reflectBall = function(target) {
   /**
    * Window boundary collision detection.
    */
-  if (target['pos']['x'] < target['radius']
-    || target['pos']['x'] > this.screenWidthPixels - target['radius']) {
+  if ((target['pos']['x'] < target['radius']) ||
+      (target['pos']['x'] > this.screenWidthPixels - target['radius'])) {
     target['vel']['x'] *= -1;
   }
 
@@ -141,23 +130,12 @@ ww.mode.PongMode.prototype.moveBall = function(target) {
 };
 
 ww.mode.PongMode.prototype.onFrame = function(delta) {
-  goog.base(this, 'onFrame', delta);
-
-  $(this.canvasOne).attr('width', window.innerWidth);
-  $(this.canvasOne).attr('height', window.innerHeight);
-
-  $(this.canvasTwo).attr('width', window.innerWidth);
-  $(this.canvasTwo).attr('height', window.innerHeight);
-
-  $(this.canvasThree).attr('width', window.innerWidth);
-  $(this.canvasThree).attr('height', window.innerHeight);
-
-  var currentPaddleY = this.mouseY - this.paddle['size']['_height'] / 2;
-  var targetPaddleY = this.mouseY - this.paddle['size']['_height'] / 2;
-  this.paperPaddle['position']['_y'] = currentPaddleY +
+  var currentPaddleY = this.paperPaddle['position']['y'];
+  var targetPaddleY = this.mouseY;
+  this.paperPaddle['position']['y'] = currentPaddleY +
     ((targetPaddleY - currentPaddleY) * 0.5 * (delta/100));
 
+  this.reflectBall(this.ball);
 
-  // this.drawPaddle();
-  this.moveBall(this.ball);
+  goog.base(this, 'onFrame', delta);
 };
