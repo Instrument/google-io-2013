@@ -18,8 +18,8 @@ ww.mode.ExplodeMode.prototype.init = function() {
     'background-size': '100% 100%'
   });
 
-  // var self = this;
-  // setInterval(function() {
-  //   self.playSound('bomb.wav');
-  // }, 1000);
+  var self = this;
+  setInterval(function() {
+    self.playSound('bomb.wav');
+  }, 2000);
 };
