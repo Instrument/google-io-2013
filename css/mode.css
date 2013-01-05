@@ -113,6 +113,12 @@ body {
   text-align: left;
 }
 
+/* line 2, ../sass/_home.scss */
+.home-mode #letter-i, .home-mode #letter-o {
+  font-size: 200px;
+  color: black;
+}
+
 /* line 1, ../sass/_pinata.scss */
 #confetti {
   z-index: -1;
@@ -135,4 +141,9 @@ body {
 #pinata img {
   height: auto;
   width: 100%;
+}
+
+/* line 1, ../sass/_pong.scss */
+.pong-mode body {
+  background: black;
 }

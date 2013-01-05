@@ -5,14 +5,14 @@ goog.provide('ww.mode.PongMode');
  * @constructor
  */
 ww.mode.PongMode = function() {
+  this.startBallSpeed_ = this.ballSpeed_ = 250;
+  this.maxBallSpeed_ = 800;
+  this.startBallRadius_ = this.ballRadius_ = 30;
+  this.minBallRadius_ = 10;
+  this.paddleWidth_ = 10;
+  this.paddleHeight_ = 140;
+
   goog.base(this, 'pong', true, true, true);
-
-  var self = this;
-
-  $(document).mousemove(function(e){
-    self.mouseX = e.pageX;
-    self.mouseY = e.pageY;
-  });
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
 
@@ -25,34 +25,10 @@ ww.mode.PongMode.prototype.init = function() {
   goog.base(this, 'init');
 
   // Prep paperjs
-  this.getPaperCanvas_();
-
-  /**
-   * Assign each canvas element to a variable.
-   */
-
-  this.canvasOne = document.getElementById('canvas-one');
-  this.canvasTwo = document.getElementById('canvas-two');
-  this.canvasThree = document.getElementById('canvas-three');
-
-  /**
-   * Assign each canvas context to a variable if the elements exist.
-   */
-  this.ctxOne = this.canvasOne.getContext('2d');
-  this.ctxTwo = this.canvasTwo.getContext('2d');
-  this.ctxThree = this.canvasThree.getContext('2d');
-
-  /**
-   * Set each canvas element to be the size of the viewport.
-   */
-  $(this.canvasOne).attr('width', window.innerWidth);
-  $(this.canvasOne).attr('height', window.innerHeight);
-
-  $(this.canvasTwo).attr('width', window.innerWidth);
-  $(this.canvasTwo).attr('height', window.innerHeight);
-
-  $(this.canvasThree).attr('width', window.innerWidth);
-  $(this.canvasThree).attr('height', window.innerHeight);
+  var can = this.getPaperCanvas_();
+  var ctx = can.getContext('2d');
+  var prefixed = Modernizr['prefixed']('imageSmoothingEnabled');
+  ctx[prefixed] = false;
 
   /**
    * Gets the width of the viewport and its center point.
@@ -66,8 +42,8 @@ ww.mode.PongMode.prototype.init = function() {
   /**
    * Sets the mouse position to start at the screen center.
    */
-  this.mouseX = this.screenCenterX;
-  this.mouseY = this.screenCenterY;
+  this.mouseX_ = this.screenCenterX;
+  this.mouseY_ = this.screenCenterY;
 
   var world = this.getPhysicsWorld_();
   world['viscosity'] = 0;
@@ -75,85 +51,229 @@ ww.mode.PongMode.prototype.init = function() {
   /**
    * Create paddle.
    */
-  var paddleX = this.screenCenterX - (this.screenWidthPixels / 4);
-  var paddleY = this.mouseY - this.paddleHeight / 2;
+  // var paddleX = this.screenCenterX - (this.screenWidthPixels / 4);
+  var paddleX = this.paddleWidth_ / 2;
+  var paddleY = this.mouseY_ - this.paddleHeight_ / 2;
 
-   var paperPaddle = new paper['Rectangle'](new paper['Point'](this.paddleX,
-    this.paddleY), 20, 200);
-   paperPaddle['fillColor'] = 'black';
-   console.log('test');
+  var paddleTopLeft = new paper['Point'](paddleX, paddleY);
+  var paddleSize = new paper['Size'](this.paddleWidth_, this.paddleHeight_);
+  this.paperPaddle_ = new paper['Path']['RoundRectangle'](
+    new paper['Rectangle'](paddleTopLeft, paddleSize),
+    new paper['Size'](5, 5)
+  );
+  this.paperPaddle_['fillColor'] = 'white';
+
+  this.topWall_ = new paper['Path']['Rectangle'](
+    new paper['Rectangle'](
+      new paper['Point'](0, 0),
+      new paper['Size'](window.innerWidth, 10)
+    )
+  );
+  this.topWall_['fillColor'] = 'orange';
+  this.topWall_['opacity'] = 0;
+
+  this.bottomWall_ = new paper['Path']['Rectangle'](
+    new paper['Rectangle'](
+      new paper['Point'](0, window.innerHeight - 10),
+      new paper['Size'](window.innerWidth, 10)
+    )
+  );
+  this.bottomWall_['fillColor'] = 'orange';
+  this.bottomWall_['opacity'] = 0;
+
+  this.rightWall_ = new paper['Path']['Rectangle'](
+    new paper['Rectangle'](
+      new paper['Point'](window.innerWidth - 10, 0),
+      new paper['Size'](10, window.innerHeight)
+    )
+  );
+  this.rightWall_['fillColor'] = 'orange';
+  this.rightWall_['opacity'] = 0;
 
   /**
    * Create ball.
    */
-  var startXBall = this.screenCenterX + (this.screenWidthPixels / 4);
-  var rad = 50;
-  var paperBall = new paper['Path']['Circle'](new paper['Point'](startXBall,
-    rad), rad);
-  paperBall['fillColor'] = 'black';
-
   this.ball = new Particle();
-  this.ball['setRadius'](rad);
-  this.ball['moveTo'](new Vector(this.startXBall, rad));
-  this.ball['drawObj'] = paperBall;
-  this.ball['vel'] = new Vector(-50, 50);
+  this.resetBall_();
   world['particles'].push(this.ball);
 };
 
-ww.mode.PongMode.prototype.drawPaddle = function() {
-  this.ctxOne.fillStyle = 'black';
-  this.ctxOne.beginPath();
+ww.mode.PongMode.prototype.resetBall_ = function() {
+  this.ballRadius_ = this.startBallRadius_;
+  this.ballSpeed_ = this.startBallSpeed_;
 
-  this.ctxOne.rect(this.paddleX, this.paddleY,
-    this.paddleWidth, this.paddleHeight);
+  if (this.paperBall) {
+    this.paperBall['remove']();
+  }
 
-  this.ctxOne.closePath();
-  this.ctxOne.fill();
+  this.startXBall_ = this.screenCenterX + (this.screenWidthPixels / 4);
+
+  this.paperBall = new paper['Path']['Circle'](
+    new paper['Point'](this.startXBall_, this.ballRadius_ * 3),
+    this.ballRadius_
+  );
+  this.paperBall['fillColor'] = 'white';
+
+  this.ball['setRadius'](this.ballRadius_);
+  this.ball['moveTo'](new Vector(this.startXBall_, this.ballRadius_));
+  this.ball['vel'] = new Vector(-this.ballSpeed_, this.ballSpeed_);
+  this.ball['drawObj'] = this.paperBall;
 };
 
-ww.mode.PongMode.prototype.moveBall = function(target) {
+ww.mode.PongMode.prototype.didFocus = function() {
+  goog.base(this, 'didFocus');
+
+  var self = this;
+  var canvas = this.getPaperCanvas_();
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+
+  $(canvas).bind(evt, function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    self.mouseX_ = e.pageX;
+    self.mouseY_ = e.pageY;
+  });
+};
+
+ww.mode.PongMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
+
+  var canvas = this.getPaperCanvas_();
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+
+  $(canvas).unbind(evt);
+};
+
+ww.mode.PongMode.prototype.hitWall_ = function(wall) {
+  this.playSound('1.wav');
+
+  var t = new TWEEN['Tween']({ 'opacity': 0 })['to']({ 'opacity': 1 }, 400)['onUpdate'](function() {
+    wall['opacity'] = this['opacity'];
+  });
+
+  var t2 = new TWEEN['Tween']({ 'opacity': 1 })['to']({ 'opacity': 0 }, 400)['delay'](800)['onUpdate'](function() {
+    wall['opacity'] = this['opacity'];
+  });
+
+  this.addTween(t);
+  this.addTween(t2);
+};
+
+ww.mode.PongMode.prototype.hitPaddle_ = function() {
+  this.playSound('2.wav');
+};
+
+ww.mode.PongMode.prototype.gameOver_ = function() {
+  this.log('You Lose');
+  this.resetBall_();
+};
+
+ww.mode.PongMode.prototype.reflectBall_ = function() {
   /**
    * Window boundary collision detection.
    */
-  if (target['pos']['x'] < target['radius']
-    || target['pos']['x'] > this.screenWidthPixels - target['radius']) {
-    target['vel']['x'] *= -1;
+  if (this.ball['pos']['x'] <= this.ball['radius']) {
+    this.gameOver_();
   }
 
-  if (target['pos']['y'] > this.screenHeightPixels - target['radius'] || target['pos']['y'] < target['radius']) {
-    target['vel']['y'] *= -1;
+  var self;
+  if ((this.ball['vel']['x'] > 0) &&
+      (this.ball['pos']['x'] >= this.screenWidthPixels - this.ball['radius'])) {
+    this.ball['vel']['x'] *= -1;
+    this.hitWall_(this.rightWall_);
+  }
+
+  if ((this.ball['vel']['y'] > 0) &&
+     (this.ball['pos']['y'] >= this.screenHeightPixels - this.ball['radius'])) {
+    this.ball['vel']['y'] *= -1;
+    this.hitWall_(this.bottomWall_);
+  }
+
+  if ((this.ball['vel']['y'] < 0) &&
+      (this.ball['pos']['y'] <= this.ball['radius'])) {
+    this.ball['vel']['y'] *= -1;
+    this.hitWall_(this.topWall_);
   }
 
   /**
    * Paddle collision detection.
    */
-  var paddleTop = (this.paddleY - this.paddleHeight / 2) - target['radius'];
-  var paddleBottom = this.paddleY + this.paddleHeight / 2 + target['radius'];
+  var paddleTop = this.paperPaddle_['position']['y'] - (this.paddleHeight_ / 2);
+  var paddleBottom = this.paperPaddle_['position']['y'] + (this.paddleHeight_ / 2);
 
-  if (target['pos']['x'] < (this.paddleX + target['radius'])
-      + this.paddleWidth / 2
-    && (target['pos']['y'] > paddleTop && target['pos']['y'] < paddleBottom)) {
-    target['vel']['x'] *= -1;
+  if (
+    (this.ball['vel']['x'] < 0) &&
+    (this.ball['pos']['x'] <= (this.paperPaddle_['position']['x'] + (this.paddleWidth_ / 2) + this.ball['radius'])) &&
+    (this.ball['pos']['y'] >= paddleTop) &&
+    (this.ball['pos']['y'] <= paddleBottom)
+  ) {
+    this.ball['vel']['x'] *= -1;
+
+    var mag = this.ball['vel']['mag']();
+
+    if (!this.norm_) {
+      this.norm_ = this.ball['vel']['clone']();
+    } else {
+      this.norm_['copy'](this.ball['vel']);
+    }
+
+    this.norm_['norm']();
+
+    this.changeVec_ = this.changeVec_ || new Vector();
+    var diff = (this.ball['pos']['y'] - this.paperPaddle_['position']['y']) / (this.paddleHeight_ / 2);
+    this.changeVec_['set'](0, diff);
+
+    this.norm_['add'](this.changeVec_);
+    this.norm_['norm']();
+    this.norm_['scale'](mag);
+
+    this.ball['vel']['copy'](this.norm_);
+
+    this.hitPaddle_();
   }
+
+  // if (this.ball['pos']['x'] < (this.paperPaddle_['position']['x'] + this.ball['radius'] + (this.paddleWidth / 2)) &&
+  //   (this.ball['pos']['y'] < paddleTop && this.ball['pos']['y'] > paddleBottom)) {
+  //   alert('derp');
+  //   this.ball['vel']['x'] *= -1;
+  //   this.hitPaddle_();
+  // }
 };
 
-ww.mode.PongMode.prototype.onFrame = function(delta) {
-  goog.base(this, 'onFrame', delta);
+ww.mode.PongMode.prototype.stepPhysics = function(delta) {
+  goog.base(this, 'stepPhysics', delta);
 
-  $(this.canvasOne).attr('width', window.innerWidth);
-  $(this.canvasOne).attr('height', window.innerHeight);
+  var currentPaddleY = this.paperPaddle_['position']['y'];
+  var targetPaddleY = this.mouseY_;
+  
+  // Min/Max top bottom
+  if (targetPaddleY < (this.paddleHeight_ / 2)) {
+    targetPaddleY = this.paddleHeight_ / 2;
+  } else if (targetPaddleY > (this.height_ - (this.paddleHeight_ / 2))) {
+    targetPaddleY = this.height_ - (this.paddleHeight_ / 2);
+  }
 
-  $(this.canvasTwo).attr('width', window.innerWidth);
-  $(this.canvasTwo).attr('height', window.innerHeight);
+  var newPaddleY = currentPaddleY + ((targetPaddleY - currentPaddleY) * 0.5 * (delta/100));
+  var velocity = (currentPaddleY - newPaddleY) / delta;
+  this.paperPaddle_['position']['y'] = newPaddleY;
 
-  $(this.canvasThree).attr('width', window.innerWidth);
-  $(this.canvasThree).attr('height', window.innerHeight);
+  // Speed up
+  if (this.ballRadius_ >= this.minBallRadius_) {
+    this.ballRadius_ *= 0.9995;
+    this.ball['setRadius'](this.ballRadius_);
+    this.paperBall['scale'](0.9995);
+  }
 
-  var currentPaddleY = this.paddleY;
-  var targetPaddleY = this.mouseY - this.paddleHeight / 2;
-  paperPaddle['top'] = currentPaddleY + ((targetPaddleY - currentPaddleY)
-    * 0.5 * (delta/100));
+  if (this.ballSpeed_ <= this.maxBallSpeed_) {
+    this.ballSpeed_ *= 1.001;
+    this.ball['vel']['x'] = (this.ball['vel']['x'] < 0) ? -this.ballSpeed_ : this.ballSpeed_;
+    this.ball['vel']['y'] = (this.ball['vel']['y'] < 0) ? -this.ballSpeed_ : this.ballSpeed_;
+  }
 
-  this.drawPaddle();
-  this.moveBall(this.ball);
+  this.reflectBall_();
 };
+
+// ww.mode.PongMode.prototype.onFrame = function(delta) {
+//   goog.base(this, 'onFrame', delta);
+// };

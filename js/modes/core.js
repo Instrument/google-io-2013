@@ -1,4 +1,5 @@
 goog.provide('ww.mode.Core');
+goog.require('goog.events');
 
 /**
  * RequestAnimationFrame polyfill.
@@ -65,26 +66,43 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   // Bind a copy of render method for rAF
   this.boundRenderFrame_ = goog.bind(this.renderFrame_, this);
 
+  this.tweens_ = [];
+
   if (DEBUG_MODE) {
     this.addDebugUI_();
   }
+
+  $(document.body).css({ minHeight: window.innerHeight + 100 });
+  setTimeout(function(){
+    window.scrollTo(0, 1);
+    setTimeout(function(){
+      $(document.body).css({ minHeight: window.innerHeight - 100 });
+    }, 20);
+  }, 0);
+
+  var self = this;
+
+  goog.events.listen(window, 'message', function(evt) {
+    var data = evt.getBrowserEvent().data;
+    self.log('Got message: ' + data['name'], data);
+
+    if (data['name'] === 'focus') {
+      self['focus']();
+    } else if (data['name'] === 'unfocus') {
+      self['unfocus']();
+    }
+  });
 
   this.letterI = $('#letter-i');
   this.letterO = $('#letter-o');
 
   // Short-cuts to activating letters for basics setup.
-  var evt;
-  if (Modernizr['touch']) {
-    evt = 'tap';
-  } else {
-    evt = 'click';
-  }
-
-  var self = this;
-  this.letterI.bind(evt, function() {
+  var hammerOpts = { 'prevent_default': true };
+  this.letterI.bind('tap', hammerOpts, function() {
     self.activateI();
   });
-  this.letterO.bind(evt, function() {
+
+  this.letterO.bind('tap', hammerOpts, function() {
     self.activateO();
   });
 
@@ -112,10 +130,32 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   });
   this.onResize();
 
+  // Catch top-level touch events and cancel them to avoid
+  // mobile browser scroll.
+  if (Modernizr['touch']) {
+    $(document.body)
+      .css(Modernizr.prefixed("userSelect"), "none")
+      .css(Modernizr.prefixed("touchCallout"), "none")
+      .css(Modernizr.prefixed("userDrag"), "none")
+      .css(Modernizr.prefixed("tapHighlightColor"), "rgba(0,0,0,0)");
+
+    // $(document).bind('touchmove', function(evt) {
+    //   evt.preventDefault();
+    //   evt.stopPropagation();
+    // });
+  }
+
+  // $(document.body).addClass(this.name_ + '-mode');
+
   this.init();
 
   // Mark this mode as ready.
   this.ready();
+
+  // Autofocus
+  setTimeout(function() {
+    self['focus']();
+  }, 50);
 };
 
 /**
@@ -123,8 +163,12 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
  * @param {String} msg The message to log.
  */
 ww.mode.Core.prototype.log = function(msg) {
-  if (DEBUG_MODE) {
-    console.log(this.name_ + ': ' + msg);
+  if (DEBUG_MODE && console && console.log) {
+    var args = Array.prototype.slice.call(arguments);
+    if (typeof args[0] === 'string') {
+      args[0] = this.name_ + ': ' + args[0];
+    }
+    console.log.apply(console, args);
   }
 };
 
@@ -168,29 +212,32 @@ if (DEBUG_MODE) {
     var self = this;
 
     var focusElem = document.createElement('button');
+    focusElem.style.fontSize = '15px';
     focusElem.innerHTML = "Focus";
     focusElem.onclick = function() {
       self['focus']();
     };
 
     var unfocusElem = document.createElement('button');
+    unfocusElem.style.fontSize = '15px';
     unfocusElem.innerHTML = "Unfocus";
     unfocusElem.onclick = function() {
       self['unfocus']();
     };
 
     var restartElem = document.createElement('button');
+    restartElem.style.fontSize = '15px';
     restartElem.innerHTML = "Restart";
     restartElem.onclick = function() {
       self.init();
     };
 
     var containerElem = document.createElement('div');
-    containerElem.style.position = 'absolute';
+    containerElem.style.position = 'fixed';
     containerElem.style.bottom = 0;
     containerElem.style.left = 0;
     containerElem.style.right = 0;
-    containerElem.style.height = '30px';
+    containerElem.style.height = '40px';
     containerElem.style.background = 'rgba(0,0,0,0.2)';
 
     containerElem.appendChild(focusElem);
@@ -209,6 +256,8 @@ ww.mode.Core.prototype.startRendering = function() {
   if (!this.wantsRenderLoop_) { return; }
 
   this.lastTime_ = new Date().getTime();
+  this.framesRenderer_ = 0;
+  this.timeElapsed_ = 0;
 
   // Only start rAF if we're not already rendering.
   if (!this.shouldRenderNextFrame_) {
@@ -235,6 +284,8 @@ ww.mode.Core.prototype.renderFrame_ = function() {
   var currentTime = new Date().getTime();
   var delta = currentTime - this.lastTime_;
 
+  this.timeElapsed_ += delta;
+
   // Reduce large gaps (returning from background tab) to
   // a single frame.
   if (delta > 500) {
@@ -244,12 +295,16 @@ ww.mode.Core.prototype.renderFrame_ = function() {
   if (this.wantsPhysics_) {
     this.stepPhysics(delta);
   }
+  
+  TWEEN['update'](this.timeElapsed_);
 
   if (this.wantsDrawing_) {
     this.onFrame(delta);
   }
 
   this.lastTime_ = currentTime;
+
+  this.framesRenderer_++;
 
   // Schedule the next frame.
   if (this.shouldRenderNextFrame_) {
@@ -286,7 +341,22 @@ ww.mode.Core.prototype.ready = function() {
   this.log('Is ready');
 
   // Notify parent frame that we are ready.
-  window.parent.postMessage(this.name_ + '.ready', '*');
+  this.sendMessage_(this.name_ + '.ready');
+};
+
+/**
+ * Send the parent a message.
+ * @private
+ * @param {String} msgName DNS-style message path.
+ * @param {Object} value The data to send.
+ */
+ww.mode.Core.prototype.sendMessage_ = function(msgName, value) {
+  if (window.parent && window.parent.postMessage) {
+    window.parent.postMessage({
+      'name': msgName,
+      'data': value
+    }, '*');
+  }
 };
 
 /**
@@ -301,16 +371,13 @@ ww.mode.Core.prototype['focus'] = function() {
   // Try to start rAF if requested.
   this.startRendering();
 
-  var self = this;
-  setTimeout(function() {
-    self['didFocus']();
-  }, 10);
+  this.didFocus();
 };
 
 /**
  * Event is called after a mode focused.
  */
-ww.mode.Core.prototype['didFocus'] = function() {
+ww.mode.Core.prototype.didFocus = function() {
   // no-op
 };
 
@@ -326,16 +393,13 @@ ww.mode.Core.prototype['unfocus'] = function() {
   // Try to stop rAF if requested.
   this.stopRendering();
 
-  var self = this;
-  setTimeout(function() {
-    self['didUnfocus']();
-  }, 10);
+  this.didUnfocus();
 };
 
 /**
  * Event is called after a mode unfocused.
  */
-ww.mode.Core.prototype['didUnfocus'] = function() {
+ww.mode.Core.prototype.didUnfocus = function() {
   // no-op
 };
 
@@ -466,9 +530,6 @@ ww.mode.Core.prototype.activateO = function() {
 ww.mode.Core.prototype.getPaperCanvas_ = function() {
   if (!this.paperCanvas_) {
     this.paperCanvas_ = document.createElement('canvas');
-    if (DEBUG_MODE) {
-      this.paperCanvas_.setAttribute('stats', 'true');
-    }
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
     $(document.body).prepend(this.paperCanvas_);
@@ -476,5 +537,9 @@ ww.mode.Core.prototype.getPaperCanvas_ = function() {
     paper['setup'](this.paperCanvas_);
   }
 
-  return this.paperCanvas;
+  return this.paperCanvas_;
+};
+
+ww.mode.Core.prototype.addTween = function(tween) {
+  tween['start'](this.timeElapsed_);
 };

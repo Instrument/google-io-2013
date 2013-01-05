@@ -10,29 +10,41 @@ var DEBUG_MODE = false;
  * @constructor
  */
 ww.app.Core = function() {
-  this.modes_ = [];
-
   this.width_ = window.innerWidth;
   this.height_ = window.innerHeight;
 };
 
-ww.app.Core.prototype.registerMode = function(name, uid) {
-  this.modes_.push({
-    name: name,
-    code: uid
-  });
-};
-
 ww.app.Core.prototype.start = function() {
-  this.loadMode(this.modes_[0]);
+  var self = this;
+
+  this.onReady_ = function() {};
+
+  goog.events.listen(window, 'message', function(evt) {
+    var data = evt.getBrowserEvent().data;
+    self.log('Got message: ' + data['name'], data);
+
+    if (data['name'].match(/.ready/)) {
+      self.onReady_(data);
+    } else if (data['name'] === 'goToMode') {
+      self.loadModeByName(data['data']);
+    }
+  });
+
+  this.loadModeByName('home');
 };
 
 ww.app.Core.prototype.loadModeByName = function(modeName) {
-  var mode = goog.array.find(this.modes_, function(mode) {
-    return mode.name === modeName;
-  });
+  this.loadMode({ name: modeName });
+};
 
-  this.loadMode(mode);
+ww.app.Core.prototype.log = function(msg) {
+  if (DEBUG_MODE && console && console.log) {
+    var args = Array.prototype.slice.call(arguments);
+    if (typeof args[0] === 'string') {
+      args[0] = 'App: ' + args[0];
+    }
+    console.log.apply(console, args);
+  }
 };
 
 ww.app.Core.prototype.loadMode = function(mode, onComplete) {
@@ -49,21 +61,25 @@ ww.app.Core.prototype.loadMode = function(mode, onComplete) {
     }
     return;
   }
-  
-  var iFrameElem = goog.dom.createElement('iframe');
 
-  var listenKey = goog.events.listen(window, 'message', function(evt) {
-    var data = evt.getBrowserEvent().data;
-    if (data === (mode.name + '.ready')) {
-      goog.events.unlistenByKey(listenKey);
+  this.onReady_ = function(data) {
+    if (data['name'] === (mode.name + '.ready')) {
       iFrameElem.style.opacity = 1;
+
+      iFrameElem.contentWindow.postMessage({
+        'name': 'focus',
+        'data': null
+      }, '*');
 
       if (goog.isFunction(onComplete)) {
         onComplete();
       }
     }
-  });
 
+    this.onReady_ = function() {};
+  };
+
+  var iFrameElem = goog.dom.createElement('iframe');
   iFrameElem.style.opacity = 0;
   iFrameElem.src = 'modes/' + mode.name + '.html';
   iFrameElem.width = this.width_;
@@ -74,19 +90,7 @@ ww.app.Core.prototype.loadMode = function(mode, onComplete) {
   mode.iframe = iFrameElem;
 };
 
-// iframe.contentWindow.postMessage('sup', '*');
-
 window['jQuery'](function() {
 	var app = new ww.app.Core();
-	app.registerMode('cat', 83);
-	app.registerMode('dog', 84);
 	app.start();
-
-	window['catMe'] = function catMe() {
-	  app.loadModeByName('cat');
-	};
-
-	window['dogMe'] = function dogMe() {
-	  app.loadModeByName('dog');
-	};
 });
