@@ -24,5 +24,7 @@ canvas {
   @extend %absolute-full;
 }
 
+@import "bacon";
+@import "cat";
 @import "letters";
 @import "pinata";

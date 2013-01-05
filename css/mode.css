@@ -19,6 +19,38 @@ body {
   padding: 0;
 }
 
+/* line 2, ../sass/_cat.scss */
+.cat-mode #letter-i {
+  background-image: url('../img/cat/cat-letter-i.png?1357242087');
+  -webkit-transform-origin: 50% 0px;
+  -moz-transform-origin: 50% 0px;
+  -ms-transform-origin: 50% 0px;
+  -o-transform-origin: 50% 0px;
+  transform-origin: 50% 0px;
+}
+
+/* line 8, ../sass/_cat.scss */
+.cat-mode #letter-o {
+  background-image: url('../img/cat/cat-letter-o.png?1357242078');
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+  transform: scale(1);
+  -webkit-transition: all 190ms ease-in-out;
+  -moz-transition: all 190ms ease-in-out;
+  -o-transition: all 190ms ease-in-out;
+  transition: all 190ms ease-in-out;
+}
+/* line 13, ../sass/_cat.scss */
+.cat-mode #letter-o.selected {
+  -webkit-transform: scale(1.4);
+  -moz-transform: scale(1.4);
+  -ms-transform: scale(1.4);
+  -o-transform: scale(1.4);
+  transform: scale(1.4);
+}
+
 /* line 5, ../sass/_letters.scss */
 #letter-i,
 #letter-o {
@@ -51,39 +83,7 @@ body {
   }
 }
 
-/* line 30, ../sass/_letters.scss */
-.cat-mode #letter-i {
-  background-image: url('../img/cat/cat-letter-i.png?1357242087');
-  -webkit-transform-origin: 50% 0px;
-  -moz-transform-origin: 50% 0px;
-  -ms-transform-origin: 50% 0px;
-  -o-transform-origin: 50% 0px;
-  transform-origin: 50% 0px;
-}
-
-/* line 42, ../sass/_letters.scss */
-.cat-mode #letter-o {
-  background-image: url('../img/cat/cat-letter-o.png?1357242078');
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
-  -o-transform: scale(1);
-  transform: scale(1);
-  -webkit-transition: all 190ms ease-out;
-  -moz-transition: all 190ms ease-out;
-  -o-transition: all 190ms ease-out;
-  transition: all 190ms ease-out;
-}
-/* line 47, ../sass/_letters.scss */
-.cat-mode #letter-o.selected {
-  -webkit-transform: scale(1.25);
-  -moz-transform: scale(1.25);
-  -ms-transform: scale(1.25);
-  -o-transform: scale(1.25);
-  transform: scale(1.25);
-}
-
-/* line 54, ../sass/_letters.scss */
+/* line 33, ../sass/_letters.scss */
 #letter-i-container,
 #letter-o-container {
   bottom: 0;
@@ -99,14 +99,14 @@ body {
   top: 0;
 }
 
-/* line 62, ../sass/_letters.scss */
+/* line 41, ../sass/_letters.scss */
 #letter-i-container {
   left: 0;
   right: 50%;
   text-align: right;
 }
 
-/* line 68, ../sass/_letters.scss */
+/* line 47, ../sass/_letters.scss */
 #letter-o-container {
   left: 50%;
   right: 0;
@@ -114,64 +114,25 @@ body {
 }
 
 /* line 1, ../sass/_pinata.scss */
+#confetti {
+  z-index: -1;
+}
+
+/* line 5, ../sass/_pinata.scss */
 #pinata-party-box {
   height: 100%;
   position: relative;
-  -webkit-transform: translate3d(0, 0, 0);
-  -moz-transform: translate3d(0, 0, 0);
-  -ms-transform: translate3d(0, 0, 0);
-  -o-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-  width: 100%;
-}
-/* line 7, ../sass/_pinata.scss */
-#pinata-party-box img {
-  height: auto;
   width: 100%;
 }
 
-/* line 13, ../sass/_pinata.scss */
+/* line 11, ../sass/_pinata.scss */
 #pinata {
   margin: 0 auto;
   width: 15%;
+  z-index: 10000;
 }
-
-/* line 18, ../sass/_pinata.scss */
-#pinata-stick {
-  left: 50%;
-  margin: 0 0 0 -13px;
-  padding: 10px;
-  position: absolute;
-  -webkit-transform: rotate(0);
-  -moz-transform: rotate(0);
-  -ms-transform: rotate(0);
-  -o-transform: rotate(0);
-  transform: rotate(0);
-  -webkit-transform-origin: center bottom;
-  -moz-transform-origin: center bottom;
-  -ms-transform-origin: center bottom;
-  -o-transform-origin: center bottom;
-  transform-origin: center bottom;
-  -webkit-transition: all 190ms ease-out;
-  -moz-transition: all 190ms ease-out;
-  -o-transition: all 190ms ease-out;
-  transition: all 190ms ease-out;
-  top: 0;
-  width: 25px;
-}
-/* line 29, ../sass/_pinata.scss */
-#pinata-stick.whack-off {
-  -webkit-transform: rotate(-20deg);
-  -moz-transform: rotate(-20deg);
-  -ms-transform: rotate(-20deg);
-  -o-transform: rotate(-20deg);
-  transform: rotate(-20deg);
-}
-/* line 33, ../sass/_pinata.scss */
-#pinata-stick.whack-on {
-  -webkit-transform: rotate(20deg);
-  -moz-transform: rotate(20deg);
-  -ms-transform: rotate(20deg);
-  -o-transform: rotate(20deg);
-  transform: rotate(20deg);
+/* line 16, ../sass/_pinata.scss */
+#pinata img {
+  height: auto;
+  width: 100%;
 }
