@@ -43,7 +43,8 @@ ww.mode.PongMode.prototype.init = function() {
    */
   var paddleWidth = 20;
   var paddleHeight = 200;
-  var paddleX = this.screenCenterX - (this.screenWidthPixels / 4);
+  // var paddleX = this.screenCenterX - (this.screenWidthPixels / 4);
+  var paddleX = 50;
   var paddleY = this.mouseY - paddleHeight / 2;
 
   var paddleTopLeft = new paper['Point'](paddleX, paddleY);
@@ -58,22 +59,38 @@ ww.mode.PongMode.prototype.init = function() {
       new paper['Size'](window.innerWidth, 10)
     )
   );
-  this.topWall['fillColor'] = 'orange';
+  this.topWall['fillColor'] = 'red';
+
+  this.bottomWall = new paper['Path']['Rectangle'](
+    new paper['Rectangle'](
+      new paper['Point'](0, window.innerHeight - 10),
+      new paper['Size'](window.innerWidth, 10)
+    )
+  );
+  this.bottomWall['fillColor'] = 'red';
+
+  this.rightWall = new paper['Path']['Rectangle'](
+    new paper['Rectangle'](
+      new paper['Point'](window.innerWidth - 10, 0),
+      new paper['Size'](10, window.innerHeight)
+    )
+  );
+  this.rightWall['fillColor'] = 'red';
 
   /**
    * Create ball.
    */
   var startXBall = this.screenCenterX + (this.screenWidthPixels / 4);
   var rad = 50;
-  var paperBall = new paper['Path']['Circle'](new paper['Point'](startXBall,
-    rad), rad);
-  paperBall['fillColor'] = 'black';
+  this.paperBall = new paper['Path']['Circle'](new paper['Point'](startXBall,
+    rad * 3), rad);
+  this.paperBall['fillColor'] = 'black';
 
-  var ballSpeed = 100;
+  var ballSpeed = 150;
   this.ball = new Particle();
   this.ball['setRadius'](rad);
   this.ball['moveTo'](new Vector(startXBall, rad));
-  this.ball['drawObj'] = paperBall;
+  this.ball['drawObj'] = this.paperBall;
   this.ball['vel'] = new Vector(-ballSpeed, ballSpeed);
   world['particles'].push(this.ball);
 };
@@ -107,24 +124,35 @@ ww.mode.PongMode.prototype.reflectBall = function(target) {
   /**
    * Window boundary collision detection.
    */
-  if ((target['pos']['x'] < target['radius']) ||
-      (target['pos']['x'] > this.screenWidthPixels - target['radius'])) {
+  if (target['pos']['x'] < target['radius']) {
     target['vel']['x'] *= -1;
+    this.log('You Lose');
   }
 
-  if (target['pos']['y'] > this.screenHeightPixels - target['radius'] || target['pos']['y'] < target['radius']) {
+  if (target['pos']['x'] > this.screenWidthPixels - target['radius']) {
+    target['vel']['x'] *= -1;
+    this.rightWall['fillColor'] = 'orange';
+  }
+
+  if (target['pos']['y'] > this.screenHeightPixels - target['radius']) {
     target['vel']['y'] *= -1;
+    this.bottomWall['fillColor'] = 'orange';
+  }
+
+  if (target['pos']['y'] < target['radius']) {
+    target['vel']['y'] *= -1;
+    this.topWall['fillColor'] = 'orange';
   }
 
   /**
    * Paddle collision detection.
    */
-  var paddleTop = (this.paddleY - this.paddleHeight / 2) - target['radius'];
-  var paddleBottom = this.paddleY + this.paddleHeight / 2 + target['radius'];
+  var paddleTop = this.paperPaddle['position']['y'] - (this.paddleHeight / 2);
+  var paddleBottom = this.paperPaddle['position']['y'] + (this.paddleHeight / 2);
 
-  if (target['pos']['x'] < (this.paddleX + target['radius'])
-      + this.paddleWidth / 2
-    && (target['pos']['y'] > paddleTop && target['pos']['y'] < paddleBottom)) {
+  if (target['pos']['x'] < (this.paddleX + target['radius'] + (this.paddleWidth / 2)) &&
+    (target['pos']['y'] < paddleTop && target['pos']['y'] > paddleBottom)) {
+    alert('derp');
     target['vel']['x'] *= -1;
   }
 };
