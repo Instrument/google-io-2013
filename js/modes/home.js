@@ -158,6 +158,9 @@ ww.mode.HomeMode.prototype.init = function() {
   this.screenCenterX = this.screenWidthPixels / 2;
   this.screenCenterY = this.screenHeightPixels / 2;
 
+  this.mouseX = this.screenCenterX;
+  this.mouseY = this.screenCenterY;
+
   /**
    * Create the letter I.
    */
@@ -183,14 +186,40 @@ ww.mode.HomeMode.prototype.init = function() {
   this.paperO = new paper['Path']['Circle'](oCenter, oRad);
   this.paperO['fillColor'] = '#00933B';
   this.paperO['fullySelected'] = true;
+};
+
+ww.mode.HomeMode.prototype.didFocus = function() {
+  goog.base(this, 'didFocus');
+
+  var self = this;
+  var canvas = this.getPaperCanvas_();
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
 
   var tool = new paper['Tool']();
 
   tool['onMouseDown'] = function(event) {
+    console.log(self.mouseX);
     if (event['point']['getDistance'](oCenter) < oRad) {
-      this.paperO['removeSegment'](0);
+      // this.paperO['removeSegment'](0);
     }
   }
+
+  $(canvas).bind(evt, function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    self.mouseX = e.pageX;
+    self.mouseY = e.pageY;
+  });
+};
+
+ww.mode.HomeMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
+
+  var canvas = this.getPaperCanvas_();
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+
+  $(canvas).unbind(evt);
 };
 
 /**
