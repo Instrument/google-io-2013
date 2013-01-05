@@ -66,6 +66,8 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   // Bind a copy of render method for rAF
   this.boundRenderFrame_ = goog.bind(this.renderFrame_, this);
 
+  this.tweens_ = [];
+
   if (DEBUG_MODE) {
     this.addDebugUI_();
   }
@@ -74,7 +76,7 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   setTimeout(function(){
     window.scrollTo(0, 1);
     setTimeout(function(){
-      $(document.body).css({ minHeight: 'auto' });
+      $(document.body).css({ minHeight: window.innerHeight - 100 });
     }, 20);
   }, 0);
 
@@ -149,6 +151,11 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
   // Mark this mode as ready.
   this.ready();
+
+  // Autofocus
+  setTimeout(function() {
+    self['focus']();
+  }, 50);
 };
 
 /**
@@ -249,6 +256,8 @@ ww.mode.Core.prototype.startRendering = function() {
   if (!this.wantsRenderLoop_) { return; }
 
   this.lastTime_ = new Date().getTime();
+  this.framesRenderer_ = 0;
+  this.timeElapsed_ = 0;
 
   // Only start rAF if we're not already rendering.
   if (!this.shouldRenderNextFrame_) {
@@ -275,6 +284,8 @@ ww.mode.Core.prototype.renderFrame_ = function() {
   var currentTime = new Date().getTime();
   var delta = currentTime - this.lastTime_;
 
+  this.timeElapsed_ += delta;
+
   // Reduce large gaps (returning from background tab) to
   // a single frame.
   if (delta > 500) {
@@ -284,12 +295,16 @@ ww.mode.Core.prototype.renderFrame_ = function() {
   if (this.wantsPhysics_) {
     this.stepPhysics(delta);
   }
+  
+  TWEEN['update'](this.timeElapsed_);
 
   if (this.wantsDrawing_) {
     this.onFrame(delta);
   }
 
   this.lastTime_ = currentTime;
+
+  this.framesRenderer_++;
 
   // Schedule the next frame.
   if (this.shouldRenderNextFrame_) {
@@ -523,4 +538,8 @@ ww.mode.Core.prototype.getPaperCanvas_ = function() {
   }
 
   return this.paperCanvas_;
+};
+
+ww.mode.Core.prototype.addTween = function(tween) {
+  tween['start'](this.timeElapsed_);
 };

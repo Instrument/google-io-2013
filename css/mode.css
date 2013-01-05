@@ -181,3 +181,8 @@ body {
   -o-transform: rotate(20deg);
   transform: rotate(20deg);
 }
+
+/* line 1, ../sass/_pong.scss */
+.pong-mode body {
+  background: black;
+}
