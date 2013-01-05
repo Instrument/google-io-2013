@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+	<head>
+		<title>IO - Synth</title>
+    <!-- <script src="../js/vendor/rsvp.js"></script>
+    <script src="../js/vendor/basket.js"></script>
+    <script src="../js/bootstrap.min.js"></script> -->
+	</head>
+	<body>
+    
+    <div id="synth">
+    
+      <input id="power" type="button" value="Play" />    
+    
+      <ol>
+        <li><input class="param" type="range" id="control-1" min="0" max="3" step="1" value="0"></li>
+        <li><input class="param" type="range" id="control-2" min="10" max="10000" step="1" value="440"></li>
+        <li><input class="param" type="range" id="control-3" min="-4800" max="4800" step="1" value="0"></li>
+        <li><input class="param" type="range" id="control-4" min="0" max="100" step="1" value="0"></li>
+      </ol>
+      
+      <select id="effect">
+        <option value="dry">Dry</option>
+        <option value="delay">Delay</option>
+        <option value="tremolo">Tremolo</option>
+        <option value="chorus">Chorus</option>
+        <option value="phaser">Phaser</option>
+        <option value="filter">Filter</option>
+        <option value="wahwah">WahWah</option>
+        <option value="overdrive">Overdrive</option>
+      </select>
+    </div>
+    
+    <canvas id="canvas" height="600" width="800"></canvas>
+    
+		<script src="../js/vendor/jquery-1.6.2.js"></script>
+		<script src="../js/vendor/tuna.js"></script>
+		<script src="../js/modes/synth.js"></script>
+		
+	</body>
+</html>

@@ -5,7 +5,7 @@ goog.provide('ww.mode.HomeMode');
  * @constructor
  */
 ww.mode.HomeMode = function() {
-  goog.base(this, 'home', true);
+  goog.base(this, 'home', true, true);
 
   this.setupPatternMatchers_();
 
@@ -137,4 +137,96 @@ ww.mode.HomeMode.prototype.activateO = function() {
  */
 ww.mode.HomeMode.prototype.goToMode_ = function(key) {
   this.sendMessage_('goToMode', key);
+};
+
+/**
+ * Function to initialize the current mode.
+ * Requests a paper canvas and creates paths.
+ * Sets initial variables.
+ */
+ww.mode.HomeMode.prototype.init = function() {
+  goog.base(this, 'init');
+
+  // Prep paperjs
+  this.getPaperCanvas_();
+
+  /**
+   * Gets the width of the viewport and its center point.
+   */
+  this.screenWidthPixels = window.innerWidth;
+  this.screenHeightPixels = window.innerHeight;
+  this.screenCenterX = this.screenWidthPixels / 2;
+  this.screenCenterY = this.screenHeightPixels / 2;
+
+  this.mouseX = this.screenCenterX;
+  this.mouseY = this.screenCenterY;
+
+  /**
+   * Create the letter I.
+   */
+  var iWidth = 100;
+  var iHeight = 200;
+  var iX = this.screenCenterX - (this.screenWidthPixels / 8);
+  var iY = this.screenCenterY - iHeight / 2;
+
+  var iTopLeft = new paper['Point'](iX, iY);
+  var iSize = new paper['Size'](iWidth, iHeight);
+  this.letterI = new paper['Rectangle'](iTopLeft, iSize);
+  this.paperI = new paper['Path']['Rectangle'](this.letterI);
+  this.paperI['fillColor'] = '#F2B50F';
+
+  /**
+   * Create the letter O.
+   */
+  var oRad = 100;
+  var oX = this.screenCenterX + (this.screenWidthPixels / 8);
+  var oY = this.screenCenterY;
+
+  var oCenter = new paper['Point'](oX, oY);
+  this.paperO = new paper['Path']['Circle'](oCenter, oRad);
+  this.paperO['fillColor'] = '#00933B';
+  this.paperO['fullySelected'] = true;
+};
+
+ww.mode.HomeMode.prototype.didFocus = function() {
+  goog.base(this, 'didFocus');
+
+  var self = this;
+  var canvas = this.getPaperCanvas_();
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+
+  var tool = new paper['Tool']();
+
+  tool['onMouseDown'] = function(event) {
+    console.log(self.mouseX);
+    if (event['point']['getDistance'](oCenter) < oRad) {
+      // this.paperO['removeSegment'](0);
+    }
+  }
+
+  $(canvas).bind(evt, function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    self.mouseX = e.pageX;
+    self.mouseY = e.pageY;
+  });
+};
+
+ww.mode.HomeMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
+
+  var canvas = this.getPaperCanvas_();
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+
+  $(canvas).unbind(evt);
+};
+
+/**
+ * Runs code on each requested frame.
+ * @param {Integer} delta The timestep variable for animation accuracy.
+ */
+ww.mode.HomeMode.prototype.onFrame = function(delta) {
+  goog.base(this, 'onFrame', delta);
+
 };
