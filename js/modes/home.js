@@ -198,9 +198,10 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var tool = new paper['Tool']();
 
   tool['onMouseDown'] = function(event) {
-    console.log(self.mouseX);
-    if (event['point']['getDistance'](oCenter) < oRad) {
-      // this.paperO['removeSegment'](0);
+    var tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
+    console.log(tempPoint);
+    if (event['point']['getDistance'](tempPoint) < self.paperO['radius']) {
+      self.paperO['removeSegment'](0);
     }
   }
 
