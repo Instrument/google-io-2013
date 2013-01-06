@@ -120,11 +120,6 @@ body {
 }
 
 /* line 1, ../sass/_pinata.scss */
-#confetti {
-  z-index: -1;
-}
-
-/* line 5, ../sass/_pinata.scss */
 #pinata-party-box {
   display: table;
   height: 100%;
@@ -132,32 +127,31 @@ body {
   width: 100%;
 }
 
-/* line 12, ../sass/_pinata.scss */
+/* line 8, ../sass/_pinata.scss */
 #pinata {
   display: table-cell;
   text-align: center;
   vertical-align: middle;
-  z-index: 10000;
 }
-/* line 18, ../sass/_pinata.scss */
+/* line 14, ../sass/_pinata.scss */
 #pinata img {
   height: auto;
   width: 20%;
 }
 @media screen and (max-width: 480px) {
-  /* line 18, ../sass/_pinata.scss */
+  /* line 14, ../sass/_pinata.scss */
   #pinata img {
     width: 30%;
   }
 }
 @media screen and (max-width: 768px) {
-  /* line 18, ../sass/_pinata.scss */
+  /* line 14, ../sass/_pinata.scss */
   #pinata img {
     width: 50%;
   }
 }
 @media screen and (max-width: 320px) {
-  /* line 18, ../sass/_pinata.scss */
+  /* line 14, ../sass/_pinata.scss */
   #pinata img {
     width: 50%;
   }

@@ -1,7 +1,3 @@
-#confetti {
-  z-index: -1;
-}
-
 #pinata-party-box {
   display: table;
   height: 100%;
@@ -13,7 +9,7 @@
   display: table-cell;
   text-align: center;
   vertical-align: middle;
-  z-index: 10000;
+  // z-index: 10000;
 
   img {
     height: auto;
