@@ -2,6 +2,9 @@ goog.require('ww.mode.Core');
 goog.provide('ww.mode.PinataMode');
 
 
+/**
+ * @constructor
+ */
 ww.mode.PinataMode = function() {
   goog.base(this, 'pinata', false, true, false);
 };
