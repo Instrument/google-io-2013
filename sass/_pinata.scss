@@ -3,18 +3,32 @@
 }
 
 #pinata-party-box {
+  display: table;
   height: 100%;
   position: relative;
   width: 100%;
 }
 
 #pinata {
-  margin: 0 auto;
-  width: 15%;
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
   z-index: 10000;
 
   img {
     height: auto;
-    width: 100%;
+    width: 20%;
+
+    @include screen($break-small) {
+      width: 30%;
+    }
+
+    @include screen($break-medium) {
+      width: 50%;
+    }
+
+    @include screen($break-smallest) {
+      width: 50%;
+    }
   }
 }

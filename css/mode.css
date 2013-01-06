@@ -1,4 +1,4 @@
-/* line 5, ../sass/mode.scss */
+/* line 10, ../sass/mode.scss */
 canvas {
   bottom: 0;
   left: 0;
@@ -7,13 +7,13 @@ canvas {
   top: 0;
 }
 
-/* line 13, ../sass/mode.scss */
+/* line 18, ../sass/mode.scss */
 html, body {
   height: 100%;
   min-height: 100%;
 }
 
-/* line 18, ../sass/mode.scss */
+/* line 23, ../sass/mode.scss */
 body {
   margin: 0;
   padding: 0;
@@ -51,7 +51,7 @@ body {
   transform: scale(1.4);
 }
 
-/* line 5, ../sass/_letters.scss */
+/* line 2, ../sass/_letters.scss */
 #letter-i,
 #letter-o {
   background-color: transparent;
@@ -69,21 +69,21 @@ body {
   width: 40%;
 }
 @media screen and (max-width: 1024px) {
-  /* line 5, ../sass/_letters.scss */
+  /* line 2, ../sass/_letters.scss */
   #letter-i,
   #letter-o {
     width: 60%;
   }
 }
-@media screen and (max-width: 320px) {
-  /* line 5, ../sass/_letters.scss */
+@media screen and (max-width: 480px) {
+  /* line 2, ../sass/_letters.scss */
   #letter-i,
   #letter-o {
     width: 70%;
   }
 }
 
-/* line 33, ../sass/_letters.scss */
+/* line 30, ../sass/_letters.scss */
 #letter-i-container,
 #letter-o-container {
   bottom: 0;
@@ -99,14 +99,14 @@ body {
   top: 0;
 }
 
-/* line 41, ../sass/_letters.scss */
+/* line 38, ../sass/_letters.scss */
 #letter-i-container {
   left: 0;
   right: 50%;
   text-align: right;
 }
 
-/* line 47, ../sass/_letters.scss */
+/* line 44, ../sass/_letters.scss */
 #letter-o-container {
   left: 50%;
   right: 0;
@@ -126,21 +126,41 @@ body {
 
 /* line 5, ../sass/_pinata.scss */
 #pinata-party-box {
+  display: table;
   height: 100%;
   position: relative;
   width: 100%;
 }
 
-/* line 11, ../sass/_pinata.scss */
+/* line 12, ../sass/_pinata.scss */
 #pinata {
-  margin: 0 auto;
-  width: 15%;
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
   z-index: 10000;
 }
-/* line 16, ../sass/_pinata.scss */
+/* line 18, ../sass/_pinata.scss */
 #pinata img {
   height: auto;
-  width: 100%;
+  width: 20%;
+}
+@media screen and (max-width: 480px) {
+  /* line 18, ../sass/_pinata.scss */
+  #pinata img {
+    width: 30%;
+  }
+}
+@media screen and (max-width: 768px) {
+  /* line 18, ../sass/_pinata.scss */
+  #pinata img {
+    width: 50%;
+  }
+}
+@media screen and (max-width: 320px) {
+  /* line 18, ../sass/_pinata.scss */
+  #pinata img {
+    width: 50%;
+  }
 }
 
 /* line 1, ../sass/_pong.scss */

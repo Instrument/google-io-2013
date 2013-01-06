@@ -2,6 +2,11 @@
 @import "compass/css3/transition";
 @import "media-queries";
 
+$break-small: 480px;
+$break-smallest: 320px;
+$break-medium: 768px;
+$break-large: 1024px;
+
 %absolute-full {
   bottom: 0;
   left: 0;
