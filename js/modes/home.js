@@ -151,9 +151,10 @@ ww.mode.HomeMode.prototype.init = function() {
   this.getPaperCanvas_();
 
   /**
-   * Float that increments when objects are clicked. Used to adjust paths.
+   * Floats that increment when objects are clicked. Used to adjust paths.
    */
-  this.pathModifier = 0;
+  this.iModifier = 0;
+  this.oModifier = 0;
 
   /**
    * Gets the width of the viewport and its center point.
@@ -179,6 +180,18 @@ ww.mode.HomeMode.prototype.init = function() {
   this.letterI = new paper['Rectangle'](iTopLeft, iSize);
   this.paperI = new paper['Path']['Rectangle'](this.letterI);
   this.paperI['fillColor'] = '#F2B50F';
+  // this.paperI['fullySelected'] = true;
+
+  this.iHandleInX = [];
+  this.iHandleInY = [];
+  this.iHandleOutX = [];
+  this.iHandleOutY = [];
+  for (var i = 0; i < this.paperI['segments'].length; i++) {
+    this.iHandleInX[i] = this.paperI['segments'][i]['handleIn']['_x'];
+    this.iHandleInY[i] = this.paperI['segments'][i]['handleIn']['_y'];
+    this.iHandleOutX[i] = this.paperI['segments'][i]['handleOut']['_x'];
+    this.iHandleOutY[i] = this.paperI['segments'][i]['handleOut']['_y'];
+  }
 
   /**
    * Create the letter O.
@@ -190,13 +203,16 @@ ww.mode.HomeMode.prototype.init = function() {
   var oCenter = new paper['Point'](oX, oY);
   this.paperO = new paper['Path']['Circle'](oCenter, oRad);
   this.paperO['fillColor'] = '#00933B';
-  this.paperO['fullySelected'] = true;
 
-  this.handleIn = [];
-  this.handleOut = [];
+  this.oHandleInX = [];
+  this.oHandleInY = [];
+  this.oHandleOutX = [];
+  this.oHandleOutY = [];
   for (var i = 0; i < this.paperO['segments'].length; i++) {
-    this.handleIn[i] = this.paperO['segments'][i]['handleIn'];
-    this.handleOut[i] = this.paperO['segments'][i]['handleOut'];
+    this.oHandleInX[i] = this.paperO['segments'][i]['handleIn']['_x'];
+    this.oHandleInY[i] = this.paperO['segments'][i]['handleIn']['_y'];
+    this.oHandleOutX[i] = this.paperO['segments'][i]['handleOut']['_x'];
+    this.oHandleOutY[i] = this.paperO['segments'][i]['handleOut']['_y'];
   }
 };
 
@@ -211,10 +227,21 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var tool = new paper['Tool']();
 
   tool['onMouseDown'] = function(event) {
+    tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
     if (event['point']['getDistance'](tempPoint) < self.paperO['bounds']['width'] / 2) {
-      self.pathModifier += 10;
-      console.log('test');
-       tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
+      if (self.oModifier < 5) {
+        self.oModifier += 30;
+      } else {
+        self.oModifier += 2;
+      }
+    }
+
+    if (self.paperI['hitTest'](event['point'])) {
+      if (self.iModifier < 5) {
+        self.iModifier += 5;
+      } else {
+        self.iModifier += 1;
+      }
     }
   }
 
@@ -243,15 +270,51 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
-  if (this.pathModifier > .1) {
-    this.pathModifier -= .1;
+  if (this.iModifier > 1) {
+    this.iModifier -= .1;
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
-      this.paperO['segments'][i]['handleIn']['_x'] = this.handleIn[i]['_x']
-        + Math.sin(self.pathModifier);
-      this.paperO['segments'][i]['handleIn']['_y'] = this.handleIn[i]['_y']
-        + Math.cos(self.pathModifier);
+      this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i]
+        + Math.cos(this.iModifier) * this.iModifier;
+      this.paperI['segments'][i]['handleIn']['_y'] = this.iHandleInY[i]
+        + Math.sin(this.iModifier) * this.iModifier;
+
+      this.paperI['segments'][i]['handleOut']['_x'] = this.iHandleOutX[i]
+        - Math.cos(this.iModifier) * this.iModifier;
+      this.paperI['segments'][i]['handleOut']['_y'] = this.iHandleOutY[i]
+        - Math.sin(this.iModifier) * this.iModifier;
     }
-    console.log('test');
+  } else {
+    for (var i = 0; i < this.paperO['segments'].length; i++) {
+      this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i];
+      this.paperI['segments'][i]['handleIn']['_y'] = this.iHandleInY[i];
+
+      this.paperI['segments'][i]['handleOut']['_x'] = this.iHandleOutX[i];
+      this.paperI['segments'][i]['handleOut']['_y'] = this.iHandleOutY[i];
+    }
+  }
+
+  if (this.oModifier > 1) {
+    this.oModifier -= .1;
+
+    for (var i = 0; i < this.paperO['segments'].length; i++) {
+      this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
+        + Math.cos(this.oModifier) * this.oModifier;
+      this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i]
+        + Math.sin(this.oModifier) * this.oModifier;
+
+      this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i]
+        - Math.cos(this.oModifier) * this.oModifier;
+      this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i]
+        - Math.sin(this.oModifier) * this.oModifier;
+    }
+  } else {
+    for (var i = 0; i < this.paperO['segments'].length; i++) {
+      this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i];
+      this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i];
+
+      this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i];
+      this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i];
+    }
   }
 };
