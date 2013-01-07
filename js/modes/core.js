@@ -93,33 +93,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     }
   });
 
-  this.letterI = $('#letter-i');
-  this.letterO = $('#letter-o');
-
-  // Short-cuts to activating letters for basics setup.
-  var hammerOpts = { 'prevent_default': true };
-  this.letterI.bind('tap', hammerOpts, function() {
-    self.activateI_();
-  });
-
-  this.letterO.bind('tap', hammerOpts, function() {
-    self.activateO_();
-  });
-
-  $(document).keypress(function(e) {
-    if (e.keyCode === 105) {
-      self.activateI_();
-    } else if (e.keyCode === 111) {
-      self.activateO_();
-    } else {
-      return;
-    }
-
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  });
-
   this.window_ = $(window);
   this.width_ = 0;
   this.height_ = 0;
@@ -153,9 +126,12 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   this.ready();
 
   // Autofocus
-  setTimeout(function() {
+  $(function() {
+    self.letterI = $('#letter-i');
+    self.letterO = $('#letter-o');
+    
     self['focus']();
-  }, 50);
+  });
 };
 
 /**
@@ -378,7 +354,31 @@ ww.mode.Core.prototype['focus'] = function() {
  * Event is called after a mode focused.
  */
 ww.mode.Core.prototype.didFocus = function() {
-  // no-op
+  var self = this;
+
+  // Short-cuts to activating letters for basics setup.
+  var hammerOpts = { 'prevent_default': true };
+  this.letterI.bind('tap.core', hammerOpts, function() {
+    self.activateI_();
+  });
+
+  this.letterO.bind('tap.core', hammerOpts, function() {
+    self.activateO_();
+  });
+
+  $(document).bind('keypress.core', function(e) {
+    if (e.keyCode === 105) {
+      self.activateI_();
+    } else if (e.keyCode === 111) {
+      self.activateO_();
+    } else {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
 };
 
 /**
@@ -400,7 +400,9 @@ ww.mode.Core.prototype['unfocus'] = function() {
  * Event is called after a mode unfocused.
  */
 ww.mode.Core.prototype.didUnfocus = function() {
-  // no-op
+  this.letterI.unbind('tap.core');
+  this.letterO.unbind('tap.core');
+  $(document).unbind('keypress.core');
 };
 
 /**
