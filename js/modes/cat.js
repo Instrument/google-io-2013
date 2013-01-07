@@ -1,6 +1,7 @@
 goog.require('ww.mode.Core');
 goog.provide('ww.mode.CatMode');
 
+
 /**
  * @constructor
  */
@@ -9,13 +10,25 @@ ww.mode.CatMode = function() {
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
 
+
+/**
+ * Initailize CateMode. Define tranform prefix.
+ * @private
+ */
 ww.mode.CatMode.prototype.init = function() {
   goog.base(this, 'init');
 
   this.prefix = Modernizr['prefixed']('transform');
 };
 
-ww.mode.CatMode.prototype.activateI = function() {
+
+/**
+ * Plays a sound and stretches the letter i when activated.
+ * @private
+ */
+ww.mode.CatMode.prototype.activateI_ = function() {
+  goog.base(this, 'activateI_');
+
   var self = this;
 
   self.playSound('cat-1.mp3');
@@ -40,7 +53,14 @@ ww.mode.CatMode.prototype.activateI = function() {
   self.addTween(stretchBack);
 };
 
-ww.mode.CatMode.prototype.activateO = function() {
+
+/**
+ * Plays a sound and stretches the letter o when activated.
+ * @private
+ */
+ww.mode.CatMode.prototype.activateO_ = function() {
+  goog.base(this, 'activateO_');
+  
   var self = this;
 
   self.playSound('cat-2.mp3');

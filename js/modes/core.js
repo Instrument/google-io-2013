@@ -99,18 +99,18 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   // Short-cuts to activating letters for basics setup.
   var hammerOpts = { 'prevent_default': true };
   this.letterI.bind('tap', hammerOpts, function() {
-    self.activateI();
+    self.activateI_();
   });
 
   this.letterO.bind('tap', hammerOpts, function() {
-    self.activateO();
+    self.activateO_();
   });
 
   $(document).keypress(function(e) {
     if (e.keyCode === 105) {
-      self.activateI();
+      self.activateI_();
     } else if (e.keyCode === 111) {
-      self.activateO();
+      self.activateO_();
     } else {
       return;
     }
@@ -510,7 +510,7 @@ ww.mode.Core.prototype.playSound = function(filename) {
 /**
  * Method called when activating the I.
  */
-ww.mode.Core.prototype.activateI = function() {
+ww.mode.Core.prototype.activateI_ = function() {
   // no-op
   this.log('Activated "I"');
 };
@@ -518,7 +518,7 @@ ww.mode.Core.prototype.activateI = function() {
 /**
  * Method called when activating the O.
  */
-ww.mode.Core.prototype.activateO = function() {
+ww.mode.Core.prototype.activateO_ = function() {
   // no-op
   this.log('Activated "O"');
 };

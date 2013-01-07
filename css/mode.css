@@ -108,6 +108,7 @@ body {
 /* line 8, ../sass/_pinata.scss */
 #pinata {
   display: table-cell;
+  opacity: 0;
   text-align: center;
   vertical-align: middle;
 }
