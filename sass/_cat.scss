@@ -1,16 +1,9 @@
 // long cat
 .cat-mode #letter-i {
   background-image: image-url('cat/cat-letter-i.png');
-  @include transform-origin(50% 0px, false);
 }
 
 // hover cat
 .cat-mode #letter-o {
   background-image: image-url('cat/cat-letter-o.png');
-  @include transform(scale(1));
-  @include transition(all 190ms ease-in-out);
-
-  &.selected {
-    @include transform(scale(1.4));
-  }
 }

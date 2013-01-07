@@ -151,6 +151,11 @@ ww.mode.HomeMode.prototype.init = function() {
   this.getPaperCanvas_();
 
   /**
+   * Float that increments when objects are clicked. Used to adjust paths.
+   */
+  this.pathModifier = 0;
+
+  /**
    * Gets the width of the viewport and its center point.
    */
   this.screenWidthPixels = window.innerWidth;
@@ -186,6 +191,13 @@ ww.mode.HomeMode.prototype.init = function() {
   this.paperO = new paper['Path']['Circle'](oCenter, oRad);
   this.paperO['fillColor'] = '#00933B';
   this.paperO['fullySelected'] = true;
+
+  this.handleIn = [];
+  this.handleOut = [];
+  for (var i = 0; i < this.paperO['segments'].length; i++) {
+    this.handleIn[i] = this.paperO['segments'][i]['handleIn'];
+    this.handleOut[i] = this.paperO['segments'][i]['handleOut'];
+  }
 };
 
 ww.mode.HomeMode.prototype.didFocus = function() {
@@ -194,14 +206,15 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var self = this;
   var canvas = this.getPaperCanvas_();
   var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var tempPoint;
 
   var tool = new paper['Tool']();
 
   tool['onMouseDown'] = function(event) {
-    var tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
-    console.log(tempPoint);
-    if (event['point']['getDistance'](tempPoint) < self.paperO['radius']) {
-      self.paperO['removeSegment'](0);
+    if (event['point']['getDistance'](tempPoint) < self.paperO['bounds']['width'] / 2) {
+      self.pathModifier += 10;
+      console.log('test');
+       tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
     }
   }
 
@@ -230,4 +243,15 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
+  if (this.pathModifier > .1) {
+    this.pathModifier -= .1;
+
+    for (var i = 0; i < this.paperO['segments'].length; i++) {
+      this.paperO['segments'][i]['handleIn']['_x'] = this.handleIn[i]['_x']
+        + Math.sin(self.pathModifier);
+      this.paperO['segments'][i]['handleIn']['_y'] = this.handleIn[i]['_y']
+        + Math.cos(self.pathModifier);
+    }
+    console.log('test');
+  }
 };
