@@ -22,33 +22,11 @@ body {
 /* line 2, ../sass/_cat.scss */
 .cat-mode #letter-i {
   background-image: url('../img/cat/cat-letter-i.png?1357242087');
-  -webkit-transform-origin: 50% 0px;
-  -moz-transform-origin: 50% 0px;
-  -ms-transform-origin: 50% 0px;
-  -o-transform-origin: 50% 0px;
-  transform-origin: 50% 0px;
 }
 
-/* line 8, ../sass/_cat.scss */
+/* line 7, ../sass/_cat.scss */
 .cat-mode #letter-o {
   background-image: url('../img/cat/cat-letter-o.png?1357242078');
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
-  -ms-transform: scale(1);
-  -o-transform: scale(1);
-  transform: scale(1);
-  -webkit-transition: all 190ms ease-in-out;
-  -moz-transition: all 190ms ease-in-out;
-  -o-transition: all 190ms ease-in-out;
-  transition: all 190ms ease-in-out;
-}
-/* line 13, ../sass/_cat.scss */
-.cat-mode #letter-o.selected {
-  -webkit-transform: scale(1.4);
-  -moz-transform: scale(1.4);
-  -ms-transform: scale(1.4);
-  -o-transform: scale(1.4);
-  transform: scale(1.4);
 }
 
 /* line 2, ../sass/_letters.scss */
