@@ -213,6 +213,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   tool['onMouseDown'] = function(event) {
     if (event['point']['getDistance'](tempPoint) < self.paperO['bounds']['width'] / 2) {
       self.pathModifier += 10;
+      console.log('test');
        tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
     }
   }
@@ -246,10 +247,11 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     this.pathModifier -= .1;
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
-    this.paperO['segments'][i]['handleIn']['_x'] = this.handleIn[i]['_x']
-      + Math.sin(self.pathModifier);
-    this.paperO['segments'][i]['handleIn']['_y'] = this.handleIn[i]['_y']
-      + Math.cos(self.pathModifier);
-  }
+      this.paperO['segments'][i]['handleIn']['_x'] = this.handleIn[i]['_x']
+        + Math.sin(self.pathModifier);
+      this.paperO['segments'][i]['handleIn']['_y'] = this.handleIn[i]['_y']
+        + Math.cos(self.pathModifier);
+    }
+    console.log('test');
   }
 };
