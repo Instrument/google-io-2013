@@ -6,7 +6,7 @@ goog.provide('ww.mode.PinataMode');
  * @constructor
  */
 ww.mode.PinataMode = function() {
-  goog.base(this, 'pinata', false, true, false);
+  goog.base(this, 'pinata', true, true, false);
 };
 goog.inherits(ww.mode.PinataMode, ww.mode.Core);
 
@@ -132,8 +132,8 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
       
       if (Math.abs(ball['vector']['x']) < 3) {
         ball['vector'] = paper['Point']['random']();
-        ball['vector'] = this.utilMultiply_(ball['vector'], [150, 100]);
-        ball['vector'] = this.utilAdd_(ball['vector'], [-75, 20]);
+        ball['vector'] = this.utilAdd_(ball['vector'], [-0.5, 0]);
+        ball['vector'] = this.utilMultiply_(ball['vector'], [50, 100]);
       }
 
       ball['vector']['y'] *= ball['bounce'];
@@ -224,6 +224,8 @@ ww.mode.PinataMode.prototype.prepopulate = function(max) {
  */
 ww.mode.PinataMode.prototype.popBalls_ = function() {
   var ball, point, radius, toPop, self = this;
+
+  this.playSound('whack.mp3');
 
   if (this.hitCount < this.maxHit) {
     this.hitCount++;
