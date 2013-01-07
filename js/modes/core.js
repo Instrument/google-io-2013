@@ -256,7 +256,7 @@ ww.mode.Core.prototype.startRendering = function() {
   if (!this.wantsRenderLoop_) { return; }
 
   this.lastTime_ = new Date().getTime();
-  this.framesRenderer_ = 0;
+  this.framesRendered_ = 0;
   this.timeElapsed_ = 0;
 
   // Only start rAF if we're not already rendering.
@@ -304,7 +304,7 @@ ww.mode.Core.prototype.renderFrame_ = function() {
 
   this.lastTime_ = currentTime;
 
-  this.framesRenderer_++;
+  this.framesRendered_++;
 
   // Schedule the next frame.
   if (this.shouldRenderNextFrame_) {
