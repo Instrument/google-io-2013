@@ -150,6 +150,8 @@ ww.mode.HomeMode.prototype.init = function() {
   // Prep paperjs
   this.getPaperCanvas_();
 
+  this.deltaModifier = 0;
+
   /**
    * Floats that increment when objects are clicked. Used to adjust paths.
    */
@@ -196,12 +198,12 @@ ww.mode.HomeMode.prototype.init = function() {
   /**
    * Create the letter O.
    */
-  var oRad = 100;
+  this.oRad = 100;
   var oX = this.screenCenterX + (this.screenWidthPixels / 8);
   var oY = this.screenCenterY;
 
   var oCenter = new paper['Point'](oX, oY);
-  this.paperO = new paper['Path']['Circle'](oCenter, oRad);
+  this.paperO = new paper['Path']['Circle'](oCenter, this.oRad);
   this.paperO['fillColor'] = '#00933B';
 
   this.oHandleInX = [];
@@ -228,7 +230,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   tool['onMouseDown'] = function(event) {
     tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
-    if (event['point']['getDistance'](tempPoint) < self.paperO['bounds']['width'] / 2) {
+    if (self.paperO['hitTest'](event['point'])) {
       if (self.oModifier < 5) {
         self.oModifier += 30;
       } else {
@@ -270,19 +272,21 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
+  this.deltaModifier = this.framesRendered_ * (delta / 100);
+
   if (this.iModifier > 1) {
     this.iModifier -= .1;
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i]
-        + Math.cos(this.iModifier) * this.iModifier;
+        + Math.cos(this.deltaModifier) * this.iModifier;
       this.paperI['segments'][i]['handleIn']['_y'] = this.iHandleInY[i]
-        + Math.sin(this.iModifier) * this.iModifier;
+        + Math.sin(this.deltaModifier) * this.iModifier;
 
       this.paperI['segments'][i]['handleOut']['_x'] = this.iHandleOutX[i]
-        - Math.cos(this.iModifier) * this.iModifier;
+        - Math.cos(this.deltaModifier) * this.iModifier;
       this.paperI['segments'][i]['handleOut']['_y'] = this.iHandleOutY[i]
-        - Math.sin(this.iModifier) * this.iModifier;
+        - Math.sin(this.deltaModifier) * this.iModifier;
     }
   } else {
     for (var i = 0; i < this.paperO['segments'].length; i++) {
@@ -297,16 +301,19 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
   if (this.oModifier > 1) {
     this.oModifier -= .1;
 
+    this.paperO['bounds']['height'] = this.oRad + this.oModifier;
+    this.paperO['bounds']['width'] = this.oRad + this.oModifier;
+
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
-        + Math.cos(this.oModifier) * this.oModifier;
+        + Math.cos(this.deltaModifier) * this.oModifier;
       this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i]
-        + Math.sin(this.oModifier) * this.oModifier;
+        + Math.sin(this.deltaModifier) * this.oModifier;
 
       this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i]
-        - Math.cos(this.oModifier) * this.oModifier;
+        - Math.cos(this.deltaModifier) * this.oModifier;
       this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i]
-        - Math.sin(this.oModifier) * this.oModifier;
+        - Math.sin(this.deltaModifier) * this.oModifier;
     }
   } else {
     for (var i = 0; i < this.paperO['segments'].length; i++) {
