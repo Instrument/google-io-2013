@@ -46,6 +46,9 @@ window['AudioContext'] = (
  * @param {Boolean} wantsPhysics Whether this mode needs physics.
  */
 ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
+  // Define transform prefix.
+  this.prefix_ = Modernizr['prefixed']('transform');
+
   this.name_ = name;
 
   this.hasFocus = false;
@@ -526,6 +529,16 @@ ww.mode.Core.prototype.activateI = function() {
 ww.mode.Core.prototype.activateO = function() {
   // no-op
   this.log('Activated "O"');
+};
+
+/**
+ * CSS Transform an element.
+ * @private
+ * @param {Element} elem The element.
+ * @param {String} value The CSS Value.
+ */
+ww.mode.Core.prototype.transformElem_ = function(elem, value) {
+  elem.style[this.prefix_] = value;
 };
 
 /**
