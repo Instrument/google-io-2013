@@ -366,9 +366,9 @@ ww.mode.Core.prototype.didFocus = function() {
 
   $(document).bind('keypress.core', function(e) {
     if (e.keyCode === 105) {
-      self.activateI_();
+      self.activateI();
     } else if (e.keyCode === 111) {
-      self.activateO_();
+      self.activateO();
     } else {
       return;
     }
