@@ -15,6 +15,7 @@ html, body {
 
 /* line 23, ../sass/mode.scss */
 body {
+  background-color: #f9f9f9;
   margin: 0;
   padding: 0;
 }
@@ -57,11 +58,18 @@ body {
   /* line 2, ../sass/_letters.scss */
   #letter-i,
   #letter-o {
-    width: 70%;
+    width: 50%;
+  }
+}
+@media screen and (max-width: 320px) {
+  /* line 2, ../sass/_letters.scss */
+  #letter-i,
+  #letter-o {
+    width: 60%;
   }
 }
 
-/* line 30, ../sass/_letters.scss */
+/* line 34, ../sass/_letters.scss */
 #letter-i-container,
 #letter-o-container {
   bottom: 0;
@@ -77,14 +85,14 @@ body {
   top: 0;
 }
 
-/* line 38, ../sass/_letters.scss */
+/* line 42, ../sass/_letters.scss */
 #letter-i-container {
   left: 0;
   right: 50%;
   text-align: right;
 }
 
-/* line 44, ../sass/_letters.scss */
+/* line 48, ../sass/_letters.scss */
 #letter-o-container {
   left: 50%;
   right: 0;
@@ -115,7 +123,19 @@ body {
 /* line 14, ../sass/_pinata.scss */
 #pinata img {
   height: auto;
-  width: 20%;
+  width: 25%;
+}
+@media screen and (max-width: 768px) {
+  /* line 14, ../sass/_pinata.scss */
+  #pinata img {
+    width: 30%;
+  }
+}
+@media screen and (max-width: 568px) {
+  /* line 14, ../sass/_pinata.scss */
+  #pinata img {
+    width: 25%;
+  }
 }
 @media screen and (max-width: 480px) {
   /* line 14, ../sass/_pinata.scss */
@@ -123,16 +143,10 @@ body {
     width: 30%;
   }
 }
-@media screen and (max-width: 768px) {
-  /* line 14, ../sass/_pinata.scss */
-  #pinata img {
-    width: 50%;
-  }
-}
 @media screen and (max-width: 320px) {
   /* line 14, ../sass/_pinata.scss */
   #pinata img {
-    width: 50%;
+    width: 45%;
   }
 }
 

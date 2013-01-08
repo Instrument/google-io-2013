@@ -27,12 +27,6 @@ ww.mode.PinataMode.prototype.init = function() {
 
   var self = this;
 
-  if (this.hasTouch) {
-    this.evt = 'tap';
-  } else {
-    this.evt = 'click';
-  }
-
   this.centerX = window.innerWidth / 2;
   this.centerY = window.innerHeight / 2;
   this.scale = window.innerWidth / 30;
@@ -70,7 +64,7 @@ ww.mode.PinataMode.prototype.didFocus = function() {
 
   var self = this;
 
-  self.pinata.bind(self.evt, function() {
+  self.pinata.bind('tap.pinata', function() {
     self.popBalls_();
   });
 };
@@ -83,13 +77,13 @@ ww.mode.PinataMode.prototype.didFocus = function() {
 ww.mode.PinataMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  this.pinata.unbind(this.evt);
+  this.pinata.unbind('tap.pinata');
 };
 
 
 /**
  * On resize of the window, ecalculate the center and scale.
- * @param {boolean} redraw Whether or not to redraw on resize.
+ * @param {Boolean} redraw Whether resize redraws.
  * @private
  */
 ww.mode.PinataMode.prototype.onResize = function(redraw) {
