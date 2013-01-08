@@ -75,13 +75,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     this.addDebugUI_();
   }
 
-  $('html, body').height(window.innerHeight + 1000 + 'px');
-  window.addEventListener("load",function() {
-      setTimeout(function(){
-          window.scrollTo(0, 100);
-      }, 0);
-  });
-
   var self = this;
 
   goog.events.listen(window, 'message', function(evt) {
