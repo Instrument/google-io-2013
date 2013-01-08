@@ -32,6 +32,61 @@ goog.require('goog.events');
         };
 }());
 
+ww.raqSubscribers = {};
+ww.raqRunning = false;
+
+ww.lastTime = 0;
+
+var subscriberKey, loopSubscriber, loopCurrentTime, loopDelta;
+ww.raqOnFrame = function(t) {
+  loopCurrentTime = t || new Date().getTime();
+  loopDelta = loopCurrentTime - ww.lastTime;
+
+  for (subscriberKey in ww.raqSubscribers) {
+    if (ww.raqSubscribers.hasOwnProperty(subscriberKey)) {
+      loopSubscriber = ww.raqSubscribers[subscriberKey];
+      loopSubscriber[1].call(loopSubscriber[0], loopDelta);
+    }
+  }
+
+  ww.lastTime = loopCurrentTime;
+
+  if (ww.raqRunning) {
+    requestAnimationFrame(ww.raqOnFrame);
+  }
+};
+
+ww.raqUpdateStatus = function() {
+  var len = 0;
+  for (var key in ww.raqSubscribers) {
+    if (ww.raqSubscribers.hasOwnProperty(key)) {
+      len++;
+    }
+  }
+
+  if (len > 0) {
+    if (!ww.raqRunning) {
+      ww.raqRunning = true;
+      ww.lastTime = new Date().getTime();
+      ww.raqOnFrame();
+    }
+  } else {
+    if (ww.raqRunning) {
+      ww.raqRunning = false;
+    }
+  }
+};
+
+ww.raqSubscribe = function(name, obj, func) {
+  ww.raqSubscribers[name] = [obj, func];
+  ww.raqUpdateStatus();
+};
+
+ww.raqUnsubscribe = function(name) {
+  delete ww.raqSubscribers[name];
+  ww.raqUpdateStatus();
+};
+
 window['AudioContext'] = (
   window['AudioContext'] ||
   window['webkitAudioContext'] ||
@@ -64,10 +119,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
   // By default, modes don't need rAF.
   this.wantsRenderLoop_ = this.wantsDrawing_ || this.wantsPhysics_ || false;
-  this.shouldRenderNextFrame_ = false;
-
-  // Bind a copy of render method for rAF
-  this.boundRenderFrame_ = goog.bind(this.renderFrame_, this);
 
   this.tweens_ = [];
 
@@ -149,6 +200,29 @@ ww.mode.Core.prototype.init = function() {
 };
 
 /**
+ * Block screen with modal reload button.
+ */
+ww.mode.Core.prototype.showReload = function() {
+  this['unfocus']();
+
+  var self = this;
+
+  if (!this.$reloadModal_) {
+    this.$reloadModal_ = $("#reload");
+    if (!this.$reloadModal_.length) {
+      this.$reloadModal_ = $("<div id='reload'></div>").appendTo(document.body);
+    }
+    this.$reloadModal_.bind('tap.reload', function() {
+      self.$reloadModal_.hide();
+      self.init();
+      self['focus']();
+    });
+  }
+
+  this.$reloadModal_.show();
+};
+
+/**
  * Handles a browser window resize.
  * @param {Boolean} redraw Whether resize redraws.
  */
@@ -220,15 +294,10 @@ ww.mode.Core.prototype.startRendering = function() {
   // No-op if mode doesn't need rAF
   if (!this.wantsRenderLoop_) { return; }
 
-  this.lastTime_ = new Date().getTime();
   this.framesRendered_ = 0;
   this.timeElapsed_ = 0;
 
-  // Only start rAF if we're not already rendering.
-  if (!this.shouldRenderNextFrame_) {
-    this.shouldRenderNextFrame_ = true;
-    this.boundRenderFrame_();
-  }
+  ww.raqSubscribe(this.name_, this, this.renderFrame);
 };
 
 /**
@@ -238,17 +307,14 @@ ww.mode.Core.prototype.stopRendering = function() {
   // No-op if mode doesn't need rAF
   if (!this.wantsRenderLoop_) { return; }
 
-  this.shouldRenderNextFrame_ = false;
+  ww.raqUnsubscribe(this.name_);
 };
 
 /**
  * Render a single frame. Call the mode's draw method,
  * then schedule the next frame if we need it.
  */
-ww.mode.Core.prototype.renderFrame_ = function() {
-  var currentTime = new Date().getTime();
-  var delta = currentTime - this.lastTime_;
-  
+ww.mode.Core.prototype.renderFrame = function(delta) {
   this.timeElapsed_ += delta;
 
   delta *= 0.001;
@@ -269,14 +335,7 @@ ww.mode.Core.prototype.renderFrame_ = function() {
     this.onFrame(delta);
   }
 
-  this.lastTime_ = currentTime;
-
   this.framesRendered_++;
-
-  // Schedule the next frame.
-  if (this.shouldRenderNextFrame_) {
-    requestAnimationFrame(this.boundRenderFrame_);
-  }
 };
 
 /**
@@ -434,7 +493,8 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
  * @return {Physics} The shared audio context.
  */
 ww.mode.Core.prototype.getPhysicsWorld_ = function() {
-  this.physicsWorld_ = this.physicsWorld_ || new window['Physics']();
+  if (this.physicsWorld_) { return this.physicsWorld_; }
+  this.physicsWorld_ = new window['Physics']();
   return this.physicsWorld_;
 };
 
@@ -456,15 +516,17 @@ ww.mode.Core.prototype.resetPhysicsWorld_ = function() {
  */
 ww.mode.Core.prototype.stepPhysics = function(delta) {
   if (delta > 0) {
-    var world = this.getPhysicsWorld_();
+    var world = this.physicsWorld_;
 
     world['integrate'](delta);
 
-    for (var i = 0; i < world['particles'].length; i++) {
-      var p = world['particles'][i];
-      if (p['drawObj'] || p['drawObj']['position']) {
-        p['drawObj']['position']['x'] = p['pos']['x'];
-        p['drawObj']['position']['y'] = p['pos']['y'];
+    if (this.paperCanvas_) {
+      for (var i = 0; i < world['particles'].length; i++) {
+        var p = world['particles'][i];
+        if ((typeof p['drawObj'] !== 'undefined') && p['drawObj']['position']) {
+          p['drawObj']['position']['x'] = p['pos']['x'];
+          p['drawObj']['position']['y'] = p['pos']['y'];
+        }
       }
     }
   }
