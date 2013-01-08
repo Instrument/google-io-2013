@@ -189,8 +189,23 @@ ww.mode.HomeMode.prototype.init = function() {
   this.letterI = new paper['Rectangle'](iTopLeft, iSize);
   this.paperI = new paper['Path']['Rectangle'](this.letterI);
   this.paperI['fillColor'] = '#F2B50F';
-  // this.paperI['fullySelected'] = true;
+  this.paperI['fullySelected'] = true;
 
+  // Create a series of additional points within I's path segments.
+  for (i = 0; i < this.paperI['segments'].length; i++) {
+    var tempX = this.paperI['segments'][i]['next']['point']['_x']
+      - this.paperI['segments'][i]['point']['_x'];
+
+    var tempY = this.paperI['segments'][i]['next']['point']['_y']
+      - this.paperI['segments'][i]['point']['_y'];
+
+    // this.paperI['add'](new paper['Point'](tempX, tempY));
+  }
+
+  this.paperI['add'](new paper['Point'](0 + iX, 100 + iY));
+  this.paperI['add'](new paper['Point'](50 + iX, 0 + iY));
+
+  // Create arrays to store the original coordinates for I's path point handles.
   this.iHandleInX = [];
   this.iHandleInY = [];
   this.iHandleOutX = [];
