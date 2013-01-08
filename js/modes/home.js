@@ -22,6 +22,20 @@ function pad(number, length) {
   return str;
 }
 
+ww.mode.HomeMode.prototype.activateI = function() {
+  this.iClicked = true;
+  this.iMultiplier += 1;
+
+  this.addCharacter_('1');
+};
+
+ww.mode.HomeMode.prototype.activateO = function() {
+  this.oClicked = true;
+  this.oMultiplier += 1;
+
+  this.addCharacter_('0');
+};
+
 /**
  * Build matchers from patterns.
  * @private
@@ -71,12 +85,13 @@ ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
   }
 
   this.log('current pattern: ' + this.currentPattern_);
+  $('#pattern').text(this.currentPattern_);
 
   var matched = this.runMatchers_();
   if (matched) {
     this.log('matched', matched);
 
-    if (matched.isPartial) {
+    if (true || matched.isPartial) {
       // Highlight partial match in UI?
     } else {
       this.goToMode_(matched.key);
@@ -122,14 +137,6 @@ ww.mode.HomeMode.prototype.runMatchers_ = function() {
   return found;
 };
 
-ww.mode.HomeMode.prototype.activateI = function() {
-  this.addCharacter_('1');
-};
-
-ww.mode.HomeMode.prototype.activateO = function() {
-  this.addCharacter_('0');
-};
-
 /**
  * Tell the app to transition to the specified mode.
  * @private
@@ -153,12 +160,6 @@ ww.mode.HomeMode.prototype.init = function() {
   this.deltaModifier = 0;
 
   /**
-   * Floats that increment when objects are clicked. Used to adjust paths.
-   */
-  this.iModifier = 0;
-  this.oModifier = 0;
-
-  /**
    * Gets the width of the viewport and its center point.
    */
   this.screenWidthPixels = window.innerWidth;
@@ -172,6 +173,10 @@ ww.mode.HomeMode.prototype.init = function() {
   /**
    * Create the letter I.
    */
+  this.iClicked = false;
+  this.iIncrement = false;
+  this.iModifier = 0;
+  this.iMultiplier = 1;
   var iWidth = 100;
   var iHeight = 200;
   var iX = this.screenCenterX - (this.screenWidthPixels / 8);
@@ -188,7 +193,8 @@ ww.mode.HomeMode.prototype.init = function() {
   this.iHandleInY = [];
   this.iHandleOutX = [];
   this.iHandleOutY = [];
-  for (var i = 0; i < this.paperI['segments'].length; i++) {
+  var i;
+  for (i = 0; i < this.paperI['segments'].length; i++) {
     this.iHandleInX[i] = this.paperI['segments'][i]['handleIn']['_x'];
     this.iHandleInY[i] = this.paperI['segments'][i]['handleIn']['_y'];
     this.iHandleOutX[i] = this.paperI['segments'][i]['handleOut']['_x'];
@@ -198,6 +204,10 @@ ww.mode.HomeMode.prototype.init = function() {
   /**
    * Create the letter O.
    */
+  this.oClicked = false;
+  this.oIncrement = true;
+  this.oModifier = 0;
+  this.oMultiplier = 1;
   this.oRad = 100;
   var oX = this.screenCenterX + (this.screenWidthPixels / 8);
   var oY = this.screenCenterY;
@@ -210,7 +220,7 @@ ww.mode.HomeMode.prototype.init = function() {
   this.oHandleInY = [];
   this.oHandleOutX = [];
   this.oHandleOutY = [];
-  for (var i = 0; i < this.paperO['segments'].length; i++) {
+  for (i = 0; i < this.paperO['segments'].length; i++) {
     this.oHandleInX[i] = this.paperO['segments'][i]['handleIn']['_x'];
     this.oHandleInY[i] = this.paperO['segments'][i]['handleIn']['_y'];
     this.oHandleOutX[i] = this.paperO['segments'][i]['handleOut']['_x'];
@@ -229,23 +239,14 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var tool = new paper['Tool']();
 
   tool['onMouseDown'] = function(event) {
-    tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
     if (self.paperO['hitTest'](event['point'])) {
-      if (self.oModifier < 5) {
-        self.oModifier += 30;
-      } else {
-        self.oModifier += 2;
-      }
+      self.activateO();
     }
 
     if (self.paperI['hitTest'](event['point'])) {
-      if (self.iModifier < 5) {
-        self.iModifier += 5;
-      } else {
-        self.iModifier += 1;
-      }
+      self.activateI();
     }
-  }
+  };
 
   $(canvas).bind(evt, function(e){
     e.preventDefault();
@@ -274,8 +275,15 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
 
   this.deltaModifier = (delta / 100);
 
-  if (this.iModifier > 0) {
-    this.iModifier -= this.deltaModifier;
+  if (this.iClicked == true) {
+    if (this.iModifier < 30) {
+      this.iModifier += 1;
+    } else {
+      this.iModifier -= this.deltaModifier;
+      if (this.iModifier < .1) {
+        this.iClicked = false;
+      }
+    }
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i]
@@ -298,8 +306,23 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     }
   }
 
-  if (this.oModifier > 0) {
-    this.oModifier -= this.deltaModifier;
+  if (this.oClicked == true) {    
+    if (this.oModifier < 30 && this.oIncrement == true) {      
+      this.oModifier += this.deltaModifier * 1000;
+      this.oMultiplier -= .1;
+    } else {
+      this.oIncrement = false;
+      this.oModifier -= this.deltaModifier * 1000;
+    }
+
+    if (this.oModifier < .1) {
+      this.oClicked = false;
+      this.oIncrement = true;
+    }
+
+    if (this.oMultiplier < 1.1) {
+      this.oMultiplier = 1;
+    }
 
     /*if (this.oModifier < 10) {
       this.paperO['scale'](this.oModifier / 100 + 1);
@@ -307,14 +330,14 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
-        + Math.cos(this.oModifier) * this.oModifier;
+        + Math.cos(this.framesRendered_ / 10) * this.oModifier * this.oMultiplier;
       this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i]
-        + Math.sin(this.oModifier) * this.oModifier;
+        + Math.sin(this.framesRendered_ / 10) * this.oModifier * this.oMultiplier;
 
       this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i]
-        - Math.cos(this.oModifier) * this.oModifier;
+        - Math.cos(this.framesRendered_ / 10) * this.oModifier * this.oMultiplier;
       this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i]
-        - Math.sin(this.oModifier) * this.oModifier;
+        - Math.sin(this.framesRendered_ / 10) * this.oModifier * this.oMultiplier;
     }
   } else {
     for (var i = 0; i < this.paperO['segments'].length; i++) {

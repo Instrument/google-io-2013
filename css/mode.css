@@ -22,12 +22,12 @@ body {
 
 /* line 2, ../sass/_cat.scss */
 .cat-mode #letter-i {
-  background-image: url('../img/cat/cat-letter-i.png?1357242087');
+  background-image: url('../img/cat/cat-letter-i.png?1357247339');
 }
 
 /* line 7, ../sass/_cat.scss */
 .cat-mode #letter-o {
-  background-image: url('../img/cat/cat-letter-o.png?1357242078');
+  background-image: url('../img/cat/cat-letter-o.png?1357247339');
 }
 
 /* line 2, ../sass/_letters.scss */
@@ -99,10 +99,28 @@ body {
   text-align: left;
 }
 
-/* line 2, ../sass/_home.scss */
-.home-mode #letter-i, .home-mode #letter-o {
-  font-size: 200px;
+/* line 1, ../sass/_home.scss */
+.home-mode #pattern-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100px;
+  text-align: center;
+}
+/* line 8, ../sass/_home.scss */
+.home-mode #pattern {
+  font-size: 14px;
+  font-family: monospace;
   color: black;
+  background: white;
+  display: inline-block;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 3px 6px;
 }
 
 /* line 1, ../sass/_pinata.scss */
