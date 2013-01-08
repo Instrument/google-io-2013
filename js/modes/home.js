@@ -150,6 +150,8 @@ ww.mode.HomeMode.prototype.init = function() {
   // Prep paperjs
   this.getPaperCanvas_();
 
+  this.deltaModifier = 0;
+
   /**
    * Floats that increment when objects are clicked. Used to adjust paths.
    */
@@ -196,12 +198,12 @@ ww.mode.HomeMode.prototype.init = function() {
   /**
    * Create the letter O.
    */
-  var oRad = 100;
+  this.oRad = 100;
   var oX = this.screenCenterX + (this.screenWidthPixels / 8);
   var oY = this.screenCenterY;
 
   var oCenter = new paper['Point'](oX, oY);
-  this.paperO = new paper['Path']['Circle'](oCenter, oRad);
+  this.paperO = new paper['Path']['Circle'](oCenter, this.oRad);
   this.paperO['fillColor'] = '#00933B';
 
   this.oHandleInX = [];
@@ -228,7 +230,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   tool['onMouseDown'] = function(event) {
     tempPoint = { x: self.paperO['position']['_x'], y: self.paperO['position']['_y'] };
-    if (event['point']['getDistance'](tempPoint) < self.paperO['bounds']['width'] / 2) {
+    if (self.paperO['hitTest'](event['point'])) {
       if (self.oModifier < 5) {
         self.oModifier += 30;
       } else {
@@ -270,8 +272,10 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
-  if (this.iModifier > 1) {
-    this.iModifier -= .1;
+  this.deltaModifier = (delta / 100);
+
+  if (this.iModifier > 0) {
+    this.iModifier -= this.deltaModifier;
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i]
@@ -294,8 +298,12 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     }
   }
 
-  if (this.oModifier > 1) {
-    this.oModifier -= .1;
+  if (this.oModifier > 0) {
+    this.oModifier -= this.deltaModifier;
+
+    /*if (this.oModifier < 10) {
+      this.paperO['scale'](this.oModifier / 100 + 1);
+    }*/
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
