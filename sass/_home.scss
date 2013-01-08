@@ -1,6 +1,16 @@
-.home-mode {
-	#letter-i, #letter-o {
-		font-size: 200px;
-		color: black;
-	}
-}
+#pattern-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100px;
+  text-align: center; }
+
+#pattern {
+  font-size: 14px;
+  font-family: monospace;
+  color: black;
+  background: white;
+  display: inline-block;
+  @include border-radius(5px);
+  border: 1px solid black;
+  padding: 3px 6px; }

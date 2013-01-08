@@ -33,7 +33,9 @@ canvas {
 @import "bacon";
 @import "cat";
 @import "letters";
-@import "home";
+.home-mode {
+  @import "home";
+}
 @import "pinata";
 
 .pong-mode {

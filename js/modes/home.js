@@ -22,6 +22,20 @@ function pad(number, length) {
   return str;
 }
 
+ww.mode.HomeMode.prototype.activateI = function() {
+  this.iClicked = true;
+  this.iMultiplier += 1;
+
+  this.addCharacter_('1');
+};
+
+ww.mode.HomeMode.prototype.activateO = function() {
+  this.oClicked = true;
+  this.oMultiplier += 1;
+
+  this.addCharacter_('0');
+};
+
 /**
  * Build matchers from patterns.
  * @private
@@ -71,12 +85,13 @@ ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
   }
 
   this.log('current pattern: ' + this.currentPattern_);
+  $('#pattern').text(this.currentPattern_);
 
   var matched = this.runMatchers_();
   if (matched) {
     this.log('matched', matched);
 
-    if (matched.isPartial) {
+    if (true || matched.isPartial) {
       // Highlight partial match in UI?
     } else {
       this.goToMode_(matched.key);
@@ -120,14 +135,6 @@ ww.mode.HomeMode.prototype.runMatchers_ = function() {
   }
 
   return found;
-};
-
-ww.mode.HomeMode.prototype.activateI = function() {
-  this.addCharacter_('1');
-};
-
-ww.mode.HomeMode.prototype.activateO = function() {
-  this.addCharacter_('0');
 };
 
 /**
@@ -186,7 +193,8 @@ ww.mode.HomeMode.prototype.init = function() {
   this.iHandleInY = [];
   this.iHandleOutX = [];
   this.iHandleOutY = [];
-  for (var i = 0; i < this.paperI['segments'].length; i++) {
+  var i;
+  for (i = 0; i < this.paperI['segments'].length; i++) {
     this.iHandleInX[i] = this.paperI['segments'][i]['handleIn']['_x'];
     this.iHandleInY[i] = this.paperI['segments'][i]['handleIn']['_y'];
     this.iHandleOutX[i] = this.paperI['segments'][i]['handleOut']['_x'];
@@ -212,7 +220,7 @@ ww.mode.HomeMode.prototype.init = function() {
   this.oHandleInY = [];
   this.oHandleOutX = [];
   this.oHandleOutY = [];
-  for (var i = 0; i < this.paperO['segments'].length; i++) {
+  for (i = 0; i < this.paperO['segments'].length; i++) {
     this.oHandleInX[i] = this.paperO['segments'][i]['handleIn']['_x'];
     this.oHandleInY[i] = this.paperO['segments'][i]['handleIn']['_y'];
     this.oHandleOutX[i] = this.paperO['segments'][i]['handleOut']['_x'];
@@ -232,15 +240,13 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   tool['onMouseDown'] = function(event) {
     if (self.paperO['hitTest'](event['point'])) {
-      self.oClicked = true;
-      self.oMultiplier += 1;
+      self.activateO();
     }
 
     if (self.paperI['hitTest'](event['point'])) {
-      self.iClicked = true;
-      self.iMultiplier += 1;
+      self.activateI();
     }
-  }
+  };
 
   $(canvas).bind(evt, function(e){
     e.preventDefault();
