@@ -468,7 +468,8 @@ ww.mode.Core.prototype.resetPhysicsWorld_ = function() {
 ww.mode.Core.prototype.stepPhysics = function(delta) {
   if (delta > 0) {
     var world = this.getPhysicsWorld_();
-    world.step();
+
+    world['integrate'](delta);
 
     for (var i = 0; i < world['particles'].length; i++) {
       var p = world['particles'][i];
