@@ -259,13 +259,15 @@ ww.mode.Core.prototype.stopRendering = function() {
 ww.mode.Core.prototype.renderFrame_ = function() {
   var currentTime = new Date().getTime();
   var delta = currentTime - this.lastTime_;
-
+  
   this.timeElapsed_ += delta;
+
+  delta *= 0.001;
 
   // Reduce large gaps (returning from background tab) to
   // a single frame.
-  if (delta > 500) {
-    delta = 16.7;
+  if (delta > 0.5) {
+    delta = 0.016;
   }
 
   if (this.wantsPhysics_) {
@@ -359,11 +361,11 @@ ww.mode.Core.prototype.didFocus = function() {
   // Short-cuts to activating letters for basics setup.
   var hammerOpts = { 'prevent_default': true };
   this.letterI.bind('tap.core', hammerOpts, function() {
-    self.activateI_();
+    self.activateI();
   });
 
   this.letterO.bind('tap.core', hammerOpts, function() {
-    self.activateO_();
+    self.activateO();
   });
 
   $(document).bind('keypress.core', function(e) {
@@ -512,7 +514,7 @@ ww.mode.Core.prototype.playSound = function(filename) {
 /**
  * Method called when activating the I.
  */
-ww.mode.Core.prototype.activateI_ = function() {
+ww.mode.Core.prototype.activateI = function() {
   // no-op
   this.log('Activated "I"');
 };
@@ -520,7 +522,7 @@ ww.mode.Core.prototype.activateI_ = function() {
 /**
  * Method called when activating the O.
  */
-ww.mode.Core.prototype.activateO_ = function() {
+ww.mode.Core.prototype.activateO = function() {
   // no-op
   this.log('Activated "O"');
 };

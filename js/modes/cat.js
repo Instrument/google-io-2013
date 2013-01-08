@@ -6,6 +6,8 @@ goog.provide('ww.mode.CatMode');
  * @constructor
  */
 ww.mode.CatMode = function() {
+  this.prefix = Modernizr['prefixed']('transform');
+
   goog.base(this, 'cat', true, true);
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
@@ -17,8 +19,6 @@ goog.inherits(ww.mode.CatMode, ww.mode.Core);
  */
 ww.mode.CatMode.prototype.init = function() {
   goog.base(this, 'init');
-
-  this.prefix = Modernizr['prefixed']('transform');
 };
 
 
@@ -26,9 +26,7 @@ ww.mode.CatMode.prototype.init = function() {
  * Plays a sound and stretches the letter i when activated.
  * @private
  */
-ww.mode.CatMode.prototype.activateI_ = function() {
-  goog.base(this, 'activateI_');
-
+ww.mode.CatMode.prototype.activateI = function() {
   var self = this;
 
   self.playSound('cat-1.mp3');
@@ -58,9 +56,7 @@ ww.mode.CatMode.prototype.activateI_ = function() {
  * Plays a sound and stretches the letter o when activated.
  * @private
  */
-ww.mode.CatMode.prototype.activateO_ = function() {
-  goog.base(this, 'activateO_');
-  
+ww.mode.CatMode.prototype.activateO = function() {
   var self = this;
 
   self.playSound('cat-2.mp3');
