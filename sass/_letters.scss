@@ -14,7 +14,11 @@
   }
 
   @include screen($break-small) {
-    width: 70%;
+    width: 50%;
+  }
+
+  @include screen($break-smallest) {
+    width: 60%;
   }
 }
 

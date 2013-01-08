@@ -72,13 +72,12 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     this.addDebugUI_();
   }
 
-  $(document.body).css({ minHeight: window.innerHeight + 100 });
-  setTimeout(function(){
-    window.scrollTo(0, 1);
-    setTimeout(function(){
-      $(document.body).css({ minHeight: window.innerHeight - 100 });
-    }, 20);
-  }, 0);
+  $('html, body').height(window.innerHeight + 1000 + 'px');
+  window.addEventListener("load",function() {
+      setTimeout(function(){
+          window.scrollTo(0, 100);
+      }, 0);
+  });
 
   var self = this;
 
@@ -106,16 +105,10 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   // Catch top-level touch events and cancel them to avoid
   // mobile browser scroll.
   if (Modernizr['touch']) {
-    $(document.body)
-      .css(Modernizr.prefixed("userSelect"), "none")
-      .css(Modernizr.prefixed("touchCallout"), "none")
-      .css(Modernizr.prefixed("userDrag"), "none")
-      .css(Modernizr.prefixed("tapHighlightColor"), "rgba(0,0,0,0)");
-
-    // $(document).bind('touchmove', function(evt) {
-    //   evt.preventDefault();
-    //   evt.stopPropagation();
-    // });
+    document.body.style[Modernizr['prefixed']('userSelect')] = 'none';
+    document.body.style[Modernizr['prefixed']('userSelect')] = 'none';
+    document.body.style[Modernizr['prefixed']('userDrag')] = 'none';
+    document.body.style[Modernizr['prefixed']('tapHighlightColor')] = 'rgba(0,0,0,0)';
   }
 
   // $(document.body).addClass(this.name_ + '-mode');

@@ -35,15 +35,19 @@ ww.mode.CatMode.prototype.activateI_ = function() {
 
   var stretchOut = new TWEEN['Tween'](
     { 'scaleY': 1 })['to'](
-    { 'scaleY': 1.4 }, 200)['onUpdate'](
+    { 'scaleY': 1.55 }, 200)['easing'](
+      TWEEN['Easing']['Bounce']['InOut']
+    )['onUpdate'](
       function() {
         self.letterI[0].style[self.prefix] = 'scaleY(' + this['scaleY'] + ')';
       }
   );
 
   var stretchBack = new TWEEN['Tween'](
-    { 'scaleY': 1.4 })['to'](
-    { 'scaleY': 1 }, 200)['delay'](200)['onUpdate'](
+    { 'scaleY': 1.55 })['to'](
+    { 'scaleY': 1 }, 200)['easing'](
+      TWEEN['Easing']['Bounce']['InOut']
+    )['delay'](200)['onUpdate'](
       function() {
         self.letterI[0].style[self.prefix] = 'scaleY(' + this['scaleY'] + ')';
       }
@@ -68,19 +72,25 @@ ww.mode.CatMode.prototype.activateO_ = function() {
   var position = [Random(-200, 200), Random(-50, 50)];
 
   var moveOut = new TWEEN['Tween'](
-    { 'x': 0, 'y': 0 })['to'](
-    { 'x': position[0], 'y': position[1] }, 200)['onUpdate'](
+    { 'scale': 1, 'x': 0, 'y': 0 })['to'](
+    { 'scale': 1.5, 'x': position[0], 'y': position[1] },
+      200
+    )['easing'](TWEEN['Easing']['Bounce']['InOut'])['onUpdate'](
       function() {
-        var translate = 'translate(' + this['x'] + 'px, ' + this['y'] + 'px)';
+        var translate = 'translate(' + this['x'] + 'px, ' + this['y'] + 'px) ';
+            translate += 'scale(' + this['scale'] + ')';
         self.letterO[0].style[self.prefix] = translate;
       }
   );
 
   var moveBack = new TWEEN['Tween'](
-    { 'x': position[0], 'y': position[1] })['to'](
-    { 'x': 0, 'y': 0 }, 200)['delay'](200)['onUpdate'](
+    { 'scale': 1.5, 'x': position[0], 'y': position[1] })['to'](
+    { 'scale': 1, 'x': 0, 'y': 0 }, 200)['delay'](
+      200
+    )['easing'](TWEEN['Easing']['Bounce']['InOut'])['onUpdate'](
       function() {
-        var translate = 'translate(' + this['x'] + 'px, ' + this['y'] + 'px)';
+        var translate = 'translate(' + this['x'] + 'px, ' + this['y'] + 'px) ';
+            translate += 'scale(' + this['scale'] + ')';
         self.letterO[0].style[self.prefix] = translate;
       }
   );
