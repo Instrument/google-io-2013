@@ -31,7 +31,9 @@ ww.mode.HomeMode.prototype.activateI = function() {
 
 ww.mode.HomeMode.prototype.activateO = function() {
   this.oClicked = true;
-  this.oMultiplier += 1;
+  if (this.oMultiplier < 10) {
+    this.oMultiplier += 1;
+  }
 
   this.addCharacter_('0');
 };
@@ -204,18 +206,31 @@ ww.mode.HomeMode.prototype.init = function() {
   /**
    * Create the letter O.
    */
+  // Boolean that sets to true if O is being activated.
   this.oClicked = false;
+
+  // Boolean that sets to true if O has been activated but delta is still low.
   this.oIncrement = true;
+
+  // Float that increments by delta when O is activated to affect animation.
   this.oModifier = 0;
+
+  // Float that increments each activation of O to affect animation further.
   this.oMultiplier = 1;
+
+  // Set O's radius.
   this.oRad = 100;
+
+  // Set O's coordinates.
   var oX = this.screenCenterX + (this.screenWidthPixels / 8);
   var oY = this.screenCenterY;
 
+  // Create a new paper.js path for O based off the previous variables.
   var oCenter = new paper['Point'](oX, oY);
   this.paperO = new paper['Path']['Circle'](oCenter, this.oRad);
   this.paperO['fillColor'] = '#00933B';
 
+  // Create arrays to store the original coordinates for O's path point handles.
   this.oHandleInX = [];
   this.oHandleInY = [];
   this.oHandleOutX = [];
@@ -273,8 +288,15 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
+  /*
+   * Delta is initially a very small float. Need to modify it for it to have a
+   * stronger effect.
+   */
   this.deltaModifier = (delta / 100);
 
+  /*
+   * Run the following code if the letter I is activated.
+   */
   if (this.iClicked == true) {
     if (this.iModifier < 30) {
       this.iModifier += 1;
@@ -285,7 +307,11 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       }
     }
 
-    for (var i = 0; i < this.paperO['segments'].length; i++) {
+    /*
+     * Loop through each path segment on the letter I and move each point's
+     * handles based on time as being evaluated by Sine and Cosine.
+     */
+    for (var i = 0; i < this.paperI['segments'].length; i++) {
       this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i]
         + Math.cos(this.iModifier) * this.iModifier;
       this.paperI['segments'][i]['handleIn']['_y'] = this.iHandleInY[i]
@@ -297,6 +323,10 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
         - Math.sin(this.iModifier) * this.iModifier;
     }
   } else {
+    /*
+     * If I hasn't been activated recently enough, restore the original handle
+     * coordinates.
+     */
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i];
       this.paperI['segments'][i]['handleIn']['_y'] = this.iHandleInY[i];
@@ -306,40 +336,67 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     }
   }
 
+  /*
+   * Run the following code if the letter O is activated.
+   */
   if (this.oClicked == true) {    
-    if (this.oModifier < 30 && this.oIncrement == true) {      
-      this.oModifier += this.deltaModifier * 1000;
-      this.oMultiplier -= .1;
+    if (this.oModifier < this.deltaModifier * 100000 &&
+      this.oIncrement == true) {      
+        this.oModifier += this.deltaModifier * 10000;
+    } else if (this.oMultiplier > 1) {
+      if (this.oModifier < this.deltaModifier * 10000) {
+        this.oModifier += this.deltaModifier * 100;
+      }
+      if (this.oMultiplier > 1) {
+        this.oMultiplier -= .1;
+      } else {
+        this.oMultiplier = 1;
+      }
     } else {
       this.oIncrement = false;
       this.oModifier -= this.deltaModifier * 1000;
+      if (this.oMultiplier > 1) {
+        this.oMultiplier -= .1;
+      } else {
+        this.oMultiplier = 1;
+      }
     }
 
-    if (this.oModifier < .1) {
+    if (this.oModifier < this.deltaModifier * 1000) {
       this.oClicked = false;
       this.oIncrement = true;
-    }
-
-    if (this.oMultiplier < 1.1) {
       this.oMultiplier = 1;
+
     }
 
     /*if (this.oModifier < 10) {
       this.paperO['scale'](this.oModifier / 100 + 1);
     }*/
 
+    /*
+     * Loop through each path segment on the letter O and move each point's
+     * handles based on time as being evaluated by Sine and Cosine.
+     */
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
-        + Math.cos(this.framesRendered_ / 10) * this.oModifier * this.oMultiplier;
+        + Math.cos(this.framesRendered_ / 10)
+        * this.oModifier * this.oMultiplier;
       this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i]
-        + Math.sin(this.framesRendered_ / 10) * this.oModifier * this.oMultiplier;
+        + Math.sin(this.framesRendered_ / 10)
+        * this.oModifier * this.oMultiplier;
 
       this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i]
-        - Math.cos(this.framesRendered_ / 10) * this.oModifier * this.oMultiplier;
+        - Math.cos(this.framesRendered_ / 10)
+        * this.oModifier * this.oMultiplier;
       this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i]
-        - Math.sin(this.framesRendered_ / 10) * this.oModifier * this.oMultiplier;
+        - Math.sin(this.framesRendered_ / 10)
+        * this.oModifier * this.oMultiplier;
     }
   } else {
+    /*
+     * If O hasn't been actiavted recently enough, restore the original handle
+     * coordinates.
+     */
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i];
       this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i];
