@@ -1,4 +1,5 @@
 goog.require('ww.mode.Core');
+goog.require('ww.util');
 goog.provide('ww.mode.HomeMode');
 
 /**
@@ -24,7 +25,9 @@ function pad(number, length) {
 
 ww.mode.HomeMode.prototype.activateI = function() {
   this.iClicked = true;
-  this.iMultiplier += 1;
+  if (this.iMultiplier < 10) {
+    this.iMultiplier += 1;
+  }
 
   this.addCharacter_('1');
 };
@@ -159,7 +162,11 @@ ww.mode.HomeMode.prototype.init = function() {
   // Prep paperjs
   this.getPaperCanvas_();
 
+  // Variable to modify delta's returned value.
   this.deltaModifier = 0;
+
+  // Temporarily float variable to use for randomizing animation effects.
+  this.tempFloat = [];
 
   /**
    * Gets the width of the viewport and its center point.
@@ -189,33 +196,27 @@ ww.mode.HomeMode.prototype.init = function() {
   this.letterI = new paper['Rectangle'](iTopLeft, iSize);
   this.paperI = new paper['Path']['Rectangle'](this.letterI);
   this.paperI['fillColor'] = '#F2B50F';
-  this.paperI['fullySelected'] = true;
+  // this.paperI['fullySelected'] = true;
+  var iLength = this.paperI['segments'].length;
 
-  // Create a series of additional points within I's path segments.
-  for (i = 0; i < this.paperI['segments'].length; i++) {
-    var tempX = this.paperI['segments'][i]['next']['point']['_x']
-      - this.paperI['segments'][i]['point']['_x'];
+  /*// Create a series of additional points within I's path segments.
+  for (i = 0; i < iLength; i += 2) {
+    var tempX = (this.paperI['segments'][i]['next']['point']['_x']
+      - this.paperI['segments'][i]['point']['_x']) + iX;
 
-    var tempY = this.paperI['segments'][i]['next']['point']['_y']
-      - this.paperI['segments'][i]['point']['_y'];
+    var tempY = (this.paperI['segments'][i]['next']['point']['_y']
+      - this.paperI['segments'][i]['point']['_y']) + iY;
 
-    // this.paperI['add'](new paper['Point'](tempX, tempY));
+    this.paperI['insert'](i, new paper['Point'](tempX, tempY));
   }
-
-  this.paperI['add'](new paper['Point'](0 + iX, 100 + iY));
-  this.paperI['add'](new paper['Point'](50 + iX, 0 + iY));
-
-  // Create arrays to store the original coordinates for I's path point handles.
-  this.iHandleInX = [];
-  this.iHandleInY = [];
-  this.iHandleOutX = [];
-  this.iHandleOutY = [];
+*/
+  // Create arrays to store the original coordinates for I's path points.
+  this.iPointX = [];
+  this.iPointY = [];
   var i;
   for (i = 0; i < this.paperI['segments'].length; i++) {
-    this.iHandleInX[i] = this.paperI['segments'][i]['handleIn']['_x'];
-    this.iHandleInY[i] = this.paperI['segments'][i]['handleIn']['_y'];
-    this.iHandleOutX[i] = this.paperI['segments'][i]['handleOut']['_x'];
-    this.iHandleOutY[i] = this.paperI['segments'][i]['handleOut']['_y'];
+    this.iPointX.push(this.paperI['segments'][i]['point']['_x']);
+    this.iPointY.push(this.paperI['segments'][i]['point']['_y']);
   }
 
   /**
@@ -250,11 +251,20 @@ ww.mode.HomeMode.prototype.init = function() {
   this.oHandleInY = [];
   this.oHandleOutX = [];
   this.oHandleOutY = [];
+
+  this.oPointX = [];
+  this.oPointY = [];
+
   for (i = 0; i < this.paperO['segments'].length; i++) {
-    this.oHandleInX[i] = this.paperO['segments'][i]['handleIn']['_x'];
-    this.oHandleInY[i] = this.paperO['segments'][i]['handleIn']['_y'];
-    this.oHandleOutX[i] = this.paperO['segments'][i]['handleOut']['_x'];
-    this.oHandleOutY[i] = this.paperO['segments'][i]['handleOut']['_y'];
+    this.oHandleInX.push(this.paperO['segments'][i]['handleIn']['_x']);
+    this.oHandleInY.push(this.paperO['segments'][i]['handleIn']['_y']);
+    this.oHandleOutX.push(this.paperO['segments'][i]['handleOut']['_x']);
+    this.oHandleOutY.push(this.paperO['segments'][i]['handleOut']['_y']);
+  }
+
+  for (i = 0; i < this.paperO['segments'].length; i++) {
+    this.oPointX.push(this.paperO['segments'][i]['point']['_x']);
+    this.oPointY.push(this.paperO['segments'][i]['point']['_y']);
   }
 };
 
@@ -312,30 +322,46 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
   /*
    * Run the following code if the letter I is activated.
    */
-  if (this.iClicked == true) {
-    if (this.iModifier < 30) {
-      this.iModifier += 1;
+  if (this.iClicked == true) {    
+    if (this.iModifier < this.deltaModifier * 100000 &&
+      this.iIncrement == true) {      
+        this.iModifier += this.deltaModifier * 10000;
+    } else if (this.iMultiplier > 1) {
+      if (this.iModifier < this.deltaModifier * 10000) {
+        this.iModifier += this.deltaModifier * 100;
+      }
+      if (this.iMultiplier > 1) {
+        this.iMultiplier -= .1;
+      } else {
+        this.iMultiplier = 1;
+      }
     } else {
-      this.iModifier -= this.deltaModifier;
-      if (this.iModifier < .1) {
-        this.iClicked = false;
+      this.iIncrement = false;
+      this.iModifier -= this.deltaModifier * 1000;
+      if (this.iMultiplier > 1) {
+        this.iMultiplier -= .1;
+      } else {
+        this.iMultiplier = 1;
       }
     }
 
+    if (this.iModifier < this.deltaModifier * 1000) {
+      this.iClicked = false;
+      this.iIncrement = true;
+      this.iMultiplier = 1;
+    }
     /*
      * Loop through each path segment on the letter I and move each point's
      * handles based on time as being evaluated by Sine and Cosine.
      */
     for (var i = 0; i < this.paperI['segments'].length; i++) {
-      this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i]
-        + Math.cos(this.iModifier) * this.iModifier;
-      this.paperI['segments'][i]['handleIn']['_y'] = this.iHandleInY[i]
-        + Math.sin(this.iModifier) * this.iModifier;
-
-      this.paperI['segments'][i]['handleOut']['_x'] = this.iHandleOutX[i]
-        - Math.cos(this.iModifier) * this.iModifier;
-      this.paperI['segments'][i]['handleOut']['_y'] = this.iHandleOutY[i]
-        - Math.sin(this.iModifier) * this.iModifier;
+      this.tempFloat = ww.util.floatComplexGaussianRandom();
+      this.paperI['segments'][i]['point']['_x'] = this.iPointX[i]
+        + Math.cos(this.framesRendered_ / 10)
+        * this.iModifier * this.iMultiplier * this.tempFloat[0];
+      this.paperI['segments'][i]['point']['_y'] = this.iPointY[i]
+        + Math.sin(this.framesRendered_ / 10)
+        * this.iModifier * this.iMultiplier * this.tempFloat[1];
     }
   } else {
     /*
@@ -343,11 +369,8 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
      * coordinates.
      */
     for (var i = 0; i < this.paperO['segments'].length; i++) {
-      this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i];
-      this.paperI['segments'][i]['handleIn']['_y'] = this.iHandleInY[i];
-
-      this.paperI['segments'][i]['handleOut']['_x'] = this.iHandleOutX[i];
-      this.paperI['segments'][i]['handleOut']['_y'] = this.iHandleOutY[i];
+      this.paperI['segments'][i]['point']['_x'] = this.iPointX[i];
+      this.paperI['segments'][i]['point']['_y'] = this.iPointY[i];
     }
   }
 
@@ -381,7 +404,6 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.oClicked = false;
       this.oIncrement = true;
       this.oMultiplier = 1;
-
     }
 
     /*if (this.oModifier < 10) {
@@ -393,19 +415,27 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
      * handles based on time as being evaluated by Sine and Cosine.
      */
     for (var i = 0; i < this.paperO['segments'].length; i++) {
-      this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
+      this.tempFloat = ww.util.floatComplexGaussianRandom();
+      /*this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
         + Math.cos(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier;
+        * this.oModifier * this.oMultiplier * tempFloat[0];
       this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i]
         + Math.sin(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier;
+        * this.oModifier * this.oMultiplier * tempFloat[1];
 
       this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i]
         - Math.cos(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier;
+        * this.oModifier * this.oMultiplier * tempFloat[0];
       this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i]
         - Math.sin(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier;
+        * this.oModifier * this.oMultiplier * tempFloat[1];*/
+
+      this.paperO['segments'][i]['point']['_x'] = this.oPointX[i]
+        - Math.cos(this.framesRendered_ / 10)
+        * this.oModifier * this.oMultiplier * this.tempFloat[0];
+      this.paperO['segments'][i]['point']['_y'] = this.oPointY[i]
+        - Math.sin(this.framesRendered_ / 10)
+        * this.oModifier * this.oMultiplier * this.tempFloat[1];
     }
   } else {
     /*
@@ -418,6 +448,9 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
 
       this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i];
       this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i];
+
+      this.paperO['segments'][i]['point']['_x'] = this.oPointX[i];
+      this.paperO['segments'][i]['point']['_y'] = this.oPointY[i];
     }
   }
 };
