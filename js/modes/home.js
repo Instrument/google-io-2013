@@ -272,21 +272,21 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
-  this.deltaModifier = this.framesRendered_ * (delta / 100);
+  this.deltaModifier = (delta / 100);
 
-  if (this.iModifier > 1) {
-    this.iModifier -= .1;
+  if (this.iModifier > 0) {
+    this.iModifier -= this.deltaModifier;
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperI['segments'][i]['handleIn']['_x'] = this.iHandleInX[i]
-        + Math.cos(this.deltaModifier) * this.iModifier;
+        + Math.cos(this.iModifier) * this.iModifier;
       this.paperI['segments'][i]['handleIn']['_y'] = this.iHandleInY[i]
-        + Math.sin(this.deltaModifier) * this.iModifier;
+        + Math.sin(this.iModifier) * this.iModifier;
 
       this.paperI['segments'][i]['handleOut']['_x'] = this.iHandleOutX[i]
-        - Math.cos(this.deltaModifier) * this.iModifier;
+        - Math.cos(this.iModifier) * this.iModifier;
       this.paperI['segments'][i]['handleOut']['_y'] = this.iHandleOutY[i]
-        - Math.sin(this.deltaModifier) * this.iModifier;
+        - Math.sin(this.iModifier) * this.iModifier;
     }
   } else {
     for (var i = 0; i < this.paperO['segments'].length; i++) {
@@ -298,22 +298,23 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     }
   }
 
-  if (this.oModifier > 1) {
-    this.oModifier -= .1;
+  if (this.oModifier > 0) {
+    this.oModifier -= this.deltaModifier;
 
-    this.paperO['bounds']['height'] = this.oRad + this.oModifier;
-    this.paperO['bounds']['width'] = this.oRad + this.oModifier;
+    /*if (this.oModifier < 10) {
+      this.paperO['scale'](this.oModifier / 100 + 1);
+    }*/
 
     for (var i = 0; i < this.paperO['segments'].length; i++) {
       this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
-        + Math.cos(this.deltaModifier) * this.oModifier;
+        + Math.cos(this.oModifier) * this.oModifier;
       this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i]
-        + Math.sin(this.deltaModifier) * this.oModifier;
+        + Math.sin(this.oModifier) * this.oModifier;
 
       this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i]
-        - Math.cos(this.deltaModifier) * this.oModifier;
+        - Math.cos(this.oModifier) * this.oModifier;
       this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i]
-        - Math.sin(this.deltaModifier) * this.oModifier;
+        - Math.sin(this.oModifier) * this.oModifier;
     }
   } else {
     for (var i = 0; i < this.paperO['segments'].length; i++) {
