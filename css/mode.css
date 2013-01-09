@@ -1,5 +1,5 @@
 /* line 10, ../sass/mode.scss */
-canvas {
+canvas, .simon-says-mode #simon-says {
   bottom: 0;
   left: 0;
   position: absolute;
@@ -22,12 +22,12 @@ body {
 
 /* line 2, ../sass/_cat.scss */
 .cat-mode #letter-i {
-  background-image: url('../img/cat/cat-letter-i.png?1357247339');
+  background-image: url('../img/cat/cat-letter-i.png?1357242087');
 }
 
 /* line 7, ../sass/_cat.scss */
 .cat-mode #letter-o {
-  background-image: url('../img/cat/cat-letter-o.png?1357247339');
+  background-image: url('../img/cat/cat-letter-o.png?1357242078');
 }
 
 /* line 2, ../sass/_letters.scss */
@@ -77,12 +77,12 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   position: absolute;
+  top: 0;
   -webkit-transform: translate3d(0, 0, 0);
   -moz-transform: translate3d(0, 0, 0);
   -ms-transform: translate3d(0, 0, 0);
   -o-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
-  top: 0;
 }
 
 /* line 42, ../sass/_letters.scss */
@@ -171,4 +171,88 @@ body {
 /* line 1, ../sass/_pong.scss */
 .pong-mode body {
   background: black;
+}
+
+/* line 1, ../sass/_simon-says.scss */
+.simon-says-mode * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+/* line 5, ../sass/_simon-says.scss */
+.simon-says-mode body {
+  background: #2c2c2c;
+  position: relative;
+}
+/* line 13, ../sass/_simon-says.scss */
+.simon-says-mode #simon-says .left {
+  display: inline;
+  float: left;
+}
+/* line 17, ../sass/_simon-says.scss */
+.simon-says-mode #simon-says .left, .simon-says-mode #simon-says .right {
+  height: 100%;
+  padding: 20% 0;
+  width: 50%;
+}
+/* line 22, ../sass/_simon-says.scss */
+.simon-says-mode #simon-says .left div, .simon-says-mode #simon-says .right div {
+  height: 50%;
+  width: 100%;
+}
+/* line 28, ../sass/_simon-says.scss */
+.simon-says-mode #simon-says .right {
+  display: inline;
+  float: right;
+}
+/* line 33, ../sass/_simon-says.scss */
+.simon-says-mode #play {
+  border: 1px solid;
+  color: #fff;
+  left: 50%;
+  line-height: 2em;
+  margin: 0 0 0 -5em;
+  position: absolute;
+  text-align: center;
+  top: 15%;
+  width: 10em;
+}
+/* line 45, ../sass/_simon-says.scss */
+.simon-says-mode #play-again {
+  position: absolute;
+}
+/* line 49, ../sass/_simon-says.scss */
+.simon-says-mode #timer {
+  background: #414141;
+  -webkit-border-radius: 18px;
+  -moz-border-radius: 18px;
+  -ms-border-radius: 18px;
+  -o-border-radius: 18px;
+  border-radius: 18px;
+  color: #fff;
+  font-size: 16px;
+  height: 36px;
+  left: 50%;
+  line-height: 36px;
+  margin: -18px 0 0 -18px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  width: 36px;
+}
+/* line 64, ../sass/_simon-says.scss */
+.simon-says-mode #bottom-left {
+  background: #4584F5;
+}
+/* line 68, ../sass/_simon-says.scss */
+.simon-says-mode #bottom-right {
+  background: #f8c740;
+}
+/* line 72, ../sass/_simon-says.scss */
+.simon-says-mode #top-left {
+  background: #d53e35;
+}
+/* line 76, ../sass/_simon-says.scss */
+.simon-says-mode #top-right {
+  background: #0aa05a;
 }

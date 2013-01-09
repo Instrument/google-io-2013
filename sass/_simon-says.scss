@@ -1,0 +1,78 @@
+* {
+  @include box-sizing(border-box);
+}
+
+body {
+  background: #2c2c2c; 
+  position: relative;
+}
+
+#simon-says {
+  @extend %absolute-full;
+
+  .left {
+    @include float-left;
+  }
+
+  .left, .right {
+    height: 100%;
+    padding: 20% 0;
+    width: 50%;
+
+    div {
+      height: 50%;
+      width: 100%;
+    }
+  }
+
+  .right {
+    @include float-right;
+  }
+}
+
+#play {
+  border: 1px solid;
+  color: #fff;
+  left: 50%;
+  line-height: 2em;
+  margin: 0 0 0 -5em;
+  position: absolute;
+  text-align: center;
+  top: 15%;
+  width: 10em;
+}
+
+#play-again {
+  position: absolute;
+}
+
+#timer {
+  background: #414141;
+  @include border-radius(18px);
+  color: #fff;
+  font-size: 16px;
+  height: 36px;
+  left: 50%;
+  line-height: 36px;
+  margin: -18px 0 0 -18px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  width: 36px;
+}
+
+#bottom-left {
+  background: #4584F5;
+}
+
+#bottom-right {
+  background: #f8c740;
+}
+
+#top-left {
+  background: #d53e35;
+}
+
+#top-right {
+  background: #0aa05a;
+}
