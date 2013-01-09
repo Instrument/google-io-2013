@@ -113,6 +113,7 @@ body {
 
 /* line 1, ../sass/_home.scss */
 .home-mode #pattern-container {
+  display: none;
   position: absolute;
   left: 0;
   right: 0;

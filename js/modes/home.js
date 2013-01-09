@@ -29,6 +29,8 @@ ww.mode.HomeMode.prototype.activateI = function() {
     this.iMultiplier += 2;
   }
 
+  this.playSound('boing.wav');
+
   this.addCharacter_('1');
 };
 
@@ -37,6 +39,8 @@ ww.mode.HomeMode.prototype.activateO = function() {
   if (this.oMultiplier < 10) {
     this.oMultiplier += 2;
   }
+
+  this.playSound('boing.wav');
 
   this.addCharacter_('0');
 };
@@ -202,11 +206,11 @@ ww.mode.HomeMode.prototype.init = function() {
   this.iMultiplier = 1;
 
   // Set I's initial dimensions.
-  var iWidth = 100;
-  var iHeight = 200;
+  var iWidth = this.screenWidthPixels * .175;
+  var iHeight = iWidth * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  var iX = this.screenCenterX - (this.screenWidthPixels / 8);
+  var iX = this.screenCenterX - iWidth * 1.5;
   var iY = this.screenCenterY - iHeight / 2;
 
   // Create a new paper.js path based on the previous variables.
@@ -214,7 +218,7 @@ ww.mode.HomeMode.prototype.init = function() {
   var iSize = new paper['Size'](iWidth, iHeight);
   this.letterI = new paper['Rectangle'](iTopLeft, iSize);
   this.paperI = new paper['Path']['Rectangle'](this.letterI);
-  this.paperI['fillColor'] = '#F2B50F';
+  this.paperI['fillColor'] = '#11a860';
   // this.paperI['fullySelected'] = true;
 
   /*// Create a series of additional points within I's path segments.
@@ -253,19 +257,19 @@ ww.mode.HomeMode.prototype.init = function() {
   this.oMultiplier = 1;
 
   // Set O's radius.
-  this.oRad = 100;
+  this.oRad = this.screenWidthPixels * 0.1944444444;
 
   // Set O's initial scale.
   this.oScale = 1;
 
   // Set O's coordinates.
-  var oX = this.screenCenterX + (this.screenWidthPixels / 8);
+  var oX = this.screenCenterX + this.oRad;
   var oY = this.screenCenterY;
 
   // Create a new paper.js path for O based off the previous variables.
   var oCenter = new paper['Point'](oX, oY);
   this.paperO = new paper['Path']['Circle'](oCenter, this.oRad);
-  this.paperO['fillColor'] = '#00933B';
+  this.paperO['fillColor'] = '#3777e2';
 
   // Create arrays to store the original coordinates for O's path point handles.
   this.oHandleInX = [];
@@ -287,6 +291,20 @@ ww.mode.HomeMode.prototype.init = function() {
     this.oPointX.push(this.paperO['segments'][this.i]['point']['_x']);
     this.oPointY.push(this.paperO['segments'][this.i]['point']['_y']);
   }
+
+  /**
+   * Create the slash.
+   */
+  var slashStart = new paper['Point'](this.screenCenterX + this.oRad / 8,
+    this.screenCenterY - (iHeight / 2) - ((iHeight * 1.5) * 0.17475728));
+  var slashEnd = new paper['Point'](iX + iWidth,
+    this.screenCenterY + (iHeight / 2) + ((iHeight * 1.5) * 0.17475728));
+
+  this.paperSlash = new paper['Path'];
+  this.paperSlash['strokeWidth'] = this.screenWidthPixels * 0.01388889;
+  this.paperSlash['strokeColor'] = '#ebebeb';
+
+  this.paperSlash['add'](slashStart, slashEnd);
 };
 
 ww.mode.HomeMode.prototype.didFocus = function() {

@@ -461,11 +461,11 @@ ww.mode.Core.prototype.didUnfocus = function() {
  * @param {String} url Audio file URL.
  * @param {Function} gotSound On-load callback.
  */
-ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
-  this.soundBuffers_ = this.soundBuffers_ || {};
+ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
+  this.soundBuffersFromURL_ = this.soundBuffersFromURL_ || {};
 
-  if (this.soundBuffers_[url]) {
-    gotSound(this.soundBuffers_[url]);
+  if (this.soundBuffersFromURL_[url]) {
+    gotSound(this.soundBuffersFromURL_[url]);
     return;
   }
 
@@ -478,13 +478,35 @@ ww.mode.Core.prototype.getSoundBuffer_ = function(url, gotSound) {
   request.onload = function() {
     var audioContext = this.getAudioContext_();
     audioContext['decodeAudioData'](request.response, function(buffer) {
-      self.soundBuffers_[url] = buffer;
-      gotSound(self.soundBuffers_[url]);
+      self.soundBuffersFromURL_[url] = buffer;
+      gotSound(self.soundBuffersFromURL_[url]);
     }, function() {
       // debugger;
     });
   };
   request.send();
+};
+
+/**
+ * Load a sound buffer (binary audio file).
+ * @private
+ * @param {Object} name The audio buffer to use.
+ */
+ww.mode.Core.prototype.getSoundBufferByName_ = function(name) {
+  this.soundBuffersByName_ = this.soundBuffersByName_ || {};
+
+  return this.soundBuffersByName_[name];
+};
+
+/**
+ * Load a sound buffer (binary audio file).
+ * @private
+ * @param {Object} name Name of the sound buffer.
+ */
+ww.mode.Core.prototype.storeSoundBufferByName_ = function(name) {
+  this.soundBuffersByName_ = this.soundBuffersByName_ || {};
+
+  return this.soundBuffersByName_[name];
 };
 
 /**
@@ -555,7 +577,7 @@ ww.mode.Core.prototype.playSound = function(filename) {
 
   var audioContext = this.getAudioContext_();
 
-  this.getSoundBuffer_(url, function(buffer) {
+  this.getSoundBufferFromURL_(url, function(buffer) {
     var source = audioContext['createBufferSource']();
     source['buffer'] = buffer;
     source['connect'](audioContext['destination']);
