@@ -168,6 +168,9 @@ ww.mode.HomeMode.prototype.init = function() {
   // Temporarily float variable to use for randomizing animation effects.
   this.tempFloat = [];
 
+  // Generic iterator.
+  this.i = 0;
+
   /**
    * Gets the width of the viewport and its center point.
    */
@@ -179,44 +182,59 @@ ww.mode.HomeMode.prototype.init = function() {
   this.mouseX = this.screenCenterX;
   this.mouseY = this.screenCenterY;
 
+  // Variable to store the screen coordinates of the last click/tap/touch.
+  this.lastClick =
+    new paper['Point'](this.screenCenterX, this.screenCenterY);
+
   /**
    * Create the letter I.
    */
+  // Boolean that sets to true if I is being activated.
   this.iClicked = false;
-  this.iIncrement = false;
+
+  // Boolean that sets to false if I has been activated but delta is too high.
+  this.iIncrement = true;
+
+  // Float that increments by delta when I is activated to affect animation.
   this.iModifier = 0;
+
+  // Float that increments on each activation of I to affect animation further.
   this.iMultiplier = 1;
+
+  // Set I's initial dimensions.
   var iWidth = 100;
   var iHeight = 200;
+
+  // Set coordinates for I's upper left corner.
   var iX = this.screenCenterX - (this.screenWidthPixels / 8);
   var iY = this.screenCenterY - iHeight / 2;
 
+  // Create a new paper.js path based on the previous variables.
   var iTopLeft = new paper['Point'](iX, iY);
   var iSize = new paper['Size'](iWidth, iHeight);
   this.letterI = new paper['Rectangle'](iTopLeft, iSize);
   this.paperI = new paper['Path']['Rectangle'](this.letterI);
   this.paperI['fillColor'] = '#F2B50F';
   // this.paperI['fullySelected'] = true;
-  var iLength = this.paperI['segments'].length;
 
   /*// Create a series of additional points within I's path segments.
-  for (i = 0; i < iLength; i += 2) {
-    var tempX = (this.paperI['segments'][i]['next']['point']['_x']
-      - this.paperI['segments'][i]['point']['_x']) + iX;
+  for (this.i = 0; this.i < iLength; this.i += 2) {
+    var tempX = (this.paperI['segments'][this.i]['next']['point']['_x']
+      - this.paperI['segments'][this.i]['point']['_x']) + iX;
 
-    var tempY = (this.paperI['segments'][i]['next']['point']['_y']
-      - this.paperI['segments'][i]['point']['_y']) + iY;
+    var tempY = (this.paperI['segments'][this.i]['next']['point']['_y']
+      - this.paperI['segments'][this.i]['point']['_y']) + iY;
 
-    this.paperI['insert'](i, new paper['Point'](tempX, tempY));
+    this.paperI['insert'](this.i, new paper['Point'](tempX, tempY));
   }
 */
   // Create arrays to store the original coordinates for I's path points.
   this.iPointX = [];
   this.iPointY = [];
-  var i;
-  for (i = 0; i < this.paperI['segments'].length; i++) {
-    this.iPointX.push(this.paperI['segments'][i]['point']['_x']);
-    this.iPointY.push(this.paperI['segments'][i]['point']['_y']);
+
+  for (this.i = 0; this.i < this.paperI['segments'].length; this.i++) {
+    this.iPointX.push(this.paperI['segments'][this.i]['point']['_x']);
+    this.iPointY.push(this.paperI['segments'][this.i]['point']['_y']);
   }
 
   /**
@@ -225,17 +243,20 @@ ww.mode.HomeMode.prototype.init = function() {
   // Boolean that sets to true if O is being activated.
   this.oClicked = false;
 
-  // Boolean that sets to true if O has been activated but delta is still low.
+  // Boolean that sets to false if O has been activated but delta is too high.
   this.oIncrement = true;
 
   // Float that increments by delta when O is activated to affect animation.
   this.oModifier = 0;
 
-  // Float that increments each activation of O to affect animation further.
+  // Float that increments on each activation of O to affect animation further.
   this.oMultiplier = 1;
 
   // Set O's radius.
   this.oRad = 100;
+
+  // Set O's initial scale.
+  this.oScale = 1;
 
   // Set O's coordinates.
   var oX = this.screenCenterX + (this.screenWidthPixels / 8);
@@ -255,16 +276,16 @@ ww.mode.HomeMode.prototype.init = function() {
   this.oPointX = [];
   this.oPointY = [];
 
-  for (i = 0; i < this.paperO['segments'].length; i++) {
-    this.oHandleInX.push(this.paperO['segments'][i]['handleIn']['_x']);
-    this.oHandleInY.push(this.paperO['segments'][i]['handleIn']['_y']);
-    this.oHandleOutX.push(this.paperO['segments'][i]['handleOut']['_x']);
-    this.oHandleOutY.push(this.paperO['segments'][i]['handleOut']['_y']);
+  for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
+    this.oHandleInX.push(this.paperO['segments'][this.i]['handleIn']['_x']);
+    this.oHandleInY.push(this.paperO['segments'][this.i]['handleIn']['_y']);
+    this.oHandleOutX.push(this.paperO['segments'][this.i]['handleOut']['_x']);
+    this.oHandleOutY.push(this.paperO['segments'][this.i]['handleOut']['_y']);
   }
 
-  for (i = 0; i < this.paperO['segments'].length; i++) {
-    this.oPointX.push(this.paperO['segments'][i]['point']['_x']);
-    this.oPointY.push(this.paperO['segments'][i]['point']['_y']);
+  for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
+    this.oPointX.push(this.paperO['segments'][this.i]['point']['_x']);
+    this.oPointY.push(this.paperO['segments'][this.i]['point']['_y']);
   }
 };
 
@@ -279,8 +300,10 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var tool = new paper['Tool']();
 
   tool['onMouseDown'] = function(event) {
+    self.lastClick = event['point'];
     if (self.paperO['hitTest'](event['point'])) {
       self.activateO();
+      console.log(self.paperO['hitTest'](event['point']));
     }
 
     if (self.paperI['hitTest'](event['point'])) {
@@ -313,6 +336,9 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
+  // Generic iterator.
+  var i;
+
   /*
    * Delta is initially a very small float. Need to modify it for it to have a
    * stronger effect.
@@ -322,7 +348,8 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
   /*
    * Run the following code if the letter I is activated.
    */
-  if (this.iClicked == true) {    
+  if (this.iClicked == true) {
+
     if (this.iModifier < this.deltaModifier * 100000 &&
       this.iIncrement == true) {      
         this.iModifier += this.deltaModifier * 10000;
@@ -350,34 +377,41 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.iIncrement = true;
       this.iMultiplier = 1;
     }
+
     /*
      * Loop through each path segment on the letter I and move each point's
      * handles based on time as being evaluated by Sine and Cosine.
      */
-    for (var i = 0; i < this.paperI['segments'].length; i++) {
+    for (this.i = 0; this.i < this.paperI['segments'].length; this.i++) {
       this.tempFloat = ww.util.floatComplexGaussianRandom();
-      this.paperI['segments'][i]['point']['_x'] = this.iPointX[i]
+
+      this.paperI['segments'][this.i]['point']['_x'] = this.iPointX[this.i]
         + Math.cos(this.framesRendered_ / 10)
         * this.iModifier * this.iMultiplier * this.tempFloat[0];
-      this.paperI['segments'][i]['point']['_y'] = this.iPointY[i]
+
+      this.paperI['segments'][this.i]['point']['_y'] = this.iPointY[this.i]
         + Math.sin(this.framesRendered_ / 10)
         * this.iModifier * this.iMultiplier * this.tempFloat[1];
     }
+
   } else {
+
     /*
      * If I hasn't been activated recently enough, restore the original handle
      * coordinates.
      */
-    for (var i = 0; i < this.paperO['segments'].length; i++) {
-      this.paperI['segments'][i]['point']['_x'] = this.iPointX[i];
-      this.paperI['segments'][i]['point']['_y'] = this.iPointY[i];
+    for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
+      this.paperI['segments'][this.i]['point']['_x'] = this.iPointX[this.i];
+      this.paperI['segments'][this.i]['point']['_y'] = this.iPointY[this.i];
     }
+
   }
 
   /*
    * Run the following code if the letter O is activated.
    */
-  if (this.oClicked == true) {    
+  if (this.oClicked == true) {
+
     if (this.oModifier < this.deltaModifier * 100000 &&
       this.oIncrement == true) {      
         this.oModifier += this.deltaModifier * 10000;
@@ -400,57 +434,68 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       }
     }
 
+    // If oModifier drops too low, reset variables to their default state.
     if (this.oModifier < this.deltaModifier * 1000) {
       this.oClicked = false;
       this.oIncrement = true;
       this.oMultiplier = 1;
     }
 
-    /*if (this.oModifier < 10) {
-      this.paperO['scale'](this.oModifier / 100 + 1);
-    }*/
+    this.oScale = 1 / this.oMultiplier;
 
     /*
      * Loop through each path segment on the letter O and move each point's
      * handles based on time as being evaluated by Sine and Cosine.
      */
-    for (var i = 0; i < this.paperO['segments'].length; i++) {
+    for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
       this.tempFloat = ww.util.floatComplexGaussianRandom();
-      /*this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i]
-        + Math.cos(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier * tempFloat[0];
-      this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i]
-        + Math.sin(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier * tempFloat[1];
 
-      this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i]
-        - Math.cos(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier * tempFloat[0];
-      this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i]
-        - Math.sin(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier * tempFloat[1];*/
+      this.paperO['segments'][this.i]['handleIn']['_x'] =
+        this.oHandleInX[this.i] + Math.cos(this.framesRendered_ / 10 * this.tempFloat[0])
+        * this.oModifier * this.oMultiplier;
+      this.paperO['segments'][this.i]['handleIn']['_y'] =
+        this.oHandleInY[this.i] + Math.sin(this.framesRendered_ / 10 * this.tempFloat[0])
+        * this.oModifier * this.oMultiplier;
 
-      this.paperO['segments'][i]['point']['_x'] = this.oPointX[i]
-        - Math.cos(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier * this.tempFloat[0];
-      this.paperO['segments'][i]['point']['_y'] = this.oPointY[i]
-        - Math.sin(this.framesRendered_ / 10)
-        * this.oModifier * this.oMultiplier * this.tempFloat[1];
+      this.paperO['segments'][this.i]['handleOut']['_x'] =
+        this.oHandleOutX[this.i] - Math.cos(this.framesRendered_ / 10 * this.tempFloat[0])
+        * this.oModifier * this.oMultiplier;
+      this.paperO['segments'][this.i]['handleOut']['_y'] =
+        this.oHandleOutY[this.i] - Math.sin(this.framesRendered_ / 10 * this.tempFloat[0])
+        * this.oModifier * this.oMultiplier;
+
+      this.paperO['segments'][this.i]['point']['_x'] = this.oPointX[this.i]
+        - Math.sin(this.framesRendered_ / 10 * this.tempFloat[0])
+        * this.oModifier * this.oMultiplier /
+        (this.lastClick['getDistance'](this.paperO['segments'][this.i]['point']));
+
+      this.paperO['segments'][this.i]['point']['_y'] = this.oPointY[this.i]
+        - Math.cos(this.framesRendered_ / 10 * this.tempFloat[0])
+        * this.oModifier * this.oMultiplier /
+        (this.lastClick['getDistance'](this.paperO['segments'][this.i]['point']));
     }
+
   } else {
+
     /*
-     * If O hasn't been actiavted recently enough, restore the original handle
+     * If O hasn't been activated recently enough, restore the original handle
      * coordinates.
      */
-    for (var i = 0; i < this.paperO['segments'].length; i++) {
-      this.paperO['segments'][i]['handleIn']['_x'] = this.oHandleInX[i];
-      this.paperO['segments'][i]['handleIn']['_y'] = this.oHandleInY[i];
+    for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
+      this.paperO['segments'][this.i]['handleIn']['_x'] =
+        this.oHandleInX[this.i];
+      this.paperO['segments'][this.i]['handleIn']['_y'] =
+        this.oHandleInY[this.i];
 
-      this.paperO['segments'][i]['handleOut']['_x'] = this.oHandleOutX[i];
-      this.paperO['segments'][i]['handleOut']['_y'] = this.oHandleOutY[i];
+      this.paperO['segments'][this.i]['handleOut']['_x'] =
+        this.oHandleOutX[this.i];
+      this.paperO['segments'][this.i]['handleOut']['_y'] =
+        this.oHandleOutY[this.i];
 
-      this.paperO['segments'][i]['point']['_x'] = this.oPointX[i];
-      this.paperO['segments'][i]['point']['_y'] = this.oPointY[i];
+      this.paperO['segments'][this.i]['point']['_x'] = this.oPointX[this.i];
+      this.paperO['segments'][this.i]['point']['_y'] = this.oPointY[this.i];
     }
+
   }
+
 };
