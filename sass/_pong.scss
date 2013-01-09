@@ -1,3 +1,16 @@
 body {
-	background: black;
+  background: #f9f9f9;
+}
+
+#score {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: #363636;
+  @include border-radius(10px);
+  height: 30px;
+  pointer-events: none;
+  padding: 0 20px;
+  line-height: 30px;
+  color: #d2d2d2;
 }

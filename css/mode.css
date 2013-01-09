@@ -20,6 +20,18 @@ body {
   padding: 0;
 }
 
+/* line 33, ../sass/mode.scss */
+#reload {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: none;
+}
+
 /* line 2, ../sass/_cat.scss */
 .cat-mode #letter-i {
   background-image: url('../img/cat/cat-letter-i.png?1357242087');
@@ -170,7 +182,24 @@ body {
 
 /* line 1, ../sass/_pong.scss */
 .pong-mode body {
-  background: black;
+  background: #f9f9f9;
+}
+/* line 5, ../sass/_pong.scss */
+.pong-mode #score {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: #363636;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  height: 30px;
+  pointer-events: none;
+  padding: 0 20px;
+  line-height: 30px;
+  color: #d2d2d2;
 }
 
 /* line 1, ../sass/_simon-says.scss */
