@@ -26,7 +26,7 @@ function pad(number, length) {
 ww.mode.HomeMode.prototype.activateI = function() {
   this.iClicked = true;
   if (this.iMultiplier < 10) {
-    this.iMultiplier += 1;
+    this.iMultiplier += 2;
   }
 
   this.addCharacter_('1');
@@ -35,7 +35,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
 ww.mode.HomeMode.prototype.activateO = function() {
   this.oClicked = true;
   if (this.oMultiplier < 10) {
-    this.oMultiplier += 1;
+    this.oMultiplier += 2;
   }
 
   this.addCharacter_('0');
@@ -303,7 +303,6 @@ ww.mode.HomeMode.prototype.didFocus = function() {
     self.lastClick = event['point'];
     if (self.paperO['hitTest'](event['point'])) {
       self.activateO();
-      console.log(self.paperO['hitTest'](event['point']));
     }
 
     if (self.paperI['hitTest'](event['point'])) {
@@ -350,9 +349,9 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
    */
   if (this.iClicked == true) {
 
-    if (this.iModifier < this.deltaModifier * 100000 &&
+    if (this.iModifier < this.deltaModifier * 10000 &&
       this.iIncrement == true) {      
-        this.iModifier += this.deltaModifier * 10000;
+        this.iModifier += this.deltaModifier * 1000;
     } else if (this.iMultiplier > 1) {
       if (this.iModifier < this.deltaModifier * 10000) {
         this.iModifier += this.deltaModifier * 100;
@@ -412,9 +411,9 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
    */
   if (this.oClicked == true) {
 
-    if (this.oModifier < this.deltaModifier * 100000 &&
+    if (this.oModifier < this.deltaModifier * 10000 &&
       this.oIncrement == true) {      
-        this.oModifier += this.deltaModifier * 10000;
+        this.oModifier += this.deltaModifier * 1000;
     } else if (this.oMultiplier > 1) {
       if (this.oModifier < this.deltaModifier * 10000) {
         this.oModifier += this.deltaModifier * 100;
@@ -466,13 +465,11 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
 
       this.paperO['segments'][this.i]['point']['_x'] = this.oPointX[this.i]
         - Math.sin(this.framesRendered_ / 10 * this.tempFloat[0])
-        * this.oModifier * this.oMultiplier /
-        (this.lastClick['getDistance'](this.paperO['segments'][this.i]['point']));
+        * this.oModifier * this.oMultiplier;
 
       this.paperO['segments'][this.i]['point']['_y'] = this.oPointY[this.i]
         - Math.cos(this.framesRendered_ / 10 * this.tempFloat[0])
-        * this.oModifier * this.oMultiplier /
-        (this.lastClick['getDistance'](this.paperO['segments'][this.i]['point']));
+        * this.oModifier * this.oMultiplier;
     }
 
   } else {
