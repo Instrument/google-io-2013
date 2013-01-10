@@ -20,39 +20,43 @@ ww.mode.SimonSaysMode.prototype.init = function() {
 
   var self = this;
 
-  if (this.hasTouch) {
-    this.evt = 'touchend.simon';
+  TWEEN['removeAll']();
+
+  if (Modernizr['touch']) {
+    this.evtStart = 'touchstart.simon';
+    this.evtEnd = 'touchend.simon';
   } else {
-    this.evt = 'mouseup.simon';
+    this.evtStart = 'mousedown.simon';
+    this.evtEnd = 'mouseup.simon';
   }
 
-  this.topLeft = $('#simon-red');        // 0 in sequence
-  this.topRight = $('#simon-green');     // 1 in sequence 
+  this.topLeft = $('#red');        // 0 in sequence
+  this.topRight = $('#green');     // 1 in sequence 
 
-  this.bottomLeft = $('#simon-blue');    // 2 in sequence
-  this.bottomRight = $('#simon-yellow'); // 3 in sequence
+  this.bottomLeft = $('#blue');    // 2 in sequence
+  this.bottomRight = $('#yellow'); // 3 in sequence
 
   this.segments = [this.topLeft, this.topRight,
                    this.bottomLeft, this.bottomRight];
 
-  this.segmentEls = $('.segment').css('opacity', 1);
+  this.segmentEls = $('#red, #green, #blue, #yellow').css('opacity', 1);
 
   // keeps track of levels reached in a game
   this.levelCount = $('#max-level').removeClass().text('');
 
-  this.uiContainer = $('#simon-ui').css('opacity', 0);
+  this.uiContainer = $('#levels').css('opacity', 0);
   this.container = $('#simon-says');
-
-  // display 'how to start playing' message
-  // unbind and hide once first game has started
-  this.container.bind(this.evt, function(){
-    self.message.css('opacity', 0);
-    self.beginGame();
-    self.container.unbind(self.evt);
-  });
 
   this.message = $('#message').css('opacity', 1);
   this.playAgainEl = $('#play-again');
+
+  // display 'how to start playing' message
+  // unbind and hide once first game has started
+  this.container.bind(this.evtEnd, function(){
+    self.message.css('opacity', 0);
+    self.beginGame();
+    self.container.unbind(self.evtEnd);
+  });
 
   // number of games played
   this.plays = 0;
@@ -89,23 +93,34 @@ ww.mode.SimonSaysMode.prototype.didFocus = function() {
 
   var self = this;
 
-  self.playAgainEl.bind(this.evt, function(){
+  self.playAgainEl.bind(this.evtEnd, function(){
     self.beginGame();
   });
+
+  self.segmentEls.bind(self.evtStart, function(){
+    var guessSeg = $(this);
+    var fadeInQuick = new TWEEN['Tween']({ 'opacity': 0.5 });
+        fadeInQuick['to']({ 'opacity': 1 }, 100);
+        fadeInQuick['onUpdate'](function() {
+          guessSeg.css('opacity', this['opacity']);
+        });
+
+    self.addTween(fadeInQuick);
+  })
   
-  self.topLeft.bind(this.evt, function(){
+  self.topLeft.bind(this.evtEnd, function(){
     self.checkSequence(0);
   });
 
-  self.topRight.bind(this.evt, function(){
+  self.topRight.bind(this.evtEnd, function(){
     self.checkSequence(1);
   });
 
-  self.bottomLeft.bind(this.evt, function(){
+  self.bottomLeft.bind(this.evtEnd, function(){
     self.checkSequence(2);
   });
   
-  self.bottomRight.bind(this.evt, function(){
+  self.bottomRight.bind(this.evtEnd, function(){
     self.checkSequence(3);
   });
 };
@@ -118,12 +133,13 @@ ww.mode.SimonSaysMode.prototype.didFocus = function() {
 ww.mode.SimonSaysMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  this.playAgainEl.unbind(this.evt);
+  this.playAgainEl.unbind(this.evtEnd);
+  this.segmentEls.unbind(this.evtStart);
 
-  this.topLeft.unbind(this.evt);
-  this.topRight.unbind(this.evt);
-  this.bottomLeft.unbind(this.evt);
-  this.bottomRight.unbind(this.evt);
+  this.topLeft.unbind(this.evtEnd);
+  this.topRight.unbind(this.evtEnd);
+  this.bottomLeft.unbind(this.evtEnd);
+  this.bottomRight.unbind(this.evtEnd);
 };
 
 
@@ -177,14 +193,15 @@ ww.mode.SimonSaysMode.prototype.checkSequence = function(guess) {
     // clear any state on the level counter
     self.levelCount.removeClass();
 
-    // highlight user selected segment
     var fadeOut = new TWEEN['Tween']({ 'opacity': 1 });
-        fadeOut['to']({ 'opacity': 0.5 }, 400);
+        fadeOut['to']({ 'opacity': 0.5 }, 200);
         fadeOut['onUpdate'](function() {
           guessSeg.css('opacity', this['opacity']);
         });
 
     self.addTween(fadeOut);
+
+    self.isAnimating = false;
 
     // check if selected segment is the expected step in the sequence
     if (self.sequence[self.stepIndex] === guess) {
@@ -265,7 +282,7 @@ ww.mode.SimonSaysMode.prototype.beginGame = function() {
     if (self.segmentEls.css('opacity') !== "0.5") {
       var fadeOut = new TWEEN['Tween']({ 'opacity': 1 });
           fadeOut['to']({ 'opacity': 0.5 }, 200);
-          fadeOut['delay'](100);
+          fadeOut['delay'](200);
           fadeOut['onUpdate'](function() {
             self.segmentEls.css('opacity', this['opacity']);
           });
