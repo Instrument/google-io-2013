@@ -332,3 +332,7 @@ body {
 .simon-says-mode #max-level.success {
   background: #069b5a;
 }
+
+.space-mode body {
+  background: #000;
+}

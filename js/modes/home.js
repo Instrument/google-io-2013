@@ -221,6 +221,151 @@ ww.mode.HomeMode.prototype.goToMode_ = function(key) {
 };
 
 /**
+ * Function to create and draw I.
+ * @param {Boolean} new Create a new paper object or just edit values. 
+ */
+ww.mode.HomeMode.prototype.drawI = function(isNew) {
+  // Set I's initial dimensions.
+  this.iWidth = this.width_ * .175;
+  this.iHeight = this.iWidth * 2.12698413;
+
+  // Set coordinates for I's upper left corner.
+  this.iX = this.screenCenterX_ - this.iWidth * 1.5;
+  this.iY = this.screenCenterY_ - this.iHeight / 2;
+
+  if (isNew) {
+    // Create a new paper.js path based on the previous variables.
+    var iTopLeft = new paper['Point'](this.iX, this.iY);
+    var iSize = new paper['Size'](this.iWidth, this.iHeight);
+    this.letterI = new paper['Rectangle'](iTopLeft, iSize);
+    this.paperI = new paper['Path']['Rectangle'](this.letterI);
+    this.paperI['fillColor'] = '#11a860';
+
+    // Create arrays to store the original coordinates for I's path points.
+    this.iPointX = [];
+    this.iPointY = [];
+
+    for (this.i = 0; this.i < this.paperI['segments'].length; this.i++) {
+      this.iPointX.push(this.paperI['segments'][this.i]['point']['_x']);
+      this.iPointY.push(this.paperI['segments'][this.i]['point']['_y']);
+    }
+  } else if (!isNew && this.paperI) {
+    this.paperI['position']['_x'] = this.iX;
+    this.paperI['position']['_y'] = this.iY;
+    this.paperI['bounds']['width'] = this.iWidth;
+    this.paperI['bounds']['height'] = this.iHeight;
+
+    for (this.i = 0; this.i < this.paperI['segments'].length; this.i++) {
+      this.iPointX[this.i] = this.paperI['segments'][this.i]['point']['_x'];
+      this.iPointY[this.i] = this.paperI['segments'][this.i]['point']['_y'];
+    }
+  } else {
+    return;
+  }
+}
+
+/**
+ * Function to create and draw O.
+ * @param {Boolean} new Create a new paper object or just edit values. 
+ */
+ww.mode.HomeMode.prototype.drawO = function(isNew) {
+  // Set O's radius.
+  this.oRad = this.width_ * 0.1944444444;
+  // Set O's coordinates.
+  this.oX = this.screenCenterX_ + this.oRad;
+  this.oY = this.screenCenterY_;
+
+  if (isNew) {
+    // Create a new paper.js path for O based off the previous variables.
+    var oCenter = new paper['Point'](this.oX, this.oY);
+    this.paperO = new paper['Path']['Circle'](oCenter, this.oRad);
+    this.paperO['fillColor'] = '#3777e2';
+
+    // Create arrays to store the original coordinates for O's path point handles.
+    this.oHandleInX = [];
+    this.oHandleInY = [];
+    this.oHandleOutX = [];
+    this.oHandleOutY = [];
+
+    this.oPointX = [];
+    this.oPointY = [];
+
+    for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
+      this.oPointX.push(this.paperO['segments'][this.i]['point']['_x']);
+      this.oPointY.push(this.paperO['segments'][this.i]['point']['_y']);
+
+      this.oHandleInX.push(this.paperO['segments'][this.i]['handleIn']['_x']);
+      this.oHandleInY.push(this.paperO['segments'][this.i]['handleIn']['_y']);
+      this.oHandleOutX.push(this.paperO['segments'][this.i]['handleOut']['_x']);
+      this.oHandleOutY.push(this.paperO['segments'][this.i]['handleOut']['_y']);
+    }
+  } else if (!isNew && this.paperO) {
+    this.paperO['position'] = {x: this.oX, y: this.oY};
+    this.paperO['scale'](this.oRad * 2 / this.paperO['bounds']['height']);
+
+    console.log(this.paperO['bounds']['width']);
+    for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
+      this.oPointX[this.i] = this.paperO['segments'][this.i]['point']['_x'];
+      this.oPointY[this.i] = this.paperO['segments'][this.i]['point']['_y'];
+
+      this.oHandleInX[this.i] =
+        this.paperO['segments'][this.i]['handleIn']['_x'];
+      this.oHandleInY[this.i] =
+        this.paperO['segments'][this.i]['handleIn']['_y'];
+      this.oHandleOutX[this.i] =
+        this.paperO['segments'][this.i]['handleOut']['_x'];
+      this.oHandleOutY[this.i] =
+        this.paperO['segments'][this.i]['handleOut']['_y'];
+    }
+  } else {
+    return;
+  }
+}
+
+/**
+ * Function to create and draw O.
+ * @param {Boolean} new Create a new paper object or just edit values. 
+ */
+ww.mode.HomeMode.prototype.drawSlash = function(isNew) {
+  // Set O's radius.
+  this.oRad = this.width_ * 0.1944444444;
+
+  // Set O's coordinates.
+  this.oX = this.screenCenterX_ + this.oRad;
+  this.oY = this.screenCenterY_;
+
+  if (isNew && this.paperI) {
+    this.slashStart = new paper['Point'](this.screenCenterX_ + this.oRad / 8,
+      this.screenCenterY_ - (this.iHeight / 2) -
+      ((this.iHeight * 1.5) * 0.17475728));
+
+    this.slashEnd = new paper['Point'](this.iX + this.iWidth,
+      this.screenCenterY_ + (this.iHeight / 2) +
+      ((this.iHeight * 1.5) * 0.17475728));
+
+    this.paperSlash = new paper['Path'];
+    this.paperSlash['strokeWidth'] = this.width_ * 0.01388889;
+    this.paperSlash['strokeColor'] = '#ebebeb';
+
+    this.paperSlash['add'](this.slashStart, this.slashEnd);
+
+  } else if (!isNew && this.paperSlash) {
+    this.slashStart['x'] = this.screenCenterX_ + this.oRad / 8;
+    this.slashStart['y'] = this.screenCenterY_ - (this.iHeight / 2) -
+      ((this.iHeight * 1.5) * 0.17475728);
+
+    this.slashEnd['x'] = this.iX + this.iWidth;
+    this.slashEnd['y'] = this.screenCenterY_ + (this.iHeight / 2) +
+      ((this.iHeight * 1.5) * 0.17475728);
+
+    this.paperSlash['segments'][0]['point'] = this.slashStart;
+    this.paperSlash['segments'][1]['point'] = this.slashEnd;
+  } else {
+    return;
+  }
+}
+
+/**
  * Function to initialize the current mode.
  * Requests a paper canvas and creates paths.
  * Sets initial variables.
@@ -243,12 +388,12 @@ ww.mode.HomeMode.prototype.init = function() {
   /**
    * Gets the width of the viewport and its center point.
    */
-  this.screenCenterX = this.width_ / 2;
-  this.screenCenterY = this.height_ / 2;
+  this.screenCenterX_ = this.width_ / 2;
+  this.screenCenterY_ = this.height_ / 2;
 
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick =
-    new paper['Point'](this.screenCenterX, this.screenCenterY);
+    new paper['Point'](this.screenCenterX_, this.screenCenterY_);
 
   /**
    * Create the letter I.
@@ -265,41 +410,7 @@ ww.mode.HomeMode.prototype.init = function() {
   // Float that increments on each activation of I to affect animation further.
   this.iMultiplier = 1;
 
-  // Set I's initial dimensions.
-  var iWidth = this.width_ * .175;
-  var iHeight = iWidth * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  var iX = this.screenCenterX - iWidth * 1.5;
-  var iY = this.screenCenterY - iHeight / 2;
-
-  // Create a new paper.js path based on the previous variables.
-  var iTopLeft = new paper['Point'](iX, iY);
-  var iSize = new paper['Size'](iWidth, iHeight);
-  this.letterI = new paper['Rectangle'](iTopLeft, iSize);
-  this.paperI = new paper['Path']['Rectangle'](this.letterI);
-  this.paperI['fillColor'] = '#11a860';
-  // this.paperI['fullySelected'] = true;
-
-  /*// Create a series of additional points within I's path segments.
-  for (this.i = 0; this.i < iLength; this.i += 2) {
-    var tempX = (this.paperI['segments'][this.i]['next']['point']['_x']
-      - this.paperI['segments'][this.i]['point']['_x']) + iX;
-
-    var tempY = (this.paperI['segments'][this.i]['next']['point']['_y']
-      - this.paperI['segments'][this.i]['point']['_y']) + iY;
-
-    this.paperI['insert'](this.i, new paper['Point'](tempX, tempY));
-  }
-*/
-  // Create arrays to store the original coordinates for I's path points.
-  this.iPointX = [];
-  this.iPointY = [];
-
-  for (this.i = 0; this.i < this.paperI['segments'].length; this.i++) {
-    this.iPointX.push(this.paperI['segments'][this.i]['point']['_x']);
-    this.iPointY.push(this.paperI['segments'][this.i]['point']['_y']);
-  }
+  this.drawI(true);
 
   /**
    * Create the letter O.
@@ -316,55 +427,12 @@ ww.mode.HomeMode.prototype.init = function() {
   // Float that increments on each activation of O to affect animation further.
   this.oMultiplier = 1;
 
-  // Set O's radius.
-  this.oRad = this.width_ * 0.1944444444;
-
-  // Set O's initial scale.
-  this.oScale = 1;
-
-  // Set O's coordinates.
-  var oX = this.screenCenterX + this.oRad;
-  var oY = this.screenCenterY;
-
-  // Create a new paper.js path for O based off the previous variables.
-  var oCenter = new paper['Point'](oX, oY);
-  this.paperO = new paper['Path']['Circle'](oCenter, this.oRad);
-  this.paperO['fillColor'] = '#3777e2';
-
-  // Create arrays to store the original coordinates for O's path point handles.
-  this.oHandleInX = [];
-  this.oHandleInY = [];
-  this.oHandleOutX = [];
-  this.oHandleOutY = [];
-
-  this.oPointX = [];
-  this.oPointY = [];
-
-  for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
-    this.oHandleInX.push(this.paperO['segments'][this.i]['handleIn']['_x']);
-    this.oHandleInY.push(this.paperO['segments'][this.i]['handleIn']['_y']);
-    this.oHandleOutX.push(this.paperO['segments'][this.i]['handleOut']['_x']);
-    this.oHandleOutY.push(this.paperO['segments'][this.i]['handleOut']['_y']);
-  }
-
-  for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
-    this.oPointX.push(this.paperO['segments'][this.i]['point']['_x']);
-    this.oPointY.push(this.paperO['segments'][this.i]['point']['_y']);
-  }
+  this.drawO(true);
 
   /**
    * Create the slash.
    */
-  var slashStart = new paper['Point'](this.screenCenterX + this.oRad / 8,
-    this.screenCenterY - (iHeight / 2) - ((iHeight * 1.5) * 0.17475728));
-  var slashEnd = new paper['Point'](iX + iWidth,
-    this.screenCenterY + (iHeight / 2) + ((iHeight * 1.5) * 0.17475728));
-
-  this.paperSlash = new paper['Path'];
-  this.paperSlash['strokeWidth'] = this.width_ * 0.01388889;
-  this.paperSlash['strokeColor'] = '#ebebeb';
-
-  this.paperSlash['add'](slashStart, slashEnd);
+  this.drawSlash(true);
 };
 
 ww.mode.HomeMode.prototype.didFocus = function() {
@@ -394,14 +462,33 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 // };
 
 /**
+ * Handles a browser window resize.
+ * @param {Boolean} redraw Whether resize redraws.
+ */
+ww.mode.HomeMode.prototype.onResize = function(redraw) {
+  goog.base(this, 'onResize', false);
+
+  console.log('resizing');
+
+  /**
+   * Redraw each shape on window resize. drawI() and drawO() must be called
+   * before drawSlash() to maintain accurate drawing scale for the slash.
+   */
+  this.drawI(false);
+  this.drawO(false);
+  this.drawSlash(false);
+
+  if (redraw) {
+    this.redraw();
+  }
+};
+
+/**
  * Runs code on each requested frame.
  * @param {Integer} delta The timestep variable for animation accuracy.
  */
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
-
-  // Generic iterator.
-  var i;
 
   /*
    * Delta is initially a very small float. Need to modify it for it to have a
