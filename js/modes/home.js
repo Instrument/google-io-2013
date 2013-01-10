@@ -242,9 +242,6 @@ ww.mode.HomeMode.prototype.init = function() {
   this.screenCenterX = this.width_ / 2;
   this.screenCenterY = this.height_ / 2;
 
-  this.mouseX = this.screenCenterX;
-  this.mouseY = this.screenCenterY;
-
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick =
     new paper['Point'](this.screenCenterX, this.screenCenterY);
@@ -386,24 +383,11 @@ ww.mode.HomeMode.prototype.didFocus = function() {
       self.activateI();
     }
   };
-
-  $(canvas).bind(evt, function(e){
-    e.preventDefault();
-    e.stopPropagation();
-
-    self.mouseX = e.pageX;
-    self.mouseY = e.pageY;
-  });
 };
 
-ww.mode.HomeMode.prototype.didUnfocus = function() {
-  goog.base(this, 'didUnfocus');
-
-  var canvas = this.getPaperCanvas_();
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
-
-  $(canvas).unbind(evt);
-};
+// ww.mode.HomeMode.prototype.didUnfocus = function() {
+//   goog.base(this, 'didUnfocus');
+// };
 
 /**
  * Runs code on each requested frame.
@@ -434,7 +418,7 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
         this.iModifier += this.deltaModifier * 100;
       }
       if (this.iMultiplier > 1) {
-        this.iMultiplier -= .1;
+        this.iMultiplier -= 0.1;
       } else {
         this.iMultiplier = 1;
       }
@@ -442,7 +426,7 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.iIncrement = false;
       this.iModifier -= this.deltaModifier * 1000;
       if (this.iMultiplier > 1) {
-        this.iMultiplier -= .1;
+        this.iMultiplier -= 0.1;
       } else {
         this.iMultiplier = 1;
       }
@@ -486,17 +470,17 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
   /*
    * Run the following code if the letter O is activated.
    */
-  if (this.oClicked == true) {
+  if (this.oClicked === true) {
 
     if (this.oModifier < this.deltaModifier * 10000 &&
-      this.oIncrement == true) {      
+      this.oIncrement === true) {
         this.oModifier += this.deltaModifier * 1000;
     } else if (this.oMultiplier > 1) {
       if (this.oModifier < this.deltaModifier * 10000) {
         this.oModifier += this.deltaModifier * 100;
       }
       if (this.oMultiplier > 1) {
-        this.oMultiplier -= .1;
+        this.oMultiplier -= 0.1;
       } else {
         this.oMultiplier = 1;
       }
@@ -504,7 +488,7 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.oIncrement = false;
       this.oModifier -= this.deltaModifier * 1000;
       if (this.oMultiplier > 1) {
-        this.oMultiplier -= .1;
+        this.oMultiplier -= 0.1;
       } else {
         this.oMultiplier = 1;
       }
