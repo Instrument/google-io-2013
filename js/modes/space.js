@@ -1,12 +1,12 @@
 goog.require('ww.mode.Core');
 goog.require('ww.util');
-goog.provide('ww.mode.HomeMode');
+goog.provide('ww.mode.SpaceMode');
 
 /**
  * @constructor
  */
-ww.mode.HomeMode = function() {
-  goog.base(this, 'home', true, true);
+ww.mode.SpaceMode = function() {
+  goog.base(this, 'space', true, true);
 
   this.setupPatternMatchers_();
   this.getAudioContext_();
@@ -49,7 +49,7 @@ ww.mode.HomeMode = function() {
   this.currentPattern_ = "";
   this.maxPatternLength_ = 15;
 };
-goog.inherits(ww.mode.HomeMode, ww.mode.Core);
+goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
 
 function pad(number, length) {
   var str = '' + number;
@@ -84,7 +84,7 @@ ww.mode.Core.prototype.playProcessedAudio = function(filename, filter) {
   });
 };
 
-ww.mode.HomeMode.prototype.activateI = function() {
+ww.mode.SpaceMode.prototype.activateI = function() {
   this.iClicked = true;
   if (this.iMultiplier < 10) {
     this.iMultiplier += 2;
@@ -95,7 +95,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
   this.addCharacter_('1');
 };
 
-ww.mode.HomeMode.prototype.activateO = function() {
+ww.mode.SpaceMode.prototype.activateO = function() {
   this.oClicked = true;
   if (this.oMultiplier < 10) {
     this.oMultiplier += 2;
@@ -110,7 +110,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
  * Build matchers from patterns.
  * @private
  */
-ww.mode.HomeMode.prototype.setupPatternMatchers_ = function() {
+ww.mode.SpaceMode.prototype.setupPatternMatchers_ = function() {
   var patterns = {}, key, mode;
 
   // Privately decode patterns into binary.
@@ -147,7 +147,7 @@ ww.mode.HomeMode.prototype.setupPatternMatchers_ = function() {
  * @private
  * @param {String} str The new character.
  */
-ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
+ww.mode.SpaceMode.prototype.addCharacter_ = function(str) {
   this.currentPattern_ += str;
 
   if (this.currentPattern_.length > this.maxPatternLength_) {
@@ -174,7 +174,7 @@ ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
  * @private
  * @return {Object} The best match.
  */
-ww.mode.HomeMode.prototype.runMatchers_ = function() {
+ww.mode.SpaceMode.prototype.runMatchers_ = function() {
   var matches = [];
 
   for (var i = 0; i < this.matchers_.length; i++) {
@@ -212,7 +212,7 @@ ww.mode.HomeMode.prototype.runMatchers_ = function() {
  * @private
  * @param {String} key The mode name.
  */
-ww.mode.HomeMode.prototype.goToMode_ = function(key) {
+ww.mode.SpaceMode.prototype.goToMode_ = function(key) {
   this.sendMessage_('goToMode', key);
 };
 
@@ -221,7 +221,7 @@ ww.mode.HomeMode.prototype.goToMode_ = function(key) {
  * Requests a paper canvas and creates paths.
  * Sets initial variables.
  */
-ww.mode.HomeMode.prototype.init = function() {
+ww.mode.SpaceMode.prototype.init = function() {
   goog.base(this, 'init');
 
   // Prep paperjs
@@ -366,7 +366,7 @@ ww.mode.HomeMode.prototype.init = function() {
   this.paperSlash['add'](slashStart, slashEnd);
 };
 
-ww.mode.HomeMode.prototype.didFocus = function() {
+ww.mode.SpaceMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
   var self = this;
@@ -396,7 +396,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   });
 };
 
-ww.mode.HomeMode.prototype.didUnfocus = function() {
+ww.mode.SpaceMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
   var canvas = this.getPaperCanvas_();
@@ -409,7 +409,7 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
  * Runs code on each requested frame.
  * @param {Integer} delta The timestep variable for animation accuracy.
  */
-ww.mode.HomeMode.prototype.onFrame = function(delta) {
+ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
   // Generic iterator.

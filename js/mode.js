@@ -7,6 +7,7 @@ goog.require('ww.mode.HomeMode');
 goog.require('ww.mode.PinataMode');
 goog.require('ww.mode.PongMode');
 goog.require('ww.mode.SimonSaysMode');
+goog.require('ww.mode.SpaceMode');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -32,6 +33,7 @@ ww.mode.register('home', ww.mode.HomeMode, null);
 ww.mode.register('pinata', ww.mode.PinataMode, 6, 3); // 110
 ww.mode.register('pong', ww.mode.PongMode, 4, 3); // 100
 ww.mode.register('simon-says', ww.mode.SimonSaysMode, 8, 3); // ?
+ww.mode.register('space', ww.mode.SpaceMode, 3, 3); // ?
 
 jQuery(function() {
   var parts = window.location.href.split('/');
