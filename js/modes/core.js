@@ -488,28 +488,6 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
 };
 
 /**
- * Load a sound buffer (binary audio file).
- * @private
- * @param {Object} name The audio buffer to use.
- */
-ww.mode.Core.prototype.getSoundBufferByName_ = function(name) {
-  this.soundBuffersByName_ = this.soundBuffersByName_ || {};
-
-  return this.soundBuffersByName_[name];
-};
-
-/**
- * Load a sound buffer (binary audio file).
- * @private
- * @param {Object} name Name of the sound buffer.
- */
-ww.mode.Core.prototype.storeSoundBufferByName_ = function(name) {
-  this.soundBuffersByName_ = this.soundBuffersByName_ || {};
-
-  return this.soundBuffersByName_[name];
-};
-
-/**
  * Get a physics world.
  * @private
  * @return {Physics} The shared audio context.

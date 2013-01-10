@@ -9,6 +9,42 @@ ww.mode.HomeMode = function() {
   goog.base(this, 'home', true, true);
 
   this.setupPatternMatchers_();
+  this.getAudioContext_();
+
+  var tuna = new Tuna(this.audioContext_);
+
+  /**
+   * Create a delay audio filter. Value ranges are as follows.
+   * feedback: 0 to 1+
+   * delayTime: how many milliseconds should the wet signal be delayed?
+   * wetLevel: 0 to 1+
+   * dryLevel: 0 to 1+
+   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
+   * bypass: the value 1 starts the effect as bypassed, 0 or 1
+   */
+  this.delay = new tuna['Delay']({
+    feedback: 0,
+    delayTime: 0,
+    wetLevel: 0,
+    dryLevel: 0,
+    cutoff: 20,
+    bypass: 0
+  });
+
+  /**
+   * Create a chorus audio filter. Value ranges are as follows.
+   * rate: 0.01 to 8+
+   * feedback: 0 to 1+
+   * delay: 0 to 1
+   * dryLevel: 0 to 1+
+   * bypass: the value 1 starts the effect as bypassed, 0 or 1
+   */
+  this.chorus = new tuna['Chorus']({
+    rate: 0.01,
+    feedback: 0.2,
+    delay: 0,
+    bypass: 0
+  });
 
   this.currentPattern_ = "";
   this.maxPatternLength_ = 15;
@@ -23,13 +59,38 @@ function pad(number, length) {
   return str;
 }
 
+/**
+ * Play a sound by url after being processed by Tuna.
+ * @param {String} filename Audio file name.
+ * @param {Object} filter Audio filter name.
+ */
+ww.mode.Core.prototype.playProcessedAudio = function(filename, filter) {
+  if (!this.wantsAudio_) { return; }
+
+  var url = '../sounds/' + this.name_ + '/' + filename;
+
+  this.log('Requested sound "' + filename + '" from "' + url + '"');
+
+  var audioContext = this.audioContext_;
+
+  var self = this;
+
+  this.getSoundBufferFromURL_(url, function(buffer) {
+    var source = audioContext['createBufferSource']();
+    source['buffer'] = buffer;
+    source['connect'](filter['input']);
+    filter['connect'](audioContext['destination']);
+    source['noteOn'](0);
+  });
+};
+
 ww.mode.HomeMode.prototype.activateI = function() {
   this.iClicked = true;
   if (this.iMultiplier < 10) {
     this.iMultiplier += 2;
   }
 
-  this.playSound('boing.wav');
+  this.playProcessedAudio('boing.wav', this.chorus);
 
   this.addCharacter_('1');
 };
@@ -40,7 +101,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
     this.oMultiplier += 2;
   }
 
-  this.playSound('boing.wav');
+  this.playProcessedAudio('boing.wav', this.delay);
 
   this.addCharacter_('0');
 };
@@ -178,10 +239,8 @@ ww.mode.HomeMode.prototype.init = function() {
   /**
    * Gets the width of the viewport and its center point.
    */
-  this.screenWidthPixels = window.innerWidth;
-  this.screenHeightPixels = window.innerHeight;
-  this.screenCenterX = this.screenWidthPixels / 2;
-  this.screenCenterY = this.screenHeightPixels / 2;
+  this.screenCenterX = this.width_ / 2;
+  this.screenCenterY = this.height_ / 2;
 
   this.mouseX = this.screenCenterX;
   this.mouseY = this.screenCenterY;
@@ -206,7 +265,7 @@ ww.mode.HomeMode.prototype.init = function() {
   this.iMultiplier = 1;
 
   // Set I's initial dimensions.
-  var iWidth = this.screenWidthPixels * .175;
+  var iWidth = this.width_ * .175;
   var iHeight = iWidth * 2.12698413;
 
   // Set coordinates for I's upper left corner.
@@ -257,7 +316,7 @@ ww.mode.HomeMode.prototype.init = function() {
   this.oMultiplier = 1;
 
   // Set O's radius.
-  this.oRad = this.screenWidthPixels * 0.1944444444;
+  this.oRad = this.width_ * 0.1944444444;
 
   // Set O's initial scale.
   this.oScale = 1;
@@ -301,7 +360,7 @@ ww.mode.HomeMode.prototype.init = function() {
     this.screenCenterY + (iHeight / 2) + ((iHeight * 1.5) * 0.17475728));
 
   this.paperSlash = new paper['Path'];
-  this.paperSlash['strokeWidth'] = this.screenWidthPixels * 0.01388889;
+  this.paperSlash['strokeWidth'] = this.width_ * 0.01388889;
   this.paperSlash['strokeColor'] = '#ebebeb';
 
   this.paperSlash['add'](slashStart, slashEnd);
@@ -458,7 +517,7 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.oMultiplier = 1;
     }
 
-    this.oScale = 1 / this.oMultiplier;
+    this.delay['feedback'] = this.oMultiplier / 10;
 
     /*
      * Loop through each path segment on the letter O and move each point's
