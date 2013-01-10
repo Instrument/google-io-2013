@@ -1,6 +1,6 @@
 # Deps
 
-## Guard (file wather) & Compass
+## Guard (file watcher) & Compass
 
 ```
 gem install bundler
