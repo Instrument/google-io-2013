@@ -7,20 +7,20 @@ canvas, .simon-says-mode #simon-says {
   top: 0;
 }
 
-/* line 18, ../sass/mode.scss */
+/* line 27, ../sass/mode.scss */
 html, body {
   height: 100%;
   min-height: 100%;
 }
 
-/* line 23, ../sass/mode.scss */
+/* line 32, ../sass/mode.scss */
 body {
   background-color: #f9f9f9;
   margin: 0;
   padding: 0;
 }
 
-/* line 33, ../sass/mode.scss */
+/* line 42, ../sass/mode.scss */
 #reload {
   cursor: pointer;
   position: absolute;
@@ -211,77 +211,108 @@ body {
 /* line 5, ../sass/_simon-says.scss */
 .simon-says-mode body {
   background: #2c2c2c;
+  color: #fff;
+  font-family: helvetica, sans-serif;
+  font-size: 110%;
   position: relative;
 }
 /* line 13, ../sass/_simon-says.scss */
-.simon-says-mode #simon-says .left {
-  display: inline;
-  float: left;
-}
-/* line 17, ../sass/_simon-says.scss */
-.simon-says-mode #simon-says .left, .simon-says-mode #simon-says .right {
-  height: 100%;
-  padding: 20% 0;
-  width: 50%;
-}
-/* line 22, ../sass/_simon-says.scss */
-.simon-says-mode #simon-says .left div, .simon-says-mode #simon-says .right div {
-  height: 50%;
-  width: 100%;
-}
-/* line 28, ../sass/_simon-says.scss */
-.simon-says-mode #simon-says .right {
-  display: inline;
-  float: right;
-}
-/* line 33, ../sass/_simon-says.scss */
-.simon-says-mode #play {
-  border: 1px solid;
-  color: #fff;
-  left: 50%;
-  line-height: 2em;
-  margin: 0 0 0 -5em;
-  position: absolute;
-  text-align: center;
-  top: 15%;
-  width: 10em;
-}
-/* line 45, ../sass/_simon-says.scss */
-.simon-says-mode #play-again {
-  position: absolute;
-}
-/* line 49, ../sass/_simon-says.scss */
-.simon-says-mode #timer {
-  background: #414141;
-  -webkit-border-radius: 18px;
-  -moz-border-radius: 18px;
-  -ms-border-radius: 18px;
-  -o-border-radius: 18px;
-  border-radius: 18px;
-  color: #fff;
-  font-size: 16px;
-  height: 36px;
-  left: 50%;
-  line-height: 36px;
-  margin: -18px 0 0 -18px;
+.simon-says-mode #message {
+  left: 0;
+  line-height: 1.5em;
+  margin-top: -1em;
   position: absolute;
   text-align: center;
   top: 50%;
-  width: 36px;
+  right: 0;
 }
-/* line 64, ../sass/_simon-says.scss */
-.simon-says-mode #bottom-left {
-  background: #4584F5;
+/* line 23, ../sass/_simon-says.scss */
+.simon-says-mode #simon-says {
+  text-align: center;
 }
-/* line 68, ../sass/_simon-says.scss */
-.simon-says-mode #bottom-right {
-  background: #f8c740;
+@media screen and (orientation: landscape) {
+  /* line 23, ../sass/_simon-says.scss */
+  .simon-says-mode #simon-says {
+    bottom: 10%;
+    top: 10%;
+  }
 }
-/* line 72, ../sass/_simon-says.scss */
-.simon-says-mode #top-left {
-  background: #d53e35;
+/* line 33, ../sass/_simon-says.scss */
+.simon-says-mode #play-again {
+  background: transparent url('../img/simon-says/refresh.svg?1357767575') no-repeat 50% 50%;
+  -webkit-background-size: 100%;
+  -moz-background-size: 100%;
+  -o-background-size: 100%;
+  background-size: 100%;
+  display: block;
+  height: 2.5em;
+  left: 50%;
+  margin: 0 0 0 -1em;
+  opacity: 0;
+  position: relative;
+  top: 50%;
+  width: 2em;
+  -webkit-transition: all 200ms ease-in;
+  -moz-transition: all 200ms ease-in;
+  -o-transition: all 200ms ease-in;
+  transition: all 200ms ease-in;
+  z-index: 1000;
 }
-/* line 76, ../sass/_simon-says.scss */
-.simon-says-mode #top-right {
-  background: #0aa05a;
+/* line 47, ../sass/_simon-says.scss */
+.no-svg .simon-says-mode #play-again {
+  background-image: url('../img/simon-says/refresh.png?1357767596');
+}
+/* line 51, ../sass/_simon-says.scss */
+.simon-says-mode #max-level.game-over + #play-again {
+  opacity: 1;
+  margin-top: 1em;
+}
+/* line 57, ../sass/_simon-says.scss */
+.simon-says-mode #simon-ui {
+  color: #fff;
+  left: 50%;
+  height: 20%;
+  margin: -10% 0 0 -10%;
+  position: absolute;
+  top: 50%;
+  width: 20%;
+}
+/* line 66, ../sass/_simon-says.scss */
+.simon-says-mode #simon-ui canvas {
+  height: 100%;
+  width: 100%;
+}
+/* line 71, ../sass/_simon-says.scss */
+.simon-says-mode #max-level {
+  background: #2c2c2c;
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  -ms-border-radius: 2em;
+  -o-border-radius: 2em;
+  border-radius: 2em;
+  left: 50%;
+  height: 2em;
+  line-height: 2em;
+  margin: -1em 0 0 -1em;
+  position: relative;
+  text-align: center;
+  top: 50%;
+  width: 2em;
+  -webkit-transition: all 200ms ease-in;
+  -moz-transition: all 200ms ease-in;
+  -o-transition: all 200ms ease-in;
+  transition: all 200ms ease-in;
+}
+/* line 84, ../sass/_simon-says.scss */
+.simon-says-mode #max-level.start {
+  background: #424242;
+}
+/* line 88, ../sass/_simon-says.scss */
+.simon-says-mode #max-level.game-over {
+  background: #d53d2f;
+  margin-top: -2em;
+}
+/* line 93, ../sass/_simon-says.scss */
+.simon-says-mode #max-level.success {
+  background: #069b5a;
 }

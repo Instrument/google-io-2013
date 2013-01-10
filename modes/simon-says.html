@@ -10,17 +10,55 @@
   </head>
   <body>
     <div id="simon-says">
-      <div class="left">
-        <div id="top-left" class="simon-button"></div>
-        <div id="bottom-left" class="simon-button"></div>
-      </div>
-      <div class="right">
-        <div id="top-right" class="simon-button"></div>
-        <div id="bottom-right" class="simon-button"></div>
-      </div>
+      <svg version="1.1" id="simon-says-board" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   width="100%" height="100%" viewBox="0 0 345 247.604" enable-background="new 0 0 315.062 247.604"
+     xml:space="preserve">
+        <g>
+          <g id="simon-green" class="segment">
+            <radialGradient id="SVGID_1_" cx="244.582" cy="-14.3174" r="220.5959" gradientUnits="userSpaceOnUse">
+              <stop  offset="0" style="stop-color:#0DA960"/>
+              <stop  offset="1" style="stop-color:#03914B"/>
+            </radialGradient>
+            <path fill="url(#SVGID_1_)" d="M288.661,178.509c3.211,5.301,3.295,13.689,0.507,19.45l38.293-63.783
+              c3.427-5.716,3.427-15.032,0-20.724l-61.884-103.1C262.141,4.673,253.899,0,247.255,0h-53.946c-6.63,0-9.273,4.673-5.85,10.353
+              l38.529,64.15c0.231,0.318,0.562,0.615,0.757,0.915L288.661,178.509z"/>
+          </g>
+          <g id="simon-yellow" class="segment">
+            <radialGradient id="SVGID_2_" cx="251.9854" cy="123.9453" r="163.6231" gradientUnits="userSpaceOnUse">
+              <stop  offset="0" style="stop-color:#FFCD4D"/>
+              <stop  offset="1" style="stop-color:#F6C338"/>
+            </radialGradient>
+            <path fill="url(#SVGID_2_)" d="M193.309,247.604h53.946c6.645,0,14.886-4.649,18.322-10.363l23.591-39.282
+              c2.788-5.761,2.704-14.149-0.507-19.45l-39.287-65.057c3.419,5.691,3.419,15.008,0,20.724l-38.306,63.736
+              c-0.194,0.414-0.29,0.91-0.504,1.326l-23.508,39.138C184.649,243.523,187.128,247.604,193.309,247.604z"/>
+          </g>
+          <g id="simon-blue" class="segment">
+              <radialGradient id="SVGID_3_" cx="-638.6592" cy="-344.4746" r="220.608" gradientTransform="matrix(-1 0 0 -1 -538.2246 -82.5527)" gradientUnits="userSpaceOnUse">
+                <stop  offset="0" style="stop-color:#4387FD"/>
+                <stop  offset="1" style="stop-color:#4683EA"/>
+              </radialGradient>
+              <path fill="url(#SVGID_3_)" d="M56.336,69.091c-3.173-5.308-3.277-13.691-0.486-19.452l-38.317,63.79
+                c-3.418,5.715-3.418,15.031,0,20.722l61.923,103.091c3.412,5.69,11.666,10.363,18.29,10.363h53.946
+                c6.662,0,9.3-4.673,5.882-10.363l-38.561-64.151c-0.207-0.331-0.562-0.603-0.758-0.899L56.336,69.091z"/>
+          </g>
+          <g id="simon-red" class="segment">
+            <radialGradient id="SVGID_4_" cx="-631.2598" cy="-206.2104" r="163.6211" gradientTransform="matrix(-1 0 0 -1 -538.2246 -82.5527)" gradientUnits="userSpaceOnUse">
+              <stop  offset="0" style="stop-color:#E04A3F"/>
+              <stop  offset="1" style="stop-color:#CD372D"/>
+            </radialGradient>
+            <path fill="url(#SVGID_4_)" d="M151.691,0H97.745c-6.624,0-14.878,4.645-18.29,10.353L55.85,49.639
+              c-2.791,5.761-2.687,14.145,0.486,19.452l39.298,65.06c-3.419-5.69-3.419-15.007,0-20.722l38.299-63.741
+              c0.19-0.429,0.283-0.912,0.539-1.328l23.49-39.133C160.383,4.076,157.868,0,151.691,0z"/>
+          </g>
+        </g>
+      </svg>
+      
+      <div id="message">Tap to play.</div>
     </div>
-    <div id="play">Play</div>
-    <div id="timer"></div>
-    <div id="play-again">Play Again</div>
+    <div id="simon-ui">
+      <canvas id="radial-spinner"></canvas>
+      <div id="max-level"></div>
+      <div id="play-again"></div>
+    </div>
   </body>
 </html>

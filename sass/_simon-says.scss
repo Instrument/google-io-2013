@@ -3,76 +3,94 @@
 }
 
 body {
-  background: #2c2c2c; 
+  background: #2c2c2c;
+  color: #fff;
+  font-family: helvetica, sans-serif;
+  font-size: 110%;
   position: relative;
+}
+
+#message {
+  left: 0;
+  line-height: 1.5em;
+  margin-top: -1em;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  right: 0;
 }
 
 #simon-says {
   @extend %absolute-full;
-
-  .left {
-    @include float-left;
-  }
-
-  .left, .right {
-    height: 100%;
-    padding: 20% 0;
-    width: 50%;
-
-    div {
-      height: 50%;
-      width: 100%;
-    }
-  }
-
-  .right {
-    @include float-right;
-  }
-}
-
-#play {
-  border: 1px solid;
-  color: #fff;
-  left: 50%;
-  line-height: 2em;
-  margin: 0 0 0 -5em;
-  position: absolute;
   text-align: center;
-  top: 15%;
-  width: 10em;
+
+  @include landscape() {
+    bottom: 10%;
+    top: 10%;
+  }
 }
 
 #play-again {
-  position: absolute;
-}
-
-#timer {
-  background: #414141;
-  @include border-radius(18px);
-  color: #fff;
-  font-size: 16px;
-  height: 36px;
+  background: transparent image-url('simon-says/refresh.svg') no-repeat 50% 50%;
+  @include background-size(100%);
+  display: block;
+  height: 2.5em;
   left: 50%;
-  line-height: 36px;
-  margin: -18px 0 0 -18px;
-  position: absolute;
-  text-align: center;
+  margin: 0 0 0 -1em;
+  opacity: 0;
+  position: relative;
   top: 50%;
-  width: 36px;
-}
+  width: 2em;
+  @include transition(all 200ms ease-in);
+  z-index: 1000;
 
-#bottom-left {
-  background: #4584F5;
+  .no-svg & {
+    background-image: image-url('simon-says/refresh.png');
+  }
 }
+  #max-level.game-over + #play-again {
+    opacity: 1;
+    margin-top: 1em;
+  }
+  
+  
+#simon-ui {
+  color: #fff;
+  left: 50%;
+  height: 20%;
+  margin: -10% 0 0 -10%;
+  position: absolute;
+  top: 50%;
+  width: 20%;
 
-#bottom-right {
-  background: #f8c740;
+  canvas {
+    height: 100%;
+    width: 100%;
+  }
 }
+  #max-level {
+    background: #2c2c2c;
+    @include border-radius(2em);
+    left: 50%;
+    height: 2em;
+    line-height: 2em;
+    margin: -1em 0 0 -1em;
+    position: relative;
+    text-align: center;
+    top: 50%;
+    width: 2em;
+    @include transition(all 200ms ease-in);
 
-#top-left {
-  background: #d53e35;
-}
+    &.start {
+      background: #424242;
+    }
 
-#top-right {
-  background: #0aa05a;
-}
+    &.game-over {
+      background: #d53d2f;
+      margin-top: -2em;
+    }
+
+    &.success {
+      background: #069b5a;
+    }
+  }

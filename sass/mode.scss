@@ -15,6 +15,15 @@ $break-large: 1024px;
   top: 0;
 }
 
+@mixin landscape()
+{
+  @media screen and (orientation:landscape)
+  {
+    @content;
+  }
+}
+
+
 html, body {
   height: 100%;
   min-height: 100%;
