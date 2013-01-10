@@ -20,6 +20,12 @@ ww.mode.SimonSaysMode.prototype.init = function() {
 
   var self = this;
 
+  if (this.hasTouch) {
+    this.evt = 'touchend.simon';
+  } else {
+    this.evt = 'mouseup.simon';
+  }
+
   this.topLeft = $('#simon-red');        // 0 in sequence
   this.topRight = $('#simon-green');     // 1 in sequence 
 
@@ -39,10 +45,10 @@ ww.mode.SimonSaysMode.prototype.init = function() {
 
   // display 'how to start playing' message
   // unbind and hide once first game has started
-  this.container.bind('click.simon', function(){
+  this.container.bind(this.evt, function(){
     self.message.css('opacity', 0);
     self.beginGame();
-    self.container.unbind('click.simon');
+    self.container.unbind(self.evt);
   });
 
   this.message = $('#message').css('opacity', 1);
@@ -83,23 +89,23 @@ ww.mode.SimonSaysMode.prototype.didFocus = function() {
 
   var self = this;
 
-  self.playAgainEl.bind('click.simon', function(){
+  self.playAgainEl.bind(this.evt, function(){
     self.beginGame();
   });
   
-  self.topLeft.bind('click.simon', function(){
+  self.topLeft.bind(this.evt, function(){
     self.checkSequence(0);
   });
 
-  self.topRight.bind('click.simon', function(){
+  self.topRight.bind(this.evt, function(){
     self.checkSequence(1);
   });
 
-  self.bottomLeft.bind('click.simon', function(){
+  self.bottomLeft.bind(this.evt, function(){
     self.checkSequence(2);
   });
   
-  self.bottomRight.bind('click.simon', function(){
+  self.bottomRight.bind(this.evt, function(){
     self.checkSequence(3);
   });
 };
@@ -112,12 +118,12 @@ ww.mode.SimonSaysMode.prototype.didFocus = function() {
 ww.mode.SimonSaysMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  this.playAgainEl.unbind('click.simon');
+  this.playAgainEl.unbind(this.evt);
 
-  this.topLeft.unbind('click.simon');
-  this.topRight.unbind('click.simon');
-  this.bottomLeft.unbind('click.simon');
-  this.bottomRight.unbind('click.simon');
+  this.topLeft.unbind(this.evt);
+  this.topRight.unbind(this.evt);
+  this.bottomLeft.unbind(this.evt);
+  this.bottomRight.unbind(this.evt);
 };
 
 
@@ -250,7 +256,7 @@ ww.mode.SimonSaysMode.prototype.beginGame = function() {
     self.lastStep = 0;
 
     self.shuffleSequence();
-    self.levelCount.removeClass();
+    self.levelCount.removeClass().text('');
 
     this.log('Playing sequence: ' + this.sequence);
 
