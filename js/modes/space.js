@@ -367,15 +367,16 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
       }
     }
 
-  this.ctx_.fillStyle = '#fff';
+    this.ctx_.fillStyle = '#fff';
 
-  this.ctx_.beginPath();
+    this.ctx_.beginPath();
 
-  for (this.i = 0; this.i < this.world['particles'].length; this.i++) {
-    this.ctx_.arc(this.world['particles'][this.i]['pos']['x'],
-      this.world['particles'][this.i]['pos']['y'],
-      this.world['particles'][this.i]['radius'], 0, Math.PI * 2);
-    console.log(this.world['particles'][this.i]);
+    for (this.i = 0; this.i < this.world['particles'].length; this.i++) {
+      this.ctx_.arc(this.world['particles'][this.i]['pos']['x'],
+        this.world['particles'][this.i]['pos']['y'],
+        this.world['particles'][this.i]['radius'], 0, Math.PI * 2);
+      console.log(this.world['particles'][this.i]);
+    }
   }
 
   /*
@@ -468,5 +469,4 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   }
 
   this.ctx_.fill();
-
 };
