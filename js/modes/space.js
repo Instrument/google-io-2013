@@ -6,9 +6,8 @@ goog.provide('ww.mode.SpaceMode');
  * @constructor
  */
 ww.mode.SpaceMode = function() {
-  goog.base(this, 'space', true, true);
+  goog.base(this, 'space', true, false, true);
 
-  this.setupPatternMatchers_();
   this.getAudioContext_();
 
   var tuna = new Tuna(this.audioContext_);
@@ -46,7 +45,7 @@ ww.mode.SpaceMode = function() {
     bypass: 0
   });
 
-  this.currentPattern_ = "";
+  this.currentPattern_ = '';
   this.maxPatternLength_ = 15;
 };
 goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
@@ -64,7 +63,7 @@ function pad(number, length) {
  * @param {String} filename Audio file name.
  * @param {Object} filter Audio filter name.
  */
-ww.mode.Core.prototype.playProcessedAudio = function(filename, filter) {
+ww.mode.SpaceMode.prototype.playProcessedAudio = function(filename, filter) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
@@ -90,9 +89,7 @@ ww.mode.SpaceMode.prototype.activateI = function() {
     this.iMultiplier += 2;
   }
 
-  this.playProcessedAudio('boing.wav', this.chorus);
-
-  this.addCharacter_('1');
+  // this.playProcessedAudio('boing.wav', this.chorus);
 };
 
 ww.mode.SpaceMode.prototype.activateO = function() {
@@ -101,119 +98,7 @@ ww.mode.SpaceMode.prototype.activateO = function() {
     this.oMultiplier += 2;
   }
 
-  this.playProcessedAudio('boing.wav', this.delay);
-
-  this.addCharacter_('0');
-};
-
-/**
- * Build matchers from patterns.
- * @private
- */
-ww.mode.SpaceMode.prototype.setupPatternMatchers_ = function() {
-  var patterns = {}, key, mode;
-
-  // Privately decode patterns into binary.
-  for (key in ww.mode.modes) {
-    if (ww.mode.modes.hasOwnProperty(key) && ww.mode.modes[key].pattern) {
-      mode = ww.mode.modes[key];
-      patterns[key] = {
-        klass: mode.klass,
-        binaryPattern: pad(mode.pattern.toString(2), mode.len)
-      };
-    }
-  }
-
-  // Build per-character matchers
-  this.matchers_ = [];
-
-  for (key in patterns) {
-    if (patterns.hasOwnProperty(key)) {
-      mode = patterns[key];
-      this.log('Building matchers for: ' + mode.binaryPattern);
-      for (var i = 0; i < mode.binaryPattern.length; i++) {
-        this.matchers_.push({
-          key: key,
-          matcher: mode.binaryPattern.slice(0, i + 1),
-          isPartial: ((i + 1) != mode.binaryPattern.length)
-        });
-      }
-    }
-  }
-};
-
-/**
- * Add a character to the pattern we're tracking.
- * @private
- * @param {String} str The new character.
- */
-ww.mode.SpaceMode.prototype.addCharacter_ = function(str) {
-  this.currentPattern_ += str;
-
-  if (this.currentPattern_.length > this.maxPatternLength_) {
-    this.currentPattern_ = this.currentPattern_.slice(-this.maxPatternLength_, this.currentPattern_.length);
-  }
-
-  this.log('current pattern: ' + this.currentPattern_);
-  $('#pattern').text(this.currentPattern_);
-
-  var matched = this.runMatchers_();
-  if (matched) {
-    this.log('matched', matched);
-
-    if (true || matched.isPartial) {
-      // Highlight partial match in UI?
-    } else {
-      this.goToMode_(matched.key);
-    }
-  }
-};
-
-/**
- * Run the matchers and return the best match.
- * @private
- * @return {Object} The best match.
- */
-ww.mode.SpaceMode.prototype.runMatchers_ = function() {
-  var matches = [];
-
-  for (var i = 0; i < this.matchers_.length; i++) {
-    var matcher = this.matchers_[i];
-    var lastXChars = this.currentPattern_.slice(-matcher.matcher.length, this.currentPattern_.length);
-
-    if (lastXChars.indexOf(matcher.matcher) > -1) {
-      matches.push({
-        matcher: matcher,
-        len: matcher.matcher.length,
-        isPartial: matcher.isPartial
-      });
-
-      if (!matcher.isPartial) {
-        return matcher;
-      }
-    }
-  }
-
-  var found;
-  // Find longest
-  var longestLen = 0;
-  for (var j = 0; j < matches.length; j++) {
-    if (matches[j].len > longestLen) {
-      found = matches[j].matcher;
-      longestLen = matches[j].len;
-    }
-  }
-
-  return found;
-};
-
-/**
- * Tell the app to transition to the specified mode.
- * @private
- * @param {String} key The mode name.
- */
-ww.mode.SpaceMode.prototype.goToMode_ = function(key) {
-  this.sendMessage_('goToMode', key);
+  // this.playProcessedAudio('boing.wav', this.delay);
 };
 
 /**
@@ -248,6 +133,21 @@ ww.mode.SpaceMode.prototype.init = function() {
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick =
     new paper['Point'](this.screenCenterX, this.screenCenterY);
+
+  /**
+   * Create a star field.
+   */
+  this.world = this.getPhysicsWorld_();
+  this.world['viscosity'] = 0;
+
+  for (this.i = 0; this.i < 200; this.i++) {
+    this.tempFloat = ww.util.floatComplexGaussianRandom();
+    this.world['particles'].push(new Particle(this.tempFloat[0] * this.width_,
+      this.tempFloat[1] * this.height_));
+    this.world['particles'][this.i]['setRadius'](Math.random(this.width_ * 0.0277778));
+    this.world['particles'][this.i]['vel']['x'] = 10;
+    this.world['particles'][this.i]['vel']['y'] = 0;
+  }
 
   /**
    * Create the letter I.
@@ -369,8 +269,14 @@ ww.mode.SpaceMode.prototype.init = function() {
 ww.mode.SpaceMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
+  this.$canvas_ = $('#space-canvas');
+  this.canvas_ = this.$canvas_[0];
+  this.canvas_.width = this.width_;
+  this.canvas_.height = this.height_;
+  this.ctx_ = this.canvas_.getContext('2d');
+
   var self = this;
-  var canvas = this.getPaperCanvas_();
+
   var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
   var tempPoint;
 
@@ -387,7 +293,7 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
     }
   };
 
-  $(canvas).bind(evt, function(e){
+  $(canvas).bind(evt, function(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -406,20 +312,33 @@ ww.mode.SpaceMode.prototype.didUnfocus = function() {
 };
 
 /**
+ * On each physics tick, adjust star positions.
+ * @param {Float} delta Time since last tick.
+ */
+ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
+  goog.base(this, 'stepPhysics', delta);
+  
+  // Move star positions right and also adjust them based on mouse position.
+  for (this.i = 0; this.i < this.world['particles'].length; this.i++) {
+    this.world['particles'][this.i]['pos']['x'] +=
+      (1 + this.screenCenterX - this.mouseX);
+
+    this.world['particles'][this.i]['pos']['y'] +=
+      (this.screenCenterY - this.mouseY);
+  }
+};
+
+/**
  * Runs code on each requested frame.
  * @param {Integer} delta The timestep variable for animation accuracy.
  */
 ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
+  console.log('frame');
 
-  // Generic iterator.
-  var i;
+  if (!this.canvas_) { return; }
 
-  /*
-   * Delta is initially a very small float. Need to modify it for it to have a
-   * stronger effect.
-   */
-  this.deltaModifier = (delta / 100);
+  this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
 
   /*
    * Run the following code if the letter I is activated.
@@ -427,7 +346,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   if (this.iClicked == true) {
 
     if (this.iModifier < this.deltaModifier * 10000 &&
-      this.iIncrement == true) {      
+      this.iIncrement == true) {
         this.iModifier += this.deltaModifier * 1000;
     } else if (this.iMultiplier > 1) {
       if (this.iModifier < this.deltaModifier * 10000) {
@@ -448,39 +367,15 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
       }
     }
 
-    if (this.iModifier < this.deltaModifier * 1000) {
-      this.iClicked = false;
-      this.iIncrement = true;
-      this.iMultiplier = 1;
-    }
+  this.ctx_.fillStyle = '#fff';
 
-    /*
-     * Loop through each path segment on the letter I and move each point's
-     * handles based on time as being evaluated by Sine and Cosine.
-     */
-    for (this.i = 0; this.i < this.paperI['segments'].length; this.i++) {
-      this.tempFloat = ww.util.floatComplexGaussianRandom();
+  this.ctx_.beginPath();
 
-      this.paperI['segments'][this.i]['point']['_x'] = this.iPointX[this.i]
-        + Math.cos(this.framesRendered_ / 10)
-        * this.iModifier * this.iMultiplier * this.tempFloat[0];
-
-      this.paperI['segments'][this.i]['point']['_y'] = this.iPointY[this.i]
-        + Math.sin(this.framesRendered_ / 10)
-        * this.iModifier * this.iMultiplier * this.tempFloat[1];
-    }
-
-  } else {
-
-    /*
-     * If I hasn't been activated recently enough, restore the original handle
-     * coordinates.
-     */
-    for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
-      this.paperI['segments'][this.i]['point']['_x'] = this.iPointX[this.i];
-      this.paperI['segments'][this.i]['point']['_y'] = this.iPointY[this.i];
-    }
-
+  for (this.i = 0; this.i < this.world['particles'].length; this.i++) {
+    this.ctx_.arc(this.world['particles'][this.i]['pos']['x'],
+      this.world['particles'][this.i]['pos']['y'],
+      this.world['particles'][this.i]['radius'], 0, Math.PI * 2);
+    console.log(this.world['particles'][this.i]);
   }
 
   /*
@@ -489,7 +384,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   if (this.oClicked == true) {
 
     if (this.oModifier < this.deltaModifier * 10000 &&
-      this.oIncrement == true) {      
+      this.oIncrement == true) {
         this.oModifier += this.deltaModifier * 1000;
     } else if (this.oMultiplier > 1) {
       if (this.oModifier < this.deltaModifier * 10000) {
@@ -571,5 +466,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     }
 
   }
+
+  this.ctx_.fill();
 
 };

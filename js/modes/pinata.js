@@ -19,10 +19,10 @@ ww.mode.PinataMode.prototype.init = function() {
   goog.base(this, 'init');
 
   this.COLORS_ = ['#EB475A', '#E05A91', '#925898',
-                  '#E96641','#19A281', '#FAD14A'];
+                  '#E96641', '#19A281', '#FAD14A'];
 
   this.NUM_COLORS = this.COLORS_.length;
-  
+
   this.prefix = Modernizr['prefixed']('transform');
 
   var self = this;
@@ -108,13 +108,13 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
       ball, pre;
 
   // update balls to bounce within canvas bounds.
-  for (var i = 0; i < length; i ++) {
+  for (var i = 0; i < length; i++) {
     ball = this.active[i];
     ball['vector']['y'] += ball['gravity'];
     ball['vector']['x'] *= 0.99;
-    
+
     pre = this.utilAdd_(ball['point'], ball['vector']);
-    
+
     if (pre['x'] < ball['radius'] ||
         pre['x'] > size['width'] - ball['radius']) {
 
@@ -123,7 +123,7 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
 
     if (pre['y'] < ball['radius'] ||
         pre['y'] > size['height'] - ball['radius']) {
-      
+
       if (Math.abs(ball['vector']['x']) < 3) {
         ball['vector'] = paper['Point']['random']();
         ball['vector'] = this.utilAdd_(ball['vector'], [-0.5, 0]);
@@ -135,10 +135,10 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
 
     var ballAndVect = this.utilAdd_(ball['point'], ball['vector']);
     var max = paper['Point']['max'](ball['radius'], ballAndVect);
- 
+
 
     ball['point'] = paper['Point']['min'](max, size['width'] - ball['radius']);
-  
+
     ball['position'] = ball['point'];
     ball['rotate'](ball['vector']['x'] / 2);
   }
@@ -149,7 +149,7 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
  * Utility to add two x/y representations together.
  * @param {object} v1 Vector one.
  * @param {object} v2 Vector two.
- * @return {object} Result of v1 + v2. 
+ * @return {object} Result of v1 + v2.
  * @private
  */
 ww.mode.PinataMode.prototype.utilAdd_ = function(v1, v2) {
@@ -198,7 +198,7 @@ ww.mode.PinataMode.prototype.prepopulate = function(max) {
 
     ball['vector'] = paper['Point']['random']();
     ball['vector'] = this.utilAdd_(ball['vector'], [-0.5, 0]);
-    ball['vector'] = this.utilMultiply_(ball['vector'], [50, 100])
+    ball['vector'] = this.utilMultiply_(ball['vector'], [50, 100]);
 
     ball['dampen'] = 0.4;
     ball['gravity'] = 3;
@@ -223,8 +223,8 @@ ww.mode.PinataMode.prototype.popBalls_ = function() {
 
   if (this.hitCount < this.maxHit) {
     this.hitCount++;
-    toPop = Math.min(this.deactive.length, ~~Random(1, 5) * this.hitCount)
-    
+    toPop = Math.min(this.deactive.length, ~~Random(1, 5) * this.hitCount);
+
     this.log('hit #' + this.hitCount + '. adding ' + toPop + ' more balls.');
 
     for (var i = 0; i < toPop; i++) {
@@ -235,7 +235,7 @@ ww.mode.PinataMode.prototype.popBalls_ = function() {
 
     // TO-DO: SWAP OPACITY CHANGE FOR DIFFERENT PINATA BASHED STATE
     // this.pinata.css('opacity', (this.maxHit - this.hitCount) / this.maxHit);
-  
+
     // animate wiggle
     var deg = ~~Random(10, 45);
     var dir = (this.hitCount % 2 === 0) ? -1 : 1;

@@ -5,7 +5,7 @@ goog.require('goog.events');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
- 
+
 /**
  * @constructor
  */
