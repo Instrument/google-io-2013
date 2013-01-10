@@ -32,6 +32,22 @@ body {
   display: none;
 }
 
+/* line 1, ../sass/_bacon.scss */
+#bacon-container {
+  bottom: 0;
+  left: 10%;
+  position: absolute;
+  right: 10%;
+  top: 0;
+}
+@media screen and (orientation: landscape) {
+  /* line 1, ../sass/_bacon.scss */
+  #bacon-container {
+    bottom: 10%;
+    top: 10%;
+  }
+}
+
 /* line 2, ../sass/_cat.scss */
 .cat-mode #letter-i {
   background-image: url('../img/cat/cat-letter-i.png?1357242087');
@@ -113,7 +129,6 @@ body {
 
 /* line 1, ../sass/_home.scss */
 .home-mode #pattern-container {
-  display: none;
   position: absolute;
   left: 0;
   right: 0;

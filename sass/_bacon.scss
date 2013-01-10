@@ -1,9 +1,13 @@
-// bacon
-.bacon-mode #letter-i {
+#bacon-container {
+  bottom: 0;
+  left: 10%;
+  position: absolute;
+  right: 10%;
+  top: 0;
 
-}
-
-// eggs
-.bacon-mode #letter-o {
+  @include landscape(){
+    bottom: 10%;
+    top: 10%;
+  }
 
 }
