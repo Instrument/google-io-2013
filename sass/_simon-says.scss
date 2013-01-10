@@ -37,19 +37,19 @@ body {
   @include background-size(100%);
   cursor: pointer;
   display: block;
-  height: 2.5em;
+  height: 3.5em;
   left: 50%;
-  margin: 0 0 0 -1em;
+  margin: 0 0 0 -1.5em;
   opacity: 0;
   position: relative;
   top: 50%;
-  width: 2em;
+  width: 3em;
   @include transition(all 200ms ease-in);
   z-index: 1000;
 }
   #max-level.game-over + #play-again {
     opacity: 1;
-    margin-top: 1em;
+    margin-top: 2em;
   }
   
   
@@ -70,15 +70,15 @@ body {
 }
   #max-level {
     background: #2c2c2c;
-    @include border-radius(2em);
+    @include border-radius(1.5em);
     left: 50%;
-    height: 2em;
-    line-height: 2em;
-    margin: -1em 0 0 -1em;
+    height: 3em;
+    line-height: 3.2em;
+    margin: -1.5em 0 0 -1.5em;
     position: relative;
     text-align: center;
     top: 50%;
-    width: 2em;
+    width: 3em;
     @include transition(all 200ms ease-in);
 
     &.start {
@@ -87,7 +87,7 @@ body {
 
     &.game-over {
       background: #d53d2f;
-      margin-top: -2.5em;
+      margin-top: -4em;
     }
 
     &.success {

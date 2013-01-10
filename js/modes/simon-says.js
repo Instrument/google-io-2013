@@ -13,7 +13,6 @@ goog.inherits(ww.mode.SimonSaysMode, ww.mode.Core);
 
 /**
  * Initailize SimonSaysMode.
- * @private
  */
 ww.mode.SimonSaysMode.prototype.init = function() {
   goog.base(this, 'init');
@@ -30,11 +29,11 @@ ww.mode.SimonSaysMode.prototype.init = function() {
     this.evtEnd = 'mouseup.simon';
   }
 
-  this.topLeft = $('#red');        // 0 in sequence
-  this.topRight = $('#green');     // 1 in sequence
+  this.topLeft = $('#red');        // 0 in sequence, e lower
+  this.topRight = $('#green');     // 1 in sequence, a
 
-  this.bottomLeft = $('#blue');    // 2 in sequence
-  this.bottomRight = $('#yellow'); // 3 in sequence
+  this.bottomLeft = $('#blue');    // 2 in sequence, c#
+  this.bottomRight = $('#yellow'); // 3 in sequence, e
 
   this.segments = [this.topLeft, this.topRight,
                    this.bottomLeft, this.bottomRight];
@@ -54,7 +53,7 @@ ww.mode.SimonSaysMode.prototype.init = function() {
   // unbind and hide once first game has started
   this.container.bind(this.evtEnd, function() {
     self.message.css('opacity', 0);
-    self.beginGame();
+    self.beginGame_();
     self.container.unbind(self.evtEnd);
   });
 
@@ -78,7 +77,7 @@ ww.mode.SimonSaysMode.prototype.init = function() {
   // highest level reached out of all games
   this.highestLevel = 0;
 
-  this.generateSequence();
+  this.generateSequence_();
 
   // total levels available to play
   this.total = this.sequence.length;
@@ -86,7 +85,6 @@ ww.mode.SimonSaysMode.prototype.init = function() {
 
 /**
  * On focus, make the Simon Says interactive.
- * @private
  */
 ww.mode.SimonSaysMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
@@ -94,7 +92,7 @@ ww.mode.SimonSaysMode.prototype.didFocus = function() {
   var self = this;
 
   self.playAgainEl.bind(this.evtEnd, function() {
-    self.beginGame();
+    self.beginGame_();
   });
 
   self.segmentEls.bind(self.evtStart, function() {
@@ -106,29 +104,28 @@ ww.mode.SimonSaysMode.prototype.didFocus = function() {
         });
 
     self.addTween(fadeInQuick);
-  })
-  
+  });
+
   self.topLeft.bind(this.evtEnd, function() {
-    self.checkSequence(0);
+    self.checkSequence_(0);
   });
 
   self.topRight.bind(this.evtEnd, function() {
-    self.checkSequence(1);
+    self.checkSequence_(1);
   });
 
   self.bottomLeft.bind(this.evtEnd, function() {
-    self.checkSequence(2);
+    self.checkSequence_(2);
   });
-  
+
   self.bottomRight.bind(this.evtEnd, function() {
-    self.checkSequence(3);
+    self.checkSequence_(3);
   });
 };
 
 
 /**
  * On unfocus, deactivate the Simon Says.
- * @private
  */
 ww.mode.SimonSaysMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
@@ -147,7 +144,7 @@ ww.mode.SimonSaysMode.prototype.didUnfocus = function() {
  * Generates an initial, random sequence.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.generateSequence = function() {
+ww.mode.SimonSaysMode.prototype.generateSequence_ = function() {
   this.sequence = this.sequence || [];
 
   for (var i = 0; i < 4; i++) {
@@ -162,7 +159,7 @@ ww.mode.SimonSaysMode.prototype.generateSequence = function() {
  * Shuffle the sequence.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.shuffleSequence = function() {
+ww.mode.SimonSaysMode.prototype.shuffleSequence_ = function() {
   var i = this.sequence.length, j, swap;
 
   while (--i) {
@@ -181,9 +178,10 @@ ww.mode.SimonSaysMode.prototype.shuffleSequence = function() {
  * If the guess is in the middle of the sequence and is correct, continue.
  * If the guess is also the last step of the active sequence and is correct,
  *   then the level count increases and the next segment is shown.
+ * @param {number} guess Enumerated number sequence representing chosen segment.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.checkSequence = function(guess) {
+ww.mode.SimonSaysMode.prototype.checkSequence_ = function(guess) {
   this.log('Guessed (' + guess + ')');
 
   if (this.isPlaying && !this.isAnimating) {
@@ -235,7 +233,7 @@ ww.mode.SimonSaysMode.prototype.checkSequence = function(guess) {
           self.stepIndex = 0;
         }
 
-        self.displayNext();
+        self.displayNext_();
       }
     } else {
       // wrong step guess
@@ -261,7 +259,7 @@ ww.mode.SimonSaysMode.prototype.checkSequence = function(guess) {
  * Begin a new, fresh state game.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.beginGame = function() {
+ww.mode.SimonSaysMode.prototype.beginGame_ = function() {
   if (!this.isPlaying) {
     var self = this;
 
@@ -272,7 +270,7 @@ ww.mode.SimonSaysMode.prototype.beginGame = function() {
     self.highestLevel = Math.max(self.highestLevel, self.lastStep);
     self.lastStep = 0;
 
-    self.shuffleSequence();
+    self.shuffleSequence_();
     self.levelCount.removeClass().text('');
 
     this.log('Playing sequence: ' + this.sequence);
@@ -290,7 +288,7 @@ ww.mode.SimonSaysMode.prototype.beginGame = function() {
       self.addTween(fadeOut);
     }
 
-    self.displayNext();
+    self.displayNext_();
   }
 };
 
@@ -299,7 +297,7 @@ ww.mode.SimonSaysMode.prototype.beginGame = function() {
  * Animates the active sequence, plus the next segment to be matched.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.displayNext = function() {
+ww.mode.SimonSaysMode.prototype.displayNext_ = function() {
   if (this.isPlaying) {
     this.isAnimating = true;
 

@@ -10,17 +10,9 @@ ww.mode.CatMode = function() {
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
 
-/**
- * Initailize CateMode.
- * @private
- */
-// ww.mode.CatMode.prototype.init = function() {
-//   goog.base(this, 'init');
-// };
 
 /**
  * Plays a sound and stretches the letter i when activated.
- * @private
  */
 ww.mode.CatMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
@@ -49,7 +41,6 @@ ww.mode.CatMode.prototype.activateI = function() {
 
 /**
  * Plays a sound and stretches the letter o when activated.
- * @private
  */
 ww.mode.CatMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
@@ -59,7 +50,12 @@ ww.mode.CatMode.prototype.activateO = function() {
 
   var position = [Random(-200, 200), Random(-50, 50)];
 
-  var moveOut = new TWEEN['Tween']({ 'scale': 1, 'x': 0, 'y': 0 });
+  var moveOut = new TWEEN['Tween']({
+    'scale': 1,
+    'x': 0,
+    'y': 0
+  });
+
   moveOut['to']({ 'scale': 1.5, 'x': position[0], 'y': position[1] }, 200);
   moveOut['easing'](TWEEN['Easing']['Bounce']['InOut']);
   moveOut['onUpdate'](function() {
@@ -68,7 +64,12 @@ ww.mode.CatMode.prototype.activateO = function() {
     self.transformElem_(self.letterO[0], translate);
   });
 
-  var moveBack = new TWEEN['Tween']({ 'scale': 1.5, 'x': position[0], 'y': position[1] });
+  var moveBack = new TWEEN['Tween']({
+    'scale': 1.5,
+    'x': position[0],
+    'y': position[1]
+  });
+
   moveBack['to']({ 'scale': 1, 'x': 0, 'y': 0 }, 200);
   moveBack['delay'](200);
   moveBack['easing'](TWEEN['Easing']['Bounce']['InOut']);

@@ -11,7 +11,6 @@ goog.inherits(ww.mode.BaconMode, ww.mode.Core);
 
 /**
  * Initailize BaconMode.
- * @private
  */
 ww.mode.BaconMode.prototype.init = function() {
   goog.base(this, 'init');

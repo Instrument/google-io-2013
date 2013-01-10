@@ -259,13 +259,13 @@ body {
   background-size: 100%;
   cursor: pointer;
   display: block;
-  height: 2.5em;
+  height: 3.5em;
   left: 50%;
-  margin: 0 0 0 -1em;
+  margin: 0 0 0 -1.5em;
   opacity: 0;
   position: relative;
   top: 50%;
-  width: 2em;
+  width: 3em;
   -webkit-transition: all 200ms ease-in;
   -moz-transition: all 200ms ease-in;
   -o-transition: all 200ms ease-in;
@@ -275,7 +275,7 @@ body {
 /* line 50, ../sass/_simon-says.scss */
 .simon-says-mode #max-level.game-over + #play-again {
   opacity: 1;
-  margin-top: 1em;
+  margin-top: 2em;
 }
 /* line 56, ../sass/_simon-says.scss */
 .simon-says-mode #levels {
@@ -298,19 +298,19 @@ body {
 /* line 71, ../sass/_simon-says.scss */
 .simon-says-mode #max-level {
   background: #2c2c2c;
-  -webkit-border-radius: 2em;
-  -moz-border-radius: 2em;
-  -ms-border-radius: 2em;
-  -o-border-radius: 2em;
-  border-radius: 2em;
+  -webkit-border-radius: 1.5em;
+  -moz-border-radius: 1.5em;
+  -ms-border-radius: 1.5em;
+  -o-border-radius: 1.5em;
+  border-radius: 1.5em;
   left: 50%;
-  height: 2em;
-  line-height: 2em;
-  margin: -1em 0 0 -1em;
+  height: 3em;
+  line-height: 3.2em;
+  margin: -1.5em 0 0 -1.5em;
   position: relative;
   text-align: center;
   top: 50%;
-  width: 2em;
+  width: 3em;
   -webkit-transition: all 200ms ease-in;
   -moz-transition: all 200ms ease-in;
   -o-transition: all 200ms ease-in;
@@ -323,7 +323,7 @@ body {
 /* line 88, ../sass/_simon-says.scss */
 .simon-says-mode #max-level.game-over {
   background: #d53d2f;
-  margin-top: -2.5em;
+  margin-top: -4em;
 }
 /* line 93, ../sass/_simon-says.scss */
 .simon-says-mode #max-level.success {
