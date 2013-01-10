@@ -5,7 +5,7 @@
   right: 10%;
   top: 0;
 
-  @include landscape(){
+  @include landscape() {
     bottom: 10%;
     top: 10%;
   }
