@@ -37,12 +37,12 @@ ww.mode.register('space', ww.mode.SpaceMode, 3, 3); // ?
 
 jQuery(function() {
   var parts = window.location.href.split('/');
-  var page = parts[parts.length-1];
-  var scriptName = page.replace('.html', '');
+  var page = parts[parts.length - 1];
+  var scriptName = page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
 
   var pair = ww.mode.findModeByName(scriptName);
   var klass = pair.klass;
-  
+
   // Initialize
   var controller = new klass();
 });

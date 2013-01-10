@@ -36,6 +36,7 @@ ww.raqSubscribers = {};
 ww.raqRunning = false;
 
 ww.lastTime = 0;
+ww.testMode = window.location.href.indexOf('test') > -1;
 
 var subscriberKey, loopSubscriber, loopCurrentTime, loopDelta;
 ww.raqOnFrame = function(t) {
@@ -122,7 +123,7 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
   this.tweens_ = [];
 
-  if (DEBUG_MODE) {
+  if (!ww.testMode && DEBUG_MODE) {
     this.addDebugUI_();
   }
 
@@ -169,7 +170,7 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   $(function() {
     self.letterI = $('#letter-i');
     self.letterO = $('#letter-o');
-    
+
     self['focus']();
   });
 };
@@ -208,7 +209,7 @@ ww.mode.Core.prototype.showReload = function() {
   var self = this;
 
   if (!this.$reloadModal_) {
-    this.$reloadModal_ = $("#reload");
+    this.$reloadModal_ = $('#reload');
     if (!this.$reloadModal_.length) {
       this.$reloadModal_ = $("<div id='reload'></div>").appendTo(document.body);
     }
@@ -252,21 +253,21 @@ if (DEBUG_MODE) {
 
     var focusElem = document.createElement('button');
     focusElem.style.fontSize = '15px';
-    focusElem.innerHTML = "Focus";
+    focusElem.innerHTML = 'Focus';
     focusElem.onclick = function() {
       self['focus']();
     };
 
     var unfocusElem = document.createElement('button');
     unfocusElem.style.fontSize = '15px';
-    unfocusElem.innerHTML = "Unfocus";
+    unfocusElem.innerHTML = 'Unfocus';
     unfocusElem.onclick = function() {
       self['unfocus']();
     };
 
     var restartElem = document.createElement('button');
     restartElem.style.fontSize = '15px';
-    restartElem.innerHTML = "Restart";
+    restartElem.innerHTML = 'Restart';
     restartElem.onclick = function() {
       self.init();
     };
@@ -328,7 +329,7 @@ ww.mode.Core.prototype.renderFrame = function(delta) {
   if (this.wantsPhysics_) {
     this.stepPhysics(delta);
   }
-  
+
   TWEEN['update'](this.timeElapsed_);
 
   if (this.wantsDrawing_) {
@@ -550,6 +551,9 @@ ww.mode.Core.prototype.playSound = function(filename) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
+  if (ww.testMode) {
+    url = '../' + url;
+  }
 
   this.log('Requested sound "' + filename + '" from "' + url + '"');
 

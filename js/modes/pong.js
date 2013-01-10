@@ -72,7 +72,7 @@ ww.mode.PongMode.prototype.resetGame_ = function() {
   this['bottomWallOpacity_'] = 0;
 
   this.ballRadius_ = this.startBallRadius_;
-  this.ballSpeed_  = this.startBallSpeed_;
+  this.ballSpeed_ = this.startBallSpeed_;
   this.startXBall_ = this.screenCenterX + (this.width_ / 4);
 
   this.ball_['setRadius'](this.ballRadius_);
@@ -86,7 +86,7 @@ ww.mode.PongMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
 
   if (this.canvas_) {
-    this.canvas_.width  = this.width_;
+    this.canvas_.width = this.width_;
     this.canvas_.height = this.height_;
   }
 
@@ -112,7 +112,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
   var self = this;
   var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
 
-  this.$canvas_.bind(evt + '.pong', function(e){
+  this.$canvas_.bind(evt + '.pong', function(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -140,7 +140,7 @@ ww.mode.PongMode.prototype.hitWall_ = function(wall) {
   this.playSound('1.wav');
 
   var key = wall + 'Opacity_';
-  
+
   var inFromParams = {};
   inFromParams[key] = this[key];
 
@@ -177,8 +177,8 @@ ww.mode.PongMode.prototype.hitPaddle_ = function() {
   // Clear sides
   var self = this;
   var fadeOutTween = new TWEEN['Tween']({
-    'topWallOpacity':    this['topWallOpacity_'],
-    'rightWallOpacity':  this['rightWallOpacity_'],
+    'topWallOpacity': this['topWallOpacity_'],
+    'rightWallOpacity': this['rightWallOpacity_'],
     'bottomWallOpacity': this['bottomWallOpacity_']
   });
   fadeOutTween['to']({
@@ -187,8 +187,8 @@ ww.mode.PongMode.prototype.hitPaddle_ = function() {
     'bottomWallOpacity': 0
   }, 200);
   fadeOutTween['onUpdate'](function() {
-    self['topWallOpacity_']    = this['topWallOpacity'];
-    self['rightWallOpacity_']  = this['rightWallOpacity'];
+    self['topWallOpacity_'] = this['topWallOpacity'];
+    self['rightWallOpacity_'] = this['rightWallOpacity'];
     self['bottomWallOpacity_'] = this['bottomWallOpacity'];
   });
 
@@ -296,7 +296,7 @@ ww.mode.PongMode.prototype.stepPhysics = function(delta) {
 
   var currentPaddleY = this.paddleY_;
   var targetPaddleY = this.mouseY_;
-  
+
   // Min/Max top bottom
   if (targetPaddleY < (this.paddleHeight_ / 2)) {
     targetPaddleY = this.paddleHeight_ / 2;

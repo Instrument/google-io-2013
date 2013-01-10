@@ -1,0 +1,104 @@
+<html>
+<head>
+  <link href="/apps/css/io/style.css" rel="stylesheet" type="text/css" media="all">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script id="jqueryui" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/jquery-ui.min.js" defer="" async=""></script>
+  <script src="/apps/js/io/test/app/jsUnitCore.js"></script>
+</head>
+<body id="about">
+  <div id="wrapper">
+    <header id="header">
+      <nav id="nav-user">
+        <ul>
+          <li class="dev-home"><a href="//developers.google.com">Developers Home</a></li>
+          <li id="plus-one"></li>
+          <li id="user" class="signed-in">
+            <a id="signout" class="sign-out-link" href="/logout">Logout</a>
+            <a id="signin" class="sign-in-link" href="/login">Login</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="content">
+        <a id="logo" href="../">
+          <img src="/apps/images/io/google-io-logo.png" alt="Google I/O 2012">
+        </a>
+
+        <a id="location" href="http://maps.google.com/maps?q=moscone+center+747+Howard+St+San+Francisco,+CA+94103&amp;z=16" target="_blank">
+          <strong>June 27-29, 2012</strong> 
+          Moscone Center, San Francisco
+        </a>
+
+        <nav id="nav-main">
+          <ul>
+            <li id="nav-schedule">
+              <span>Schedule</span>
+              <nav class="subnav nav-schedule">
+                <ul>
+                  <li><a href="agenda">Agenda</a></li>
+                  <li><a href="sessions">Sessions</a></li>
+                  <li><a href="code-labs">Code Labs</a></li>
+                  <li><a href="hackathon">Hackathon</a></li>
+                </ul>
+              </nav>
+            </li>
+
+            <li id="nav-events">
+              <span>Events</span>
+              <nav class="subnav nav-events">
+                <ul>
+                  <li><a href="io-extended">I/O Extended</a></li>
+                  <li><a href="io-live">I/O Live</a></li>
+                  <li><a href="after-hours">After Hours</a></li>
+                  <li><a href="community-events">Community Events</a></li>
+                </ul>
+              </nav>
+            </li>
+            <li id="nav-info">
+              <span>Info</span>
+              <nav class="subnav nav-info">
+                <ul>
+                  <li><a href="about">About</a></li>
+                  <li><a href="travel">Travel</a></li>
+                  <li><a href="register">Registration</a></li>
+                  <li><a href="faq">FAQ</a></li>
+                </ul>
+              </nav>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <div id="about-features" class="grid full">
+      <div id="grid-zoom" class="grid-item" style="display: none; "></div>
+      <div class="grid-wrapper">
+        <div class="grid-item" id='grid-item1'>
+          <div class="gradient"></div>
+          <div class="photo">
+            <img src="http://placekitten.com/285/181">
+          </div>
+          <h2>Title of the thing</h2>
+          <p>Content of the thing</p>
+          <button class="expand">+</button>
+        </div>
+        <div class="grid-item" id='grid-item2'>
+          <div class="gradient"></div>
+          <div class="photo">
+            <img src="http://placekitten.com/285/182">
+          </div>
+          <h2>Title of the second thing</h2>
+          <p>Content of the second thing</p>
+          <button class="expand">+</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/apps/js/io/app.js"></script>
+    <script src="/apps/js/io/about.js"></script>
+    <script>IO_2012.about.init();</script>
+    <script src="/apps/js/io/test/app_test.js"></script>
+    <script src="/apps/js/io/test/about_test.js"></script>
+  </div>
+</body>
+</html>

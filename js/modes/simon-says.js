@@ -27,7 +27,7 @@ ww.mode.SimonSaysMode.prototype.init = function() {
   }
 
   this.topLeft = $('#simon-red');        // 0 in sequence
-  this.topRight = $('#simon-green');     // 1 in sequence 
+  this.topRight = $('#simon-green');     // 1 in sequence
 
   this.bottomLeft = $('#simon-blue');    // 2 in sequence
   this.bottomRight = $('#simon-yellow'); // 3 in sequence
@@ -45,7 +45,7 @@ ww.mode.SimonSaysMode.prototype.init = function() {
 
   // display 'how to start playing' message
   // unbind and hide once first game has started
-  this.container.bind(this.evt, function(){
+  this.container.bind(this.evt, function() {
     self.message.css('opacity', 0);
     self.beginGame();
     self.container.unbind(self.evt);
@@ -89,23 +89,23 @@ ww.mode.SimonSaysMode.prototype.didFocus = function() {
 
   var self = this;
 
-  self.playAgainEl.bind(this.evt, function(){
+  self.playAgainEl.bind(this.evt, function() {
     self.beginGame();
   });
-  
-  self.topLeft.bind(this.evt, function(){
+
+  self.topLeft.bind(this.evt, function() {
     self.checkSequence(0);
   });
 
-  self.topRight.bind(this.evt, function(){
+  self.topRight.bind(this.evt, function() {
     self.checkSequence(1);
   });
 
-  self.bottomLeft.bind(this.evt, function(){
+  self.bottomLeft.bind(this.evt, function() {
     self.checkSequence(2);
   });
-  
-  self.bottomRight.bind(this.evt, function(){
+
+  self.bottomRight.bind(this.evt, function() {
     self.checkSequence(3);
   });
 };
@@ -137,7 +137,7 @@ ww.mode.SimonSaysMode.prototype.generateSequence = function() {
   for (var i = 0; i < 4; i++) {
     this.sequence.push(~~(Math.random() * 4));
   }
-  
+
   this.log('generated sequence: ' + this.sequence);
 };
 
@@ -148,7 +148,7 @@ ww.mode.SimonSaysMode.prototype.generateSequence = function() {
  */
 ww.mode.SimonSaysMode.prototype.shuffleSequence = function() {
   var i = this.sequence.length, j, swap;
-  
+
   while (--i) {
     j = Math.random() * (i + 1) | 0;
     swap = this.sequence[i];
@@ -197,7 +197,7 @@ ww.mode.SimonSaysMode.prototype.checkSequence = function(guess) {
         self.stepIndex++;
       } else {
         self.log('Reached last step. Show next step.');
-        
+
         // advance level by one
         // display success state on level count
         self.lastStep++;
@@ -222,7 +222,7 @@ ww.mode.SimonSaysMode.prototype.checkSequence = function(guess) {
       }
     } else {
       // wrong step guess
-      self.log('Wrong. Expected (' + self.sequence[self.stepIndex] + '). Got (' + guess + ').' );
+      self.log('Wrong. Expected (' + self.sequence[self.stepIndex] + '). Got (' + guess + ').');
 
       self.isPlaying = false;
       self.levelCount.addClass('game-over');
@@ -262,7 +262,7 @@ ww.mode.SimonSaysMode.prototype.beginGame = function() {
 
     self.uiContainer.animate({ opacity: 1 }, 200);
 
-    if (self.segmentEls.css('opacity') !== "0.5") {
+    if (self.segmentEls.css('opacity') !== '0.5') {
       var fadeOut = new TWEEN['Tween']({ 'opacity': 1 });
           fadeOut['to']({ 'opacity': 0.5 }, 200);
           fadeOut['delay'](100);
@@ -297,7 +297,7 @@ ww.mode.SimonSaysMode.prototype.displayNext = function() {
       segment = self.segments[idx];
       delay += 500;
 
-      (function(segment, delay, i){
+      (function(segment, delay, i) {
         var fadeIn = new TWEEN['Tween']({ 'opacity': 0.5 });
             fadeIn['to']({ 'opacity': 1}, 200);
             fadeIn['delay'](delay);

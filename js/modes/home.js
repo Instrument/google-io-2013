@@ -46,7 +46,7 @@ ww.mode.HomeMode = function() {
     bypass: 0
   });
 
-  this.currentPattern_ = "";
+  this.currentPattern_ = '';
   this.maxPatternLength_ = 15;
 };
 goog.inherits(ww.mode.HomeMode, ww.mode.Core);
@@ -64,10 +64,14 @@ function pad(number, length) {
  * @param {String} filename Audio file name.
  * @param {Object} filter Audio filter name.
  */
-ww.mode.Core.prototype.playProcessedAudio = function(filename, filter) {
+ww.mode.HomeMode.prototype.playProcessedAudio = function(filename, filter) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
+
+  if (ww.testMode) {
+    url = '../' + url;
+  }
 
   this.log('Requested sound "' + filename + '" from "' + url + '"');
 
@@ -411,7 +415,7 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
   if (this.iClicked == true) {
 
     if (this.iModifier < this.deltaModifier * 10000 &&
-      this.iIncrement == true) {      
+      this.iIncrement == true) {
         this.iModifier += this.deltaModifier * 1000;
     } else if (this.iMultiplier > 1) {
       if (this.iModifier < this.deltaModifier * 10000) {

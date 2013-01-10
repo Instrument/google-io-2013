@@ -46,7 +46,7 @@ ww.mode.SpaceMode = function() {
     bypass: 0
   });
 
-  this.currentPattern_ = "";
+  this.currentPattern_ = '';
   this.maxPatternLength_ = 15;
 };
 goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
@@ -64,7 +64,7 @@ function pad(number, length) {
  * @param {String} filename Audio file name.
  * @param {Object} filter Audio filter name.
  */
-ww.mode.Core.prototype.playProcessedAudio = function(filename, filter) {
+ww.mode.SpaceMode.prototype.playProcessedAudio = function(filename, filter) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
@@ -387,7 +387,7 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
     }
   };
 
-  $(canvas).bind(evt, function(e){
+  $(canvas).bind(evt, function(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -427,7 +427,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   if (this.iClicked == true) {
 
     if (this.iModifier < this.deltaModifier * 10000 &&
-      this.iIncrement == true) {      
+      this.iIncrement == true) {
         this.iModifier += this.deltaModifier * 1000;
     } else if (this.iMultiplier > 1) {
       if (this.iModifier < this.deltaModifier * 10000) {
@@ -489,7 +489,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   if (this.oClicked == true) {
 
     if (this.oModifier < this.deltaModifier * 10000 &&
-      this.oIncrement == true) {      
+      this.oIncrement == true) {
         this.oModifier += this.deltaModifier * 1000;
     } else if (this.oMultiplier > 1) {
       if (this.oModifier < this.deltaModifier * 10000) {
