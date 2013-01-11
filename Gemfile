@@ -5,3 +5,4 @@ gem "sass", "~> 3.2.0"
 gem "guard"
 gem "guard-compass"
 gem 'rb-fsevent', '~> 0.9.1'
+gem "rake"

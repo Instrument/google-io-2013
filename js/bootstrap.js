@@ -36,8 +36,10 @@ var DEBUG_MODE = false;
       { 'url': prefix + 'js/vendor/jquery.specialevent.hammer.js', 'key': 'jquery.specialevent.hammer' }
     ];
 
-    if (inIFrame || inTest) {
+    if (inIFrame) {
       level2.push({ 'url': prefix + 'js/mode.min.js', 'key': 'mode' });
+    } else if (inTest) {
+      level2.push({ 'url': prefix + 'js/mode.test.js', 'key': 'mode-test' });
     }
 
     require.apply(basket, level2)['then'](function() {
