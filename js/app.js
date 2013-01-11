@@ -82,6 +82,11 @@ ww.app.Core.prototype.loadMode = function(mode, transition) {
 
   if (transition) {
     onComplete = function() {
+      mode.iframe.contentWindow.postMessage({
+        'name': 'focus',
+        'data': null
+      }, '*');
+      
       mode.iframe.style[self.transformKey_] = "translateX(" + self.width_ + "px)";
       mode.iframe.style.visibility = 'visible';
 
@@ -97,6 +102,11 @@ ww.app.Core.prototype.loadMode = function(mode, transition) {
         t2['start']();
 
         if (currentFrame) {
+          currentFrame.contentWindow.postMessage({
+            'name': 'unfocus',
+            'data': null
+          }, '*');
+
           currentFrame.style.pointerEvents = 'none';
 
           var t = new TWEEN["Tween"]({ 'translateX': 0 });
@@ -115,6 +125,10 @@ ww.app.Core.prototype.loadMode = function(mode, transition) {
     };
   } else {
     onComplete = function() {
+      mode.iframe.contentWindow.postMessage({
+        'name': 'focus',
+        'data': null
+      }, '*');
       mode.iframe.style.visibility = 'visible';
       mode.iframe.style.pointerEvents = 'auto';
     };
@@ -130,11 +144,6 @@ ww.app.Core.prototype.loadMode = function(mode, transition) {
 
   this.onReady_ = function(data) {
     if (data['name'] === (mode.name + '.ready')) {
-      iFrameElem.contentWindow.postMessage({
-        'name': 'focus',
-        'data': null
-      }, '*');
-
       if (goog.isFunction(onComplete)) {
         onComplete();
       }
