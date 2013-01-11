@@ -31,10 +31,6 @@ module ::Guard
     end
 
     def run_on_changes(paths = [])
-      return true if paths.include?("js/app.min.js")
-      return true if paths.include?("js/mode.min.js")
-      return true if paths.include?("js/bootstrap.min.js")
-      
       debug_flag = %Q{--define='DEBUG_MODE=true'}
 
       puts `gjslint -r js/ --exclude_directories="js/vendor,js/test" --exclude_files="js/app.min.js,js/bootstrap.min.js,js/mode.min.js"`
@@ -102,5 +98,10 @@ guard 'jsunit' do
 end
 
 guard 'closure' do
-  watch(/^js\/(.*)\.js/)
+  watch(/^js\/modes\/(.*)\.js/)
+  watch(/^js\/vendor\/(.*)\.js/)
+  watch(/^js\/app\.js/)
+  watch(/^js\/bootstrap\.js/)
+  watch(/^js\/mode\.js/)
+  watch(/^js\/util\.js/)
 end

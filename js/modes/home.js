@@ -165,7 +165,7 @@ ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
   if (matched) {
     this.log('matched', matched);
 
-    if (true || matched.isPartial) {
+    if (matched.isPartial) {
       // Highlight partial match in UI?
     } else {
       this.goToMode_(matched.key);

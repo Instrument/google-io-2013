@@ -8,7 +8,6 @@ goog.provide('ww.mode.SpaceMode');
 ww.mode.SpaceMode = function() {
   goog.base(this, 'space', true, true);
 
-  this.setupPatternMatchers_();
   this.getAudioContext_();
 
   var tuna = new Tuna(this.audioContext_);
@@ -104,116 +103,6 @@ ww.mode.SpaceMode.prototype.activateO = function() {
   this.playProcessedAudio('boing.wav', this.delay);
 
   this.addCharacter_('0');
-};
-
-/**
- * Build matchers from patterns.
- * @private
- */
-ww.mode.SpaceMode.prototype.setupPatternMatchers_ = function() {
-  var patterns = {}, key, mode;
-
-  // Privately decode patterns into binary.
-  for (key in ww.mode.modes) {
-    if (ww.mode.modes.hasOwnProperty(key) && ww.mode.modes[key].pattern) {
-      mode = ww.mode.modes[key];
-      patterns[key] = {
-        klass: mode.klass,
-        binaryPattern: pad(mode.pattern.toString(2), mode.len)
-      };
-    }
-  }
-
-  // Build per-character matchers
-  this.matchers_ = [];
-
-  for (key in patterns) {
-    if (patterns.hasOwnProperty(key)) {
-      mode = patterns[key];
-      this.log('Building matchers for: ' + mode.binaryPattern);
-      for (var i = 0; i < mode.binaryPattern.length; i++) {
-        this.matchers_.push({
-          key: key,
-          matcher: mode.binaryPattern.slice(0, i + 1),
-          isPartial: ((i + 1) != mode.binaryPattern.length)
-        });
-      }
-    }
-  }
-};
-
-/**
- * Add a character to the pattern we're tracking.
- * @private
- * @param {String} str The new character.
- */
-ww.mode.SpaceMode.prototype.addCharacter_ = function(str) {
-  this.currentPattern_ += str;
-
-  if (this.currentPattern_.length > this.maxPatternLength_) {
-    this.currentPattern_ = this.currentPattern_.slice(-this.maxPatternLength_, this.currentPattern_.length);
-  }
-
-  this.log('current pattern: ' + this.currentPattern_);
-  $('#pattern').text(this.currentPattern_);
-
-  var matched = this.runMatchers_();
-  if (matched) {
-    this.log('matched', matched);
-
-    if (true || matched.isPartial) {
-      // Highlight partial match in UI?
-    } else {
-      this.goToMode_(matched.key);
-    }
-  }
-};
-
-/**
- * Run the matchers and return the best match.
- * @private
- * @return {Object} The best match.
- */
-ww.mode.SpaceMode.prototype.runMatchers_ = function() {
-  var matches = [];
-
-  for (var i = 0; i < this.matchers_.length; i++) {
-    var matcher = this.matchers_[i];
-    var lastXChars = this.currentPattern_.slice(-matcher.matcher.length, this.currentPattern_.length);
-
-    if (lastXChars.indexOf(matcher.matcher) > -1) {
-      matches.push({
-        matcher: matcher,
-        len: matcher.matcher.length,
-        isPartial: matcher.isPartial
-      });
-
-      if (!matcher.isPartial) {
-        return matcher;
-      }
-    }
-  }
-
-  var found;
-  // Find longest
-  var longestLen = 0;
-  for (var j = 0; j < matches.length; j++) {
-    if (matches[j].len > longestLen) {
-      found = matches[j].matcher;
-      longestLen = matches[j].len;
-    }
-  }
-
-  return found;
-};
-
-/**
- * Tell the app to transition to the specified mode.
- * @private
- * @param {String} key The mode name.
- */
-ww.mode.SpaceMode.prototype.goToMode_ = function(key) {
-  this.sendMessage_('goToMode', key);
 };
 
 /**
