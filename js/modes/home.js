@@ -444,11 +444,11 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   tool['onMouseDown'] = function(event) {
     self.lastClick = event['point'];
-    if (self.paperO['hitTest'](event['point'])) {
+    if (self.paperO_['hitTest'](event['point'])) {
       self.activateO();
     }
 
-    if (self.paperI['hitTest'](event['point'])) {
+    if (self.paperI_['hitTest'](event['point'])) {
       self.activateI();
     }
   };
