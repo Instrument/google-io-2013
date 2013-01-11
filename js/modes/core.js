@@ -77,9 +77,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
   this.init();
 
-  // Mark this mode as ready.
-  this.ready();
-
   // Autofocus
   $(function() {
     self.letterI = $('#letter-i');
@@ -87,6 +84,9 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
     self['focus']();
   });
+
+  // Mark this mode as ready.
+  this.ready();
 };
 
 /**
@@ -279,6 +279,10 @@ ww.mode.Core.prototype.onFrame = function(delta) {
 ww.mode.Core.prototype.ready = function() {
   window['currentMode'] = this;
 
+  if (window['onModeReady']) {
+    window['onModeReady'](this);
+  }
+
   this.log('Is ready');
 
   // Notify parent frame that we are ready.
@@ -323,11 +327,14 @@ ww.mode.Core.prototype.didFocus = function() {
 
   // Short-cuts to activating letters for basics setup.
   var hammerOpts = { 'prevent_default': true };
-  this.letterI.bind('tap.core', hammerOpts, function() {
+
+  var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+
+  this.letterI.bind(evt + '.core', hammerOpts, function() {
     self.activateI();
   });
 
-  this.letterO.bind('tap.core', hammerOpts, function() {
+  this.letterO.bind(evt + '.core', hammerOpts, function() {
     self.activateO();
   });
 
@@ -391,7 +398,7 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
   // Decode asynchronously
   var self = this;
   request.onload = function() {
-    var audioContext = this.getAudioContext_();
+    var audioContext = self.getAudioContext_();
     audioContext['decodeAudioData'](request.response, function(buffer) {
       self.soundBuffersFromURL_[url] = buffer;
       gotSound(self.soundBuffersFromURL_[url]);

@@ -4,6 +4,36 @@ def create_test_for_mode(p)
   source = File.read(p)
 
   appendScripts = %Q{
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
     <script src="app/jsUnitCore.js"></script>
     <script src="app_test.js"></script>
     <script src="#{test_name}.js"></script>
