@@ -29,11 +29,11 @@ ww.mode.SimoneMode.prototype.init = function() {
     this.evtEnd = 'mouseup.simon';
   }
 
-  this.topLeft = $('#red');        // 0 in sequence, e lower
-  this.topRight = $('#green');     // 1 in sequence, a
+  this.topLeft = $('#red');        // 0 in sequence
+  this.topRight = $('#green');     // 1 in sequence
 
-  this.bottomLeft = $('#blue');    // 2 in sequence, c#
-  this.bottomRight = $('#yellow'); // 3 in sequence, e
+  this.bottomLeft = $('#blue');    // 2 in sequence
+  this.bottomRight = $('#yellow'); // 3 in sequence
 
   this.segments = [this.topLeft, this.topRight,
                    this.bottomLeft, this.bottomRight];
@@ -81,7 +81,75 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   // total levels available to play
   this.total = this.sequence.length;
+
+  // Set up audio
+  this.getAudioContext_();
+  this.source = this.audioContext_['createOscillator']();
+  this.analyser = this.audioContext_['createAnalyser']();
+  this.analyser['fftSize'] = 512;
+  this.analyser['smoothingTimeConstant'] = 0.85;
+
+  this.notes = [
+    {
+      // red
+      'frequency': 1806,
+      'detune': -3663,
+      'type': 1
+    },
+    {
+      // green
+      'frequency': 1806,
+      'detune': -4758,
+      'type': 1
+    },
+    {
+      // blue
+      'frequency': 229,
+      'detune': 1053,
+      'type': 1
+    },
+    {
+      // yellow
+      'frequency': 580,
+      'detune': -1137,
+      'type': 2
+    }
+  ];
 };
+
+
+/**
+ * Fades in the selected segment and begins playing audio.
+ * @param {number} noteNum Enumerated number for chosen segment + note.
+ * @private
+ */
+ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
+  if (this.isPlaying && !this.isAnimating) {
+    var note = this.notes[noteNum],
+        segment = this.segments[noteNum],
+        self = this;
+
+    this.log('Playing note: ', note);
+
+    this.source['type'] = note['type'];
+    this.source['frequency']['value'] = note['frequency'];
+    this.source['detune']['value'] = note['detune'];
+
+    var fadeInQuick = new TWEEN['Tween']({ 'opacity': 0.5 });
+        fadeInQuick['to']({ 'opacity': 1 }, 100);
+        fadeInQuick['onStart'](function () {
+          self.source['connect'](self.analyser);
+          self.analyser['connect'](self.audioContext_['destination']);
+          self.source['noteOn'](0);
+        });
+        fadeInQuick['onUpdate'](function() {
+          segment.css('opacity', this['opacity']);
+        });
+
+    this.addTween(fadeInQuick);
+  }
+};
+
 
 /**
  * On focus, make the Simon Says interactive.
@@ -95,29 +163,30 @@ ww.mode.SimoneMode.prototype.didFocus = function() {
     self.beginGame_();
   });
 
-  self.segmentEls.bind(self.evtStart, function() {
-    var guessSeg = $(this);
-    var fadeInQuick = new TWEEN['Tween']({ 'opacity': 0.5 });
-        fadeInQuick['to']({ 'opacity': 1 }, 100);
-        fadeInQuick['onUpdate'](function() {
-          guessSeg.css('opacity', this['opacity']);
-        });
-
-    self.addTween(fadeInQuick);
+  self.topLeft.bind(this.evtStart, function() {
+    self.startCheck_(0);
   });
-
   self.topLeft.bind(this.evtEnd, function() {
     self.checkSequence_(0);
   });
 
+  self.topRight.bind(this.evtStart, function() {
+    self.startCheck_(1);
+  });
   self.topRight.bind(this.evtEnd, function() {
     self.checkSequence_(1);
   });
 
+  self.bottomLeft.bind(this.evtStart, function() {
+    self.startCheck_(2);
+  });
   self.bottomLeft.bind(this.evtEnd, function() {
     self.checkSequence_(2);
   });
 
+  self.bottomRight.bind(this.evtStart, function() {
+    self.startCheck_(3);
+  });
   self.bottomRight.bind(this.evtEnd, function() {
     self.checkSequence_(3);
   });
@@ -131,7 +200,11 @@ ww.mode.SimoneMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
   this.playAgainEl.unbind(this.evtEnd);
-  this.segmentEls.unbind(this.evtStart);
+
+  this.topLeft.unbind(this.evtStart);
+  this.topRight.unbind(this.evtStart);
+  this.bottomLeft.unbind(this.evtStart);
+  this.bottomRight.unbind(this.evtStart);
 
   this.topLeft.unbind(this.evtEnd);
   this.topRight.unbind(this.evtEnd);
@@ -178,7 +251,7 @@ ww.mode.SimoneMode.prototype.shuffleSequence_ = function() {
  * If the guess is in the middle of the sequence and is correct, continue.
  * If the guess is also the last step of the active sequence and is correct,
  *   then the level count increases and the next segment is shown.
- * @param {number} guess Enumerated number sequence representing chosen segment.
+ * @param {number} guess Enumerated number representing chosen segment.
  * @private
  */
 ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
@@ -195,6 +268,9 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
         fadeOut['to']({ 'opacity': 0.5 }, 200);
         fadeOut['onUpdate'](function() {
           guessSeg.css('opacity', this['opacity']);
+        });
+        fadeOut['onComplete'](function() {
+          self.source['disconnect']();
         });
 
     self.addTween(fadeOut);
@@ -303,46 +379,57 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
 
     var self = this,
         idx,
+        note,
         segment,
         stopIndex = this.lastStep + 1,
         delay = 500;
 
     for (var i = 0; i < stopIndex; i++) {
       idx = self.sequence[i];
+      note = self.notes[idx];
       segment = self.segments[idx];
-      delay += 500;
+      delay += 600;
 
-      (function(segment, delay, i) {
+      (function(segment, delay, note, i) {
         var fadeIn = new TWEEN['Tween']({ 'opacity': 0.5 });
             fadeIn['to']({ 'opacity': 1}, 200);
             fadeIn['delay'](delay);
+            fadeIn['onStart'](function() {
+              if (i === 0) {
+                self.levelCount.removeClass('success');
+              }
+
+              self.log(i + ' now playing: ', note);
+              self.source['type'] = note['type'];
+              self.source['frequency']['value'] = note['frequency'];
+              self.source['detune']['value'] = note['detune'];
+
+              self.source['connect'](self.analyser);
+              self.analyser['connect'](self.audioContext_['destination']);
+              self.source['noteOn'](0);
+            });
             fadeIn['onUpdate'](function() {
               segment[0].style.opacity = this['opacity'];
             });
 
-        if (i === 0) {
-          fadeIn['onStart'](function() {
-            self.levelCount.removeClass('success');
-          });
-        }
-
         var fadeOut = new TWEEN['Tween']({ 'opacity': 1 });
             fadeOut['to']({ 'opacity': 0.5 }, 200);
-            fadeOut['delay'](delay + 200);
+            fadeOut['delay'](delay + 300);
             fadeOut['onUpdate'](function() {
               segment[0].style.opacity = this['opacity'];
             });
+            fadeOut['onComplete'](function() {
+              if (i === stopIndex - 1) {
+                self.isAnimating = false;
+                self.levelCount.addClass('start').text(stopIndex);
+              }
 
-        if (i === stopIndex - 1) {
-          fadeOut['onComplete'](function() {
-            self.isAnimating = false;
-            self.levelCount.addClass('start').text(stopIndex);
-          });
-        }
+              self.source['disconnect']();
+            });
 
         self.addTween(fadeIn);
         self.addTween(fadeOut);
-      })(segment, delay, i);
+      })(segment, delay, note, i);
     }
   }
 };
