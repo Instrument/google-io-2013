@@ -87,6 +87,7 @@
                 var buttonClass = needsUploadField ? "" : "button";
                 document.writeln('<input type="button" name="runButton" value="Run" onclick="top.startTests()" class="' + buttonClass + '">');
                 document.writeln('<input type="button" name="stopButton" value="Stop" onclick="top.stopTests()" class="' + buttonClass + '">');
+                document.writeln('<input type="button" name="jscoverageButton" value="Coverage Report" onclick="window.open(\'../../jscoverage.html\');" class="' + buttonClass + '">');
             </script>
         </td>
     </tr>
