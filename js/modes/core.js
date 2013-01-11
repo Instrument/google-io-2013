@@ -127,7 +127,10 @@ ww.mode.Core.prototype.showReload = function() {
     if (!this.$reloadModal_.length) {
       this.$reloadModal_ = $("<div id='reload'></div>").appendTo(document.body);
     }
-    this.$reloadModal_.bind('tap.reload', function() {
+
+    var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+
+    this.$reloadModal_.bind(evt + '.reload', function() {
       self.$reloadModal_.hide();
       self.init();
       self['focus']();
@@ -372,8 +375,10 @@ ww.mode.Core.prototype['unfocus'] = function() {
  * Event is called after a mode unfocused.
  */
 ww.mode.Core.prototype.didUnfocus = function() {
-  this.letterI.unbind('tap.core');
-  this.letterO.unbind('tap.core');
+  var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+
+  this.letterI.unbind(evt + '.core');
+  this.letterO.unbind(evt + '.core');
   $(document).unbind('keypress.core');
 };
 
