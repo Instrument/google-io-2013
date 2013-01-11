@@ -62,7 +62,8 @@ ww.mode.PinataMode.prototype.didFocus = function() {
 
   var self = this;
 
-  self.pinata.bind('tap.pinata', function() {
+  var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+  self.pinata.bind(evt + '.pinata', function() {
     self.popBalls_();
   });
 };
@@ -74,7 +75,8 @@ ww.mode.PinataMode.prototype.didFocus = function() {
 ww.mode.PinataMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  this.pinata.unbind('tap.pinata');
+  var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+  this.pinata.unbind(evt + '.pinata');
 };
 
 
