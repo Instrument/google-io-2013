@@ -4,5 +4,6 @@
 Gemfile.lock
 /bin/
 js/*.min.js
+js/*.test.js
 *.pyc
 js-instrumented
