@@ -20,7 +20,7 @@ body {
   right: 0;
 }
 
-#simon-says {
+#simone {
   @extend %absolute-full;
   padding: 0 5%;
   text-align: center;
@@ -33,7 +33,7 @@ body {
 }
 
 #play-again {
-  background: transparent image-url('simon-says/refresh.svg') no-repeat 50% 50%;
+  background: transparent image-url('simone/refresh.svg') no-repeat 50% 50%;
   @include background-size(100%);
   cursor: pointer;
   display: block;

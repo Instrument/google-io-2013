@@ -1,20 +1,20 @@
 goog.require('ww.mode.Core');
-goog.provide('ww.mode.SimonSaysMode');
+goog.provide('ww.mode.SimoneMode');
 
 
 /**
  * @constructor
  */
-ww.mode.SimonSaysMode = function() {
+ww.mode.SimoneMode = function() {
   goog.base(this, 'simon-says', true, true);
 };
-goog.inherits(ww.mode.SimonSaysMode, ww.mode.Core);
+goog.inherits(ww.mode.SimoneMode, ww.mode.Core);
 
 
 /**
- * Initailize SimonSaysMode.
+ * Initailize SimoneMode.
  */
-ww.mode.SimonSaysMode.prototype.init = function() {
+ww.mode.SimoneMode.prototype.init = function() {
   goog.base(this, 'init');
 
   var self = this;
@@ -44,7 +44,7 @@ ww.mode.SimonSaysMode.prototype.init = function() {
   this.levelCount = $('#max-level').removeClass().text('');
 
   this.uiContainer = $('#levels').css('opacity', 0);
-  this.container = $('#simon-says');
+  this.container = $('#simone');
 
   this.message = $('#message').css('opacity', 1);
   this.playAgainEl = $('#play-again');
@@ -86,7 +86,7 @@ ww.mode.SimonSaysMode.prototype.init = function() {
 /**
  * On focus, make the Simon Says interactive.
  */
-ww.mode.SimonSaysMode.prototype.didFocus = function() {
+ww.mode.SimoneMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
   var self = this;
@@ -127,7 +127,7 @@ ww.mode.SimonSaysMode.prototype.didFocus = function() {
 /**
  * On unfocus, deactivate the Simon Says.
  */
-ww.mode.SimonSaysMode.prototype.didUnfocus = function() {
+ww.mode.SimoneMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
   this.playAgainEl.unbind(this.evtEnd);
@@ -144,7 +144,7 @@ ww.mode.SimonSaysMode.prototype.didUnfocus = function() {
  * Generates an initial, random sequence.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.generateSequence_ = function() {
+ww.mode.SimoneMode.prototype.generateSequence_ = function() {
   this.sequence = this.sequence || [];
 
   for (var i = 0; i < 4; i++) {
@@ -159,7 +159,7 @@ ww.mode.SimonSaysMode.prototype.generateSequence_ = function() {
  * Shuffle the sequence.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.shuffleSequence_ = function() {
+ww.mode.SimoneMode.prototype.shuffleSequence_ = function() {
   var i = this.sequence.length, j, swap;
 
   while (--i) {
@@ -181,7 +181,7 @@ ww.mode.SimonSaysMode.prototype.shuffleSequence_ = function() {
  * @param {number} guess Enumerated number sequence representing chosen segment.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.checkSequence_ = function(guess) {
+ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
   this.log('Guessed (' + guess + ')');
 
   if (this.isPlaying && !this.isAnimating) {
@@ -259,7 +259,7 @@ ww.mode.SimonSaysMode.prototype.checkSequence_ = function(guess) {
  * Begin a new, fresh state game.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.beginGame_ = function() {
+ww.mode.SimoneMode.prototype.beginGame_ = function() {
   if (!this.isPlaying) {
     var self = this;
 
@@ -297,7 +297,7 @@ ww.mode.SimonSaysMode.prototype.beginGame_ = function() {
  * Animates the active sequence, plus the next segment to be matched.
  * @private
  */
-ww.mode.SimonSaysMode.prototype.displayNext_ = function() {
+ww.mode.SimoneMode.prototype.displayNext_ = function() {
   if (this.isPlaying) {
     this.isAnimating = true;
 

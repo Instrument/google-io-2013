@@ -1,5 +1,5 @@
 /* line 11, ../sass/mode.scss */
-canvas, #bacon-container, .simon-says-mode #simon-says {
+canvas, #bacon-container, .simone-mode #simone {
   bottom: 0;
   left: 0;
   position: absolute;
@@ -211,22 +211,22 @@ body {
   color: #d2d2d2;
 }
 
-/* line 1, ../sass/_simon-says.scss */
-.simon-says-mode * {
+/* line 1, ../sass/_simone.scss */
+.simone-mode * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-/* line 5, ../sass/_simon-says.scss */
-.simon-says-mode body {
+/* line 5, ../sass/_simone.scss */
+.simone-mode body {
   background: #2c2c2c;
   color: #fff;
   font-family: helvetica, sans-serif;
   font-size: 100%;
   position: relative;
 }
-/* line 13, ../sass/_simon-says.scss */
-.simon-says-mode #message {
+/* line 13, ../sass/_simone.scss */
+.simone-mode #message {
   left: 0;
   line-height: 1.5em;
   margin-top: -0.75em;
@@ -235,8 +235,8 @@ body {
   top: 50%;
   right: 0;
 }
-/* line 23, ../sass/_simon-says.scss */
-.simon-says-mode #simon-says {
+/* line 23, ../sass/_simone.scss */
+.simone-mode #simone {
   padding: 0 5%;
   text-align: center;
   -webkit-user-select: none;
@@ -244,15 +244,15 @@ body {
   user-select: none;
 }
 @media screen and (orientation: landscape) {
-  /* line 23, ../sass/_simon-says.scss */
-  .simon-says-mode #simon-says {
+  /* line 23, ../sass/_simone.scss */
+  .simone-mode #simone {
     bottom: 10%;
     top: 10%;
   }
 }
-/* line 35, ../sass/_simon-says.scss */
-.simon-says-mode #play-again {
-  background: transparent url('../img/simon-says/refresh.svg?1357767575') no-repeat 50% 50%;
+/* line 35, ../sass/_simone.scss */
+.simone-mode #play-again {
+  background: transparent url('../img/simone/refresh.svg?1357767575') no-repeat 50% 50%;
   -webkit-background-size: 100%;
   -moz-background-size: 100%;
   -o-background-size: 100%;
@@ -272,13 +272,13 @@ body {
   transition: all 200ms ease-in;
   z-index: 1000;
 }
-/* line 50, ../sass/_simon-says.scss */
-.simon-says-mode #max-level.game-over + #play-again {
+/* line 50, ../sass/_simone.scss */
+.simone-mode #max-level.game-over + #play-again {
   opacity: 1;
   margin-top: 2em;
 }
-/* line 56, ../sass/_simon-says.scss */
-.simon-says-mode #levels {
+/* line 56, ../sass/_simone.scss */
+.simone-mode #levels {
   color: #fff;
   left: 50%;
   height: 20%;
@@ -290,13 +290,13 @@ body {
   -moz-user-select: none;
   user-select: none;
 }
-/* line 66, ../sass/_simon-says.scss */
-.simon-says-mode #levels canvas {
+/* line 66, ../sass/_simone.scss */
+.simone-mode #levels canvas {
   height: 100%;
   width: 100%;
 }
-/* line 71, ../sass/_simon-says.scss */
-.simon-says-mode #max-level {
+/* line 71, ../sass/_simone.scss */
+.simone-mode #max-level {
   background: #2c2c2c;
   -webkit-border-radius: 1.5em;
   -moz-border-radius: 1.5em;
@@ -316,16 +316,16 @@ body {
   -o-transition: all 200ms ease-in;
   transition: all 200ms ease-in;
 }
-/* line 84, ../sass/_simon-says.scss */
-.simon-says-mode #max-level.start {
+/* line 84, ../sass/_simone.scss */
+.simone-mode #max-level.start {
   background: #424242;
 }
-/* line 88, ../sass/_simon-says.scss */
-.simon-says-mode #max-level.game-over {
+/* line 88, ../sass/_simone.scss */
+.simone-mode #max-level.game-over {
   background: #d53d2f;
   margin-top: -4em;
 }
-/* line 93, ../sass/_simon-says.scss */
-.simon-says-mode #max-level.success {
+/* line 93, ../sass/_simone.scss */
+.simone-mode #max-level.success {
   background: #069b5a;
 }
