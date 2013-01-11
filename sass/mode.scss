@@ -1,5 +1,6 @@
 @import "compass";
 @import "compass/css3/transition";
+@import "compass/css3/user-interface";
 @import "media-queries";
 
 $break-small: 480px;
@@ -62,6 +63,6 @@ canvas {
   @import "pong";
 }
 
-.simon-says-mode {
-  @import "simon-says";
+.simone-mode {
+  @import "simone";
 }

@@ -13,7 +13,6 @@ goog.inherits(ww.mode.PinataMode, ww.mode.Core);
 
 /**
  * Initailize PinataMode.
- * @private
  */
 ww.mode.PinataMode.prototype.init = function() {
   goog.base(this, 'init');
@@ -57,7 +56,6 @@ ww.mode.PinataMode.prototype.init = function() {
 
 /**
  * On focus, make the pinata interactive.
- * @private
  */
 ww.mode.PinataMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
@@ -72,7 +70,6 @@ ww.mode.PinataMode.prototype.didFocus = function() {
 
 /**
  * On unfocus, deactivate the pinata.
- * @private
  */
 ww.mode.PinataMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
@@ -84,7 +81,6 @@ ww.mode.PinataMode.prototype.didUnfocus = function() {
 /**
  * On resize of the window, ecalculate the center and scale.
  * @param {Boolean} redraw Whether resize redraws.
- * @private
  */
 ww.mode.PinataMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', redraw);
@@ -98,7 +94,6 @@ ww.mode.PinataMode.prototype.onResize = function(redraw) {
 /**
  * Per animated frame, update physics and positioning of balls.
  * @param {number} delta Animation delta.
- * @private
  */
 ww.mode.PinataMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
@@ -185,7 +180,7 @@ ww.mode.PinataMode.prototype.utilMultiply_ = function(v1, v2) {
   * @return {array} Array of prepopulated papaer objects.
   * @private
   */
-ww.mode.PinataMode.prototype.prepopulate = function(max) {
+ww.mode.PinataMode.prototype.prepopulate_ = function(max) {
   var balls = [];
 
   for (var i = 0; i < max; i++) {

@@ -6,7 +6,7 @@ goog.require('ww.mode.ExplodeMode');
 goog.require('ww.mode.HomeMode');
 goog.require('ww.mode.PinataMode');
 goog.require('ww.mode.PongMode');
-goog.require('ww.mode.SimonSaysMode');
+goog.require('ww.mode.SimoneMode');
 goog.require('ww.mode.SpaceMode');
 
 /** @define {boolean} */
@@ -32,7 +32,7 @@ ww.mode.register('explode', ww.mode.ExplodeMode, 5, 4);      // 0101
 ww.mode.register('home', ww.mode.HomeMode, null);
 ww.mode.register('pinata', ww.mode.PinataMode, 6, 4);        // 0110
 ww.mode.register('pong', ww.mode.PongMode, 4, 4);            // 0100
-ww.mode.register('simon-says', ww.mode.SimonSaysMode, 8, 4); // 1000
+ww.mode.register('simone', ww.mode.SimoneMode, 8, 4);        // 1000
 ww.mode.register('space', ww.mode.SpaceMode, 3, 4);          // 0011
 
 jQuery(function() {

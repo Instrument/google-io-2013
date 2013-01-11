@@ -6,23 +6,25 @@ body {
   background: #2c2c2c;
   color: #fff;
   font-family: helvetica, sans-serif;
-  font-size: 110%;
+  font-size: 100%;
   position: relative;
 }
 
 #message {
   left: 0;
   line-height: 1.5em;
-  margin-top: -1em;
+  margin-top: -0.75em;
   position: absolute;
   text-align: center;
   top: 50%;
   right: 0;
 }
 
-#simon-says {
+#simone {
   @extend %absolute-full;
+  padding: 0 5%;
   text-align: center;
+  @include user-select(none);
 
   @include landscape() {
     bottom: 10%;
@@ -31,30 +33,27 @@ body {
 }
 
 #play-again {
-  background: transparent image-url('simon-says/refresh.svg') no-repeat 50% 50%;
+  background: transparent image-url('simone/refresh.svg') no-repeat 50% 50%;
   @include background-size(100%);
+  cursor: pointer;
   display: block;
-  height: 2.5em;
+  height: 3.5em;
   left: 50%;
-  margin: 0 0 0 -1em;
+  margin: 0 0 0 -1.5em;
   opacity: 0;
   position: relative;
   top: 50%;
-  width: 2em;
+  width: 3em;
   @include transition(all 200ms ease-in);
   z-index: 1000;
-
-  .no-svg & {
-    background-image: image-url('simon-says/refresh.png');
-  }
 }
   #max-level.game-over + #play-again {
     opacity: 1;
-    margin-top: 1em;
+    margin-top: 2em;
   }
   
   
-#simon-ui {
+#levels {
   color: #fff;
   left: 50%;
   height: 20%;
@@ -62,6 +61,7 @@ body {
   position: absolute;
   top: 50%;
   width: 20%;
+  @include user-select(none);
 
   canvas {
     height: 100%;
@@ -70,15 +70,15 @@ body {
 }
   #max-level {
     background: #2c2c2c;
-    @include border-radius(2em);
+    @include border-radius(1.5em);
     left: 50%;
-    height: 2em;
-    line-height: 2em;
-    margin: -1em 0 0 -1em;
+    height: 3em;
+    line-height: 3.2em;
+    margin: -1.5em 0 0 -1.5em;
     position: relative;
     text-align: center;
     top: 50%;
-    width: 2em;
+    width: 3em;
     @include transition(all 200ms ease-in);
 
     &.start {
@@ -87,7 +87,7 @@ body {
 
     &.game-over {
       background: #d53d2f;
-      margin-top: -2em;
+      margin-top: -4em;
     }
 
     &.success {
