@@ -340,132 +340,15 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
   this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
 
-  /*
-   * Run the following code if the letter I is activated.
-   */
-  if (this.iClicked == true) {
+  this.ctx_.fillStyle = '#fff';
 
-    if (this.iModifier < this.deltaModifier * 10000 &&
-      this.iIncrement == true) {
-        this.iModifier += this.deltaModifier * 1000;
-    } else if (this.iMultiplier > 1) {
-      if (this.iModifier < this.deltaModifier * 10000) {
-        this.iModifier += this.deltaModifier * 100;
-      }
-      if (this.iMultiplier > 1) {
-        this.iMultiplier -= .1;
-      } else {
-        this.iMultiplier = 1;
-      }
-    } else {
-      this.iIncrement = false;
-      this.iModifier -= this.deltaModifier * 1000;
-      if (this.iMultiplier > 1) {
-        this.iMultiplier -= .1;
-      } else {
-        this.iMultiplier = 1;
-      }
-    }
+  this.ctx_.beginPath();
 
-    this.ctx_.fillStyle = '#fff';
-
-    this.ctx_.beginPath();
-
-    for (this.i = 0; this.i < this.world['particles'].length; this.i++) {
-      this.ctx_.arc(this.world['particles'][this.i]['pos']['x'],
-        this.world['particles'][this.i]['pos']['y'],
-        this.world['particles'][this.i]['radius'], 0, Math.PI * 2);
-      console.log(this.world['particles'][this.i]);
-    }
-  }
-
-  /*
-   * Run the following code if the letter O is activated.
-   */
-  if (this.oClicked == true) {
-
-    if (this.oModifier < this.deltaModifier * 10000 &&
-      this.oIncrement == true) {
-        this.oModifier += this.deltaModifier * 1000;
-    } else if (this.oMultiplier > 1) {
-      if (this.oModifier < this.deltaModifier * 10000) {
-        this.oModifier += this.deltaModifier * 100;
-      }
-      if (this.oMultiplier > 1) {
-        this.oMultiplier -= .1;
-      } else {
-        this.oMultiplier = 1;
-      }
-    } else {
-      this.oIncrement = false;
-      this.oModifier -= this.deltaModifier * 1000;
-      if (this.oMultiplier > 1) {
-        this.oMultiplier -= .1;
-      } else {
-        this.oMultiplier = 1;
-      }
-    }
-
-    // If oModifier drops too low, reset variables to their default state.
-    if (this.oModifier < this.deltaModifier * 1000) {
-      this.oClicked = false;
-      this.oIncrement = true;
-      this.oMultiplier = 1;
-    }
-
-    this.delay['feedback'] = this.oMultiplier / 10;
-
-    /*
-     * Loop through each path segment on the letter O and move each point's
-     * handles based on time as being evaluated by Sine and Cosine.
-     */
-    for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
-      this.tempFloat = ww.util.floatComplexGaussianRandom();
-
-      this.paperO['segments'][this.i]['handleIn']['_x'] =
-        this.oHandleInX[this.i] + Math.cos(this.framesRendered_ / 10 * this.tempFloat[0])
-        * this.oModifier * this.oMultiplier;
-      this.paperO['segments'][this.i]['handleIn']['_y'] =
-        this.oHandleInY[this.i] + Math.sin(this.framesRendered_ / 10 * this.tempFloat[0])
-        * this.oModifier * this.oMultiplier;
-
-      this.paperO['segments'][this.i]['handleOut']['_x'] =
-        this.oHandleOutX[this.i] - Math.cos(this.framesRendered_ / 10 * this.tempFloat[0])
-        * this.oModifier * this.oMultiplier;
-      this.paperO['segments'][this.i]['handleOut']['_y'] =
-        this.oHandleOutY[this.i] - Math.sin(this.framesRendered_ / 10 * this.tempFloat[0])
-        * this.oModifier * this.oMultiplier;
-
-      this.paperO['segments'][this.i]['point']['_x'] = this.oPointX[this.i]
-        - Math.sin(this.framesRendered_ / 10 * this.tempFloat[0])
-        * this.oModifier * this.oMultiplier;
-
-      this.paperO['segments'][this.i]['point']['_y'] = this.oPointY[this.i]
-        - Math.cos(this.framesRendered_ / 10 * this.tempFloat[0])
-        * this.oModifier * this.oMultiplier;
-    }
-
-  } else {
-
-    /*
-     * If O hasn't been activated recently enough, restore the original handle
-     * coordinates.
-     */
-    for (this.i = 0; this.i < this.paperO['segments'].length; this.i++) {
-      this.paperO['segments'][this.i]['handleIn']['_x'] =
-        this.oHandleInX[this.i];
-      this.paperO['segments'][this.i]['handleIn']['_y'] =
-        this.oHandleInY[this.i];
-
-      this.paperO['segments'][this.i]['handleOut']['_x'] =
-        this.oHandleOutX[this.i];
-      this.paperO['segments'][this.i]['handleOut']['_y'] =
-        this.oHandleOutY[this.i];
-
-      this.paperO['segments'][this.i]['point']['_x'] = this.oPointX[this.i];
-      this.paperO['segments'][this.i]['point']['_y'] = this.oPointY[this.i];
-    }
-
+  for (this.i = 0; this.i < this.world['particles'].length; this.i++) {
+    this.ctx_.arc(this.world['particles'][this.i]['pos']['x'],
+      this.world['particles'][this.i]['pos']['y'],
+      this.world['particles'][this.i]['radius'], 0, Math.PI * 2);
+    console.log(this.world['particles'][this.i]);
   }
 
   this.ctx_.fill();
