@@ -6,7 +6,7 @@ goog.provide('ww.mode.SimoneMode');
  * @constructor
  */
 ww.mode.SimoneMode = function() {
-  goog.base(this, 'simon-says', true, true);
+  goog.base(this, 'simone', true, true);
 };
 goog.inherits(ww.mode.SimoneMode, ww.mode.Core);
 

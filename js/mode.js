@@ -26,14 +26,14 @@ ww.mode.findModeByName = function(name) {
   return ww.mode.modes[name];
 };
 
-ww.mode.register('bacon', ww.mode.BaconMode, 7, 3); // 111
-ww.mode.register('cat', ww.mode.CatMode, 2, 3); // 010
-ww.mode.register('explode', ww.mode.ExplodeMode, 5, 3); // 101
+ww.mode.register('bacon', ww.mode.BaconMode, 7, 4);          // 0111
+ww.mode.register('cat', ww.mode.CatMode, 2, 4);              // 0010
+ww.mode.register('explode', ww.mode.ExplodeMode, 5, 4);      // 0101
 ww.mode.register('home', ww.mode.HomeMode, null);
-ww.mode.register('pinata', ww.mode.PinataMode, 6, 3); // 110
-ww.mode.register('pong', ww.mode.PongMode, 4, 3); // 100
-ww.mode.register('simone', ww.mode.SimoneMode, 8, 3); // ?
-ww.mode.register('space', ww.mode.SpaceMode, 3, 3); // ?
+ww.mode.register('pinata', ww.mode.PinataMode, 6, 4);        // 0110
+ww.mode.register('pong', ww.mode.PongMode, 4, 4);            // 0100
+ww.mode.register('simone', ww.mode.SimoneMode, 8, 4);        // 1000
+ww.mode.register('space', ww.mode.SpaceMode, 3, 4);          // 0011
 
 jQuery(function() {
   var parts = window.location.href.split('/');

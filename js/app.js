@@ -2,6 +2,7 @@ goog.provide('ww.app');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
+goog.require('ww.util');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -10,8 +11,34 @@ var DEBUG_MODE = false;
  * @constructor
  */
 ww.app.Core = function() {
-  this.width_ = window.innerWidth;
-  this.height_ = window.innerHeight;
+  this.window_ = $(window);
+  this.width_ = 0;
+  this.height_ = 0;
+
+  this.transformKey_ = Modernizr['prefixed']('transform');
+
+  // TODO: Throttle
+  var self = this;
+  this.window_.resize(function() {
+    self.onResize();
+  });
+  this.onResize();
+};
+
+ww.app.Core.prototype.renderFrame_ = function(delta) {
+  if (TWEEN['update']()) {
+    // ww.raqUnsubscribe('app');
+  }
+};
+
+/**
+ * Handles a browser window resize.
+ */
+ww.app.Core.prototype.onResize = function() {
+  this.width_ = this.window_.width();
+  this.height_ = this.window_.height();
+
+  $('iframe').attr('width', this.width_).attr('height', this.height_);
 };
 
 ww.app.Core.prototype.start = function() {
@@ -26,15 +53,15 @@ ww.app.Core.prototype.start = function() {
     if (data['name'].match(/.ready/)) {
       self.onReady_(data);
     } else if (data['name'] === 'goToMode') {
-      self.loadModeByName(data['data']);
+      self.loadModeByName(data['data'], true);
     }
   });
 
-  this.loadModeByName('home');
+  this.loadModeByName('home', false);
 };
 
-ww.app.Core.prototype.loadModeByName = function(modeName) {
-  this.loadMode({ name: modeName });
+ww.app.Core.prototype.loadModeByName = function(modeName, transition) {
+  this.loadMode({ name: modeName }, transition);
 };
 
 ww.app.Core.prototype.log = function(msg) {
@@ -47,15 +74,68 @@ ww.app.Core.prototype.log = function(msg) {
   }
 };
 
-ww.app.Core.prototype.loadMode = function(mode, onComplete) {
-  if (this.currentIframe) {
-    this.currentIframe.style.display = 'none';
+ww.app.Core.prototype.loadMode = function(mode, transition) {
+  var onComplete;
+
+  var currentFrame = this.currentIframe;
+  var self = this;
+
+  if (transition) {
+    onComplete = function() {
+      mode.iframe.contentWindow.postMessage({
+        'name': 'focus',
+        'data': null
+      }, '*');
+      
+      mode.iframe.style[self.transformKey_] = "translateX(" + self.width_ + "px)";
+      mode.iframe.style.visibility = 'visible';
+
+      setTimeout(function() {
+        var t2 = new TWEEN["Tween"]({ 'translateX': self.width_ });
+        t2['to']({ 'translateX': 0 }, 400);
+        t2['onUpdate'](function() {
+          mode.iframe.style[self.transformKey_] = "translateX(" + this['translateX'] + "px)";
+        });
+        t2['onComplete'](function() {
+          currentFrame.style.pointerEvents = 'auto';
+        });
+        t2['start']();
+
+        if (currentFrame) {
+          currentFrame.contentWindow.postMessage({
+            'name': 'unfocus',
+            'data': null
+          }, '*');
+
+          currentFrame.style.pointerEvents = 'none';
+
+          var t = new TWEEN["Tween"]({ 'translateX': 0 });
+          t['to']({ 'translateX': -self.width_ }, 400);
+          t['onUpdate'](function() {
+            currentFrame.style[self.transformKey_] = "translateX(" + this['translateX'] + "px)";
+          });
+          t['onComplete'](function() {
+            currentFrame.style.visibility = 'hidden';
+          });
+          t['start']();
+        }
+
+        ww.raqSubscribe('app', self, self.renderFrame_);
+      }, 50);
+    };
+  } else {
+    onComplete = function() {
+      mode.iframe.contentWindow.postMessage({
+        'name': 'focus',
+        'data': null
+      }, '*');
+      mode.iframe.style.visibility = 'visible';
+      mode.iframe.style.pointerEvents = 'auto';
+    };
   }
 
   if (mode.iframe) {
     this.currentIframe = mode.iframe;
-    mode.iframe.style.display = 'block';
-    mode.iframe.style.opacity = 1;
     if (goog.isFunction(onComplete)) {
       onComplete();
     }
@@ -64,13 +144,6 @@ ww.app.Core.prototype.loadMode = function(mode, onComplete) {
 
   this.onReady_ = function(data) {
     if (data['name'] === (mode.name + '.ready')) {
-      iFrameElem.style.opacity = 1;
-
-      iFrameElem.contentWindow.postMessage({
-        'name': 'focus',
-        'data': null
-      }, '*');
-
       if (goog.isFunction(onComplete)) {
         onComplete();
       }
@@ -80,7 +153,8 @@ ww.app.Core.prototype.loadMode = function(mode, onComplete) {
   };
 
   var iFrameElem = goog.dom.createElement('iframe');
-  iFrameElem.style.opacity = 0;
+  iFrameElem.style.visibility = 'hidden';
+  iFrameElem.style.pointerEvents = 'none';
   iFrameElem.src = 'modes/' + mode.name + '.html';
   iFrameElem.width = this.width_;
   iFrameElem.height = this.height_;
