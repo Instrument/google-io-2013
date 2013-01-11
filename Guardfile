@@ -78,7 +78,6 @@ guard 'closure' do
   watch(/^js\/modes\/(.*)\.js/)
   watch(/^js\/vendor\/(.*)\.js/)
   watch(/^js\/app\.js/)
-  watch(/^js\/bootstrap\.js/)
   watch(/^js\/mode\.js/)
   watch(/^js\/util\.js/)
 end
