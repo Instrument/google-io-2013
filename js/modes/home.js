@@ -242,9 +242,6 @@ ww.mode.HomeMode.prototype.drawI_ = function(isNew) {
         this.paperI_['segments'][this.i_]['point']['_y'];
     }
   } else {
-    // Return an error message if drawI_(true) has not been called yet.
-    this.log('drawI_(true) must be called before it can be redrawn');
-
     return;
   }
 };
@@ -317,8 +314,6 @@ ww.mode.HomeMode.prototype.drawO_ = function(isNew) {
         this.paperO_['segments'][this.i_]['handleOut']['_y'];
     }
   } else {
-    // Return an error message if drawO_(true) has not been called yet.
-    this.log('drawO_(true) must be called before it can be redrawn');
     return;
   }
 };
@@ -362,7 +357,6 @@ ww.mode.HomeMode.prototype.drawSlash_ = function(isNew) {
 
     this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
   } else {
-    this.log('The I and O must be created before the slash can be drawn.');
     return;
   }
 };
@@ -424,9 +418,7 @@ ww.mode.HomeMode.prototype.init = function() {
   // Generic iterator.
   this.i_ = 0;
 
-  /**
-   * Gets the width of the viewport and its center point.
-   */
+  // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
