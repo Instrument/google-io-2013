@@ -43,12 +43,12 @@ body {
 
 /* line 2, ../sass/_cat.scss */
 .cat-mode #letter-i {
-  background-image: url('../img/cat/cat-letter-i.png?1357247339');
+  background-image: url('../img/cat/cat-letter-i.png?1357242087');
 }
 
 /* line 7, ../sass/_cat.scss */
 .cat-mode #letter-o {
-  background-image: url('../img/cat/cat-letter-o.png?1357247339');
+  background-image: url('../img/cat/cat-letter-o.png?1357242078');
 }
 
 /* line 2, ../sass/_letters.scss */
@@ -252,7 +252,7 @@ body {
 }
 /* line 35, ../sass/_simone.scss */
 .simone-mode #play-again {
-  background: transparent url('../img/simone/refresh.svg?1357865427') no-repeat 50% 50%;
+  background: transparent url('../img/simone/refresh.svg?1357767575') no-repeat 50% 50%;
   -webkit-background-size: 100%;
   -moz-background-size: 100%;
   -o-background-size: 100%;
