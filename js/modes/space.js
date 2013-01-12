@@ -283,13 +283,13 @@ ww.mode.SpaceMode.prototype.init = function() {
   this.world = this.getPhysicsWorld_();
   this.world['viscosity'] = 0;
 
-  for (this.i_ = 0; this.i_ < 200; this.i_++) {
+  for (this.i_ = 0; this.i_ < 500; this.i_++) {
     this.tempFloat = ww.util.floatComplexGaussianRandom();
 
     this.world['particles'].push(new Particle());
 
     this.world['particles'][this.i_]['setRadius'](
-      Math.random(this.width_ * 0.0277778));
+      Math.random() * (1 - 0.1) + 0.1);
 
     this.world['particles'][this.i_]['pos']['x'] = this.tempFloat[0] *
       this.width_;
@@ -376,6 +376,11 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
+  this.ctx_.fillStyle = '#fff';
+  this.ctx_.shadowColor = '#fff';
+  this.ctx_.shadowBlur = 5;
+
+  var canvas = this.getPaperCanvas_();
 
   var self = this;
 
@@ -385,16 +390,24 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
 
   tool['onMouseDown'] = function(event) {
     self.lastClick = event['point'];
-    if (self.paperO['hitTest'](event['point'])) {
+    if (self.paperO_['hitTest'](event['point'])) {
       self.activateO();
     }
 
-    if (self.paperI['hitTest'](event['point'])) {
+    if (self.paperI_['hitTest'](event['point'])) {
       self.activateI();
     }
   };
 
   this.$canvas_.bind(evt, function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    self.mouseX_ = e.pageX;
+    self.mouseY_ = e.pageY;
+  });
+
+  $(canvas).bind(evt, function(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -478,8 +491,6 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   if (!this.canvas_) { return; }
 
   this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
-
-  this.ctx_.fillStyle = '#fff';
 
   this.ctx_.beginPath();
 
