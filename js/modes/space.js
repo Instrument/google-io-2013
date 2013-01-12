@@ -280,25 +280,25 @@ ww.mode.SpaceMode.prototype.init = function() {
   /**
    * Create a star field.
    */
-  this.world = this.getPhysicsWorld_();
-  this.world['viscosity'] = 0;
+  this.world_ = this.getPhysicsWorld_();
+  this.world_['viscosity'] = 0;
 
   for (this.i_ = 0; this.i_ < 500; this.i_++) {
-    this.tempFloat = ww.util.floatComplexGaussianRandom();
+    this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
-    this.world['particles'].push(new Particle());
+    this.world_['particles'].push(new Particle());
 
-    this.world['particles'][this.i_]['setRadius'](
-      Math.random() * (1 - 0.1) + 0.1);
+    this.world_['particles'][this.i_]['setRadius'](
+      Math.random() * (2 - 0.1) + 0.1);
 
-    this.world['particles'][this.i_]['pos']['x'] = this.tempFloat[0] *
+    this.world_['particles'][this.i_]['pos']['x'] = this.tempFloat_[0] *
       this.width_;
 
-    this.world['particles'][this.i_]['pos']['y'] = this.tempFloat[1] *
+    this.world_['particles'][this.i_]['pos']['y'] = this.tempFloat_[1] *
       this.height_;
 
-    this.world['particles'][this.i_]['vel']['x'] = 0;
-    this.world['particles'][this.i_]['vel']['y'] = 0;
+    this.world_['particles'][this.i_]['vel']['x'] = 0;
+    this.world_['particles'][this.i_]['vel']['y'] = 0;
   }
 
   // Prep paperjs
@@ -308,7 +308,7 @@ ww.mode.SpaceMode.prototype.init = function() {
   this.deltaModifier_ = 0;
 
   // Temporarily float variable to use for randomizing animation effects.
-  this.tempFloat = [];
+  this.tempFloat_ = [];
 
   // Generic iterator.
   this.i_ = 0;
@@ -376,9 +376,9 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
-  this.ctx_.fillStyle = '#fff';
+  this.ctx_.fillStyle = '#424242';
   this.ctx_.shadowColor = '#fff';
-  this.ctx_.shadowBlur = 5;
+  this.ctx_.shadowBlur = 10;
 
   var canvas = this.getPaperCanvas_();
 
@@ -432,6 +432,18 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
+  // console.log(this.world_['particles']);
+
+  /*for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
+    this.tempFloat_ = ww.util.floatComplexGaussianRandom();
+
+    this.world_['particles'][this.i_]['pos']['x'] = this.tempFloat_[0] *
+      this.width_;
+
+    this.world_['particles'][this.i_]['pos']['y'] = this.tempFloat_[1] *
+      this.height_;
+  }*/
+
   /**
    * Redraw each shape on window resize. drawI() and drawO() must be called
    * before drawSlash() to maintain accurate drawing scale for the slash.
@@ -453,29 +465,31 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   goog.base(this, 'stepPhysics', delta);
   
   // Move star positions right and also adjust them based on mouse position.
-  for (this.i_ = 0; this.i_ < this.world['particles'].length; this.i_++) {
-    this.world['particles'][this.i_]['pos']['x'] +=
-      (this.screenCenterX_ - this.mouseX_) / 5000;
+  for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
+    this.world_['particles'][this.i_]['pos']['x'] +=
+      (this.screenCenterX_  - this.mouseX_) /
+      (5000 / this.world_['particles'][this.i_]['radius']);
 
-    if (this.world['particles'][this.i_]['pos']['x'] > this.width_ * 2) {
-      this.world['particles'][this.i_]['pos']['x'] =
-        -this.world['particles'][this.i_]['radius'] * 10;
-    } else if (this.world['particles'][this.i_]['pos']['x'] <
+    if (this.world_['particles'][this.i_]['pos']['x'] > this.width_ * 2) {
+      this.world_['particles'][this.i_]['pos']['x'] =
+        -this.world_['particles'][this.i_]['radius'] * 10;
+    } else if (this.world_['particles'][this.i_]['pos']['x'] <
       -this.width_ * 2) {
-        this.world['particles'][this.i_]['pos']['x'] =
-          this.width_ + this.world['particles'][this.i_]['radius'] * 10;
+        this.world_['particles'][this.i_]['pos']['x'] =
+          this.width_ + this.world_['particles'][this.i_]['radius'] * 10;
     }
 
-    this.world['particles'][this.i_]['pos']['y'] +=
-      (this.screenCenterY_ - this.mouseY_) / 5000;
+    this.world_['particles'][this.i_]['pos']['y'] +=
+      (this.screenCenterY_ - this.mouseY_) /
+      (5000 / this.world_['particles'][this.i_]['radius']);
 
-    if (this.world['particles'][this.i_]['pos']['y'] > this.height_ * 2) {
-      this.world['particles'][this.i_]['pos']['y'] =
-        -this.world['particles'][this.i_]['radius'] * 10;
-    } else if (this.world['particles'][this.i_]['pos']['y'] <
+    if (this.world_['particles'][this.i_]['pos']['y'] > this.height_ * 2) {
+      this.world_['particles'][this.i_]['pos']['y'] =
+        -this.world_['particles'][this.i_]['radius'] * 10;
+    } else if (this.world_['particles'][this.i_]['pos']['y'] <
       -this.height_ * 2) {
-        this.world['particles'][this.i_]['pos']['y'] =
-          this.width_ + this.world['particles'][this.i_]['radius'] * 10;
+        this.world_['particles'][this.i_]['pos']['y'] =
+          this.width_ + this.world_['particles'][this.i_]['radius'] * 10;
     }
   }
 
@@ -494,10 +508,10 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
   this.ctx_.beginPath();
 
-  for (this.i_ = 0; this.i_ < this.world['particles'].length; this.i_++) {
-    this.ctx_.arc(this.world['particles'][this.i_]['pos']['x'],
-      this.world['particles'][this.i_]['pos']['y'],
-      this.world['particles'][this.i_]['radius'], 0, Math.PI * 2);
+  for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
+    this.ctx_.arc(this.world_['particles'][this.i_]['pos']['x'],
+      this.world_['particles'][this.i_]['pos']['y'],
+      this.world_['particles'][this.i_]['radius'], 0, Math.PI * 2);
   }
 
   this.ctx_.fill();
@@ -548,16 +562,16 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
      * handles based on time as being evaluated by Sine and Cosine.
      */
     for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
-      this.tempFloat = ww.util.floatComplexGaussianRandom();
+      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
       this.paperI_['segments'][this.i_]['point']['_x'] =
         this.i_PointX[this.i_] + Math.cos(this.framesRendered_ / 10) *
-        this.iModifier_ * this.iMultiplier_ * this.tempFloat[0];
+        this.iModifier_ * this.iMultiplier_ * this.tempFloat_[0];
 
       this.paperI_['segments'][this.i_]['point']['_y'] =
         this.i_PointY_[this.i_] +
         Math.sin(this.framesRendered_ / 10) * this.iModifier_ *
-        this.iMultiplier_ * this.tempFloat[1];
+        this.iMultiplier_ * this.tempFloat_[1];
     }
   } else {
     /*
@@ -616,31 +630,31 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
      * handles based on time as being evaluated by Sine and Cosine.
      */
     for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.tempFloat = ww.util.floatComplexGaussianRandom();
+      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
       this.paperO_['segments'][this.i_]['handleIn']['_x'] =
         this.oHandleInX_[this.i_] + Math.cos(this.framesRendered_ / 10 *
-        this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
+        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
 
       this.paperO_['segments'][this.i_]['handleIn']['_y'] =
         this.oHandleInY_[this.i_] + Math.sin(this.framesRendered_ / 10 *
-        this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
+        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
 
       this.paperO_['segments'][this.i_]['handleOut']['_x'] =
         this.oHandleOutX_[this.i_] - Math.cos(this.framesRendered_ / 10 *
-          this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
+          this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
 
       this.paperO_['segments'][this.i_]['handleOut']['_y'] =
         this.oHandleOutY_[this.i_] - Math.sin(this.framesRendered_ / 10 *
-        this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
+        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
 
       this.paperO_['segments'][this.i_]['point']['_x'] =
         this.oPointX_[this.i_] - Math.sin(this.framesRendered_ / 10 *
-        this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
+        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
 
       this.paperO_['segments'][this.i_]['point']['_y'] =
         this.oPointY_[this.i_] - Math.cos(this.framesRendered_ / 10 *
-        this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
+        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
     }
   } else {
     /*
