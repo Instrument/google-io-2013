@@ -36,6 +36,8 @@ function testWwModeSimoneModeDidFocus() {
   mode['unfocus']();
   mode['focus']();
 
+  mode.beginGame_();
+
   var beginCount = 0;
   var startSequenceCount = 0;
   var checkSequenceCount = 0;
@@ -64,18 +66,59 @@ function testWwModeSimoneModeDidFocus() {
   assertEquals('startSequenceCount should be 0', startSequenceCount, 0);
   assertEquals('checkSequenceCount should be 0', checkSequenceCount, 0);
 
-  playAgain.trigger('mouseup');
+  mode.playAgainEl.trigger('mouseup');
   assertEquals('beginCount should now be 1', beginCount, 1);
   assertEquals('startSequenceCount should be 0', startSequenceCount, 0);
   assertEquals('checkSequenceCount should be 0', checkSequenceCount, 0);
 
-  topLeft.trigger('mousedown');
+  mode.isAnimating = false;
+
+  mode.topLeft.trigger('mousedown');
   assertEquals('startSequenceCount should now be 1', startSequenceCount, 1);
   assertEquals('checkSequenceCount should be 0', checkSequenceCount, 0);
 
-  topLeft.trigger('mouseup');
+  mode.isAnimating = false;
+
+  mode.topLeft.trigger('mouseup');
   assertEquals('startSequenceCount should still be 1', startSequenceCount, 1);
   assertEquals('checkSequenceCount should now be 1', checkSequenceCount, 1);
+
+  mode.isAnimating = false;
+
+  mode.topRight.trigger('mousedown');
+  assertEquals('startSequenceCount should now be 2', startSequenceCount, 2);
+  assertEquals('checkSequenceCount should be 1', checkSequenceCount, 1);
+
+  mode.isAnimating = false;
+
+  mode.topRight.trigger('mouseup');
+  assertEquals('startSequenceCount should still be 2', startSequenceCount, 2);
+  assertEquals('checkSequenceCount should now be 2', checkSequenceCount, 2);
+
+  mode.isAnimating = false;
+
+  mode.bottomLeft.trigger('mousedown');
+  assertEquals('startSequenceCount should now be 3', startSequenceCount, 3);
+  assertEquals('checkSequenceCount should be 2', checkSequenceCount, 2);
+
+  mode.isAnimating = false;
+
+  mode.bottomLeft.trigger('mouseup');
+  assertEquals('startSequenceCount should still be 3', startSequenceCount, 3);
+  assertEquals('checkSequenceCount should now be 3', checkSequenceCount, 3);
+
+  mode.isAnimating = false;
+
+  mode.bottomRight.trigger('mousedown');
+  assertEquals('startSequenceCount should now be 4', startSequenceCount, 4);
+  assertEquals('checkSequenceCount should be 3', checkSequenceCount, 3);
+
+  mode.isAnimating = false;
+
+  mode.bottomRight.trigger('mouseup');
+  assertEquals('startSequenceCount should still be 4', startSequenceCount, 4);
+  assertEquals('checkSequenceCount should now be 4', checkSequenceCount, 4);
+
 }
 
 function testWwModeSimoneModeDidFocus() {
@@ -142,13 +185,13 @@ function testWwModeSimoneModeShuffleSequence_() {
 }
 
 function testWwModeSimoneModeCheckSequence_() {
-
+  mode.checkSequence_(0);
 }
 
 function testWwModeSimoneModeBeginGame_() {
-
+  mode.beginGame_();
 }
 
 function testWwModeSimoneModeDisplayNext_() {
-
+  mode.displayNext_();
 }
