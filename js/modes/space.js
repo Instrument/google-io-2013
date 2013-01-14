@@ -130,11 +130,39 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
 
+  // Create an array to store O's paths.
+  this.oPaths_ = [];
+
+  // Initial variables for calculating circle angles.
+  var pathX;
+  var pathY;
+
+  var pathStart;
+  var pathEnd;
+
   if (isNew) {
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
-    this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
-    this.paperO_['fillColor'] = '#3777e2';
+    var oCenter2 = new paper['Point'](this.oX_, this.oY_);
+    this.paperO_ = new paper['Path']['Circle'](oCenter2, this.oRad_);
+    // this.paperO_['strokeColor'] = '#3777e2';
+
+    for (this.i_ = 0; this.i_ < 180; this.i_++) {
+      this.oPaths_.push(new paper['Path']);
+
+      pathX = oCenter['x'] + this.oRad_ * Math.cos(this.i_ * (Math.PI / 180));
+      pathY = oCenter['y'] + this.oRad_ * Math.sin(this.i_ * (Math.PI / 180));
+      pathStart = new paper['Point'](pathX, pathY);
+
+      pathX = oCenter['x'] + this.oRad_ * Math.cos(-this.i_ * (Math.PI / 180));
+      pathY = oCenter['y'] + this.oRad_ * Math.sin(-this.i_ * (Math.PI / 180));
+      pathEnd = new paper['Point'](pathX, pathY);
+
+      this.oPaths_[this.i_]['add'](pathStart, pathEnd);
+      console.log(pathStart, pathEnd);
+
+      this.oPaths_[this.i_]['strokeColor'] = '#3777e2';
+    }
 
     // Create arrays to store the coordinates for O's path points and handles.
     this.oHandleInX_ = [];
