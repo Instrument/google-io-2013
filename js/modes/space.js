@@ -138,8 +138,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
   var pathY;
 
   var pathStart;
-  var pathMid;
+  var pathMidOne;
+  var pathMidTwo;
   var pathEnd;
+  var pathLength;
 
   if (isNew) {
     // Create a new paper.js path for O based off the previous variables.
@@ -147,24 +149,33 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
     // this.paperO_['strokeColor'] = '#3777e2';
 
-    for (this.i_ = 0; this.i_ < 180; this.i_++) {
+    var oGroup = new paper['Group'];
+
+    for (this.i_ = 0; this.i_ < 90; this.i_++) {
       this.oPaths_.push(new paper['Path']);
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos(this.i_ * (Math.PI / 180));
-      pathY = oCenter['y'] + this.oRad_ * Math.sin(this.i_ * (Math.PI / 180));
+      pathX = oCenter['x'] + this.oRad_ * Math.cos((this.i_ * 2) * (Math.PI / 180));
+      pathY = oCenter['y'] + this.oRad_ * Math.sin((this.i_ * 2) * (Math.PI / 180));
       pathStart = new paper['Point'](pathX, pathY);
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos(-this.i_ * (Math.PI / 180));
-      pathY = oCenter['y'] + this.oRad_ * Math.sin(-this.i_ * (Math.PI / 180));
+      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-this.i_ * 2)) * (Math.PI / 180));
+      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-this.i_ * 2)) * (Math.PI / 180));
       pathEnd = new paper['Point'](pathX, pathY);
 
-      pathMid = new paper['Point'](pathX, this.screenCenterY_);
+      pathLength = pathEnd['getDistance'](pathStart);
 
-      this.oPaths_[this.i_]['add'](pathStart, pathMid, pathEnd);
+      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ + (pathLength / 4));
+      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ - (pathLength / 4));
 
-      this.oPaths_[this.i_]['strokeColor'] = '#3777e2';
-      this.oPaths_[this.i_]['strokeWidth'] = 2;
+      this.oPaths_[this.i_]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
+
+      oGroup['addChild'](this.oPaths_[this.i_]);
     }
+
+    oGroup['strokeColor'] = '#3777e2';
+    oGroup['strokeWidth'] = 1;
+    oGroup['rotate'](45);
+    // oGroup['fullySelected'] = true;
 
     // Create arrays to store the coordinates for O's path points and handles.
     this.oHandleInX_ = [];
@@ -178,9 +189,15 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
     this.oPathsX_ = [];
     this.oPathsY_ = [];
 
+    var altI;
+
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
-      this.oPathsX_.push(this.oPaths_[this.i_]['segments'][1]['point']['_x']);
-      this.oPathsY_.push(this.oPaths_[this.i_]['segments'][1]['point']['_y']);
+      this.oPathsX_[this.i_] = [];
+      this.oPathsY_[this.i_] = [];
+      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
+        this.oPathsX_[this.i_].push(this.oPaths_[this.i_]['segments'][altI]['point']['_x']);
+        this.oPathsY_[this.i_].push(this.oPaths_[this.i_]['segments'][altI]['point']['_y']);
+      }
     }
 
     // Store the coordinates for O's path points and handles
@@ -665,49 +682,47 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
     var altI;
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
-      
+      this.oPaths_[this.i_]['segments'][0]['point']['_x'] =
+        this.oPathsX_[this.i_][0] +
+        Math.cos(this.framesRendered_ / 10 + this.i_) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['segments'][0]['point']['_y'] =
+        this.oPathsY_[this.i_][0] +
+        Math.cos(this.framesRendered_ / 10 + this.i_) *
+        this.oModifier_ * this.oMultiplier_;
+
       this.oPaths_[this.i_]['segments'][1]['point']['_x'] =
-        this.oPathsX_[this.i_] +
-        Math.sin(this.framesRendered_ / 10) *
+        this.oPathsX_[this.i_][1] +
+        Math.sin(this.framesRendered_ / 10 + this.i_) *
         this.oModifier_ * this.oMultiplier_;
 
       this.oPaths_[this.i_]['segments'][1]['point']['_y'] =
-        this.oPathsY_[this.i_] +
-        Math.cos(this.framesRendered_ / 10) *
+        this.oPathsY_[this.i_][1] +
+        Math.sin(this.framesRendered_ / 10 + this.i_) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['firstSegment']['handleIn']['_x'] =
-        Math.cos(this.framesRendered_ / 10) *
+      this.oPaths_[this.i_]['segments'][2]['point']['_x'] =
+        this.oPathsX_[this.i_][2] +
+        Math.cos(this.framesRendered_ / 10 + this.i_) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['firstSegment']['handleIn']['_y'] =
-        Math.sin(this.framesRendered_ / 10) *
+      this.oPaths_[this.i_]['segments'][2]['point']['_y'] =
+        this.oPathsY_[this.i_][2] +
+        Math.cos(this.framesRendered_ / 10 + this.i_) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['firstSegment']['handleOut']['_x'] =
-        Math.cos(this.framesRendered_ / 10) *
+      this.oPaths_[this.i_]['segments'][3]['point']['_x'] =
+        this.oPathsX_[this.i_][3] +
+        Math.sin(this.framesRendered_ / 10 + this.i_) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['firstSegment']['handleOut']['_y'] =
-        Math.sin(this.framesRendered_ / 10) *
+      this.oPaths_[this.i_]['segments'][3]['point']['_y'] =
+        this.oPathsY_[this.i_][3] +
+        Math.sin(this.framesRendered_ / 10 + this.i_) *
         this.oModifier_ * this.oMultiplier_;
 
-
-      this.oPaths_[this.i_]['lastSegment']['handleIn']['_x'] =
-        Math.cos(this.framesRendered_ / 10) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['lastSegment']['handleIn']['_y'] =
-        Math.sin(this.framesRendered_ / 10) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['lastSegment']['handleOut']['_x'] =
-        Math.cos(this.framesRendered_ / 10) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['lastSegment']['handleOut']['_y'] =
-        Math.sin(this.framesRendered_ / 10) *
-        this.oModifier_ * this.oMultiplier_;
+      this.oPaths_[this.i_]['smooth']();
     }
 
     /*
