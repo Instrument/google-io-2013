@@ -138,13 +138,13 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
   var pathY;
 
   var pathStart;
+  var pathMid;
   var pathEnd;
 
   if (isNew) {
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
-    var oCenter2 = new paper['Point'](this.oX_, this.oY_);
-    this.paperO_ = new paper['Path']['Circle'](oCenter2, this.oRad_);
+    this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
     // this.paperO_['strokeColor'] = '#3777e2';
 
     for (this.i_ = 0; this.i_ < 180; this.i_++) {
@@ -158,10 +158,12 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
       pathY = oCenter['y'] + this.oRad_ * Math.sin(-this.i_ * (Math.PI / 180));
       pathEnd = new paper['Point'](pathX, pathY);
 
-      this.oPaths_[this.i_]['add'](pathStart, pathEnd);
-      console.log(pathStart, pathEnd);
+      pathMid = new paper['Point'](pathX, this.screenCenterY_);
+
+      this.oPaths_[this.i_]['add'](pathStart, pathMid, pathEnd);
 
       this.oPaths_[this.i_]['strokeColor'] = '#3777e2';
+      this.oPaths_[this.i_]['strokeWidth'] = 2;
     }
 
     // Create arrays to store the coordinates for O's path points and handles.
@@ -172,6 +174,14 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
 
     this.oPointX_ = [];
     this.oPointY_ = [];
+
+    this.oPathsX_ = [];
+    this.oPathsY_ = [];
+
+    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
+      this.oPathsX_.push(this.oPaths_[this.i_]['segments'][1]['point']['_x']);
+      this.oPathsY_.push(this.oPaths_[this.i_]['segments'][1]['point']['_y']);
+    }
 
     // Store the coordinates for O's path points and handles
     for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
@@ -496,7 +506,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
     this.world_['particles'][this.i_]['pos']['x'] +=
       (this.screenCenterX_  - this.mouseX_) /
-      (5000 / this.world_['particles'][this.i_]['radius']);
+      (5000 / this.world_['particles'][this.i_]['radius']) + .1;
 
     if (this.world_['particles'][this.i_]['pos']['x'] > this.width_ * 2) {
       this.world_['particles'][this.i_]['pos']['x'] =
@@ -652,6 +662,53 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     }
 
     this.delay_['feedback'] = this.oMultiplier_ / 10;
+
+    var altI;
+    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
+      
+      this.oPaths_[this.i_]['segments'][1]['point']['_x'] =
+        this.oPathsX_[this.i_] +
+        Math.sin(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['segments'][1]['point']['_y'] =
+        this.oPathsY_[this.i_] +
+        Math.cos(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['firstSegment']['handleIn']['_x'] =
+        Math.cos(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['firstSegment']['handleIn']['_y'] =
+        Math.sin(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['firstSegment']['handleOut']['_x'] =
+        Math.cos(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['firstSegment']['handleOut']['_y'] =
+        Math.sin(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+
+      this.oPaths_[this.i_]['lastSegment']['handleIn']['_x'] =
+        Math.cos(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['lastSegment']['handleIn']['_y'] =
+        Math.sin(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['lastSegment']['handleOut']['_x'] =
+        Math.cos(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+
+      this.oPaths_[this.i_]['lastSegment']['handleOut']['_y'] =
+        Math.sin(this.framesRendered_ / 10) *
+        this.oModifier_ * this.oMultiplier_;
+    }
 
     /*
      * Loop through each path segment on the letter O and move each point's
