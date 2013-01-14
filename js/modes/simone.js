@@ -137,7 +137,7 @@ ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
 
     var fadeInQuick = new TWEEN['Tween']({ 'opacity': 0.5 });
         fadeInQuick['to']({ 'opacity': 1 }, 100);
-        fadeInQuick['onStart'](function () {
+        fadeInQuick['onStart'](function() {
           self.source['connect'](self.analyser);
           self.analyser['connect'](self.audioContext_['destination']);
           self.source['noteOn'](0);

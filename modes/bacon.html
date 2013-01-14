@@ -13,11 +13,13 @@
     <script src="../js/mode.min.js"></script>
   </head>
   <body>
-    <div id="bacon-container" style="opacity: 0">
+    <div id="bacon-container">
       <svg version="1.1" id="bacon-and-eggs" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
    width="100%" height="100%" viewBox="0 0 810.25 812.156" enable-background="new 0 0 810.25 812.156"
    xml:space="preserve">
-        <g id="eggs">
+        <polygon id="slash" fill="#F5F5F5" points="393.731,4.025 378.639,-0.397 129.706,806.62 
+          144.796,811.041 "/>
+        <g id="letter-o">
           <path id="egg-whites" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="0.5" stroke-miterlimit="10" d="M810,421.26
             c0,80.304-52.063,136.855-111.683,181.637c-41.022,30.814-92.016,98.182-147.272,98.182c-60.91,0-116.64-73.722-159.545-110.454
             c-52.585-45.019-85.91-109.441-85.91-184.091c0-135.561,109.895-245.455,245.455-245.455c95.834,0,147.352,54.915,187.772,135
@@ -29,12 +31,13 @@
             <stop  offset="0.8179" style="stop-color:#FBCB43"/>
             <stop  offset="1" style="stop-color:#F6C338"/>
           </radialGradient>
-          <circle id="yolk" fill="url(#SVGID_1_)" cx="520.363" cy="375.851" r="92.045"/>
-          
+          <g id="yolk">
+            <circle fill="url(#SVGID_1_)" cx="520.363" cy="375.851" r="92.045"/>
             <path opacity="0.75" fill="none" stroke="#FFFFFF" stroke-width="12.2727" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
             M452.863,375.851c0-16.318,5.79-31.284,15.428-42.955c12.381-14.991,31.111-24.545,52.072-24.545"/>
+          </g>
         </g>
-        <g id="bacon">
+        <g id="letter-i">
           <g>
             <linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="80" y1="640.0781" x2="80" y2="172.0786">
               <stop  offset="0" style="stop-color:#D63E30"/>
@@ -71,7 +74,7 @@
               s-10-35.69-10-68.116c0-32.426,10-34.105,10-67.324c0-33.218-10-33.265-10-67.323v-20.435C150,177.89,150,171.078,140,171.078
               L140,171.078z"/>
           </g>
-          <g opacity="0.9">
+          <g id="stripes" opacity="0.9">
             <defs>
               <path id="SVGID_3_" opacity="0.9" d="M150,339.784c0-32.426,10-34.105,10-67.324c0-33.218-10-33.265-10-67.323v-20.435
                 c0-6.812,0-13.623-10-13.623s-120,0-130,0S0,177.89,0,184.701s0,20.435,0,20.435c0,34.058,10,34.058,10,68.116
@@ -80,7 +83,7 @@
                 c0-34.059,10-34.059,10-68.115c0-34.059-10-32.57-10-67.372c0-34.803,10-38.066,10-70.492S150,372.209,150,339.784z"/>
             </defs>
             <clipPath id="SVGID_4_">
-              <use xlink:href="#SVGID_3_"  overflow="visible"/>
+              <use xlink:href="#SVGID_3_"  overflow="hidden"/>
             </clipPath>
             <g clip-path="url(#SVGID_4_)">
               <path fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linecap="round" stroke-miterlimit="10" d="M50,171.078
@@ -93,8 +96,6 @@
             </g>
           </g>
         </g>
-        <polygon id="slash" fill="#F5F5F5" points="393.731,4.025 378.639,-0.397 129.706,806.62 
-          144.796,811.041 "/>
         </svg>
     </div>
   </body>

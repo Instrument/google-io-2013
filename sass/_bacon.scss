@@ -3,3 +3,11 @@
   padding: 10%;
   @include transition(all 100ms ease-in);
 }
+
+#letter-i,
+#letter-o,
+#stripes,
+#egg-whites,
+#yolk {
+  @include transform-origin(50% 50%, false);
+}
