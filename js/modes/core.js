@@ -1,6 +1,7 @@
 goog.provide('ww.mode.Core');
 goog.require('goog.events');
 goog.require('ww.util');
+goog.require('ww.raf');
 
 window['AudioContext'] = (
   window['AudioContext'] ||
@@ -215,7 +216,7 @@ ww.mode.Core.prototype.startRendering = function() {
   this.framesRendered_ = 0;
   this.timeElapsed_ = 0;
 
-  ww.raqSubscribe(this.name_, this, this.renderFrame);
+  ww.raf.subscribe(this.name_, this, this.renderFrame);
 };
 
 /**
@@ -225,7 +226,7 @@ ww.mode.Core.prototype.stopRendering = function() {
   // No-op if mode doesn't need rAF
   if (!this.wantsRenderLoop_) { return; }
 
-  ww.raqUnsubscribe(this.name_);
+  ww.raf.unsubscribe(this.name_);
 };
 
 /**

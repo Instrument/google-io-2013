@@ -3,6 +3,7 @@ goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('ww.util');
+goog.require('ww.raf');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -27,7 +28,7 @@ ww.app.Core = function() {
 
 ww.app.Core.prototype.renderFrame_ = function(delta) {
   if (TWEEN['update']()) {
-    // ww.raqUnsubscribe('app');
+    // ww.raf.unsubscribe('app');
   }
 };
 
@@ -120,7 +121,7 @@ ww.app.Core.prototype.loadMode = function(mode, transition) {
           t['start']();
         }
 
-        ww.raqSubscribe('app', self, self.renderFrame_);
+        ww.raf.subscribe('app', self, self.renderFrame_);
       }, 50);
     };
   } else {

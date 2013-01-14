@@ -1,0 +1,16 @@
+{
+	"folders":
+	[
+		{
+			"path": "/Users/thomasreynolds/Sites/google-io-2013",
+			"folder_exclude_patterns": ["js-instrumented", "jstemp", ".sass-cache", ".bundle", "bin", "compiler-latest"],
+      "file_exclude_patterns": ["*.sublime-workspace", "*.min.js", "*.test.js"]
+		}
+	],
+
+  "settings":
+  {
+    "tab_size": 2,
+    "translate_tabs_to_spaces": true
+  }
+}
