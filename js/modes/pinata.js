@@ -7,6 +7,7 @@ goog.provide('ww.mode.PinataMode');
  */
 ww.mode.PinataMode = function() {
   goog.base(this, 'pinata', true, true, false);
+  this.preloadSound('whack.mp3');
 };
 goog.inherits(ww.mode.PinataMode, ww.mode.Core);
 

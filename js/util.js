@@ -1,4 +1,7 @@
 goog.provide('ww.util');
+goog.provide('ww.raf');
+
+ww.testMode = window.location.href.indexOf('test') > -1;
 
 /**
  * Used to generate random X and Y coordinates.
@@ -27,6 +30,17 @@ ww.util.floatComplexGaussianRandom = function() {
   return out;
 };
 
+/**
+ * Get the current time, depending on the browser's level of support.
+ * @return {Number}
+ */
+ww.util.rightNow = function() {
+  if (window['performance'] && window['performance']['now']) {
+    return window['performance']['now']();
+  } else {
+    return +(new Date());
+  }
+};
 
 /**
  * RequestAnimationFrame polyfill.
@@ -59,58 +73,76 @@ ww.util.floatComplexGaussianRandom = function() {
         };
 }());
 
-ww.raqSubscribers = {};
-ww.raqRunning = false;
+ww.raf.subscribers_ = {};
+ww.raf.isRunning_ = false;
 
-ww.lastTime = 0;
-ww.testMode = window.location.href.indexOf('test') > -1;
+ww.raf.lastTime = 0;
 
-var subscriberKey, loopSubscriber, loopCurrentTime, loopDelta;
-ww.raqOnFrame = function(t) {
-  loopCurrentTime = t || new Date().getTime();
-  loopDelta = loopCurrentTime - ww.lastTime;
+/**
+ * On-frame loop.
+ * @private
+ * @param {Number} t timer.
+ */
+ww.raf.onFrame_ = function(t) {
+  var loopCurrentTime = t || ww.util.rightNow();
+  var loopDelta = loopCurrentTime - ww.raf.lastTime;
 
-  for (subscriberKey in ww.raqSubscribers) {
-    if (ww.raqSubscribers.hasOwnProperty(subscriberKey)) {
-      loopSubscriber = ww.raqSubscribers[subscriberKey];
+  for (var subscriberKey in ww.raf.subscribers_) {
+    if (ww.raf.subscribers_.hasOwnProperty(subscriberKey)) {
+      var loopSubscriber = ww.raf.subscribers_[subscriberKey];
       loopSubscriber[1].call(loopSubscriber[0], loopDelta);
     }
   }
 
-  ww.lastTime = loopCurrentTime;
+  ww.raf.lastTime = loopCurrentTime;
 
-  if (ww.raqRunning) {
-    requestAnimationFrame(ww.raqOnFrame);
+  if (ww.raf.isRunning_) {
+    requestAnimationFrame(ww.raf.onFrame_);
   }
 };
 
-ww.raqUpdateStatus = function() {
+/**
+ * After adding/removing a callback, see if we need to
+ * stop/start the loop.
+ * @private
+ */
+ww.raf.updateStatus_ = function() {
   var len = 0;
-  for (var key in ww.raqSubscribers) {
-    if (ww.raqSubscribers.hasOwnProperty(key)) {
+  for (var key in ww.raf.subscribers_) {
+    if (ww.raf.subscribers_.hasOwnProperty(key)) {
       len++;
     }
   }
 
   if (len > 0) {
-    if (!ww.raqRunning) {
-      ww.raqRunning = true;
-      ww.lastTime = new Date().getTime();
-      ww.raqOnFrame();
+    if (!ww.raf.isRunning_) {
+      ww.raf.isRunning_ = true;
+      ww.raf.lastTime = ww.util.rightNow();
+      ww.raf.onFrame_();
     }
   } else {
-    if (ww.raqRunning) {
-      ww.raqRunning = false;
+    if (ww.raf.isRunning_) {
+      ww.raf.isRunning_ = false;
     }
   }
 };
 
-ww.raqSubscribe = function(name, obj, func) {
-  ww.raqSubscribers[name] = [obj, func];
-  ww.raqUpdateStatus();
+/**
+ * Subscribe a named callback as needing a rAF loop.
+ * @param {String} name The name of the callback.
+ * @param {Object} obj The instance needing to be called.
+ * @param {Function} func The reference to the function to be called.
+ */
+ww.raf.subscribe = function(name, obj, func) {
+  ww.raf.subscribers_[name] = [obj, func];
+  ww.raf.updateStatus_();
 };
 
-ww.raqUnsubscribe = function(name) {
-  delete ww.raqSubscribers[name];
-  ww.raqUpdateStatus();
+/**
+ * Unsubscribe a named callback from needing a rAF loop.
+ * @param {String} name The name of the callback.
+ */
+ww.raf.unsubscribe = function(name) {
+  delete ww.raf.subscribers_[name];
+  ww.raf.updateStatus_();
 };

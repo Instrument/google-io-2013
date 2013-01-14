@@ -21,6 +21,8 @@ ww.mode.PongMode = function() {
   this['bottomWallOpacity_'] = 0;
 
   goog.base(this, 'pong', true, true, true);
+  this.preloadSound('1.wav');
+  this.preloadSound('2.wav');
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
 

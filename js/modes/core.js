@@ -1,6 +1,7 @@
 goog.provide('ww.mode.Core');
 goog.require('goog.events');
 goog.require('ww.util');
+goog.require('ww.raf');
 
 window['AudioContext'] = (
   window['AudioContext'] ||
@@ -215,7 +216,7 @@ ww.mode.Core.prototype.startRendering = function() {
   this.framesRendered_ = 0;
   this.timeElapsed_ = 0;
 
-  ww.raqSubscribe(this.name_, this, this.renderFrame);
+  ww.raf.subscribe(this.name_, this, this.renderFrame);
 };
 
 /**
@@ -225,7 +226,7 @@ ww.mode.Core.prototype.stopRendering = function() {
   // No-op if mode doesn't need rAF
   if (!this.wantsRenderLoop_) { return; }
 
-  ww.raqUnsubscribe(this.name_);
+  ww.raf.unsubscribe(this.name_);
 };
 
 /**
@@ -390,6 +391,7 @@ ww.mode.Core.prototype.didUnfocus = function() {
  */
 ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
   this.soundBuffersFromURL_ = this.soundBuffersFromURL_ || {};
+  gotSound = gotSound || function(){};
 
   if (this.soundBuffersFromURL_[url]) {
     gotSound(this.soundBuffersFromURL_[url]);
@@ -407,8 +409,6 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
     audioContext['decodeAudioData'](request.response, function(buffer) {
       self.soundBuffersFromURL_[url] = buffer;
       gotSound(self.soundBuffersFromURL_[url]);
-    }, function() {
-      // debugger;
     });
   };
   request.send();
@@ -470,10 +470,10 @@ ww.mode.Core.prototype.getAudioContext_ = function() {
 };
 
 /**
- * Play a sound by url.
+ * Cache a sound file.
  * @param {String} filename Audio file name.
  */
-ww.mode.Core.prototype.playSound = function(filename) {
+ww.mode.Core.prototype.preloadSound = function(filename) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
@@ -483,6 +483,24 @@ ww.mode.Core.prototype.playSound = function(filename) {
 
   this.log('Requested sound "' + filename + '" from "' + url + '"');
 
+  this.getSoundBufferFromURL_(url);
+};
+
+/**
+ * Play a sound by url.
+ * @param {String} filename Audio file name.
+ * @param {Function} onPlay Callback on play.
+ */
+ww.mode.Core.prototype.playSound = function(filename, onPlay) {
+  if (!this.wantsAudio_) { return; }
+
+  var url = '../sounds/' + this.name_ + '/' + filename;
+  if (ww.testMode) {
+    url = '../' + url;
+  }
+
+  this.log('Playing sound "' + filename);
+
   var audioContext = this.getAudioContext_();
 
   this.getSoundBufferFromURL_(url, function(buffer) {
@@ -490,6 +508,10 @@ ww.mode.Core.prototype.playSound = function(filename) {
     source['buffer'] = buffer;
     source['connect'](audioContext['destination']);
     source['noteOn'](0);
+
+    if ('function' === typeof onPlay) {
+      onPlay(source);
+    }
   });
 };
 

@@ -7,6 +7,8 @@ goog.provide('ww.mode.CatMode');
  */
 ww.mode.CatMode = function() {
   goog.base(this, 'cat', true, true);
+  this.preloadSound('cat-1.mp3');
+  this.preloadSound('cat-2.mp3');
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
 
