@@ -391,6 +391,7 @@ ww.mode.Core.prototype.didUnfocus = function() {
  */
 ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
   this.soundBuffersFromURL_ = this.soundBuffersFromURL_ || {};
+  gotSound = gotSound || function(){};
 
   if (this.soundBuffersFromURL_[url]) {
     gotSound(this.soundBuffersFromURL_[url]);
@@ -408,8 +409,6 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
     audioContext['decodeAudioData'](request.response, function(buffer) {
       self.soundBuffersFromURL_[url] = buffer;
       gotSound(self.soundBuffersFromURL_[url]);
-    }, function() {
-      // debugger;
     });
   };
   request.send();
@@ -471,6 +470,23 @@ ww.mode.Core.prototype.getAudioContext_ = function() {
 };
 
 /**
+ * Cache a sound file.
+ * @param {String} filename Audio file name.
+ */
+ww.mode.Core.prototype.preloadSound = function(filename) {
+  if (!this.wantsAudio_) { return; }
+
+  var url = '../sounds/' + this.name_ + '/' + filename;
+  if (ww.testMode) {
+    url = '../' + url;
+  }
+
+  this.log('Requested sound "' + filename + '" from "' + url + '"');
+
+  this.getSoundBufferFromURL_(url);
+};
+
+/**
  * Play a sound by url.
  * @param {String} filename Audio file name.
  */
@@ -481,8 +497,8 @@ ww.mode.Core.prototype.playSound = function(filename) {
   if (ww.testMode) {
     url = '../' + url;
   }
-
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
+  
+  this.log('Playing sound "' + filename);
 
   var audioContext = this.getAudioContext_();
 

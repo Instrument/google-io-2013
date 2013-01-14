@@ -6,6 +6,7 @@ goog.provide('ww.mode.ExplodeMode');
  */
 ww.mode.ExplodeMode = function() {
   goog.base(this, 'explode', true);
+  this.preloadSound('bomb.wav');
 };
 goog.inherits(ww.mode.ExplodeMode, ww.mode.Core);
 
