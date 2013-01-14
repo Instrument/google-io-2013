@@ -489,15 +489,16 @@ ww.mode.Core.prototype.preloadSound = function(filename) {
 /**
  * Play a sound by url.
  * @param {String} filename Audio file name.
+ * @param {Function} onPlay Callback on play.
  */
-ww.mode.Core.prototype.playSound = function(filename) {
+ww.mode.Core.prototype.playSound = function(filename, onPlay) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }
-  
+
   this.log('Playing sound "' + filename);
 
   var audioContext = this.getAudioContext_();
@@ -507,6 +508,10 @@ ww.mode.Core.prototype.playSound = function(filename) {
     source['buffer'] = buffer;
     source['connect'](audioContext['destination']);
     source['noteOn'](0);
+
+    if ('function' === typeof onPlay) {
+      onPlay(source);
+    }
   });
 };
 
