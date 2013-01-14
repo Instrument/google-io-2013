@@ -130,9 +130,6 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
 
-  // Create an array to store O's paths.
-  this.oPaths_ = [];
-
   // Initial variables for calculating circle angles.
   var pathX;
   var pathY;
@@ -143,13 +140,20 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
   var pathEnd;
   var pathLength;
 
+  var altI;
+
   if (isNew) {
+    this.oCreated_ = true;
+    
+    // Create an array to store O's paths.
+    this.oPaths_ = [];
+
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
-    // this.paperO_['strokeColor'] = '#3777e2';
+    this.paperO_['fillColor'] = 'transparent';
 
-    var oGroup = new paper['Group'];
+    this.oGroup_ = new paper['Group'];
 
     for (this.i_ = 0; this.i_ < 90; this.i_++) {
       this.oPaths_.push(new paper['Path']);
@@ -169,28 +173,20 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
 
       this.oPaths_[this.i_]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
 
-      oGroup['addChild'](this.oPaths_[this.i_]);
+      this.oGroup_['addChild'](this.oPaths_[this.i_]);
     }
 
-    oGroup['strokeColor'] = '#3777e2';
-    oGroup['strokeWidth'] = 1;
-    oGroup['rotate'](45);
-    // oGroup['fullySelected'] = true;
+    this.oGroup_['strokeColor'] = '#3777e2';
+    this.oGroup_['strokeWidth'] = 1;
+    this.oGroup_['rotate'](45);
+    // this.oGroup_['fullySelected'] = true;
 
-    // Create arrays to store the coordinates for O's path points and handles.
-    this.oHandleInX_ = [];
-    this.oHandleInY_ = [];
-    this.oHandleOutX_ = [];
-    this.oHandleOutY_ = [];
-
-    this.oPointX_ = [];
-    this.oPointY_ = [];
-
+    // Create arrays to store the coordinates for O's path points.
     this.oPathsX_ = [];
     this.oPathsY_ = [];
 
-    var altI;
 
+    // Store the coordinates for O's path points.
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       this.oPathsX_[this.i_] = [];
       this.oPathsY_[this.i_] = [];
@@ -200,44 +196,20 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
       }
     }
 
-    // Store the coordinates for O's path points and handles
-    for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.oPointX_.push(this.paperO_['segments'][this.i_]['point']['_x']);
-      this.oPointY_.push(this.paperO_['segments'][this.i_]['point']['_y']);
-
-      this.oHandleInX_.push(
-        this.paperO_['segments'][this.i_]['handleIn']['_x']);
-
-      this.oHandleInY_.push(
-        this.paperO_['segments'][this.i_]['handleIn']['_y']);
-
-      this.oHandleOutX_.push(
-        this.paperO_['segments'][this.i_]['handleOut']['_x']);
-
-      this.oHandleOutY_.push(
-        this.paperO_['segments'][this.i_]['handleOut']['_y']);
-    }
-
   // Run if drawO_() is called and drawO_(true) has also already been called.
-  } else if (!isNew && this.paperO_) {
+  } else if (!isNew && this.oCreated_) {
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
+    this.oGroup_['position'] = {x: this.oX_, y: this.oY_};
+
+    this.oGroup_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
     this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
 
-    for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.oPointX_[this.i_] = this.paperO_['segments'][this.i_]['point']['_x'];
-      this.oPointY_[this.i_] = this.paperO_['segments'][this.i_]['point']['_y'];
-
-      this.oHandleInX_[this.i_] =
-        this.paperO_['segments'][this.i_]['handleIn']['_x'];
-
-      this.oHandleInY_[this.i_] =
-        this.paperO_['segments'][this.i_]['handleIn']['_y'];
-
-      this.oHandleOutX_[this.i_] =
-        this.paperO_['segments'][this.i_]['handleOut']['_x'];
-
-      this.oHandleOutY_[this.i_] =
-        this.paperO_['segments'][this.i_]['handleOut']['_y'];
+    // Store the coordinates for O's path points based on the new window size.
+    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
+        this.oPathsX_[this.i_][altI] = this.oPaths_[this.i_]['segments'][altI]['point']['_x'];
+        this.oPathsY_[this.i_][altI] = this.oPaths_[this.i_]['segments'][altI]['point']['_y'];
+      }
     }
   } else {
     return;
@@ -487,7 +459,7 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
-  // console.log(this.world_['particles']);
+  console.log(this.world_['particles']);
 
   /*for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
     this.tempFloat_ = ww.util.floatComplexGaussianRandom();
@@ -680,7 +652,12 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
     this.delay_['feedback'] = this.oMultiplier_ / 10;
 
+    /*
+     * Loop through each path segment on the letter O and move each point's
+     * coordinates based on time as being evaluated by Sine and Cosine.
+     */
     var altI;
+
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       this.oPaths_[this.i_]['segments'][0]['point']['_x'] =
         this.oPathsX_[this.i_][0] +
@@ -724,56 +701,12 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
       this.oPaths_[this.i_]['smooth']();
     }
-
-    /*
-     * Loop through each path segment on the letter O and move each point's
-     * handles based on time as being evaluated by Sine and Cosine.
-     */
-    for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
-
-      this.paperO_['segments'][this.i_]['handleIn']['_x'] =
-        this.oHandleInX_[this.i_] + Math.cos(this.framesRendered_ / 10 *
-        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
-
-      this.paperO_['segments'][this.i_]['handleIn']['_y'] =
-        this.oHandleInY_[this.i_] + Math.sin(this.framesRendered_ / 10 *
-        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
-
-      this.paperO_['segments'][this.i_]['handleOut']['_x'] =
-        this.oHandleOutX_[this.i_] - Math.cos(this.framesRendered_ / 10 *
-          this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
-
-      this.paperO_['segments'][this.i_]['handleOut']['_y'] =
-        this.oHandleOutY_[this.i_] - Math.sin(this.framesRendered_ / 10 *
-        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
-
-      this.paperO_['segments'][this.i_]['point']['_x'] =
-        this.oPointX_[this.i_] - Math.sin(this.framesRendered_ / 10 *
-        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
-
-      this.paperO_['segments'][this.i_]['point']['_y'] =
-        this.oPointY_[this.i_] - Math.cos(this.framesRendered_ / 10 *
-        this.tempFloat_[0]) * this.oModifier_ * this.oMultiplier_;
-    }
   } else {
-    /*
-     * If O hasn't been activated recently enough, restore the original handle
-     * coordinates.
-     */
-    for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.paperO_['segments'][this.i_]['handleIn']['_x'] =
-        this.oHandleInX_[this.i_];
-      this.paperO_['segments'][this.i_]['handleIn']['_y'] =
-        this.oHandleInY_[this.i_];
-
-      this.paperO_['segments'][this.i_]['handleOut']['_x'] =
-        this.oHandleOutX_[this.i_];
-      this.paperO_['segments'][this.i_]['handleOut']['_y'] =
-        this.oHandleOutY_[this.i_];
-
-      this.paperO_['segments'][this.i_]['point']['_x'] = this.oPointX_[this.i_];
-      this.paperO_['segments'][this.i_]['point']['_y'] = this.oPointY_[this.i_];
+    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
+        this.oPaths_[this.i_]['segments'][altI]['_x'] = this.oPathsX_[this.i_][altI];
+        this.oPaths_[this.i_]['segments'][altI]['_y'] = this.oPathsY_[this.i_][altI];
+      }
     }
   }
 };
