@@ -1,0 +1,13 @@
+body {
+	background: #000;
+}
+
+#space-canvas {
+	position: absolute;
+  z-index: 1;
+}
+
+#canvas-0 {
+  position: absolute;
+  z-index: 2;
+}
