@@ -204,12 +204,12 @@ ww.mode.HomeMode.prototype.drawI_ = function(isNew) {
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.i_X = this.screenCenterX_ - this.iWidth_ * 1.5;
-  this.i_Y = this.screenCenterY_ - this.iHeight_ / 2;
+  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
   if (isNew) {
     // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.i_X, this.i_Y);
+    var iTopLeft = new paper['Point'](this.iX_, this.iY_);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
     this.letterI_ = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](this.letterI_);
@@ -227,8 +227,8 @@ ww.mode.HomeMode.prototype.drawI_ = function(isNew) {
   // Run if drawI_() is called and drawI_(true) has also already been called.
   } else if (!isNew && this.paperI_) {
     // Change the position based on new screen size values.
-    this.paperI_['position'] = {x: this.i_X + this.iWidth_ / 2,
-      y: this.i_Y + this.iHeight_ / 2};
+    this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
+      y: this.iY_ + this.iHeight_ / 2};
 
     // Change the scale based on new screen size values.
     this.paperI_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
@@ -331,7 +331,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function(isNew) {
       this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728));
 
-    this.slashEnd_ = new paper['Point'](this.i_X + this.iWidth_,
+    this.slashEnd_ = new paper['Point'](this.iX_ + this.iWidth_,
       this.screenCenterY_ + (this.iHeight_ / 2) +
       ((this.iHeight_ * 1.5) * 0.17475728));
 
@@ -348,7 +348,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function(isNew) {
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728);
 
-    this.slashEnd_['x'] = this.i_X + this.iWidth_;
+    this.slashEnd_['x'] = this.iX_ + this.iWidth_;
     this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
       ((this.iHeight_ * 1.5) * 0.17475728);
 
