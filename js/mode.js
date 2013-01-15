@@ -9,6 +9,7 @@ goog.require('ww.mode.PongMode');
 goog.require('ww.mode.SimoneMode');
 goog.require('ww.mode.SongMode');
 goog.require('ww.mode.SpaceMode');
+goog.require('ww.mode.EightBitMode');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -29,6 +30,7 @@ ww.mode.findModeByName = function(name) {
 
 ww.mode.register('bacon', ww.mode.BaconMode, 7, 4);          // 0111
 ww.mode.register('cat', ww.mode.CatMode, 2, 4);              // 0010
+ww.mode.register('eightbit', ww.mode.EightBitMode, 1, 4);    // 0001
 ww.mode.register('explode', ww.mode.ExplodeMode, 5, 4);      // 0101
 ww.mode.register('home', ww.mode.HomeMode, null);
 ww.mode.register('pinata', ww.mode.PinataMode, 6, 4);        // 0110
