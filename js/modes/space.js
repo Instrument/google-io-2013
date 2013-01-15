@@ -144,7 +144,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
 
   if (isNew) {
     this.oCreated_ = true;
-    
+
     // Create an array to store O's paths.
     this.oPaths_ = [];
 
@@ -158,18 +158,29 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
     for (this.i_ = 0; this.i_ < 90; this.i_++) {
       this.oPaths_.push(new paper['Path']);
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos((this.i_ * 2) * (Math.PI / 180));
-      pathY = oCenter['y'] + this.oRad_ * Math.sin((this.i_ * 2) * (Math.PI / 180));
+      pathX = oCenter['x'] + this.oRad_ * Math.cos((this.i_ * 2) *
+        (Math.PI / 180));
+
+      pathY = oCenter['y'] + this.oRad_ * Math.sin((this.i_ * 2) *
+        (Math.PI / 180));
+
       pathStart = new paper['Point'](pathX, pathY);
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-this.i_ * 2)) * (Math.PI / 180));
-      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-this.i_ * 2)) * (Math.PI / 180));
+      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-this.i_ * 2)) *
+        (Math.PI / 180));
+
+      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-this.i_ * 2)) *
+        (Math.PI / 180));
+
       pathEnd = new paper['Point'](pathX, pathY);
 
       pathLength = pathEnd['getDistance'](pathStart);
 
-      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ + (pathLength / 4));
-      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ - (pathLength / 4));
+      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ +
+        (pathLength / 4));
+
+      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ -
+        (pathLength / 4));
 
       this.oPaths_[this.i_]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
 
@@ -179,12 +190,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
     this.oGroup_['strokeColor'] = '#3777e2';
     this.oGroup_['strokeWidth'] = 1;
     this.oGroup_['rotate'](-45);
-    // this.oGroup_['fullySelected'] = true;
 
     // Create arrays to store the coordinates for O's path points.
     this.oPathsX_ = [];
     this.oPathsY_ = [];
-
 
     // Store the coordinates for O's path points.
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
@@ -401,6 +410,9 @@ ww.mode.SpaceMode.prototype.init = function() {
   this.drawSlash_(true);
 };
 
+/**
+ * Event is called after a mode focused.
+ */
 ww.mode.SpaceMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
@@ -494,11 +506,11 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
  */
 ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   goog.base(this, 'stepPhysics', delta);
-  
+
   // Move star positions right and also adjust them based on mouse position.
   for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
     this.world_['particles'][this.i_]['pos']['x'] +=
-      (this.screenCenterX_  - this.mouseX_) /
+      (this.screenCenterX_ - this.mouseX_) /
       (5000 / this.world_['particles'][this.i_]['radius']) + .1;
 
     if (this.world_['particles'][this.i_]['pos']['x'] > this.width_ * 2) {
@@ -597,7 +609,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
       this.paperI_['segments'][this.i_]['point']['_x'] =
         this.i_PointX[this.i_] +
         Math.cos(this.framesRendered_ / 10 + this.i_ * 100) * this.iModifier_ *
-        this.iMultiplier_ ;
+        this.iMultiplier_;
 
       this.paperI_['segments'][this.i_]['point']['_y'] =
         this.i_PointY_[this.i_] +
@@ -690,7 +702,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
       this.oPaths_[this.i_]['segments'][2]['point']['_x'] =
         this.oPathsX_[this.i_][2] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x']- this.oPathsX_[this.i_][2])) *
+        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][2])) *
         this.oModifier_ * this.oMultiplier_;
 
       this.oPaths_[this.i_]['segments'][2]['point']['_y'] =
@@ -716,8 +728,11 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   } else {
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
-        this.oPaths_[this.i_]['segments'][altI]['_x'] = this.oPathsX_[this.i_][altI];
-        this.oPaths_[this.i_]['segments'][altI]['_y'] = this.oPathsY_[this.i_][altI];
+        this.oPaths_[this.i_]['segments'][altI]['_x'] =
+          this.oPathsX_[this.i_][altI];
+
+        this.oPaths_[this.i_]['segments'][altI]['_y'] =
+          this.oPathsY_[this.i_][altI];
       }
     }
   }
