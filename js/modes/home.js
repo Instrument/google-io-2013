@@ -233,9 +233,8 @@ ww.mode.HomeMode.prototype.goToMode_ = function(key) {
 /**
  * Function to create and draw I.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.HomeMode.prototype.drawI_ = function(isNew) {
+ww.mode.HomeMode.prototype.drawI_ = function() {
   // Set I's initial dimensions.
   this.iWidth_ = this.width_ * .175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
@@ -244,7 +243,7 @@ ww.mode.HomeMode.prototype.drawI_ = function(isNew) {
   this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
-  if (isNew) {
+  if (!this.paperI_) {
     // Create a new paper.js path based on the previous variables.
     var iTopLeft = new paper['Point'](this.iX_, this.iY_);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
@@ -262,7 +261,7 @@ ww.mode.HomeMode.prototype.drawI_ = function(isNew) {
     }
 
   // Run if drawI_() is called and drawI_(true) has also already been called.
-  } else if (!isNew && this.paperI_) {
+  } else if (this.paperI_) {
     // Change the position based on new screen size values.
     this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
       y: this.iY_ + this.iHeight_ / 2};
@@ -286,9 +285,8 @@ ww.mode.HomeMode.prototype.drawI_ = function(isNew) {
 /**
  * Function to create and draw O.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.HomeMode.prototype.drawO_ = function(isNew) {
+ww.mode.HomeMode.prototype.drawO_ = function() {
   // Set O's radius.
   this.oRad_ = this.width_ * 0.1944444444;
 
@@ -296,7 +294,7 @@ ww.mode.HomeMode.prototype.drawO_ = function(isNew) {
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
 
-  if (isNew) {
+  if (!this.paperO_) {
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
@@ -330,7 +328,7 @@ ww.mode.HomeMode.prototype.drawO_ = function(isNew) {
     }
 
   // Run if drawO_() is called and drawO_(true) has also already been called.
-  } else if (!isNew && this.paperO_) {
+  } else if (this.paperO_) {
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
     this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
 
@@ -358,11 +356,10 @@ ww.mode.HomeMode.prototype.drawO_ = function(isNew) {
 /**
  * Function to create and draw Slash.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.HomeMode.prototype.drawSlash_ = function(isNew) {
+ww.mode.HomeMode.prototype.drawSlash_ = function() {
   // Run only if drawI_(true) and drawO_(true) have been called
-  if (isNew && this.paperI_ && this.paperO_) {
+  if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
       this.screenCenterY_ - (this.iHeight_ / 2) -
@@ -380,7 +377,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function(isNew) {
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
 
   // Run if drawSlash_() is called and drawSlash(true) has already been called.
-  } else if (!isNew && this.paperSlash_) {
+  } else if (this.paperSlash_) {
     this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728);
@@ -429,7 +426,7 @@ ww.mode.HomeMode.prototype.init = function() {
     new paper['Point'](this.screenCenterX_, this.screenCenterY_);
 
   /**
-   * Create the letter I.
+   * Set the letter I's modify variables.
    */
   // Boolean that sets to true if I is being activated.
   this.iClicked_ = false;
@@ -443,10 +440,8 @@ ww.mode.HomeMode.prototype.init = function() {
   // Float that increments on each activation of I to affect animation further.
   this.iMultiplier_ = 1;
 
-  this.drawI_(true);
-
   /**
-   * Create the letter O.
+   * Set the letter O's modify variables.
    */
   // Boolean that sets to true if O is being activated.
   this.oClicked_ = false;
@@ -459,14 +454,6 @@ ww.mode.HomeMode.prototype.init = function() {
 
   // Float that increments on each activation of O to affect animation further.
   this.oMultiplier_ = 1;
-
-  this.drawO_(true);
-
-  /**
-   * Create the slash. drawI() and drawO() must be called before drawSlash() to
-   * successfully create the slash.
-   */
-  this.drawSlash_(true);
 };
 
 /**
@@ -508,11 +495,19 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
   this.screenCenterY_ = this.height_ / 2;
 
   /**
-   * Redraw each shape on window resize. drawI() and drawO() must be called
-   * before drawSlash() to maintain accurate drawing scale for the slash.
+   * Create the letter I.
    */
   this.drawI_();
+
+  /**
+   * Create the letter O.
+   */
   this.drawO_();
+
+  /**
+   * Create the slash. drawI() and drawO() must be called before drawSlash() to
+   * successfully create the slash.
+   */
   this.drawSlash_();
 
   if (redraw) {

@@ -103,9 +103,8 @@ ww.mode.SpaceMode.prototype.activateO = function() {
 /**
  * Function to create and draw I.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.SpaceMode.prototype.drawI_ = function(isNew) {
+ww.mode.SpaceMode.prototype.drawI_ = function() {
   // Set I's initial dimensions.
   this.iWidth_ = this.width_ * .175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
@@ -114,8 +113,7 @@ ww.mode.SpaceMode.prototype.drawI_ = function(isNew) {
   this.i_X = this.screenCenterX_ - this.iWidth_ * 1.5;
   this.i_Y = this.screenCenterY_ - this.iHeight_ / 2;
 
-  if (isNew) {
-    this.iCreated_ = true;
+  if (!this.paperI_) {
 
     // Initial variables for calculating path coordinates.
     var pathX;
@@ -175,6 +173,7 @@ ww.mode.SpaceMode.prototype.drawI_ = function(isNew) {
     for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
       this.iPathsX_[this.i_] = [];
       this.iPathsY_[this.i_] = [];
+
       for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
         this.iPathsX_[this.i_].push(
           this.iPaths_[this.i_]['segments'][altI]['point']['_x']);
@@ -185,7 +184,18 @@ ww.mode.SpaceMode.prototype.drawI_ = function(isNew) {
     }
 
   // Run if drawI_() is called and drawI_(true) has also already been called.
-  } else if (!isNew && this.paperI_) {
+  } else if (this.paperI_) {
+    // Restore the coordinates for I's path points before resizing
+    for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
+        this.iPaths_[this.i_]['segments'][altI]['point']['_x'] =
+          this.iPathsX_[this.i_][altI];
+
+        this.iPaths_[this.i_]['segments'][altI]['point']['_y'] =
+          this.iPathsY_[this.i_][altI];
+      }
+    }
+
     // Change the position based on new screen size values.
     this.iGroup_['position'] = {x: this.i_X + this.iWidth_ / 2,
       y: this.i_Y + this.iHeight_ / 2};
@@ -214,9 +224,8 @@ ww.mode.SpaceMode.prototype.drawI_ = function(isNew) {
 /**
  * Function to create and draw O.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
+ww.mode.SpaceMode.prototype.drawO_ = function() {
   // Set O's radius.
   this.oRad_ = this.width_ * 0.1944444444;
 
@@ -224,8 +233,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
 
-  if (isNew) {
-    this.oCreated_ = true;
+  if (!this.paperO_) {
 
     // Initial variables for calculating circle angles.
     var pathX;
@@ -303,7 +311,18 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
     }
 
   // Run if drawO_() is called and drawO_(true) has also already been called.
-  } else if (!isNew && this.oCreated_) {
+  } else if (this.paperO_) {
+    // Restore the original coordinates for O's path points before resizing.
+    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
+        this.oPaths_[this.i_]['segments'][altI]['point']['_x'] =
+          this.oPathsX_[this.i_][altI];
+
+        this.oPaths_[this.i_]['segments'][altI]['point']['_y'] =
+          this.oPathsY_[this.i_][altI];
+      }
+    }
+
     // Change the position based on new screen size values.
     this.oGroup_['position'] = {x: this.oX_, y: this.oY_};
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
@@ -330,11 +349,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
 /**
  * Function to create and draw Slash.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.SpaceMode.prototype.drawSlash_ = function(isNew) {
+ww.mode.SpaceMode.prototype.drawSlash_ = function() {
   // Run only if drawI_(true) and drawO_(true) have been called
-  if (isNew && this.paperI_ && this.paperO_) {
+  if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
       this.screenCenterY_ - (this.iHeight_ / 2) -
@@ -352,7 +370,7 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function(isNew) {
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
 
   // Run if drawSlash_() is called and drawSlash(true) has already been called.
-  } else if (!isNew && this.paperSlash_) {
+  } else if (this.paperSlash_) {
     this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728);
@@ -428,7 +446,7 @@ ww.mode.SpaceMode.prototype.init = function() {
     new paper['Point'](this.screenCenterX_, this.screenCenterY_);
 
   /**
-   * Create the letter I.
+   * Set the letter I's modify variables.
    */
   // Boolean that sets to true if I is being activated.
   this.iClicked_ = false;
@@ -442,10 +460,18 @@ ww.mode.SpaceMode.prototype.init = function() {
   // Float that increments on each activation of I to affect animation further.
   this.iMultiplier_ = 1;
 
-  this.drawI_(true);
+  // If I and O already exist, draw them again to reset their path points.
+  if (this.paperI_) {
+    this.drawI_();
+  }
+
+  if (this.paperO_) {
+    this.drawO_();
+  }
+
 
   /**
-   * Create the letter O.
+   * Set the letter O's modify variables.
    */
   // Boolean that sets to true if O is being activated.
   this.oClicked_ = false;
@@ -458,14 +484,6 @@ ww.mode.SpaceMode.prototype.init = function() {
 
   // Float that increments on each activation of O to affect animation further.
   this.oMultiplier_ = 1;
-
-  this.drawO_(true);
-
-  /**
-   * Create the slash. drawI() and drawO() must be called before drawSlash() to
-   * successfully create the slash.
-   */
-  this.drawSlash_(true);
 };
 
 /**
@@ -548,11 +566,19 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   }
 
   /**
-   * Redraw each shape on window resize. drawI() and drawO() must be called
-   * before drawSlash() to maintain accurate drawing scale for the slash.
+   * Create the letter I.
    */
   this.drawI_();
+
+  /**
+   * Create the letter O.
+   */
   this.drawO_();
+
+  /**
+   * Create the slash. drawI() and drawO() must be called before drawSlash() to
+   * successfully create the slash.
+   */
   this.drawSlash_();
 
   this.redraw();

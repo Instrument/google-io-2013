@@ -60,10 +60,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   this.height_ = 0;
 
   // TODO: Throttle
-  this.window_.resize(function() {
-    self.onResize(true);
-  });
-  this.onResize();
 
   // Catch top-level touch events and cancel them to avoid
   // mobile browser scroll.
@@ -81,6 +77,11 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     self.letterO = $('#letter-o');
 
     self.init();
+
+    self.window_.resize(function() {
+      self.onResize(true);
+    });
+    self.onResize();
 
     var modeDetails = ww.mode.findModeByName(self.name_);
 
@@ -209,6 +210,7 @@ if (DEBUG_MODE) {
     containerElem.style.right = 0;
     containerElem.style.height = '40px';
     containerElem.style.background = 'rgba(0,0,0,0.2)';
+    containerElem.style.zIndex = 20;
 
     containerElem.appendChild(focusElem);
     containerElem.appendChild(unfocusElem);
