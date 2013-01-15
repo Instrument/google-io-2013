@@ -151,20 +151,23 @@ ww.mode.SpaceMode.prototype.drawI_ = function(isNew) {
   // Run if drawI_() is called and drawI_(true) has also already been called.
   } else if (!isNew && this.paperI_) {
     // Change the position based on new screen size values.
+    this.iGroup_['position'] = {x: this.i_X + this.iWidth_ / 2,
+      y: this.i_Y + this.iHeight_ / 2};
     this.paperI_['position'] = {x: this.i_X + this.iWidth_ / 2,
       y: this.i_Y + this.iHeight_ / 2};
 
     // Change the scale based on new screen size values.
+    this.iGroup_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
     this.paperI_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
 
     // Store the coordinates for I's path points based on the new window size.
-    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
-      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
-        this.oPathsX_[this.i_][altI] =
-          this.oPaths_[this.i_]['segments'][altI]['point']['_x'];
+    for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
+        this.iPathsX_[this.i_][altI] =
+          this.iPaths_[this.i_]['segments'][altI]['point']['_x'];
 
-        this.oPathsY_[this.i_][altI] =
-          this.oPaths_[this.i_]['segments'][altI]['point']['_y'];
+        this.iPathsY_[this.i_][altI] =
+          this.iPaths_[this.i_]['segments'][altI]['point']['_y'];
       }
     }
   } else {
@@ -265,9 +268,11 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
 
   // Run if drawO_() is called and drawO_(true) has also already been called.
   } else if (!isNew && this.oCreated_) {
-    this.paperO_['position'] = {x: this.oX_, y: this.oY_};
+    // Change the position based on new screen size values.
     this.oGroup_['position'] = {x: this.oX_, y: this.oY_};
+    this.paperO_['position'] = {x: this.oX_, y: this.oY_};
 
+    // Change the scale based on new screen size values.
     this.oGroup_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
     this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
 
@@ -305,7 +310,7 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function(isNew) {
 
     // Create a new paper.js path for the slash based on screen dimensions.
     this.paperSlash_ = new paper['Path'];
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
+    this.paperSlash_['strokeWidth'] = 1;
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
@@ -323,7 +328,6 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function(isNew) {
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
 
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
   } else {
     return;
   }
