@@ -459,17 +459,17 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
-  console.log(this.world_['particles']);
+  if (this.world_) {
+    for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
+      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
-  /*for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
-    this.tempFloat_ = ww.util.floatComplexGaussianRandom();
+      this.world_['particles'][this.i_]['pos']['x'] = this.tempFloat_[0] *
+        this.width_;
 
-    this.world_['particles'][this.i_]['pos']['x'] = this.tempFloat_[0] *
-      this.width_;
-
-    this.world_['particles'][this.i_]['pos']['y'] = this.tempFloat_[1] *
-      this.height_;
-  }*/
+      this.world_['particles'][this.i_]['pos']['y'] = this.tempFloat_[1] *
+        this.height_;
+    }
+  }
 
   /**
    * Redraw each shape on window resize. drawI() and drawO() must be called
