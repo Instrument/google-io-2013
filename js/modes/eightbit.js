@@ -11,36 +11,6 @@ ww.mode.EightBitMode = function() {
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
 
 /**
- * Play a sound by url after being processed by Tuna.
- * @private.
- * @param {String} filename Audio file name.
- * @param {Object} filter Audio filter name.
- */
-ww.mode.EightBitMode.prototype.playProcessedAudio_ = function(filename, filter) {
-  if (!this.wantsAudio_) { return; }
-
-  var url = '../sounds/' + this.name_ + '/' + filename;
-
-  if (ww.testMode) {
-    url = '../' + url;
-  }
-
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
-
-  var audioContext = this.audioContext_;
-
-  var self = this;
-
-  this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext['createBufferSource']();
-    source['buffer'] = buffer;
-    source['connect'](filter['input']);
-    filter['connect'](audioContext['destination']);
-    source['noteOn'](0);
-  });
-};
-
-/**
  * Method called when activating the I.
  */
 ww.mode.EightBitMode.prototype.activateI = function() {
@@ -48,8 +18,6 @@ ww.mode.EightBitMode.prototype.activateI = function() {
   if (this.iMultiplier_ < 10) {
     this.iMultiplier_ += 2;
   }
-
-  // this.playProcessedAudio_('boing.wav', this.chorus_);
 };
 
 /**
@@ -60,8 +28,6 @@ ww.mode.EightBitMode.prototype.activateO = function() {
   if (this.oMultiplier_ < 10) {
     this.oMultiplier_ += 2;
   }
-
-  // this.playProcessedAudio_('boing.wav', this.delay_);
 };
 
 /**
@@ -282,67 +248,6 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function(isNew) {
 ww.mode.EightBitMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.getAudioContext_();
-
-  var tuna = new Tuna(this.audioContext_);
-
-  /**
-   * Create a delay audio filter. Value ranges are as follows.
-   * feedback: 0 to 1+
-   * delayTime: how many milliseconds should the wet signal be delayed?
-   * wetLevel: 0 to 1+
-   * dryLevel: 0 to 1+
-   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.delay_ = new tuna['Delay']({
-    feedback: 0,
-    delayTime: 0,
-    wetLevel: 0,
-    dryLevel: 0,
-    cutoff: 20,
-    bypass: 0
-  });
-
-  /**
-   * Create a chorus audio filter. Value ranges are as follows.
-   * rate: 0.01 to 8+
-   * feedback: 0 to 1+
-   * delay: 0 to 1
-   * dryLevel: 0 to 1+
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.chorus_ = new tuna['Chorus']({
-    rate: 0.01,
-    feedback: 0.2,
-    delay: 0,
-    bypass: 0
-  });
-
-  /**
-   * Create a star field.
-   */
-  this.world_ = this.getPhysicsWorld_();
-  this.world_['viscosity'] = 0;
-
-  for (this.i_ = 0; this.i_ < 500; this.i_++) {
-    this.tempFloat_ = ww.util.floatComplexGaussianRandom();
-
-    this.world_['particles'].push(new Particle());
-
-    this.world_['particles'][this.i_]['setRadius'](
-      Math.random() * (2 - 0.1) + 0.1);
-
-    this.world_['particles'][this.i_]['pos']['x'] = this.tempFloat_[0] *
-      this.width_;
-
-    this.world_['particles'][this.i_]['pos']['y'] = this.tempFloat_[1] *
-      this.height_;
-
-    this.world_['particles'][this.i_]['vel']['x'] = 0;
-    this.world_['particles'][this.i_]['vel']['y'] = 0;
-  }
-
   // Prep paperjs
   this.getPaperCanvas_();
 
@@ -364,10 +269,6 @@ ww.mode.EightBitMode.prototype.init = function() {
    */
   this.mouseX_ = this.screenCenterX_;
   this.mouseY_ = this.screenCenterY_;
-
-  // Variable to store the screen coordinates of the last click/tap/touch.
-  this.lastClick =
-    new paper['Point'](this.screenCenterX_, this.screenCenterY_);
 
   /**
    * Create the letter I.
@@ -416,15 +317,6 @@ ww.mode.EightBitMode.prototype.init = function() {
 ww.mode.EightBitMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
-  this.$canvas_ = $('#space-canvas');
-  this.canvas_ = this.$canvas_[0];
-  this.canvas_.width = this.width_;
-  this.canvas_.height = this.height_;
-  this.ctx_ = this.canvas_.getContext('2d');
-  this.ctx_.fillStyle = '#424242';
-  this.ctx_.shadowColor = '#fff';
-  this.ctx_.shadowBlur = 10;
-
   var canvas = this.getPaperCanvas_();
 
   var self = this;
@@ -444,14 +336,6 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
     }
   };
 
-  this.$canvas_.bind(evt, function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    self.mouseX_ = e.pageX;
-    self.mouseY_ = e.pageY;
-  });
-
   $(canvas).bind(evt, function(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -468,26 +352,9 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
 ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
 
-  if (this.canvas_) {
-    this.canvas_.width = this.width_;
-    this.canvas_.height = this.height_;
-  }
-
   // Recalculate the center of the screen based on the new window size.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
-
-  if (this.world_) {
-    for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
-      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
-
-      this.world_['particles'][this.i_]['pos']['x'] = this.tempFloat_[0] *
-        this.width_;
-
-      this.world_['particles'][this.i_]['pos']['y'] = this.tempFloat_[1] *
-        this.height_;
-    }
-  }
 
   /**
    * Redraw each shape on window resize. drawI() and drawO() must be called
@@ -497,45 +364,9 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   this.drawO_();
   this.drawSlash_();
 
-  this.redraw();
-};
-
-/**
- * On each physics tick, adjust star positions.
- * @param {Float} delta Time since last tick.
- */
-ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
-  goog.base(this, 'stepPhysics', delta);
-
-  // Move star positions right and also adjust them based on mouse position.
-  for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
-    this.world_['particles'][this.i_]['pos']['x'] +=
-      (this.screenCenterX_ - this.mouseX_) /
-      (5000 / this.world_['particles'][this.i_]['radius']) + .1;
-
-    if (this.world_['particles'][this.i_]['pos']['x'] > this.width_ * 2) {
-      this.world_['particles'][this.i_]['pos']['x'] =
-        -this.world_['particles'][this.i_]['radius'] * 10;
-    } else if (this.world_['particles'][this.i_]['pos']['x'] <
-      -this.width_ * 2) {
-        this.world_['particles'][this.i_]['pos']['x'] =
-          this.width_ + this.world_['particles'][this.i_]['radius'] * 10;
-    }
-
-    this.world_['particles'][this.i_]['pos']['y'] +=
-      (this.screenCenterY_ - this.mouseY_) /
-      (5000 / this.world_['particles'][this.i_]['radius']);
-
-    if (this.world_['particles'][this.i_]['pos']['y'] > this.height_ * 2) {
-      this.world_['particles'][this.i_]['pos']['y'] =
-        -this.world_['particles'][this.i_]['radius'] * 10;
-    } else if (this.world_['particles'][this.i_]['pos']['y'] <
-      -this.height_ * 2) {
-        this.world_['particles'][this.i_]['pos']['y'] =
-          this.width_ + this.world_['particles'][this.i_]['radius'] * 10;
-    }
+  if (redraw) {
+    this.redraw();
   }
-
 };
 
 /**
@@ -544,20 +375,6 @@ ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
  */
 ww.mode.EightBitMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
-
-  if (!this.canvas_) { return; }
-
-  this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
-
-  this.ctx_.beginPath();
-
-  for (this.i_ = 0; this.i_ < this.world_['particles'].length; this.i_++) {
-    this.ctx_.arc(this.world_['particles'][this.i_]['pos']['x'],
-      this.world_['particles'][this.i_]['pos']['y'],
-      this.world_['particles'][this.i_]['radius'], 0, Math.PI * 2);
-  }
-
-  this.ctx_.fill();
 
   /*
    * Delta is initially a very small float. Need to modify it for it to have a
