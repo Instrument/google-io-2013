@@ -75,19 +75,30 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   }
 
   // $(document.body).addClass(this.name_ + '-mode');
-
-  this.init();
-
-  // Autofocus
+  
   $(function() {
     self.letterI = $('#letter-i');
     self.letterO = $('#letter-o');
 
-    self['focus']();
-  });
+    self.init();
 
-  // Mark this mode as ready.
-  this.ready();
+    var modeDetails = ww.mode.findModeByName(self.name_);
+
+    if (modeDetails.pattern) {
+      self.$back = $('<div id="back"></div>').prependTo(document.body);
+
+      var modePattern = ww.util.pad(modeDetails.pattern.toString(2), modeDetails.len);
+      var modeHTML = modePattern.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
+
+      $('<div id="code">' + modeHTML + '</div>').prependTo(document.body);
+    }
+
+    // Autofocus
+    self['focus']();
+
+    // Mark this mode as ready.
+    self.ready();
+  });
 };
 
 /**
@@ -109,6 +120,8 @@ ww.mode.Core.prototype.log = function(msg) {
  */
 ww.mode.Core.prototype.init = function() {
   this.log('Init');
+
+  this.hasInited_ = true;
 
   if (this.wantsPhysics_) {
     this.resetPhysicsWorld_();
@@ -133,7 +146,6 @@ ww.mode.Core.prototype.showReload = function() {
 
     this.$reloadModal_.bind(evt + '.reload', function() {
       self.$reloadModal_.hide();
-      self.init();
       self['focus']();
     });
   }
@@ -309,10 +321,22 @@ ww.mode.Core.prototype.sendMessage_ = function(msgName, value) {
 };
 
 /**
+ * Return from this mode to the home screen.
+ */
+ww.mode.Core.prototype.goBack = function() {
+  this.sendMessage_('goToHome');
+};
+
+/**
  * Focus this mode (start rendering).
  */
 ww.mode.Core.prototype['focus'] = function() {
   if (this.hasFocus) { return; }
+
+  // Re-init
+  if (this.hasInited_) {
+    this.init();
+  }
 
   this.log('Got focus');
   this.hasFocus = true;
@@ -329,18 +353,21 @@ ww.mode.Core.prototype['focus'] = function() {
 ww.mode.Core.prototype.didFocus = function() {
   var self = this;
 
-  // Short-cuts to activating letters for basics setup.
-  var hammerOpts = { 'prevent_default': true };
-
   var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
 
-  this.letterI.bind(evt + '.core', hammerOpts, function() {
+  this.letterI.bind(evt + '.core', function() {
     self.activateI();
   });
 
-  this.letterO.bind(evt + '.core', hammerOpts, function() {
+  this.letterO.bind(evt + '.core', function() {
     self.activateO();
   });
+
+  if (this.$back) {
+    this.$back.bind(evt + '.core', function() {
+      self.goBack();
+    });
+  }
 
   $(document).bind('keypress.core', function(e) {
     if (e.keyCode === 105) {
@@ -380,6 +407,11 @@ ww.mode.Core.prototype.didUnfocus = function() {
 
   this.letterI.unbind(evt + '.core');
   this.letterO.unbind(evt + '.core');
+  
+  if (this.$back) {
+    this.$back.unbind(evt + '.core');
+  }
+
   $(document).unbind('keypress.core');
 };
 

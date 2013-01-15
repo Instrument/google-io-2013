@@ -12,16 +12,44 @@ ww.mode.HomeMode = function() {
 
   this.currentPattern_ = '';
   this.maxPatternLength_ = 15;
+
+  var context = this.getAudioContext_();
+  this.tuna_ = new Tuna(context);
+  
+  /**
+   * Create a delay audio filter. Value ranges are as follows.
+   * feedback: 0 to 1+
+   * delayTime: how many milliseconds should the wet signal be delayed?
+   * wetLevel: 0 to 1+
+   * dryLevel: 0 to 1+
+   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
+   * bypass: the value 1 starts the effect as bypassed, 0 or 1
+   */
+  this.delay_ = new this.tuna_['Delay']({
+    feedback: 0,
+    delayTime: 0,
+    wetLevel: 0,
+    dryLevel: 0,
+    cutoff: 20,
+    bypass: 0
+  });
+
+  /**
+   * Create a chorus audio filter. Value ranges are as follows.
+   * rate: 0.01 to 8+
+   * feedback: 0 to 1+
+   * delay: 0 to 1
+   * dryLevel: 0 to 1+
+   * bypass: the value 1 starts the effect as bypassed, 0 or 1
+   */
+  this.chorus_ = new this.tuna_['Chorus']({
+    rate: 0.01,
+    feedback: 0.2,
+    delay: 0,
+    bypass: 0
+  });
 };
 goog.inherits(ww.mode.HomeMode, ww.mode.Core);
-
-function pad(number, length) {
-  var str = '' + number;
-  while (str.length < length) {
-    str = '0' + str;
-  }
-  return str;
-}
 
 /**
  * Play a sound by url after being processed by Tuna.
@@ -94,7 +122,7 @@ ww.mode.HomeMode.prototype.setupPatternMatchers_ = function() {
       mode = ww.mode.modes[key];
       patterns[key] = {
         klass: mode.klass,
-        binaryPattern: pad(mode.pattern.toString(2), mode.len)
+        binaryPattern: ww.util.pad(mode.pattern.toString(2), mode.len)
       };
     }
   }
@@ -143,6 +171,15 @@ ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
       this.goToMode_(matched.key);
     }
   }
+};
+
+/**
+ * Reset the pattern matcher.
+ * @private
+ */
+ww.mode.HomeMode.prototype.resetMatcher_ = function() {
+  this.currentPattern_ = '';
+  $('#pattern').text(this.currentPattern_);
 };
 
 /**
@@ -336,7 +373,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function(isNew) {
       ((this.iHeight_ * 1.5) * 0.17475728));
 
     // Create a new paper.js path for the slash based on screen dimensions.
-    this.paperSlash_ = new paper['Path'];
+    this.paperSlash_ = new paper['Path']();
     this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
@@ -369,42 +406,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function(isNew) {
 ww.mode.HomeMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.getAudioContext_();
-
-  var tuna = new Tuna(this.audioContext_);
-
-  /**
-   * Create a delay audio filter. Value ranges are as follows.
-   * feedback: 0 to 1+
-   * delayTime: how many milliseconds should the wet signal be delayed?
-   * wetLevel: 0 to 1+
-   * dryLevel: 0 to 1+
-   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.delay_ = new tuna['Delay']({
-    feedback: 0,
-    delayTime: 0,
-    wetLevel: 0,
-    dryLevel: 0,
-    cutoff: 20,
-    bypass: 0
-  });
-
-  /**
-   * Create a chorus audio filter. Value ranges are as follows.
-   * rate: 0.01 to 8+
-   * feedback: 0 to 1+
-   * delay: 0 to 1
-   * dryLevel: 0 to 1+
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.chorus_ = new tuna['Chorus']({
-    rate: 0.01,
-    feedback: 0.2,
-    delay: 0,
-    bypass: 0
-  });
+  this.resetMatcher_();
 
   // Prep paperjs
   this.getPaperCanvas_();
