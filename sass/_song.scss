@@ -8,19 +8,26 @@ body {
 #instruments {
   @extend %absolute-full;
   padding: 5% 0;
+  @include transform(translate3d(0, 0, 0));
 
   .shape {
     @include transform-origin(50% 50%, false);
+    opacity: 0.5;
+    pointer-events: none;
   }
 }
 
 #song-styles {
-  bottom: 5%;
+  bottom: 10%;
   left: 0;
   height: 1.75em;
   position: absolute;
   right: 0;
   text-align: center;
+
+  @include landscape() {
+    bottom: 5%;
+  }
 
   ul {
     @include horizontal-list(0);

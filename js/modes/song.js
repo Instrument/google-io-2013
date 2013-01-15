@@ -81,24 +81,27 @@ ww.mode.SongMode.prototype.beginSound = function(id) {
   var self = this;
   var ripples = this.ripples[id];
   var ripple, delay = 0;
+  
   for (var i = 0, l = ripples.length; i < l; i++) {
     ripple = ripples[i];
 
     (function(ripple, delay) {
-      var fadeOut = new TWEEN['Tween']({ 'opacity': 1, 'scale': 1 });
-          fadeOut['to']({ 'opacity': 0, 'scale': 5 }, 500);
-          fadeOut['delay'](delay);
-          fadeOut['easing'](TWEEN['Easing']['Elastic']['Out']);
-          fadeOut['onUpdate'](function() {
+      var rippleOut = new TWEEN['Tween']({ 'scale': 1 });
+          rippleOut['to']({ 'scale': 1.75 }, 400);
+          rippleOut['delay'](delay);
+          rippleOut['onUpdate'](function() {
             self.transformElem_(ripple, 'scale(' + this['scale'] + ')');
-            ripple.style.opacity = this['opacity'];
-          });
-          fadeOut['onComplete'](function() {
-            self.transformElem_(ripple, 'scale(1)');
-            ripple.style.opacity = 1;
           });
 
-      self.addTween(fadeOut);
+      var rippleIn = new TWEEN['Tween']({ 'scale': 1.75 });
+          rippleIn['to']({ 'scale': 1 }, 200);
+          rippleIn['delay'](delay + 400);
+          rippleIn['onUpdate'](function() {
+            self.transformElem_(ripple, 'scale(' + this['scale'] + ')');
+          });
+
+      self.addTween(rippleOut);
+      self.addTween(rippleIn);
     })(ripple, delay);
 
     delay += 300;
