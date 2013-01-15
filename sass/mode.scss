@@ -54,9 +54,11 @@ canvas {
 @import "bacon";
 @import "cat";
 @import "letters";
+
 .home-mode {
   @import "home";
 }
+
 @import "pinata";
 
 .pong-mode {
@@ -65,6 +67,10 @@ canvas {
 
 .simone-mode {
   @import "simone";
+}
+
+.song-mode {
+  @import "song";
 }
 
 .space-mode {

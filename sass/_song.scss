@@ -1,0 +1,43 @@
+body {
+  background-color: #f8f8f8;
+  color: #cacaca;
+  font-family: helvetica, arial;
+  font-size: 90%;
+}
+
+#instruments {
+  @extend %absolute-full;
+  padding: 5% 0;
+
+  .shape {
+    @include transform-origin(50% 50%, false);
+  }
+}
+
+#song-styles {
+  bottom: 5%;
+  left: 0;
+  height: 1.75em;
+  position: absolute;
+  right: 0;
+  text-align: center;
+
+  ul {
+    @include horizontal-list(0);
+    display: inline-block;
+    line-height: 1.75em;
+
+    li {
+      border-bottom: 0.25em solid transparent;
+      margin-left: 1.75em;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &.active {
+        border-bottom-color: #acacac;
+      }
+    }
+  }
+}

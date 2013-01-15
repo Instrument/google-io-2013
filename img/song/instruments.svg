@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   width="100%" height="100%" viewBox="0 0 459.782 408.696" enable-background="new 0 0 459.782 408.696"
+   xml:space="preserve">
+  <g id="rectangle">
+    <rect id="rect1" x="88.587" y="73.434" fill="#09A860" width="77.174" height="203.261"/>
+    <rect id="rect2" x="88.587" y="73.434" fill="#09A860" width="77.174" height="203.261"/>
+    <rect id="rect3" x="88.587" y="73.434" fill="#09A860" width="77.174" height="203.261"/>
+  </g>
+  <g id="big-circle">
+    <circle id="big1" fill="#4873B9" cx="303.26" cy="175.064" r="67.935"/>
+    <circle id="big2" fill="#4873B9" cx="303.26" cy="175.064" r="67.935"/>
+    <circle id="big3" fill="#4873B9" cx="303.26" cy="175.064" r="67.935"/>
+  </g>
+  <g id="small-circle">
+    <circle id="small1" fill="#F8C73F" cx="221.333" cy="87.021" r="44.022"/>
+    <circle id="small2" fill="#F8C73F" cx="221.333" cy="87.021" r="44.022"/>
+    <circle id="small3" fill="#F8C73F" cx="221.333" cy="87.021" r="44.022"/>
+  </g>
+  <g id="polygon">
+    <polygon id="poly1" fill="#DF483C" points="282.731,349.069 216.721,365.697 169.315,316.844 187.92,251.364 253.931,234.736 301.336,283.588"/>
+    <polygon id="poly2" fill="#DF483C" points="282.731,349.069 216.721,365.697 169.315,316.844 187.92,251.364 253.931,234.736 301.336,283.588"/>
+    <polygon id="poly3" fill="#DF483C" points="282.731,349.069 216.721,365.697 169.315,316.844 187.92,251.364 253.931,234.736 301.336,283.588"/>
+  </g>
+</svg>
