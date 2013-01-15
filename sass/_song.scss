@@ -1,19 +1,29 @@
 body {
   background-color: #f8f8f8;
-  color: #cacaca;
+  color: #959595;
   font-family: helvetica, arial;
-  font-size: 90%;
+  font-size: 110%;
+
+  @include iphone() {
+    font-size: 90%;
+  }
 }
 
 #instruments {
   @extend %absolute-full;
   padding: 5% 0;
   @include transform(translate3d(0, 0, 0));
+  @include user-select(none);
 
   .shape {
-    @include transform-origin(50% 50%, false);
-    opacity: 0.5;
+    opacity: 0.75;
     pointer-events: none;
+    @include transform-origin(50% 50%, false);
+    @include transition(opacity 190ms ease-out);
+  }
+
+  .original {
+    cursor: pointer;
   }
 }
 
@@ -43,7 +53,7 @@ body {
       }
 
       &.active {
-        border-bottom-color: #acacac;
+        border-bottom-color: #959595;
       }
     }
   }

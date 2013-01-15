@@ -106,11 +106,11 @@ ww.mode.BaconMode.prototype.activateO = function() {
   spinEgg['easing'](TWEEN['Easing']['Elastic']['In']);
 
   spinEgg['onUpdate'](function() {
-    var translate =  'translateX(' + this['translateX'] + 'px) ';
+    var translate = 'translateX(' + this['translateX'] + 'px) ';
         translate += 'translateY(' + this['translateY'] + 'px) ';
         translate += 'rotate(' + (-1 * this['rotate']) + 'deg) ';
 
-    var whites =  'rotate(' + this['rotate'] + 'deg) ';
+    var whites = 'rotate(' + this['rotate'] + 'deg) ';
         whites += 'skewX(' + this['skewX'] + 'deg) ';
         whites += 'skewY(' + this['skewY'] + 'deg)';
 

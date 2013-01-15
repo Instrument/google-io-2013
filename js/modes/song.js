@@ -17,7 +17,6 @@ goog.inherits(ww.mode.SongMode, ww.mode.Core);
 ww.mode.SongMode.prototype.init = function() {
   goog.base(this, 'init');
 
-
   if (Modernizr['touch']) {
     this.evtStart = 'touchstart.song';
     this.evtEnd = 'touchend.song';
@@ -31,24 +30,29 @@ ww.mode.SongMode.prototype.init = function() {
   this.ripples = {};
 
   this.rectangle = $('#rectangle');
-  this.ripples['rectangle'] = [document.getElementById('rectangle0'),
-                               document.getElementById('rectangle1'),
-                               document.getElementById('rectangle2')];
+  this.ripples['rectangle'] = [document.getElementById('rectangle1'),
+                               document.getElementById('rectangle2'),
+                               document.getElementById('rectangle3')];
 
-  this.bigCircle = $('#big-circle');
-  this.ripples['big-circle'] = [document.getElementById('big-circle0'),
-                                document.getElementById('big-circle1'),
-                                document.getElementById('big-circle2')];
+  this.bigCircle = $('#circle-blue');
+  this.ripples['circle-blue'] = [document.getElementById('circle-blue1'),
+                                document.getElementById('circle-blue2'),
+                                document.getElementById('circle-blue3')];
 
-  this.smallCircle = $('#small-circle');
-  this.ripples['small-circle'] = [document.getElementById('small-circle0'),
-                                  document.getElementById('small-circle1'),
-                                  document.getElementById('small-circle2')];
+  this.smallCircle = $('#circle-yellow');
+  this.ripples['circle-yellow'] = [document.getElementById('circle-yellow1'),
+                                  document.getElementById('circle-yellow2'),
+                                  document.getElementById('circle-yellow3')];
 
   this.polygon = $('#polygon');
-  this.ripples['polygon'] = [document.getElementById('polygon0'),
-                             document.getElementById('polygon1'),
-                             document.getElementById('polygon2')];
+  this.ripples['polygon'] = [document.getElementById('polygon1'),
+                             document.getElementById('polygon2'),
+                             document.getElementById('polygon3')];
+
+  // setup song styles, making first auto-active
+  this.songs = $('.song-style');
+  $(this.songs.get(0)).addClass('active');
+  this.active = this.songs.get(0).id;
 };
 
 
@@ -86,18 +90,20 @@ ww.mode.SongMode.prototype.beginSound = function(id) {
     ripple = ripples[i];
 
     (function(ripple, delay) {
-      var rippleOut = new TWEEN['Tween']({ 'scale': 1 });
-          rippleOut['to']({ 'scale': 1.75 }, 400);
+      var rippleOut = new TWEEN['Tween']({ 'scale': 1, 'opacity': 1 });
+          rippleOut['to']({ 'scale': 1.75, 'opacity': 0.05 }, 400);
           rippleOut['delay'](delay);
           rippleOut['onUpdate'](function() {
             self.transformElem_(ripple, 'scale(' + this['scale'] + ')');
+            ripple.style.opacity = this['opacity'];
           });
 
-      var rippleIn = new TWEEN['Tween']({ 'scale': 1.75 });
-          rippleIn['to']({ 'scale': 1 }, 200);
+      var rippleIn = new TWEEN['Tween']({ 'scale': 1.75, 'opacity': 0.05 });
+          rippleIn['to']({ 'scale': 1, 'opacity': 1 }, 200);
           rippleIn['delay'](delay + 400);
           rippleIn['onUpdate'](function() {
             self.transformElem_(ripple, 'scale(' + this['scale'] + ')');
+            ripple.style.opacity = this['opacity'];
           });
 
       self.addTween(rippleOut);
