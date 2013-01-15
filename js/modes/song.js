@@ -86,7 +86,7 @@ ww.mode.SongMode.prototype.beginSound = function(id) {
 
     (function(ripple, delay) {
       var fadeOut = new TWEEN['Tween']({ 'opacity': 1, 'scale': 1 });
-          fadeOut['to']({ 'opacity': 0, 'scale': 10 }, 500);
+          fadeOut['to']({ 'opacity': 0, 'scale': 5 }, 500);
           fadeOut['delay'](delay);
           fadeOut['easing'](TWEEN['Easing']['Elastic']['Out']);
           fadeOut['onUpdate'](function() {
