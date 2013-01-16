@@ -1,3 +1,27 @@
+#nav {
+  position: absolute;
+  z-index: 1000;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  height: 35px; }
+  #logo {
+    opacity: 0.5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 85px;
+    height: 30px;
+    cursor: pointer; }
+  #menu {
+    opacity: 0.5;
+    position: absolute;
+    top: 3px;
+    right: 0;
+    width: 23.6px;
+    height: 20px;
+    cursor: pointer; }
+
 #pattern-container {
   position: absolute;
   left: 0;

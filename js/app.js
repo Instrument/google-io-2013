@@ -55,14 +55,18 @@ ww.app.Core.prototype.start = function() {
       self.onReady_(data);
     } else if (data['name'] === 'goToMode') {
       self.loadModeByName(data['data'], true);
+    } else if (data['name'] === 'goToHome') {
+      self.loadModeByName('home', true, true);
     }
   });
 
   this.loadModeByName('home', false);
 };
 
-ww.app.Core.prototype.loadModeByName = function(modeName, transition) {
-  this.loadMode({ name: modeName }, transition);
+ww.app.Core.prototype.loadModeByName = function(modeName, transition, reverse) {
+  this.loadedModes_ = this.loadedModes_ || {};
+  this.loadedModes_[modeName] = this.loadedModes_[modeName] || { name: modeName };
+  this.loadMode(this.loadedModes_[modeName], transition, reverse);
 };
 
 ww.app.Core.prototype.log = function(msg) {
@@ -75,12 +79,21 @@ ww.app.Core.prototype.log = function(msg) {
   }
 };
 
-ww.app.Core.prototype.loadMode = function(mode, transition) {
+ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
   var onComplete;
 
   var currentFrame = this.currentIframe;
   var self = this;
 
+  if (currentFrame) {
+    currentFrame.contentWindow.postMessage({
+      'name': 'unfocus',
+      'data': null
+    }, '*');
+
+    currentFrame.style.pointerEvents = 'none';
+  }
+  
   if (transition) {
     onComplete = function() {
       mode.iframe.contentWindow.postMessage({
@@ -88,11 +101,13 @@ ww.app.Core.prototype.loadMode = function(mode, transition) {
         'data': null
       }, '*');
       
-      mode.iframe.style[self.transformKey_] = "translateX(" + self.width_ + "px)";
+      var startX = reverse ? -self.width_ : self.width_;
+
+      mode.iframe.style[self.transformKey_] = "translateX(" + startX + "px)";
       mode.iframe.style.visibility = 'visible';
 
       setTimeout(function() {
-        var t2 = new TWEEN["Tween"]({ 'translateX': self.width_ });
+        var t2 = new TWEEN["Tween"]({ 'translateX': startX });
         t2['to']({ 'translateX': 0 }, 400);
         t2['onUpdate'](function() {
           mode.iframe.style[self.transformKey_] = "translateX(" + this['translateX'] + "px)";
@@ -103,15 +118,9 @@ ww.app.Core.prototype.loadMode = function(mode, transition) {
         t2['start']();
 
         if (currentFrame) {
-          currentFrame.contentWindow.postMessage({
-            'name': 'unfocus',
-            'data': null
-          }, '*');
-
-          currentFrame.style.pointerEvents = 'none';
-
+          var endX = -startX;
           var t = new TWEEN["Tween"]({ 'translateX': 0 });
-          t['to']({ 'translateX': -self.width_ }, 400);
+          t['to']({ 'translateX': endX }, 400);
           t['onUpdate'](function() {
             currentFrame.style[self.transformKey_] = "translateX(" + this['translateX'] + "px)";
           });

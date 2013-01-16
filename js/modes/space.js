@@ -7,6 +7,42 @@ goog.provide('ww.mode.SpaceMode');
  */
 ww.mode.SpaceMode = function() {
   goog.base(this, 'space', true, true, true);
+
+  var context = this.getAudioContext_();
+  this.tuna_ = new Tuna(context);
+
+  /**
+   * Create a delay audio filter. Value ranges are as follows.
+   * feedback: 0 to 1+
+   * delayTime: how many milliseconds should the wet signal be delayed?
+   * wetLevel: 0 to 1+
+   * dryLevel: 0 to 1+
+   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
+   * bypass: the value 1 starts the effect as bypassed, 0 or 1
+   */
+  this.delay_ = new this.tuna_['Delay']({
+    feedback: 0,
+    delayTime: 0,
+    wetLevel: 0,
+    dryLevel: 0,
+    cutoff: 20,
+    bypass: 0
+  });
+
+  /**
+   * Create a chorus audio filter. Value ranges are as follows.
+   * rate: 0.01 to 8+
+   * feedback: 0 to 1+
+   * delay: 0 to 1
+   * dryLevel: 0 to 1+
+   * bypass: the value 1 starts the effect as bypassed, 0 or 1
+   */
+  this.chorus_ = new this.tuna_['Chorus']({
+    rate: 0.01,
+    feedback: 0.2,
+    delay: 0,
+    bypass: 0
+  });
 };
 goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
 
@@ -67,50 +103,118 @@ ww.mode.SpaceMode.prototype.activateO = function() {
 /**
  * Function to create and draw I.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.SpaceMode.prototype.drawI_ = function(isNew) {
+ww.mode.SpaceMode.prototype.drawI_ = function() {
   // Set I's initial dimensions.
   this.iWidth_ = this.width_ * .175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.i_X = this.screenCenterX_ - this.iWidth_ * 1.5;
-  this.i_Y = this.screenCenterY_ - this.iHeight_ / 2;
+  this.ix = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iy = this.screenCenterY_ - this.iHeight_ / 2;
 
-  if (isNew) {
+  if (!this.paperI_) {
+
+    // Initial variables for calculating path coordinates.
+    var pathX;
+    var pathY;
+
+    var pathStart;
+    var pathMidOne;
+    var pathMidTwo;
+    var pathEnd;
+    var pathLength;
+
+    var altI;
+
+    // Create an array to store I's paths.
+    this.iPaths_ = [];
+
     // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.i_X, this.i_Y);
+    var iTopLeft = new paper['Point'](this.ix, this.iy);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
     this.letterI_ = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](this.letterI_);
-    this.paperI_['fillColor'] = '#11a860';
+    this.paperI_['fillColor'] = '#transparent';
 
-    // Create arrays to store the original coordinates for I's path points.
-    this.i_PointX = [];
-    this.i_PointY_ = [];
+    this.iGroup_ = new paper['Group'];
 
-    for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
-      this.i_PointX.push(this.paperI_['segments'][this.i_]['point']['_x']);
-      this.i_PointY_.push(this.paperI_['segments'][this.i_]['point']['_y']);
+    for (this.i_ = 0; this.i_ < this.iWidth_ / 6; this.i_++) {
+      this.iPaths_.push(new paper['Path']);
+
+      pathX = iTopLeft['x'] + this.i_ * 6;
+      pathY = iTopLeft['y'];
+
+      pathStart = new paper['Point'](pathX, pathY);
+
+      pathY = iTopLeft['y'] + this.iHeight_;
+
+      pathEnd = new paper['Point'](pathX, pathY);
+
+      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ -
+        (this.iHeight_ / 4));
+
+      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ +
+        (this.iHeight_ / 4));
+
+      this.iPaths_[this.i_]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
+
+      this.iGroup_['addChild'](this.iPaths_[this.i_]);
+    }
+
+    this.iGroup_['strokeColor'] = '#11a860';
+    this.iGroup_['strokeWidth'] = 1;
+
+    // Create arrays to store the coordinates for I's path points.
+    this.iPathsX_ = [];
+    this.iPathsY_ = [];
+
+    // Store the coordinates for I's path points.
+    for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
+      this.iPathsX_[this.i_] = [];
+      this.iPathsY_[this.i_] = [];
+
+      for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
+        this.iPathsX_[this.i_].push(
+          this.iPaths_[this.i_]['segments'][altI]['point']['x']);
+
+        this.iPathsY_[this.i_].push(
+          this.iPaths_[this.i_]['segments'][altI]['point']['y']);
+      }
     }
 
   // Run if drawI_() is called and drawI_(true) has also already been called.
-  } else if (!isNew && this.paperI_) {
+  } else if (this.paperI_) {
+    // Restore the coordinates for I's path points before resizing
+    for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
+        this.iPaths_[this.i_]['segments'][altI]['point']['x'] =
+          this.iPathsX_[this.i_][altI];
+
+        this.iPaths_[this.i_]['segments'][altI]['point']['y'] =
+          this.iPathsY_[this.i_][altI];
+      }
+    }
+
     // Change the position based on new screen size values.
-    this.paperI_['position'] = {x: this.i_X + this.iWidth_ / 2,
-      y: this.i_Y + this.iHeight_ / 2};
+    this.iGroup_['position'] = {x: this.ix + this.iWidth_ / 2,
+      y: this.iy + this.iHeight_ / 2};
+    this.paperI_['position'] = {x: this.ix + this.iWidth_ / 2,
+      y: this.iy + this.iHeight_ / 2};
 
     // Change the scale based on new screen size values.
+    this.iGroup_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
     this.paperI_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
 
-    // Store the coordinates for the newly moved and scaled control points.
-    for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
-      this.i_PointX[this.i_] =
-        this.paperI_['segments'][this.i_]['point']['_x'];
+    // Store the coordinates for I's path points based on the new window size.
+    for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
+        this.iPathsX_[this.i_][altI] =
+          this.iPaths_[this.i_]['segments'][altI]['point']['x'];
 
-      this.i_PointY_[this.i_] =
-        this.paperI_['segments'][this.i_]['point']['_y'];
+        this.iPathsY_[this.i_][altI] =
+          this.iPaths_[this.i_]['segments'][altI]['point']['y'];
+      }
     }
   } else {
     return;
@@ -120,9 +224,8 @@ ww.mode.SpaceMode.prototype.drawI_ = function(isNew) {
 /**
  * Function to create and draw O.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
+ww.mode.SpaceMode.prototype.drawO_ = function() {
   // Set O's radius.
   this.oRad_ = this.width_ * 0.1944444444;
 
@@ -130,20 +233,19 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
 
-  // Initial variables for calculating circle angles.
-  var pathX;
-  var pathY;
+  if (!this.paperO_) {
 
-  var pathStart;
-  var pathMidOne;
-  var pathMidTwo;
-  var pathEnd;
-  var pathLength;
+    // Initial variables for calculating circle angles.
+    var pathX;
+    var pathY;
 
-  var altI;
+    var pathStart;
+    var pathMidOne;
+    var pathMidTwo;
+    var pathEnd;
+    var pathLength;
 
-  if (isNew) {
-    this.oCreated_ = true;
+    var altI;
 
     // Create an array to store O's paths.
     this.oPaths_ = [];
@@ -153,10 +255,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
     this.paperO_['fillColor'] = 'transparent';
 
-    this.oGroup_ = new paper['Group'];
+    this.oGroup_ = new paper['Group']();
 
     for (this.i_ = 0; this.i_ < 90; this.i_++) {
-      this.oPaths_.push(new paper['Path']);
+      this.oPaths_.push(new paper['Path']());
 
       pathX = oCenter['x'] + this.oRad_ * Math.cos((this.i_ * 2) *
         (Math.PI / 180));
@@ -201,18 +303,31 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
       this.oPathsY_[this.i_] = [];
       for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
         this.oPathsX_[this.i_].push(
-          this.oPaths_[this.i_]['segments'][altI]['point']['_x']);
+          this.oPaths_[this.i_]['segments'][altI]['point']['x']);
 
         this.oPathsY_[this.i_].push(
-          this.oPaths_[this.i_]['segments'][altI]['point']['_y']);
+          this.oPaths_[this.i_]['segments'][altI]['point']['y']);
       }
     }
 
   // Run if drawO_() is called and drawO_(true) has also already been called.
-  } else if (!isNew && this.oCreated_) {
-    this.paperO_['position'] = {x: this.oX_, y: this.oY_};
-    this.oGroup_['position'] = {x: this.oX_, y: this.oY_};
+  } else if (this.paperO_) {
+    // Restore the original coordinates for O's path points before resizing.
+    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
+        this.oPaths_[this.i_]['segments'][altI]['point']['x'] =
+          this.oPathsX_[this.i_][altI];
 
+        this.oPaths_[this.i_]['segments'][altI]['point']['y'] =
+          this.oPathsY_[this.i_][altI];
+      }
+    }
+
+    // Change the position based on new screen size values.
+    this.oGroup_['position'] = {x: this.oX_, y: this.oY_};
+    this.paperO_['position'] = {x: this.oX_, y: this.oY_};
+
+    // Change the scale based on new screen size values.
     this.oGroup_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
     this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
 
@@ -220,57 +335,50 @@ ww.mode.SpaceMode.prototype.drawO_ = function(isNew) {
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
         this.oPathsX_[this.i_][altI] =
-          this.oPaths_[this.i_]['segments'][altI]['point']['_x'];
+          this.oPaths_[this.i_]['segments'][altI]['point']['x'];
 
         this.oPathsY_[this.i_][altI] =
-          this.oPaths_[this.i_]['segments'][altI]['point']['_y'];
+          this.oPaths_[this.i_]['segments'][altI]['point']['y'];
       }
     }
-  } else {
-    return;
   }
 };
 
 /**
  * Function to create and draw Slash.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.SpaceMode.prototype.drawSlash_ = function(isNew) {
+ww.mode.SpaceMode.prototype.drawSlash_ = function() {
   // Run only if drawI_(true) and drawO_(true) have been called
-  if (isNew && this.paperI_ && this.paperO_) {
+  if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
       this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728));
 
-    this.slashEnd_ = new paper['Point'](this.i_X + this.iWidth_,
+    this.slashEnd_ = new paper['Point'](this.ix + this.iWidth_,
       this.screenCenterY_ + (this.iHeight_ / 2) +
       ((this.iHeight_ * 1.5) * 0.17475728));
 
     // Create a new paper.js path for the slash based on screen dimensions.
-    this.paperSlash_ = new paper['Path'];
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
+    this.paperSlash_ = new paper['Path']();
+    this.paperSlash_['strokeWidth'] = 1;
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
 
   // Run if drawSlash_() is called and drawSlash(true) has already been called.
-  } else if (!isNew && this.paperSlash_) {
+  } else {
     this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728);
 
-    this.slashEnd_['x'] = this.i_X + this.iWidth_;
+    this.slashEnd_['x'] = this.ix + this.iWidth_;
     this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
       ((this.iHeight_ * 1.5) * 0.17475728);
 
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
-
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
-  } else {
-    return;
   }
 };
 
@@ -281,43 +389,6 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function(isNew) {
  */
 ww.mode.SpaceMode.prototype.init = function() {
   goog.base(this, 'init');
-
-  this.getAudioContext_();
-
-  var tuna = new Tuna(this.audioContext_);
-
-  /**
-   * Create a delay audio filter. Value ranges are as follows.
-   * feedback: 0 to 1+
-   * delayTime: how many milliseconds should the wet signal be delayed?
-   * wetLevel: 0 to 1+
-   * dryLevel: 0 to 1+
-   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.delay_ = new tuna['Delay']({
-    feedback: 0,
-    delayTime: 0,
-    wetLevel: 0,
-    dryLevel: 0,
-    cutoff: 20,
-    bypass: 0
-  });
-
-  /**
-   * Create a chorus audio filter. Value ranges are as follows.
-   * rate: 0.01 to 8+
-   * feedback: 0 to 1+
-   * delay: 0 to 1
-   * dryLevel: 0 to 1+
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.chorus_ = new tuna['Chorus']({
-    rate: 0.01,
-    feedback: 0.2,
-    delay: 0,
-    bypass: 0
-  });
 
   /**
    * Create a star field.
@@ -370,7 +441,7 @@ ww.mode.SpaceMode.prototype.init = function() {
     new paper['Point'](this.screenCenterX_, this.screenCenterY_);
 
   /**
-   * Create the letter I.
+   * Set the letter I's modify variables.
    */
   // Boolean that sets to true if I is being activated.
   this.iClicked_ = false;
@@ -384,10 +455,13 @@ ww.mode.SpaceMode.prototype.init = function() {
   // Float that increments on each activation of I to affect animation further.
   this.iMultiplier_ = 1;
 
-  this.drawI_(true);
+  // If I and O already exist, draw them again to reset their path points.
+  if (this.paperI_) {
+    this.drawI_();
+  }
 
   /**
-   * Create the letter O.
+   * Set the letter O's modify variables.
    */
   // Boolean that sets to true if O is being activated.
   this.oClicked_ = false;
@@ -401,13 +475,9 @@ ww.mode.SpaceMode.prototype.init = function() {
   // Float that increments on each activation of O to affect animation further.
   this.oMultiplier_ = 1;
 
-  this.drawO_(true);
-
-  /**
-   * Create the slash. drawI() and drawO() must be called before drawSlash() to
-   * successfully create the slash.
-   */
-  this.drawSlash_(true);
+  if (this.paperO_) {
+    this.drawO_();
+  }
 };
 
 /**
@@ -429,8 +499,6 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
-
   var tool = new paper['Tool']();
 
   tool['onMouseDown'] = function(event) {
@@ -444,21 +512,21 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
     }
   };
 
-  this.$canvas_.bind(evt, function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  $(document).bind(evt + '.space', function(e) {
     self.mouseX_ = e.pageX;
     self.mouseY_ = e.pageY;
   });
+};
 
-  $(canvas).bind(evt, function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+/**
+ * Event is called after a mode unfocused.
+ */
+ww.mode.SpaceMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
 
-    self.mouseX_ = e.pageX;
-    self.mouseY_ = e.pageY;
-  });
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  $(document).unbind(evt + '.space');
 };
 
 /**
@@ -490,11 +558,19 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   }
 
   /**
-   * Redraw each shape on window resize. drawI() and drawO() must be called
-   * before drawSlash() to maintain accurate drawing scale for the slash.
+   * Create the letter I.
    */
   this.drawI_();
+
+  /**
+   * Create the letter O.
+   */
   this.drawO_();
+
+  /**
+   * Create the slash. drawI() and drawO() must be called before drawSlash() to
+   * successfully create the slash.
+   */
   this.drawSlash_();
 
   this.redraw();
@@ -604,29 +680,74 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
      * Loop through each path segment on the letter I and move each point's
      * handles based on time as being evaluated by Sine and Cosine.
      */
-    for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
+    var altI;
 
-      this.paperI_['segments'][this.i_]['point']['_x'] =
-        this.i_PointX[this.i_] +
-        Math.cos(this.framesRendered_ / 10 + this.i_ * 100) * this.iModifier_ *
-        this.iMultiplier_;
+    for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
+      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
-      this.paperI_['segments'][this.i_]['point']['_y'] =
-        this.i_PointY_[this.i_] +
-        Math.sin(this.framesRendered_ / 10 + this.i_ * 100) * this.iModifier_ *
-        this.iMultiplier_;
+      this.iPaths_[this.i_]['segments'][0]['point']['x'] =
+        this.iPathsX_[this.i_][0] +
+        Math.cos(this.framesRendered_ / 10 +
+        (this.iGroup_['position']['x'] - this.iPathsX_[this.i_][0])) *
+        this.iModifier_ * this.iMultiplier_;
+
+      this.iPaths_[this.i_]['segments'][0]['point']['y'] =
+        this.iPathsY_[this.i_][0] +
+        Math.sin(this.framesRendered_ / 10 +
+        (this.iGroup_['position']['y'] - this.iPathsY_[this.i_][0])) *
+        this.iModifier_ * this.iMultiplier_ * this.tempFloat_[0];
+
+      this.iPaths_[this.i_]['segments'][1]['point']['x'] =
+        this.iPathsX_[this.i_][1] +
+        Math.sin(this.framesRendered_ / 10 +
+        (this.iGroup_['position']['x'] - this.iPathsX_[this.i_][1])) *
+        this.iModifier_ * this.iMultiplier_;
+
+      this.iPaths_[this.i_]['segments'][1]['point']['y'] =
+        this.iPathsY_[this.i_][1] +
+        Math.cos(this.framesRendered_ / 10 +
+        (this.iGroup_['position']['y'] - this.iPathsY_[this.i_][1])) *
+        this.iModifier_ * this.iMultiplier_;
+
+      this.iPaths_[this.i_]['segments'][2]['point']['x'] =
+        this.iPathsX_[this.i_][2] +
+        Math.cos(this.framesRendered_ / 10 +
+        (this.iGroup_['position']['x'] - this.iPathsX_[this.i_][2])) *
+        this.iModifier_ * this.iMultiplier_;
+
+      this.iPaths_[this.i_]['segments'][2]['point']['y'] =
+        this.iPathsY_[this.i_][2] +
+        Math.sin(this.framesRendered_ / 10 +
+        (this.iGroup_['position']['y'] - this.iPathsY_[this.i_][2])) *
+        this.iModifier_ * this.iMultiplier_;
+
+      this.iPaths_[this.i_]['segments'][3]['point']['x'] =
+        this.iPathsX_[this.i_][3] +
+        Math.sin(this.framesRendered_ / 10 +
+        (this.iGroup_['position']['x'] - this.iPathsX_[this.i_][3])) *
+        this.iModifier_ * this.iMultiplier_;
+
+      this.iPaths_[this.i_]['segments'][3]['point']['y'] =
+        this.iPathsY_[this.i_][3] +
+        Math.cos(this.framesRendered_ / 10 +
+        (this.iGroup_['position']['y'] - this.iPathsY_[this.i_][3])) *
+        this.iModifier_ * this.iMultiplier_ * this.tempFloat_[1];
+
+      this.iPaths_[this.i_]['smooth']();
     }
   } else {
     /*
-     * If I hasn't been activated recently enough, restore the original handle
+     * If I hasn't been activated recently enough, restore the original point
      * coordinates.
      */
-    for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.paperI_['segments'][this.i_]['point']['_x'] =
-        this.i_PointX[this.i_];
+    for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
+      for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
+        this.iPaths_[this.i_]['segments'][altI]['x'] =
+          this.iPathsX_[this.i_][altI];
 
-      this.paperI_['segments'][this.i_]['point']['_y'] =
-        this.i_PointY_[this.i_];
+        this.iPaths_[this.i_]['segments'][altI]['y'] =
+          this.iPathsY_[this.i_][altI];
+      }
     }
   }
 
@@ -637,11 +758,11 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
    */
   if (this.oClicked_ === true) {
 
-    if (this.oModifier_ < this.deltaModifier_ * 20000 &&
+    if (this.oModifier_ < this.deltaModifier_ * 10000 &&
       this.oIncrement_ === true) {
         this.oModifier_ += this.deltaModifier_ * 1000;
     } else if (this.oMultiplier_ > 1) {
-      if (this.oModifier_ < this.deltaModifier_ * 20000) {
+      if (this.oModifier_ < this.deltaModifier_ * 10000) {
         this.oModifier_ += this.deltaModifier_ * 10;
       }
       if (this.oMultiplier_ > 1) {
@@ -675,63 +796,69 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     var altI;
 
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
-      this.oPaths_[this.i_]['segments'][0]['point']['_x'] =
+      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
+
+      this.oPaths_[this.i_]['segments'][0]['point']['x'] =
         this.oPathsX_[this.i_][0] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][0])) *
+        (this.oGroup_['position']['x'] - this.oPathsX_[this.i_][0])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][0]['point']['_y'] =
+      this.oPaths_[this.i_]['segments'][0]['point']['y'] =
         this.oPathsY_[this.i_][0] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][0])) *
-        this.oModifier_ * this.oMultiplier_;
+        (this.oGroup_['position']['y'] - this.oPathsY_[this.i_][0])) *
+        this.oModifier_ * this.oMultiplier_ * this.tempFloat_[0];
 
-      this.oPaths_[this.i_]['segments'][1]['point']['_x'] =
+      this.oPaths_[this.i_]['segments'][1]['point']['x'] =
         this.oPathsX_[this.i_][1] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][1])) *
+        (this.oGroup_['position']['x'] - this.oPathsX_[this.i_][1])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][1]['point']['_y'] =
+      this.oPaths_[this.i_]['segments'][1]['point']['y'] =
         this.oPathsY_[this.i_][1] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][1])) *
+        (this.oGroup_['position']['y'] - this.oPathsY_[this.i_][1])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][2]['point']['_x'] =
+      this.oPaths_[this.i_]['segments'][2]['point']['x'] =
         this.oPathsX_[this.i_][2] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][2])) *
+        (this.oGroup_['position']['x'] - this.oPathsX_[this.i_][2])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][2]['point']['_y'] =
+      this.oPaths_[this.i_]['segments'][2]['point']['y'] =
         this.oPathsY_[this.i_][2] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][2])) *
+        (this.oGroup_['position']['y'] - this.oPathsY_[this.i_][2])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][3]['point']['_x'] =
+      this.oPaths_[this.i_]['segments'][3]['point']['x'] =
         this.oPathsX_[this.i_][3] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][3])) *
+        (this.oGroup_['position']['x'] - this.oPathsX_[this.i_][3])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][3]['point']['_y'] =
+      this.oPaths_[this.i_]['segments'][3]['point']['y'] =
         this.oPathsY_[this.i_][3] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][3])) *
-        this.oModifier_ * this.oMultiplier_;
+        (this.oGroup_['position']['y'] - this.oPathsY_[this.i_][3])) *
+        this.oModifier_ * this.oMultiplier_ * this.tempFloat_[1];
 
       this.oPaths_[this.i_]['smooth']();
     }
   } else {
+    /*
+     * If O hasn't been activated recently enough, restore the original point
+     * coordinates.
+     */
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
-        this.oPaths_[this.i_]['segments'][altI]['_x'] =
+        this.oPaths_[this.i_]['segments'][altI]['x'] =
           this.oPathsX_[this.i_][altI];
 
-        this.oPaths_[this.i_]['segments'][altI]['_y'] =
+        this.oPaths_[this.i_]['segments'][altI]['y'] =
           this.oPathsY_[this.i_][altI];
       }
     }

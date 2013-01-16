@@ -43,6 +43,21 @@ ww.util.rightNow = function() {
 };
 
 /**
+ * Pad a string to a given number of characters.
+ * @param {Number} num Initial number.
+ * @param {Number} len Desired length.
+ * @return {String} String of desired length.
+ */
+ww.util.pad = function(num, len) {
+  var str = '' + num;
+  while (str.length < len) {
+    str = '0' + str;
+  }
+  return str;
+};
+
+
+/**
  * RequestAnimationFrame polyfill.
  */
  (function() {
