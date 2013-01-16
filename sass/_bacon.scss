@@ -1,6 +1,7 @@
 #bacon-container {
   @extend %absolute-full;
-  padding: 10%;
+  height: 100%;
+  padding: 5% 10%;
   @include transition(all 100ms ease-in);
 }
 
