@@ -183,21 +183,21 @@ if (DEBUG_MODE) {
     var self = this;
 
     var focusElem = document.createElement('button');
-    focusElem.style.fontSize = '15px';
+    focusElem.style.fontSize = '12px';
     focusElem.innerHTML = 'Focus';
     focusElem.onclick = function() {
       self['focus']();
     };
 
     var unfocusElem = document.createElement('button');
-    unfocusElem.style.fontSize = '15px';
+    unfocusElem.style.fontSize = '12px';
     unfocusElem.innerHTML = 'Unfocus';
     unfocusElem.onclick = function() {
       self['unfocus']();
     };
 
     var restartElem = document.createElement('button');
-    restartElem.style.fontSize = '15px';
+    restartElem.style.fontSize = '12px';
     restartElem.innerHTML = 'Restart';
     restartElem.onclick = function() {
       self['unfocus']();
@@ -209,7 +209,7 @@ if (DEBUG_MODE) {
     containerElem.style.bottom = 0;
     containerElem.style.left = 0;
     containerElem.style.right = 0;
-    containerElem.style.height = '40px';
+    containerElem.style.height = '1.5em';
     containerElem.style.background = 'rgba(0,0,0,0.2)';
     containerElem.style.zIndex = 20;
 
@@ -525,8 +525,9 @@ ww.mode.Core.prototype.preloadSound = function(filename) {
  * Play a sound by url.
  * @param {String} filename Audio file name.
  * @param {Function} onPlay Callback on play.
+ * @param {Boolean} loop To loop the audio, or to not loop the audio.
  */
-ww.mode.Core.prototype.playSound = function(filename, onPlay) {
+ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
@@ -534,13 +535,14 @@ ww.mode.Core.prototype.playSound = function(filename, onPlay) {
     url = '../' + url;
   }
 
-  this.log('Playing sound "' + filename);
+  this.log('Playing sound "' + filename + '"');
 
   var audioContext = this.getAudioContext_();
 
   this.getSoundBufferFromURL_(url, function(buffer) {
     var source = audioContext['createBufferSource']();
     source['buffer'] = buffer;
+    source['loop'] = loop || false;
     source['connect'](audioContext['destination']);
     source['noteOn'](0);
 

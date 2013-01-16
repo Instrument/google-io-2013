@@ -22,7 +22,7 @@ body {
     @include transition(opacity 190ms ease-out);
   }
 
-  .original {
+  .instrument {
     cursor: pointer;
   }
 }
@@ -46,7 +46,9 @@ body {
 
     li {
       border-bottom: 0.25em solid transparent;
+      cursor: pointer;
       margin-left: 1.75em;
+      @include transition(border-bottom 190ms ease-out);
 
       &:first-child {
         margin-left: 0;
@@ -63,12 +65,21 @@ body {
         @include border-radius(3px);
         @include hide-text;
         line-height: 1.95em;
+        @include transition(background-color 190ms ease-out);
         width: 2em;
 
         &.active {
           background-color: #dcdcdc;
         }
+
+        &.tabbing {
+          background-color: darken(#dcdcdc, 5%);
+        }
       }
     }
   }
+}
+
+&.no-touch #song-styles ul li#drumkit:hover {
+  background-color: darken(#dcdcdc, 5%);
 }

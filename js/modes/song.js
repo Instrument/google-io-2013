@@ -18,10 +18,25 @@ ww.mode.SongMode = function() {
   this.preloadSound('lute-note-3.m4a');
   this.preloadSound('lute-note-4.m4a');
 
-  this.preloadSound('organ-note-1.m4a');
-  this.preloadSound('organ-note-2.m4a');
-  this.preloadSound('organ-note-3.m4a');
-  this.preloadSound('organ-note-4.m4a');
+  this.preloadSound('funky-note-1.m4a');
+  this.preloadSound('funky-note-2.m4a');
+  this.preloadSound('funky-note-3.m4a');
+  this.preloadSound('funky-note-4.m4a');
+
+  // this.preloadSound('organ-note-1.m4a');
+  // this.preloadSound('organ-note-2.m4a');
+  // this.preloadSound('organ-note-3.m4a');
+  // this.preloadSound('organ-note-4.m4a');
+
+  this.preloadSound('drums-club.m4a');
+  this.preloadSound('drums-effected-kit.m4a');
+  this.preloadSound('drums-electric-1.m4a');
+  this.preloadSound('drums-electric-2.m4a');
+  this.preloadSound('drums-hip-hop.m4a');
+  this.preloadSound('drums-jazzy-rock.m4a');
+  this.preloadSound('drums-jazzy.m4a');
+  this.preloadSound('drums-lounge.m4a');
+  this.preloadSound('drums-motown.m4a');
 };
 goog.inherits(ww.mode.SongMode, ww.mode.Core);
 
@@ -44,22 +59,18 @@ ww.mode.SongMode.prototype.init = function() {
   this.instruments = $('.instrument');
   this.ripples = {};
 
-  this.note1 = $('#note-1');
   this.ripples['note-1'] = [document.getElementById('rectangle1'),
                             document.getElementById('rectangle2'),
                             document.getElementById('rectangle3')];
 
-  this.note2 = $('#note-2');
   this.ripples['note-2'] = [document.getElementById('circle-yellow1'),
                             document.getElementById('circle-yellow2'),
                             document.getElementById('circle-yellow3')];
 
-  this.note3 = $('#note-3');
   this.ripples['note-3'] = [document.getElementById('circle-blue1'),
                             document.getElementById('circle-blue2'),
                             document.getElementById('circle-blue3')];
 
-  this.note4 = $('#note-4');
   this.ripples['note-4'] = [document.getElementById('polygon1'),
                             document.getElementById('polygon2'),
                             document.getElementById('polygon3')];
@@ -68,6 +79,24 @@ ww.mode.SongMode.prototype.init = function() {
   this.songs = $('.song-style');
   $(this.songs.get(0)).addClass('active');
   this.active = this.songs.get(0).id;
+
+  // setup drums
+  this.drums = [
+    'drums-club.m4a',
+    'drums-effected-kit.m4a',
+    'drums-electric-1.m4a',
+    'drums-electric-2.m4a',
+    'drums-hip-hop.m4a',
+    'drums-jazzy-rock.m4a',
+    'drums-jazzy.m4a',
+    'drums-lounge.m4a',
+    'drums-motown.m4a'
+  ];
+
+  this.numDrums = this.drums.length;
+  this.drumIndex = -1;
+  this.drumEl = $('#drumkit');
+  this.activeDrum = null;
 };
 
 
@@ -87,8 +116,15 @@ ww.mode.SongMode.prototype.didFocus =  function() {
   self.songs.bind(self.evtEnd, function() {
     self.swapSongMode(this.id);
   });
-};
 
+  self.drumEl.bind(self.evtStart, function() {
+    self.startDrumChange();
+  });
+
+  self.drumEl.bind(self.evtEnd, function() {
+    self.changeDrums();
+  });
+};
 
 ww.mode.SongMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
@@ -96,6 +132,41 @@ ww.mode.SongMode.prototype.didUnfocus = function() {
   this.instruments.unbind(this.evtStart);
   this.instruments.unbind(this.evtEnd);
   this.songs.unbind(this.evtEnd);
+  this.drumEl.unbind(this.evtStart);
+  this.drumEl.unbind(this.evtEnd);
+};
+
+
+ww.mode.SongMode.prototype.startDrumChange = function() {
+  this.drumIndex++;
+
+  if (this.drumIndex === 0) {
+    this.drumEl.addClass('active');
+  }
+
+  if (this.drumIndex < this.numDrums) {
+    this.drumEl.addClass('tabbing');
+  } else {
+    this.drumEl.removeClass('active');
+    this.drumIndex = -1;
+    this.activeDrum['disconnect'](0);
+    this.activeDrum = null;
+  }
+};
+
+
+ww.mode.SongMode.prototype.changeDrums = function() {
+  if (this.drumIndex >= 0) {
+    var self = this;
+
+    self.activeDrum && self.activeDrum['disconnect'](0);
+
+    self.playSound(self.drums[self.drumIndex], function(source) {
+      self.activeDrum = source;
+    }, true);
+
+    self.drumEl.removeClass('tabbing');
+  }
 };
 
 
