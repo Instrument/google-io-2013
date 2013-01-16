@@ -558,6 +558,72 @@ ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
   }
 }
 
+ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
+  incrementer, multiplier, clicker) {
+
+  var delta1 = this.deltaModifier_ * 100;
+  var delta2 = this.deltaModifier_ * 1000;
+  var delta3 = this.deltaModifier_ * 10000;
+    
+    if (modifier < delta3 &&
+      incrementer == true) {
+        modifier += delta2;
+    } else if (multiplier > 1) {
+      if (modifier < delta3) {
+        modifier += delta1;
+      }
+      if (multiplier > 1) {
+        multiplier -= 0.1;
+      } else {
+        multiplier = 1;
+      }
+    } else {
+      incrementer = false;
+      modifier -= delta2;
+      if (multiplier > 1) {
+        multiplier -= 0.1;
+      } else {
+        multiplier = 1;
+      }
+    }
+
+    if (modifier < delta2) {
+      clicker = false;
+      incrementer = true;
+      multiplier = 1;
+    }
+}
+
+/**
+ * Assign a paper object's coordinates to a static array, or vice versa.
+ * @param {Number} source The base coordinate to reference.
+ * @param {Boolean} cos Equation uses cosine if true, sine if false.
+ * @param {Number} mod1 The first modifier used in the equation.
+ * @param {Number} mod2 The second modifier used in the equation.
+ * @param {Number} mod3 The third modifier used in the equation.
+ * @param {Number} mod4 The fourth modifier used in the equation.
+ * @param {Float} random Optional float to modify the equation.
+ */
+ww.mode.SpaceMode.prototype.modCoords_ = function(source,
+  cos, mod1, mod2, mod3, mod4, random) {
+
+    var result;
+
+    if (!random) {
+      random = 1;
+    }
+    
+    if (cos) {
+      result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *
+        mod3 * mod4 * random;
+    } else {
+      result = source + Math.sin(this.framesRendered_ / 10 + (mod1 - mod2)) *
+        mod3 * mod4 * random;
+    }
+
+    return result;
+}
+
 /**
  * On each physics tick, adjust star positions.
  * @param {Float} delta Time since last tick.
@@ -672,52 +738,44 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
       this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
       this.iPaths_[i]['segments'][0]['point']['x'] =
-        this.iPathsX_[i][0] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['x'] - this.iPathsX_[i][0])) *
-        this.iModifier_ * this.iMultiplier_;
+        this.modCoords_(this.iPathsX_[i][0], true,
+        this.iGroup_['position']['x'], this.iPathsX_[i][0], this.iModifier_,
+        this.iMultiplier_);
 
-      this.iPaths_[i]['segments'][0]['point']['y'] =
-        this.iPathsY_[i][0] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['y'] - this.iPathsY_[i][0])) *
-        this.iModifier_ * this.iMultiplier_ * this.tempFloat_[0];
+      this.iPaths_[i]['segments'][0]['point']['y'] = 
+        this.modCoords_(this.iPathsY_[i][0], false,
+        this.iGroup_['position']['y'], this.iPathsY_[i][0], this.iModifier_,
+        this.iMultiplier_);
 
       this.iPaths_[i]['segments'][1]['point']['x'] =
-        this.iPathsX_[i][1] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['x'] - this.iPathsX_[i][1])) *
-        this.iModifier_ * this.iMultiplier_;
+        this.modCoords_(this.iPathsX_[i][1], false,
+        this.iGroup_['position']['x'], this.iPathsX_[i][1], this.iModifier_,
+        this.iMultiplier_);
 
-      this.iPaths_[i]['segments'][1]['point']['y'] =
-        this.iPathsY_[i][1] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['y'] - this.iPathsY_[i][1])) *
-        this.iModifier_ * this.iMultiplier_;
+      this.iPaths_[i]['segments'][1]['point']['y'] = 
+        this.modCoords_(this.iPathsY_[i][1], true,
+        this.iGroup_['position']['y'], this.iPathsY_[i][1], this.iModifier_,
+        this.iMultiplier_);
 
       this.iPaths_[i]['segments'][2]['point']['x'] =
-        this.iPathsX_[i][2] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['x'] - this.iPathsX_[i][2])) *
-        this.iModifier_ * this.iMultiplier_;
+        this.modCoords_(this.iPathsX_[i][2], true,
+        this.iGroup_['position']['x'], this.iPathsX_[i][2], this.iModifier_,
+        this.iMultiplier_);
 
-      this.iPaths_[i]['segments'][2]['point']['y'] =
-        this.iPathsY_[i][2] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['y'] - this.iPathsY_[i][2])) *
-        this.iModifier_ * this.iMultiplier_;
+      this.iPaths_[i]['segments'][2]['point']['y'] = 
+        this.modCoords_(this.iPathsY_[i][2], false,
+        this.iGroup_['position']['y'], this.iPathsY_[i][2], this.iModifier_,
+        this.iMultiplier_);
 
       this.iPaths_[i]['segments'][3]['point']['x'] =
-        this.iPathsX_[i][3] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['x'] - this.iPathsX_[i][3])) *
-        this.iModifier_ * this.iMultiplier_;
+        this.modCoords_(this.iPathsX_[i][3], false,
+        this.iGroup_['position']['x'], this.iPathsX_[i][3], this.iModifier_,
+        this.iMultiplier_);
 
-      this.iPaths_[i]['segments'][3]['point']['y'] =
-        this.iPathsY_[i][3] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['y'] - this.iPathsY_[i][3])) *
-        this.iModifier_ * this.iMultiplier_ * this.tempFloat_[1];
+      this.iPaths_[i]['segments'][3]['point']['y'] = 
+        this.modCoords_(this.iPathsY_[i][3], true,
+        this.iGroup_['position']['y'], this.iPathsY_[i][3], this.iModifier_,
+        this.iMultiplier_);
 
       this.iPaths_[i]['smooth']();
     }
@@ -726,15 +784,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
      * If I hasn't been activated recently enough, restore the original point
      * coordinates.
      */
-    for (i = 0; i < this.iPaths_.length; i++) {
-      for (ii = 0; ii < this.iPaths_[i]['segments'].length; ii++) {
-        this.iPaths_[i]['segments'][ii]['x'] =
-          this.iPathsX_[i][ii];
-
-        this.iPaths_[i]['segments'][ii]['y'] =
-          this.iPathsY_[i][ii];
-      }
-    }
+    this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, false);
   }
 
   /*
@@ -784,52 +834,44 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
       this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
       this.oPaths_[i]['segments'][0]['point']['x'] =
-        this.oPathsX_[i][0] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['x'] - this.oPathsX_[i][0])) *
-        this.oModifier_ * this.oMultiplier_;
+        this.modCoords_(this.oPathsX_[i][0], true,
+        this.oGroup_['position']['x'], this.oPathsX_[i][0], this.oModifier_,
+        this.oMultiplier_);
 
-      this.oPaths_[i]['segments'][0]['point']['y'] =
-        this.oPathsY_[i][0] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['y'] - this.oPathsY_[i][0])) *
-        this.oModifier_ * this.oMultiplier_ * this.tempFloat_[0];
+      this.oPaths_[i]['segments'][0]['point']['y'] = 
+        this.modCoords_(this.oPathsY_[i][0], false,
+        this.oGroup_['position']['y'], this.oPathsY_[i][0], this.oModifier_,
+        this.oMultiplier_);
 
       this.oPaths_[i]['segments'][1]['point']['x'] =
-        this.oPathsX_[i][1] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['x'] - this.oPathsX_[i][1])) *
-        this.oModifier_ * this.oMultiplier_;
+        this.modCoords_(this.oPathsX_[i][1], false,
+        this.oGroup_['position']['x'], this.oPathsX_[i][1], this.oModifier_,
+        this.oMultiplier_);
 
-      this.oPaths_[i]['segments'][1]['point']['y'] =
-        this.oPathsY_[i][1] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['y'] - this.oPathsY_[i][1])) *
-        this.oModifier_ * this.oMultiplier_;
+      this.oPaths_[i]['segments'][1]['point']['y'] = 
+        this.modCoords_(this.oPathsY_[i][1], true,
+        this.oGroup_['position']['y'], this.oPathsY_[i][1], this.oModifier_,
+        this.oMultiplier_);
 
       this.oPaths_[i]['segments'][2]['point']['x'] =
-        this.oPathsX_[i][2] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['x'] - this.oPathsX_[i][2])) *
-        this.oModifier_ * this.oMultiplier_;
+        this.modCoords_(this.oPathsX_[i][2], true,
+        this.oGroup_['position']['x'], this.oPathsX_[i][2], this.oModifier_,
+        this.oMultiplier_);
 
-      this.oPaths_[i]['segments'][2]['point']['y'] =
-        this.oPathsY_[i][2] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['y'] - this.oPathsY_[i][2])) *
-        this.oModifier_ * this.oMultiplier_;
+      this.oPaths_[i]['segments'][2]['point']['y'] = 
+        this.modCoords_(this.oPathsY_[i][2], false,
+        this.oGroup_['position']['y'], this.oPathsY_[i][2], this.oModifier_,
+        this.oMultiplier_);
 
       this.oPaths_[i]['segments'][3]['point']['x'] =
-        this.oPathsX_[i][3] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['x'] - this.oPathsX_[i][3])) *
-        this.oModifier_ * this.oMultiplier_;
+        this.modCoords_(this.oPathsX_[i][3], false,
+        this.oGroup_['position']['x'], this.oPathsX_[i][3], this.oModifier_,
+        this.oMultiplier_);
 
-      this.oPaths_[i]['segments'][3]['point']['y'] =
-        this.oPathsY_[i][3] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['y'] - this.oPathsY_[i][3])) *
-        this.oModifier_ * this.oMultiplier_ * this.tempFloat_[1];
+      this.oPaths_[i]['segments'][3]['point']['y'] = 
+        this.modCoords_(this.oPathsY_[i][3], true,
+        this.oGroup_['position']['y'], this.oPathsY_[i][3], this.oModifier_,
+        this.oMultiplier_);
 
       this.oPaths_[i]['smooth']();
     }
@@ -838,14 +880,6 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
      * If O hasn't been activated recently enough, restore the original point
      * coordinates.
      */
-    for (i = 0; i < this.oPaths_.length; i++) {
-      for (ii = 0; ii < this.oPaths_[i]['segments'].length; ii++) {
-        this.oPaths_[i]['segments'][ii]['x'] =
-          this.oPathsX_[i][ii];
-
-        this.oPaths_[i]['segments'][ii]['y'] =
-          this.oPathsY_[i][ii];
-      }
-    }
+    this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, false);
   }
 };
