@@ -255,10 +255,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
     this.paperO_['fillColor'] = 'transparent';
 
-    this.oGroup_ = new paper['Group'];
+    this.oGroup_ = new paper['Group']();
 
     for (this.i_ = 0; this.i_ < 90; this.i_++) {
-      this.oPaths_.push(new paper['Path']);
+      this.oPaths_.push(new paper['Path']());
 
       pathX = oCenter['x'] + this.oRad_ * Math.cos((this.i_ * 2) *
         (Math.PI / 180));
@@ -341,8 +341,6 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
           this.oPaths_[this.i_]['segments'][altI]['point']['_y'];
       }
     }
-  } else {
-    return;
   }
 };
 
@@ -363,14 +361,14 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
       ((this.iHeight_ * 1.5) * 0.17475728));
 
     // Create a new paper.js path for the slash based on screen dimensions.
-    this.paperSlash_ = new paper['Path'];
+    this.paperSlash_ = new paper['Path']();
     this.paperSlash_['strokeWidth'] = 1;
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
 
   // Run if drawSlash_() is called and drawSlash(true) has already been called.
-  } else if (this.paperSlash_) {
+  } else {
     this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728);
@@ -381,9 +379,6 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
 
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
-
-  } else {
-    return;
   }
 };
 
@@ -465,11 +460,6 @@ ww.mode.SpaceMode.prototype.init = function() {
     this.drawI_();
   }
 
-  if (this.paperO_) {
-    this.drawO_();
-  }
-
-
   /**
    * Set the letter O's modify variables.
    */
@@ -484,6 +474,10 @@ ww.mode.SpaceMode.prototype.init = function() {
 
   // Float that increments on each activation of O to affect animation further.
   this.oMultiplier_ = 1;
+
+  if (this.paperO_) {
+    this.drawO_();
+  }
 };
 
 /**
@@ -505,8 +499,6 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
-
   var tool = new paper['Tool']();
 
   tool['onMouseDown'] = function(event) {
@@ -520,21 +512,21 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
     }
   };
 
-  this.$canvas_.bind(evt, function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  $(document).bind(evt + '.space', function(e) {
     self.mouseX_ = e.pageX;
     self.mouseY_ = e.pageY;
   });
+};
 
-  $(canvas).bind(evt, function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+/**
+ * Event is called after a mode unfocused.
+ */
+ww.mode.SpaceMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
 
-    self.mouseX_ = e.pageX;
-    self.mouseY_ = e.pageY;
-  });
+  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  $(document).unbind(evt + '.space');
 };
 
 /**

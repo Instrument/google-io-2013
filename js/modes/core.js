@@ -200,7 +200,8 @@ if (DEBUG_MODE) {
     restartElem.style.fontSize = '15px';
     restartElem.innerHTML = 'Restart';
     restartElem.onclick = function() {
-      self.init();
+      self['unfocus']();
+      self['focus']();
     };
 
     var containerElem = document.createElement('div');
