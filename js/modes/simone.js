@@ -19,7 +19,7 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   var self = this;
 
-  TWEEN['removeAll']();
+  TWEEN.removeAll();
 
   if (Modernizr.touch) {
     this.evtStart = 'touchstart.simon';
@@ -84,10 +84,10 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   // Set up audio
   this.getAudioContext_();
-  this.source = this.audioContext_['createOscillator']();
-  this.analyser = this.audioContext_['createAnalyser']();
-  this.analyser['fftSize'] = 512;
-  this.analyser['smoothingTimeConstant'] = 0.85;
+  this.source = this.audioContext_.createOscillator();
+  this.analyser = this.audioContext_.createAnalyser();
+  this.analyser.fftSize = 512;
+  this.analyser.smoothingTimeConstant = 0.85;
 
   this.notes = [
     {
@@ -131,18 +131,18 @@ ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
 
     this.log('Playing note: ', note);
 
-    this.source['type'] = note['type'];
-    this.source['frequency']['value'] = note['frequency'];
-    this.source['detune']['value'] = note['detune'];
+    this.source.type = note['type'];
+    this.source.frequency.value = note['frequency'];
+    this.source.detune.value = note['detune'];
 
-    var fadeInQuick = new TWEEN['Tween']({ 'opacity': 0.5 });
-        fadeInQuick['to']({ 'opacity': 1 }, 100);
+    var fadeInQuick = new TWEEN.Tween({ 'opacity': 0.5 });
+        fadeInQuick.to({ 'opacity': 1 }, 100);
         fadeInQuick['onStart'](function() {
-          self.source['connect'](self.analyser);
-          self.analyser['connect'](self.audioContext_['destination']);
-          self.source['noteOn'](0);
+          self.source.connect(self.analyser);
+          self.analyser.connect(self.audioContext_.destination);
+          self.source.noteOn(0);
         });
-        fadeInQuick['onUpdate'](function() {
+        fadeInQuick.onUpdate(function() {
           segment.css('opacity', this['opacity']);
         });
 
@@ -264,12 +264,12 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
     // clear any state on the level counter
     self.levelCount.removeClass();
 
-    var fadeOut = new TWEEN['Tween']({ 'opacity': 1 });
-        fadeOut['to']({ 'opacity': 0.5 }, 200);
-        fadeOut['onUpdate'](function() {
+    var fadeOut = new TWEEN.Tween({ 'opacity': 1 });
+        fadeOut.to({ 'opacity': 0.5 }, 200);
+        fadeOut.onUpdate(function() {
           guessSeg.css('opacity', this['opacity']);
         });
-        fadeOut['onComplete'](function() {
+        fadeOut.onComplete(function() {
           self.source['disconnect']();
         });
 
@@ -318,10 +318,10 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
       self.isPlaying = false;
       self.levelCount.addClass('game-over');
 
-      var fadeIn = new TWEEN['Tween']({ 'opacity': 0.5 });
-          fadeIn['to']({ 'opacity': 1 }, 200);
-          fadeIn['delay'](500);
-          fadeIn['onUpdate'](function() {
+      var fadeIn = new TWEEN.Tween({ 'opacity': 0.5 });
+          fadeIn.to({ 'opacity': 1 }, 200);
+          fadeIn.delay(500);
+          fadeIn.onUpdate(function() {
             self.segmentEls.css('opacity', this['opacity']);
           });
 
@@ -354,10 +354,10 @@ ww.mode.SimoneMode.prototype.beginGame_ = function() {
     self.uiContainer.animate({ opacity: 1 }, 200);
 
     if (self.segmentEls.css('opacity') !== '0.5') {
-      var fadeOut = new TWEEN['Tween']({ 'opacity': 1 });
-          fadeOut['to']({ 'opacity': 0.5 }, 200);
-          fadeOut['delay'](200);
-          fadeOut['onUpdate'](function() {
+      var fadeOut = new TWEEN.Tween({ 'opacity': 1 });
+          fadeOut.to({ 'opacity': 0.5 }, 200);
+          fadeOut.delay(200);
+          fadeOut.onUpdate(function() {
             self.segmentEls.css('opacity', this['opacity']);
           });
 
@@ -391,10 +391,10 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
       delay += 600;
 
       (function(segment, delay, note, i) {
-        var fadeIn = new TWEEN['Tween']({ 'opacity': 0.5 });
-            fadeIn['to']({ 'opacity': 1}, 200);
-            fadeIn['delay'](delay);
-            fadeIn['onStart'](function() {
+        var fadeIn = new TWEEN.Tween({ 'opacity': 0.5 });
+            fadeIn.to({ 'opacity': 1}, 200);
+            fadeIn.delay(delay);
+            fadeIn.onStart(function() {
               if (i === 0) {
                 self.levelCount.removeClass('success');
               }
@@ -404,21 +404,21 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
               self.source['frequency']['value'] = note['frequency'];
               self.source['detune']['value'] = note['detune'];
 
-              self.source['connect'](self.analyser);
-              self.analyser['connect'](self.audioContext_['destination']);
-              self.source['noteOn'](0);
+              self.source.connect(self.analyser);
+              self.analyser.connect(self.audioContext_.destination);
+              self.source.noteOn(0);
             });
-            fadeIn['onUpdate'](function() {
+            fadeIn.onUpdate(function() {
               segment[0].style.opacity = this['opacity'];
             });
 
-        var fadeOut = new TWEEN['Tween']({ 'opacity': 1 });
-            fadeOut['to']({ 'opacity': 0.5 }, 200);
-            fadeOut['delay'](delay + 300);
-            fadeOut['onUpdate'](function() {
+        var fadeOut = new TWEEN.Tween({ 'opacity': 1 });
+            fadeOut.to({ 'opacity': 0.5 }, 200);
+            fadeOut.delay(delay + 300);
+            fadeOut.onUpdate(function() {
               segment[0].style.opacity = this['opacity'];
             });
-            fadeOut['onComplete'](function() {
+            fadeOut.onComplete(function() {
               if (i === stopIndex - 1) {
                 self.isAnimating = false;
                 self.levelCount.addClass('start').text(stopIndex);

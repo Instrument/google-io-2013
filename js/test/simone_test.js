@@ -33,8 +33,8 @@ function testWwModeSimoneModeStartCheck_() {
 }
 
 function testWwModeSimoneModeDidFocus() {
-  mode['unfocus']();
-  mode['focus']();
+  mode.unfocus_();
+  mode.focus_();
 
   mode.beginGame_();
 
@@ -122,8 +122,8 @@ function testWwModeSimoneModeDidFocus() {
 }
 
 function testWwModeSimoneModeDidFocus() {
-  mode['unfocus']();
-  mode['focus']();
+  mode.unfocus_();
+  mode.focus_();
 
   var bindCount = 0;
   var elements = [$('#play-again'), $('#red'), $('#green'), $('#blue'), $('#yellow')];
@@ -143,8 +143,8 @@ function testWwModeSimoneModeDidFocus() {
 }
 
 function testWwModeSimoneModeDidUnfocus() {
-  mode['focus']();
-  mode['unfocus']();
+  mode.focus_();
+  mode.unfocus_();
 
   var bindCount = 0;
   var elements = [$('#play-again'), $('#red'), $('#green'), $('#blue'), $('#yellow')];

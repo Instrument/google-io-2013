@@ -34,21 +34,19 @@ ww.mode.BaconMode.prototype.activateI = function() {
     self.playingSound = buffer;
   });
 
-  var self = this;
-
-  var stretchOut = new TWEEN['Tween']({ 'scaleX': 1, 'scaleY': 1 });
-  stretchOut['to']({ 'scaleX': 1.75, 'scaleY': 1.2 }, 400);
-  stretchOut['easing'](TWEEN['Easing']['Elastic']['In']);
-  stretchOut['onUpdate'](function() {
+  var stretchOut = new TWEEN.Tween({ 'scaleX': 1, 'scaleY': 1 });
+  stretchOut.to({ 'scaleX': 1.75, 'scaleY': 1.2 }, 400);
+  stretchOut.easing(TWEEN.Easing.Elastic.In);
+  stretchOut.onUpdate(function() {
     self.transformElem_(self.letterI[0], 'scaleY(' + this['scaleY'] + ')');
     self.transformElem_(self.stripes[0], 'scaleX(' + this['scaleX'] + ')');
   });
 
-  var stretchBack = new TWEEN['Tween']({ 'scaleX': 1.75, 'scaleY': 1.2 });
-  stretchBack['to']({ 'scaleX': 1, 'scaleY': 1 }, 600);
-  stretchBack['easing'](TWEEN['Easing']['Elastic']['Out']);
-  stretchBack['delay'](400);
-  stretchBack['onUpdate'](function() {
+  var stretchBack = new TWEEN.Tween({ 'scaleX': 1.75, 'scaleY': 1.2 });
+  stretchBack.to({ 'scaleX': 1, 'scaleY': 1 }, 600);
+  stretchBack.easing(TWEEN.Easing.Elastic.Out);
+  stretchBack.delay(400);
+  stretchBack.onUpdate(function() {
     self.transformElem_(self.letterI[0], 'scaleY(' + this['scaleY'] + ')');
     self.transformElem_(self.stripes[0], 'scaleX(' + this['scaleX'] + ')');
   });
@@ -87,7 +85,7 @@ ww.mode.BaconMode.prototype.activateO = function() {
 
   var sizing = [Random(-15, 15), Random(-15, 15)];
 
-  var spinEgg = new TWEEN['Tween']({
+  var spinEgg = new TWEEN.Tween({
     'translateX': posX,
     'translateY': posY,
     'skewX': sizeX,
@@ -95,7 +93,7 @@ ww.mode.BaconMode.prototype.activateO = function() {
     'rotate': degs
   });
 
-  spinEgg['to']({
+  spinEgg.to({
     'translateX': pos[0],
     'translateY': pos[1],
     'skewX': sizing[0],
@@ -103,9 +101,9 @@ ww.mode.BaconMode.prototype.activateO = function() {
     'rotate': (degs + shift / 2)
   }, 500);
 
-  spinEgg['easing'](TWEEN['Easing']['Elastic']['In']);
+  spinEgg.easing(TWEEN.Easing.Elastic.In);
 
-  spinEgg['onUpdate'](function() {
+  spinEgg.onUpdate(function() {
     var translate = 'translateX(' + this['translateX'] + 'px) ';
         translate += 'translateY(' + this['translateY'] + 'px) ';
         translate += 'rotate(' + (-1 * this['rotate']) + 'deg) ';

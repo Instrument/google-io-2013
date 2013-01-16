@@ -119,7 +119,7 @@ ww.mode.SongMode.prototype.beginSound = function(id, loop) {
 
   var ripples = this.ripples[id];
   var ripple, delay = 0;
-  var duration = ~~self.source['buffer']['duration'];
+  var duration = ~~self.source.buffer.duration;
   
   for (var i = 0, l = ripples.length; i < l; i++) {
     ripple = ripples[i];
@@ -127,18 +127,18 @@ ww.mode.SongMode.prototype.beginSound = function(id, loop) {
     (function(ripple, delay) {
       var startDuration = duration * 0.4 * 1000,
           endDuration = duration * 0.3 * 1000;
-      var rippleOut = new TWEEN['Tween']({ 'scale': 1, 'opacity': 1 });
-          rippleOut['to']({ 'scale': 1.75, 'opacity': 0.05 }, startDuration);
-          rippleOut['delay'](delay);
-          rippleOut['onUpdate'](function() {
+      var rippleOut = new TWEEN.Tween({ 'scale': 1, 'opacity': 1 });
+          rippleOut.to({ 'scale': 1.75, 'opacity': 0.05 }, startDuration);
+          rippleOut.delay(delay);
+          rippleOut.onUpdate(function() {
             self.transformElem_(ripple, 'scale(' + this['scale'] + ')');
             ripple.style.opacity = this['opacity'];
           });
 
-      var rippleIn = new TWEEN['Tween']({ 'scale': 1.75, 'opacity': 0.05 });
-          rippleIn['to']({ 'scale': 1, 'opacity': 1 }, endDuration);
-          rippleIn['delay'](delay + startDuration);
-          rippleIn['onUpdate'](function() {
+      var rippleIn = new TWEEN.Tween({ 'scale': 1.75, 'opacity': 0.05 });
+          rippleIn.to({ 'scale': 1, 'opacity': 1 }, endDuration);
+          rippleIn.delay(delay + startDuration);
+          rippleIn.onUpdate(function() {
             self.transformElem_(ripple, 'scale(' + this['scale'] + ')');
             ripple.style.opacity = this['opacity'];
           });

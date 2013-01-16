@@ -113,14 +113,14 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
 
     pre = this.utilAdd_(ball['point'], ball['vector']);
 
-    if (pre['x'] < ball['radius'] ||
-        pre['x'] > size['width'] - ball['radius']) {
+    if (pre['x'] < ball.radius ||
+        pre['x'] > size['width'] - ball.radius) {
 
       ball['vector']['x'] *= -1 * ball['dampen'];
     }
 
-    if (pre['y'] < ball['radius'] ||
-        pre['y'] > size['height'] - ball['radius']) {
+    if (pre['y'] < ball.radius ||
+        pre['y'] > size['height'] - ball.radius) {
 
       if (Math.abs(ball['vector']['x']) < 3) {
         ball['vector'] = paper['Point']['random']();
@@ -132,10 +132,10 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
     }
 
     var ballAndVect = this.utilAdd_(ball['point'], ball['vector']);
-    var max = paper['Point']['max'](ball['radius'], ballAndVect);
+    var max = paper['Point']['max'](ball.radius, ballAndVect);
 
 
-    ball['point'] = paper['Point']['min'](max, size['width'] - ball['radius']);
+    ball['point'] = paper['Point']['min'](max, size['width'] - ball.radius);
 
     ball['position'] = ball['point'];
     ball['rotate'](ball['vector']['x'] / 2);
@@ -201,7 +201,7 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(max) {
     ball['dampen'] = 0.4;
     ball['gravity'] = 3;
     ball['bounce'] = -0.6;
-    ball['radius'] = radius;
+    ball.radius = radius;
 
     balls.push(ball);
   }
@@ -238,29 +238,25 @@ ww.mode.PinataMode.prototype.popBalls_ = function() {
     var deg = ~~Random(10, 45);
     var dir = (this.hitCount % 2 === 0) ? -1 : 1;
     var duration = 150;
-    var wiggleOne = new TWEEN['Tween'](
-      { 'deg': 0 })['to'](
-      { 'deg': dir * deg }, duration)['onUpdate'](
-        function() {
-          self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
-        }
-    );
+    var wiggleOne = new TWEEN.Tween({ 'deg': 0 });
+    wiggleOne.to({ 'deg': dir * deg }, duration);
+    wiggleOne.onUpdate(function() {
+      self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
+    });
 
-    var wiggleTwo = new TWEEN['Tween'](
-      { 'deg': dir * deg })['to'](
-      { 'deg': -1 * dir * deg }, duration)['delay'](duration)['onUpdate'](
-        function() {
-          self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
-        }
-    );
+    var wiggleTwo = new TWEEN.Tween({ 'deg': dir * deg });
+    wiggleTwo.to({ 'deg': -1 * dir * deg }, duration);
+    wiggleTwo.delay(duration);
+    wiggleTwo.onUpdate(function() {
+      self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
+    });
 
-    var wiggleBack = new TWEEN['Tween'](
-      { 'deg': -1 * dir * deg })['to'](
-      { 'deg': 0 }, duration)['delay'](duration * 2)['onUpdate'](
-        function() {
-          self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
-        }
-    );
+    var wiggleBack = new TWEEN.Tween({ 'deg': -1 * dir * deg });
+    wiggleBack.to({ 'deg': 0 }, duration);
+    wiggleBack.delay(duration * 2);
+    wiggleBack.onUpdate(function() {
+      self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
+    });
 
     self.addTween(wiggleOne);
     self.addTween(wiggleTwo);

@@ -2,8 +2,8 @@ goog.provide('ww.app');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
-goog.require('ww.util');
 goog.require('ww.raf');
+goog.require('ww.util');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -27,8 +27,8 @@ ww.app.Core = function() {
 };
 
 ww.app.Core.prototype.renderFrame_ = function(delta) {
-  if (TWEEN['update']()) {
-    // ww.raf.unsubscribe('app');
+  if (!TWEEN.update()) {
+    ww.raf.unsubscribe('app');
   }
 };
 
@@ -103,31 +103,31 @@ ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
       
       var startX = reverse ? -self.width_ : self.width_;
 
-      mode.iframe.style[self.transformKey_] = "translateX(" + startX + "px)";
+      mode.iframe.style[self.transformKey_] = 'translateX(' + startX + 'px)';
       mode.iframe.style.visibility = 'visible';
 
       setTimeout(function() {
-        var t2 = new TWEEN["Tween"]({ 'translateX': startX });
-        t2['to']({ 'translateX': 0 }, 400);
-        t2['onUpdate'](function() {
-          mode.iframe.style[self.transformKey_] = "translateX(" + this['translateX'] + "px)";
+        var t2 = new TWEEN.Tween({ 'translateX': startX });
+        t2.to({ 'translateX': 0 }, 400);
+        t2.onUpdate(function() {
+          mode.iframe.style[self.transformKey_] = 'translateX(' + this['translateX'] + 'px)';
         });
-        t2['onComplete'](function() {
+        t2.onComplete(function() {
           currentFrame.style.pointerEvents = 'auto';
         });
-        t2['start']();
+        t2.start();
 
         if (currentFrame) {
           var endX = -startX;
-          var t = new TWEEN["Tween"]({ 'translateX': 0 });
-          t['to']({ 'translateX': endX }, 400);
-          t['onUpdate'](function() {
-            currentFrame.style[self.transformKey_] = "translateX(" + this['translateX'] + "px)";
+          var t = new TWEEN.Tween({ 'translateX': 0 });
+          t.to({ 'translateX': endX }, 400);
+          t.onUpdate(function() {
+            currentFrame.style[self.transformKey_] = 'translateX(' + this['translateX'] + 'px)';
           });
-          t['onComplete'](function() {
+          t.onComplete(function() {
             currentFrame.style.visibility = 'hidden';
           });
-          t['start']();
+          t.start();
         }
 
         ww.raf.subscribe('app', self, self.renderFrame_);
@@ -174,7 +174,7 @@ ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
   mode.iframe = iFrameElem;
 };
 
-window['jQuery'](function() {
-	var app = new ww.app.Core();
-	app.start();
+$(function() {
+  var app = new ww.app.Core();
+  app.start();
 });

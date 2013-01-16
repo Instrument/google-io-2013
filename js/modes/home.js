@@ -25,7 +25,7 @@ ww.mode.HomeMode = function() {
    * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
    * bypass: the value 1 starts the effect as bypassed, 0 or 1
    */
-  this.delay_ = new this.tuna_['Delay']({
+  this.delay_ = new this.tuna_.Delay({
     feedback: 0,
     delayTime: 0,
     wetLevel: 0,
@@ -42,7 +42,7 @@ ww.mode.HomeMode = function() {
    * dryLevel: 0 to 1+
    * bypass: the value 1 starts the effect as bypassed, 0 or 1
    */
-  this.chorus_ = new this.tuna_['Chorus']({
+  this.chorus_ = new this.tuna_.Chorus({
     rate: 0.01,
     feedback: 0.2,
     delay: 0,
@@ -73,11 +73,11 @@ ww.mode.HomeMode.prototype.playProcessedAudio_ = function(filename, filter) {
   var self = this;
 
   this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext['createBufferSource']();
-    source['buffer'] = buffer;
-    source['connect'](filter['input']);
-    filter['connect'](audioContext['destination']);
-    source['noteOn'](0);
+    var source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(filter.input);
+    filter.connect(audioContext.destination);
+    source.noteOn(0);
   });
 };
 
@@ -623,6 +623,7 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.oMultiplier_ = 1;
     }
 
+    // TODO: externs Tuna.Delay.prototype.feedback
     this.delay_['feedback'] = this.oMultiplier_ / 10;
 
     /*

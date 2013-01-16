@@ -20,7 +20,7 @@ ww.mode.SpaceMode = function() {
    * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
    * bypass: the value 1 starts the effect as bypassed, 0 or 1
    */
-  this.delay_ = new this.tuna_['Delay']({
+  this.delay_ = new this.tuna_.Delay({
     feedback: 0,
     delayTime: 0,
     wetLevel: 0,
@@ -37,7 +37,7 @@ ww.mode.SpaceMode = function() {
    * dryLevel: 0 to 1+
    * bypass: the value 1 starts the effect as bypassed, 0 or 1
    */
-  this.chorus_ = new this.tuna_['Chorus']({
+  this.chorus_ = new this.tuna_.Chorus({
     rate: 0.01,
     feedback: 0.2,
     delay: 0,
@@ -68,11 +68,11 @@ ww.mode.SpaceMode.prototype.playProcessedAudio_ = function(filename, filter) {
   var self = this;
 
   this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext['createBufferSource']();
-    source['buffer'] = buffer;
-    source['connect'](filter['input']);
-    filter['connect'](audioContext['destination']);
-    source['noteOn'](0);
+    var source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(filter.input);
+    filter.connect(audioContext.destination);
+    source.noteOn(0);
   });
 };
 
@@ -345,24 +345,24 @@ ww.mode.SpaceMode.prototype.init = function() {
    * Create a star field.
    */
   this.world_ = this.getPhysicsWorld_();
-  this.world_['viscosity'] = 0;
+  this.world_.viscosity = 0;
 
   for (i = 0; i < 500; i++) {
     this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
-    this.world_['particles'].push(new Particle());
+    this.world_.particles.push(new Particle());
 
-    this.world_['particles'][i]['setRadius'](
+    this.world_.particles[i].setRadius(
       Math.random() * (2 - 0.1) + 0.1);
 
-    this.world_['particles'][i]['pos']['x'] = this.tempFloat_[0] *
+    this.world_.particles[i].pos.x = this.tempFloat_[0] *
       this.width_;
 
-    this.world_['particles'][i]['pos']['y'] = this.tempFloat_[1] *
+    this.world_.particles[i].pos.y = this.tempFloat_[1] *
       this.height_;
 
-    this.world_['particles'][i]['vel']['x'] = 0;
-    this.world_['particles'][i]['vel']['y'] = 0;
+    this.world_.particles[i].vel.x = 0;
+    this.world_.particles[i].vel.y = 0;
   }
 
   // Prep paperjs
@@ -496,13 +496,13 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   var i;
 
   if (this.world_) {
-    for (i = 0; i < this.world_['particles'].length; i++) {
+    for (i = 0; i < this.world_.particles.length; i++) {
       this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
-      this.world_['particles'][i]['pos']['x'] = this.tempFloat_[0] *
+      this.world_.particles[i].pos.x = this.tempFloat_[0] *
         this.width_;
 
-      this.world_['particles'][i]['pos']['y'] = this.tempFloat_[1] *
+      this.world_.particles[i].pos.y = this.tempFloat_[1] *
         this.height_;
     }
   }
@@ -568,31 +568,31 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   var i;
 
   // Move star positions right and also adjust them based on mouse position.
-  for (i = 0; i < this.world_['particles'].length; i++) {
-    this.world_['particles'][i]['pos']['x'] +=
+  for (i = 0; i < this.world_.particles.length; i++) {
+    this.world_.particles[i].pos.x +=
       (this.screenCenterX_ - this.mouseX_) /
-      (5000 / this.world_['particles'][i]['radius']) + .1;
+      (5000 / this.world_.particles[i].radius) + .1;
 
-    if (this.world_['particles'][i]['pos']['x'] > this.width_ * 2) {
-      this.world_['particles'][i]['pos']['x'] =
-        -this.world_['particles'][i]['radius'] * 10;
-    } else if (this.world_['particles'][i]['pos']['x'] <
+    if (this.world_.particles[i].pos.x > this.width_ * 2) {
+      this.world_.particles[i].pos.x =
+        -this.world_.particles[i].radius * 10;
+    } else if (this.world_.particles[i].pos.x <
       -this.width_ * 2) {
-        this.world_['particles'][i]['pos']['x'] =
-          this.width_ + this.world_['particles'][i]['radius'] * 10;
+        this.world_.particles[i].pos.x =
+          this.width_ + this.world_.particles[i].radius * 10;
     }
 
-    this.world_['particles'][i]['pos']['y'] +=
+    this.world_.particles[i].pos.y +=
       (this.screenCenterY_ - this.mouseY_) /
-      (5000 / this.world_['particles'][i]['radius']);
+      (5000 / this.world_.particles[i].radius);
 
-    if (this.world_['particles'][i]['pos']['y'] > this.height_ * 2) {
-      this.world_['particles'][i]['pos']['y'] =
-        -this.world_['particles'][i]['radius'] * 10;
-    } else if (this.world_['particles'][i]['pos']['y'] <
+    if (this.world_.particles[i].pos.y > this.height_ * 2) {
+      this.world_.particles[i].pos.y =
+        -this.world_.particles[i].radius * 10;
+    } else if (this.world_.particles[i].pos.y <
       -this.height_ * 2) {
-        this.world_['particles'][i]['pos']['y'] =
-          this.width_ + this.world_['particles'][i]['radius'] * 10;
+        this.world_.particles[i].pos.y =
+          this.width_ + this.world_.particles[i].radius * 10;
     }
   }
 
@@ -614,10 +614,10 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
   this.ctx_.beginPath();
 
-  for (i = 0; i < this.world_['particles'].length; i++) {
-    this.ctx_.arc(this.world_['particles'][i]['pos']['x'],
-      this.world_['particles'][i]['pos']['y'],
-      this.world_['particles'][i]['radius'], 0, Math.PI * 2);
+  for (i = 0; i < this.world_.particles.length; i++) {
+    this.ctx_.arc(this.world_.particles[i].pos.x,
+      this.world_.particles[i].pos.y,
+      this.world_.particles[i].radius, 0, Math.PI * 2);
   }
 
   this.ctx_.fill();
