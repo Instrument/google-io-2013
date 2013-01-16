@@ -321,7 +321,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
 
   var tool = new paper['Tool']();
 
