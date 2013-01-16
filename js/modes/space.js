@@ -110,8 +110,8 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.i_X = this.screenCenterX_ - this.iWidth_ * 1.5;
-  this.i_Y = this.screenCenterY_ - this.iHeight_ / 2;
+  this.ix = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iy = this.screenCenterY_ - this.iHeight_ / 2;
 
   if (!this.paperI_) {
 
@@ -131,7 +131,7 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     this.iPaths_ = [];
 
     // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.i_X, this.i_Y);
+    var iTopLeft = new paper['Point'](this.ix, this.iy);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
     this.letterI_ = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](this.letterI_);
@@ -176,10 +176,10 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
 
       for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
         this.iPathsX_[this.i_].push(
-          this.iPaths_[this.i_]['segments'][altI]['point']['_x']);
+          this.iPaths_[this.i_]['segments'][altI]['point']['x']);
 
         this.iPathsY_[this.i_].push(
-          this.iPaths_[this.i_]['segments'][altI]['point']['_y']);
+          this.iPaths_[this.i_]['segments'][altI]['point']['y']);
       }
     }
 
@@ -188,19 +188,19 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     // Restore the coordinates for I's path points before resizing
     for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
       for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
-        this.iPaths_[this.i_]['segments'][altI]['point']['_x'] =
+        this.iPaths_[this.i_]['segments'][altI]['point']['x'] =
           this.iPathsX_[this.i_][altI];
 
-        this.iPaths_[this.i_]['segments'][altI]['point']['_y'] =
+        this.iPaths_[this.i_]['segments'][altI]['point']['y'] =
           this.iPathsY_[this.i_][altI];
       }
     }
 
     // Change the position based on new screen size values.
-    this.iGroup_['position'] = {x: this.i_X + this.iWidth_ / 2,
-      y: this.i_Y + this.iHeight_ / 2};
-    this.paperI_['position'] = {x: this.i_X + this.iWidth_ / 2,
-      y: this.i_Y + this.iHeight_ / 2};
+    this.iGroup_['position'] = {x: this.ix + this.iWidth_ / 2,
+      y: this.iy + this.iHeight_ / 2};
+    this.paperI_['position'] = {x: this.ix + this.iWidth_ / 2,
+      y: this.iy + this.iHeight_ / 2};
 
     // Change the scale based on new screen size values.
     this.iGroup_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
@@ -210,10 +210,10 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
       for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
         this.iPathsX_[this.i_][altI] =
-          this.iPaths_[this.i_]['segments'][altI]['point']['_x'];
+          this.iPaths_[this.i_]['segments'][altI]['point']['x'];
 
         this.iPathsY_[this.i_][altI] =
-          this.iPaths_[this.i_]['segments'][altI]['point']['_y'];
+          this.iPaths_[this.i_]['segments'][altI]['point']['y'];
       }
     }
   } else {
@@ -303,10 +303,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
       this.oPathsY_[this.i_] = [];
       for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
         this.oPathsX_[this.i_].push(
-          this.oPaths_[this.i_]['segments'][altI]['point']['_x']);
+          this.oPaths_[this.i_]['segments'][altI]['point']['x']);
 
         this.oPathsY_[this.i_].push(
-          this.oPaths_[this.i_]['segments'][altI]['point']['_y']);
+          this.oPaths_[this.i_]['segments'][altI]['point']['y']);
       }
     }
 
@@ -315,10 +315,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
     // Restore the original coordinates for O's path points before resizing.
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
-        this.oPaths_[this.i_]['segments'][altI]['point']['_x'] =
+        this.oPaths_[this.i_]['segments'][altI]['point']['x'] =
           this.oPathsX_[this.i_][altI];
 
-        this.oPaths_[this.i_]['segments'][altI]['point']['_y'] =
+        this.oPaths_[this.i_]['segments'][altI]['point']['y'] =
           this.oPathsY_[this.i_][altI];
       }
     }
@@ -335,10 +335,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
         this.oPathsX_[this.i_][altI] =
-          this.oPaths_[this.i_]['segments'][altI]['point']['_x'];
+          this.oPaths_[this.i_]['segments'][altI]['point']['x'];
 
         this.oPathsY_[this.i_][altI] =
-          this.oPaths_[this.i_]['segments'][altI]['point']['_y'];
+          this.oPaths_[this.i_]['segments'][altI]['point']['y'];
       }
     }
   }
@@ -356,7 +356,7 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
       this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728));
 
-    this.slashEnd_ = new paper['Point'](this.i_X + this.iWidth_,
+    this.slashEnd_ = new paper['Point'](this.ix + this.iWidth_,
       this.screenCenterY_ + (this.iHeight_ / 2) +
       ((this.iHeight_ * 1.5) * 0.17475728));
 
@@ -373,7 +373,7 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728);
 
-    this.slashEnd_['x'] = this.i_X + this.iWidth_;
+    this.slashEnd_['x'] = this.ix + this.iWidth_;
     this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
       ((this.iHeight_ * 1.5) * 0.17475728);
 
@@ -685,52 +685,52 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
       this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
-      this.iPaths_[this.i_]['segments'][0]['point']['_x'] =
+      this.iPaths_[this.i_]['segments'][0]['point']['x'] =
         this.iPathsX_[this.i_][0] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['_x'] - this.iPathsX_[this.i_][0])) *
+        (this.iGroup_['position']['x'] - this.iPathsX_[this.i_][0])) *
         this.iModifier_ * this.iMultiplier_;
 
-      this.iPaths_[this.i_]['segments'][0]['point']['_y'] =
+      this.iPaths_[this.i_]['segments'][0]['point']['y'] =
         this.iPathsY_[this.i_][0] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['_y'] - this.iPathsY_[this.i_][0])) *
+        (this.iGroup_['position']['y'] - this.iPathsY_[this.i_][0])) *
         this.iModifier_ * this.iMultiplier_ * this.tempFloat_[0];
 
-      this.iPaths_[this.i_]['segments'][1]['point']['_x'] =
+      this.iPaths_[this.i_]['segments'][1]['point']['x'] =
         this.iPathsX_[this.i_][1] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['_x'] - this.iPathsX_[this.i_][1])) *
+        (this.iGroup_['position']['x'] - this.iPathsX_[this.i_][1])) *
         this.iModifier_ * this.iMultiplier_;
 
-      this.iPaths_[this.i_]['segments'][1]['point']['_y'] =
+      this.iPaths_[this.i_]['segments'][1]['point']['y'] =
         this.iPathsY_[this.i_][1] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['_y'] - this.iPathsY_[this.i_][1])) *
+        (this.iGroup_['position']['y'] - this.iPathsY_[this.i_][1])) *
         this.iModifier_ * this.iMultiplier_;
 
-      this.iPaths_[this.i_]['segments'][2]['point']['_x'] =
+      this.iPaths_[this.i_]['segments'][2]['point']['x'] =
         this.iPathsX_[this.i_][2] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['_x'] - this.iPathsX_[this.i_][2])) *
+        (this.iGroup_['position']['x'] - this.iPathsX_[this.i_][2])) *
         this.iModifier_ * this.iMultiplier_;
 
-      this.iPaths_[this.i_]['segments'][2]['point']['_y'] =
+      this.iPaths_[this.i_]['segments'][2]['point']['y'] =
         this.iPathsY_[this.i_][2] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['_y'] - this.iPathsY_[this.i_][2])) *
+        (this.iGroup_['position']['y'] - this.iPathsY_[this.i_][2])) *
         this.iModifier_ * this.iMultiplier_;
 
-      this.iPaths_[this.i_]['segments'][3]['point']['_x'] =
+      this.iPaths_[this.i_]['segments'][3]['point']['x'] =
         this.iPathsX_[this.i_][3] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['_x'] - this.iPathsX_[this.i_][3])) *
+        (this.iGroup_['position']['x'] - this.iPathsX_[this.i_][3])) *
         this.iModifier_ * this.iMultiplier_;
 
-      this.iPaths_[this.i_]['segments'][3]['point']['_y'] =
+      this.iPaths_[this.i_]['segments'][3]['point']['y'] =
         this.iPathsY_[this.i_][3] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.iGroup_['position']['_y'] - this.iPathsY_[this.i_][3])) *
+        (this.iGroup_['position']['y'] - this.iPathsY_[this.i_][3])) *
         this.iModifier_ * this.iMultiplier_ * this.tempFloat_[1];
 
       this.iPaths_[this.i_]['smooth']();
@@ -742,10 +742,10 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
      */
     for (this.i_ = 0; this.i_ < this.iPaths_.length; this.i_++) {
       for (altI = 0; altI < this.iPaths_[this.i_]['segments'].length; altI++) {
-        this.iPaths_[this.i_]['segments'][altI]['_x'] =
+        this.iPaths_[this.i_]['segments'][altI]['x'] =
           this.iPathsX_[this.i_][altI];
 
-        this.iPaths_[this.i_]['segments'][altI]['_y'] =
+        this.iPaths_[this.i_]['segments'][altI]['y'] =
           this.iPathsY_[this.i_][altI];
       }
     }
@@ -798,52 +798,52 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
-      this.oPaths_[this.i_]['segments'][0]['point']['_x'] =
+      this.oPaths_[this.i_]['segments'][0]['point']['x'] =
         this.oPathsX_[this.i_][0] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][0])) *
+        (this.oGroup_['position']['x'] - this.oPathsX_[this.i_][0])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][0]['point']['_y'] =
+      this.oPaths_[this.i_]['segments'][0]['point']['y'] =
         this.oPathsY_[this.i_][0] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][0])) *
+        (this.oGroup_['position']['y'] - this.oPathsY_[this.i_][0])) *
         this.oModifier_ * this.oMultiplier_ * this.tempFloat_[0];
 
-      this.oPaths_[this.i_]['segments'][1]['point']['_x'] =
+      this.oPaths_[this.i_]['segments'][1]['point']['x'] =
         this.oPathsX_[this.i_][1] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][1])) *
+        (this.oGroup_['position']['x'] - this.oPathsX_[this.i_][1])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][1]['point']['_y'] =
+      this.oPaths_[this.i_]['segments'][1]['point']['y'] =
         this.oPathsY_[this.i_][1] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][1])) *
+        (this.oGroup_['position']['y'] - this.oPathsY_[this.i_][1])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][2]['point']['_x'] =
+      this.oPaths_[this.i_]['segments'][2]['point']['x'] =
         this.oPathsX_[this.i_][2] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][2])) *
+        (this.oGroup_['position']['x'] - this.oPathsX_[this.i_][2])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][2]['point']['_y'] =
+      this.oPaths_[this.i_]['segments'][2]['point']['y'] =
         this.oPathsY_[this.i_][2] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][2])) *
+        (this.oGroup_['position']['y'] - this.oPathsY_[this.i_][2])) *
         this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][3]['point']['_x'] =
+      this.oPaths_[this.i_]['segments'][3]['point']['x'] =
         this.oPathsX_[this.i_][3] +
         Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][3])) *
-        this.oModifier_ * this.oMultiplier_ ;
+        (this.oGroup_['position']['x'] - this.oPathsX_[this.i_][3])) *
+        this.oModifier_ * this.oMultiplier_;
 
-      this.oPaths_[this.i_]['segments'][3]['point']['_y'] =
+      this.oPaths_[this.i_]['segments'][3]['point']['y'] =
         this.oPathsY_[this.i_][3] +
         Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][3])) *
+        (this.oGroup_['position']['y'] - this.oPathsY_[this.i_][3])) *
         this.oModifier_ * this.oMultiplier_ * this.tempFloat_[1];
 
       this.oPaths_[this.i_]['smooth']();
@@ -855,10 +855,10 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
      */
     for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
       for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
-        this.oPaths_[this.i_]['segments'][altI]['_x'] =
+        this.oPaths_[this.i_]['segments'][altI]['x'] =
           this.oPathsX_[this.i_][altI];
 
-        this.oPaths_[this.i_]['segments'][altI]['_y'] =
+        this.oPaths_[this.i_]['segments'][altI]['y'] =
           this.oPathsY_[this.i_][altI];
       }
     }

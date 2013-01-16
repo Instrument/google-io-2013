@@ -256,12 +256,12 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
     this.i_PointY_ = [];
 
     for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
-      this.i_PointX.push(this.paperI_['segments'][this.i_]['point']['_x']);
-      this.i_PointY_.push(this.paperI_['segments'][this.i_]['point']['_y']);
+      this.i_PointX.push(this.paperI_['segments'][this.i_]['point']['x']);
+      this.i_PointY_.push(this.paperI_['segments'][this.i_]['point']['y']);
     }
 
   // Run if drawI_() is called and drawI_(true) has also already been called.
-  } else if (this.paperI_) {
+  } else {
     // Change the position based on new screen size values.
     this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
       y: this.iY_ + this.iHeight_ / 2};
@@ -272,13 +272,11 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
     // Store the coordinates for the newly moved and scaled control points.
     for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
       this.i_PointX[this.i_] =
-        this.paperI_['segments'][this.i_]['point']['_x'];
+        this.paperI_['segments'][this.i_]['point']['x'];
 
       this.i_PointY_[this.i_] =
-        this.paperI_['segments'][this.i_]['point']['_y'];
+        this.paperI_['segments'][this.i_]['point']['y'];
     }
-  } else {
-    return;
   }
 };
 
@@ -311,45 +309,43 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 
     // Store the coordinates for O's path points and handles
     for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.oPointX_.push(this.paperO_['segments'][this.i_]['point']['_x']);
-      this.oPointY_.push(this.paperO_['segments'][this.i_]['point']['_y']);
+      this.oPointX_.push(this.paperO_['segments'][this.i_]['point']['x']);
+      this.oPointY_.push(this.paperO_['segments'][this.i_]['point']['y']);
 
       this.oHandleInX_.push(
-        this.paperO_['segments'][this.i_]['handleIn']['_x']);
+        this.paperO_['segments'][this.i_]['handleIn']['x']);
 
       this.oHandleInY_.push(
-        this.paperO_['segments'][this.i_]['handleIn']['_y']);
+        this.paperO_['segments'][this.i_]['handleIn']['y']);
 
       this.oHandleOutX_.push(
-        this.paperO_['segments'][this.i_]['handleOut']['_x']);
+        this.paperO_['segments'][this.i_]['handleOut']['x']);
 
       this.oHandleOutY_.push(
-        this.paperO_['segments'][this.i_]['handleOut']['_y']);
+        this.paperO_['segments'][this.i_]['handleOut']['y']);
     }
 
   // Run if drawO_() is called and drawO_(true) has also already been called.
-  } else if (this.paperO_) {
+  } else {
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
     this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
 
     for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.oPointX_[this.i_] = this.paperO_['segments'][this.i_]['point']['_x'];
-      this.oPointY_[this.i_] = this.paperO_['segments'][this.i_]['point']['_y'];
+      this.oPointX_[this.i_] = this.paperO_['segments'][this.i_]['point']['x'];
+      this.oPointY_[this.i_] = this.paperO_['segments'][this.i_]['point']['y'];
 
       this.oHandleInX_[this.i_] =
-        this.paperO_['segments'][this.i_]['handleIn']['_x'];
+        this.paperO_['segments'][this.i_]['handleIn']['x'];
 
       this.oHandleInY_[this.i_] =
-        this.paperO_['segments'][this.i_]['handleIn']['_y'];
+        this.paperO_['segments'][this.i_]['handleIn']['y'];
 
       this.oHandleOutX_[this.i_] =
-        this.paperO_['segments'][this.i_]['handleOut']['_x'];
+        this.paperO_['segments'][this.i_]['handleOut']['x'];
 
       this.oHandleOutY_[this.i_] =
-        this.paperO_['segments'][this.i_]['handleOut']['_y'];
+        this.paperO_['segments'][this.i_]['handleOut']['y'];
     }
-  } else {
-    return;
   }
 };
 
@@ -377,7 +373,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
 
   // Run if drawSlash_() is called and drawSlash(true) has already been called.
-  } else if (this.paperSlash_) {
+  } else {
     this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728);
@@ -390,8 +386,6 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
 
     this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
-  } else {
-    return;
   }
 };
 
@@ -570,11 +564,11 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
       this.tempFloat = ww.util.floatComplexGaussianRandom();
 
-      this.paperI_['segments'][this.i_]['point']['_x'] =
+      this.paperI_['segments'][this.i_]['point']['x'] =
         this.i_PointX[this.i_] + Math.cos(this.framesRendered_ / 10) *
         this.iModifier_ * this.iMultiplier_ * this.tempFloat[0];
 
-      this.paperI_['segments'][this.i_]['point']['_y'] =
+      this.paperI_['segments'][this.i_]['point']['y'] =
         this.i_PointY_[this.i_] +
         Math.sin(this.framesRendered_ / 10) * this.iModifier_ *
         this.iMultiplier_ * this.tempFloat[1];
@@ -585,10 +579,10 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
      * coordinates.
      */
     for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.paperI_['segments'][this.i_]['point']['_x'] =
+      this.paperI_['segments'][this.i_]['point']['x'] =
         this.i_PointX[this.i_];
 
-      this.paperI_['segments'][this.i_]['point']['_y'] =
+      this.paperI_['segments'][this.i_]['point']['y'] =
         this.i_PointY_[this.i_];
     }
   }
@@ -638,27 +632,27 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
       this.tempFloat = ww.util.floatComplexGaussianRandom();
 
-      this.paperO_['segments'][this.i_]['handleIn']['_x'] =
+      this.paperO_['segments'][this.i_]['handleIn']['x'] =
         this.oHandleInX_[this.i_] + Math.cos(this.framesRendered_ / 10 *
         this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
 
-      this.paperO_['segments'][this.i_]['handleIn']['_y'] =
+      this.paperO_['segments'][this.i_]['handleIn']['y'] =
         this.oHandleInY_[this.i_] + Math.sin(this.framesRendered_ / 10 *
         this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
 
-      this.paperO_['segments'][this.i_]['handleOut']['_x'] =
+      this.paperO_['segments'][this.i_]['handleOut']['x'] =
         this.oHandleOutX_[this.i_] - Math.cos(this.framesRendered_ / 10 *
           this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
 
-      this.paperO_['segments'][this.i_]['handleOut']['_y'] =
+      this.paperO_['segments'][this.i_]['handleOut']['y'] =
         this.oHandleOutY_[this.i_] - Math.sin(this.framesRendered_ / 10 *
         this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
 
-      this.paperO_['segments'][this.i_]['point']['_x'] =
+      this.paperO_['segments'][this.i_]['point']['x'] =
         this.oPointX_[this.i_] - Math.sin(this.framesRendered_ / 10 *
         this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
 
-      this.paperO_['segments'][this.i_]['point']['_y'] =
+      this.paperO_['segments'][this.i_]['point']['y'] =
         this.oPointY_[this.i_] - Math.cos(this.framesRendered_ / 10 *
         this.tempFloat[0]) * this.oModifier_ * this.oMultiplier_;
     }
@@ -668,18 +662,18 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
      * coordinates.
      */
     for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.paperO_['segments'][this.i_]['handleIn']['_x'] =
+      this.paperO_['segments'][this.i_]['handleIn']['x'] =
         this.oHandleInX_[this.i_];
-      this.paperO_['segments'][this.i_]['handleIn']['_y'] =
+      this.paperO_['segments'][this.i_]['handleIn']['y'] =
         this.oHandleInY_[this.i_];
 
-      this.paperO_['segments'][this.i_]['handleOut']['_x'] =
+      this.paperO_['segments'][this.i_]['handleOut']['x'] =
         this.oHandleOutX_[this.i_];
-      this.paperO_['segments'][this.i_]['handleOut']['_y'] =
+      this.paperO_['segments'][this.i_]['handleOut']['y'] =
         this.oHandleOutY_[this.i_];
 
-      this.paperO_['segments'][this.i_]['point']['_x'] = this.oPointX_[this.i_];
-      this.paperO_['segments'][this.i_]['point']['_y'] = this.oPointY_[this.i_];
+      this.paperO_['segments'][this.i_]['point']['x'] = this.oPointX_[this.i_];
+      this.paperO_['segments'][this.i_]['point']['y'] = this.oPointY_[this.i_];
     }
   }
 };
