@@ -32,7 +32,7 @@ goog.inherits(ww.mode.SongMode, ww.mode.Core);
 ww.mode.SongMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  if (Modernizr['touch']) {
+  if (Modernizr.touch) {
     this.evtStart = 'touchstart.song';
     this.evtEnd = 'touchend.song';
   } else {

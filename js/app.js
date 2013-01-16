@@ -16,7 +16,7 @@ ww.app.Core = function() {
   this.width_ = 0;
   this.height_ = 0;
 
-  this.transformKey_ = Modernizr['prefixed']('transform');
+  this.transformKey_ = Modernizr.prefixed('transform');
 
   // TODO: Throttle
   var self = this;

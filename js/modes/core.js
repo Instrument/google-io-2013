@@ -18,7 +18,7 @@ window['AudioContext'] = (
  */
 ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   // Define transform prefix.
-  this.prefix_ = Modernizr['prefixed']('transform');
+  this.prefix_ = Modernizr.prefixed('transform');
 
   this.name_ = name;
 
@@ -63,11 +63,10 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
   // Catch top-level touch events and cancel them to avoid
   // mobile browser scroll.
-  if (Modernizr['touch']) {
-    document.body.style[Modernizr['prefixed']('userSelect')] = 'none';
-    document.body.style[Modernizr['prefixed']('userSelect')] = 'none';
-    document.body.style[Modernizr['prefixed']('userDrag')] = 'none';
-    document.body.style[Modernizr['prefixed']('tapHighlightColor')] = 'rgba(0,0,0,0)';
+  if (Modernizr.touch) {
+    document.body.style[Modernizr.prefixed('userSelect')] = 'none';
+    document.body.style[Modernizr.prefixed('userDrag')] = 'none';
+    document.body.style[Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
   }
 
   // $(document.body).addClass(this.name_ + '-mode');
@@ -143,7 +142,7 @@ ww.mode.Core.prototype.showReload = function() {
       this.$reloadModal_ = $("<div id='reload'></div>").appendTo(document.body);
     }
 
-    var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+    var evt = Modernizr.touch ? 'touchend' : 'mouseup';
 
     this.$reloadModal_.bind(evt + '.reload', function() {
       self.$reloadModal_.hide();
@@ -356,7 +355,7 @@ ww.mode.Core.prototype['focus'] = function() {
 ww.mode.Core.prototype.didFocus = function() {
   var self = this;
 
-  var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
 
   this.letterI.bind(evt + '.core', function() {
     self.activateI();
@@ -373,9 +372,9 @@ ww.mode.Core.prototype.didFocus = function() {
   }
 
   $(document).bind('keypress.core', function(e) {
-    if (e.keyCode === 105) {
+    if ((e.keyCode === 105) || (e.keyCode === 49)) {
       self.activateI();
-    } else if (e.keyCode === 111) {
+    } else if ((e.keyCode === 111) || (e.keyCode === 48)) {
       self.activateO();
     } else {
       return;
@@ -406,7 +405,7 @@ ww.mode.Core.prototype['unfocus'] = function() {
  * Event is called after a mode unfocused.
  */
 ww.mode.Core.prototype.didUnfocus = function() {
-  var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
 
   this.letterI.unbind(evt + '.core');
   this.letterO.unbind(evt + '.core');

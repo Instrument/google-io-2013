@@ -112,7 +112,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
   this.ctx_ = this.canvas_.getContext('2d');
 
   var self = this;
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
 
   this.$canvas_.bind(evt + '.pong', function(e) {
     e.preventDefault();
@@ -129,7 +129,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
 ww.mode.PongMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   this.$canvas_.unbind(evt + '.pong');
 };
 

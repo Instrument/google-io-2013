@@ -457,7 +457,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
   var self = this;
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
 
   var tool = new paper['Tool']();
 

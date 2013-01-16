@@ -21,7 +21,7 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   TWEEN['removeAll']();
 
-  if (Modernizr['touch']) {
+  if (Modernizr.touch) {
     this.evtStart = 'touchstart.simon';
     this.evtEnd = 'touchend.simon';
   } else {

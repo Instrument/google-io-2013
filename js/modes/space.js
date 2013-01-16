@@ -512,7 +512,7 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
     }
   };
 
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   $(document).bind(evt + '.space', function(e) {
     self.mouseX_ = e.pageX;
     self.mouseY_ = e.pageY;
@@ -525,7 +525,7 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
 ww.mode.SpaceMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   $(document).unbind(evt + '.space');
 };
 

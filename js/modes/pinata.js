@@ -23,7 +23,7 @@ ww.mode.PinataMode.prototype.init = function() {
 
   this.NUM_COLORS = this.COLORS_.length;
 
-  this.prefix = Modernizr['prefixed']('transform');
+  this.prefix = Modernizr.prefixed('transform');
 
   var self = this;
 
@@ -44,7 +44,7 @@ ww.mode.PinataMode.prototype.init = function() {
       this.deactive.push(temp);
     }
   } else {
-    this.deactive = this.prepopulate(200);
+    this.deactive = this.prepopulate_(200);
     this.active = [];
   }
 
@@ -63,7 +63,7 @@ ww.mode.PinataMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
   self.pinata.bind(evt + '.pinata', function() {
     self.popBalls_();
   });
@@ -76,7 +76,7 @@ ww.mode.PinataMode.prototype.didFocus = function() {
 ww.mode.PinataMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = Modernizr['touch'] ? 'touchend' : 'mouseup';
+  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
   this.pinata.unbind(evt + '.pinata');
 };
 
