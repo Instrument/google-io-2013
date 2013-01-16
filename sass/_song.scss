@@ -55,6 +55,20 @@ body {
       &.active {
         border-bottom-color: #959595;
       }
+
+      &#drumkit {
+        background: transparent image-url('song/drums.svg') no-repeat center center;
+        @include background-size(90% auto);
+        border-bottom: none;
+        @include border-radius(3px);
+        @include hide-text;
+        line-height: 1.95em;
+        width: 2em;
+
+        &.active {
+          background-color: #dcdcdc;
+        }
+      }
     }
   }
 }
