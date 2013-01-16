@@ -18,7 +18,7 @@ body {
 
 #code, #back {
   position: absolute;
-  top: 20px;
+  top: 2.5%;
   border: 1px solid #393939;
   height: 34px; 
   @include border-radius(17px);
@@ -33,13 +33,19 @@ body {
 #code {
   padding: 3px 5px 0 10px;
   line-height: 30px;
-  left: 20px;
+  left: 2%;
   pointer-events: none;
+  @include transition(left 200ms ease-out);
+
   .dark & {
+  }
+
+  @include iphone-landscape() {
+    left: -110%;
   }
 }
 #back {
-  right: 20px;
+  right: 2%;
   width: 34px;
   cursor: pointer;
   background-size: 16px 16px;
