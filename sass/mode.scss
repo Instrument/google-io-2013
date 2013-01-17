@@ -39,10 +39,6 @@ body {
 
   .dark & {
   }
-
-  @include iphone-landscape() {
-    left: -110%;
-  }
 }
 #back {
   right: 2%;
