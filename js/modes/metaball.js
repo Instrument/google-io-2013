@@ -1,5 +1,4 @@
 goog.require('ww.mode.Core');
-goog.require('ww.util');
 goog.provide('ww.mode.MetaBallMode');
 
 /**
@@ -133,8 +132,6 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function() {
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
-
-  
 };
 
 /**
@@ -142,44 +139,25 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function() {
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
-  // If no slash exists and the I and the O have been created.
-  if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
-    // Determine the slash's start and end coordinates based on I and O sizes.
-    this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
-      this.screenCenterY_ - (this.iHeight_ / 2) -
-      ((this.iHeight_ * 1.5) * 0.17475728));
+  // Determine the slash's start and end coordinates based on I and O sizes.
+  /*this.slashStart_ = this.screenCenterX_ + this.oRad_ / 8,
+    this.screenCenterY_ - (this.iHeight_ / 2) -
+    ((this.iHeight_ * 1.5) * 0.17475728);
 
-    this.slashEnd_ = new paper['Point'](this.ix + this.iWidth_,
-      this.screenCenterY_ + (this.iHeight_ / 2) +
-      ((this.iHeight_ * 1.5) * 0.17475728));
-
-    // Create a new paper.js path for the slash based on screen dimensions.
-    this.paperSlash_ = new paper['Path']();
-    this.paperSlash_['strokeWidth'] = 1;
-    this.paperSlash_['strokeColor'] = '#ebebeb';
-
-    this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
-  } else {
-    this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
-    this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
-      ((this.iHeight_ * 1.5) * 0.17475728);
-
-    this.slashEnd_['x'] = this.ix + this.iWidth_;
-    this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
-      ((this.iHeight_ * 1.5) * 0.17475728);
-
-    this.paperSlash_['segments'][0]['point'] = this.slashStart_;
-    this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
-  }
+  this.slashEnd_ = this.ix + this.iWidth_,
+    this.screenCenterY_ + (this.iHeight_ / 2) +
+    ((this.iHeight_ * 1.5) * 0.17475728);*/
 };
 
 /**
  * Function to initialize the current mode.
- * Requests a paper canvas and creates paths.
  * Sets initial variables.
  */
 ww.mode.MetaBallMode.prototype.init = function() {
   goog.base(this, 'init');
+
+  this.world_ = this.getPhysicsWorld_();
+  this.world_.viscosity = 0;
 
   this.ballCount_ = 1;
 
@@ -192,10 +170,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
    */
   this.mouseX_ = this.screenCenterX_;
   this.mouseY_ = this.screenCenterY_;
-
-  // Variable to store the screen coordinates of the last click/tap/touch.
-  this.lastClick =
-    new paper['Point'](this.screenCenterX_, this.screenCenterY_);
 };
 
 /**
@@ -204,7 +178,7 @@ ww.mode.MetaBallMode.prototype.init = function() {
 ww.mode.MetaBallMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
-  this.$canvas_ = $('#space-canvas');
+  this.$canvas_ = $('#metaball-canvas');
   this.canvas_ = this.$canvas_[0];
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
