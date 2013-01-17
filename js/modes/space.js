@@ -114,7 +114,6 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
   this.iy = this.screenCenterY_ - this.iHeight_ / 2;
 
   if (!this.paperI_) {
-
     // Initial variables for calculating path coordinates.
     var pathX;
     var pathY;
@@ -173,7 +172,6 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     // Store the coordinates for I's path points.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, true);
 
-  // Run if drawI_() is called and drawI_(true) has also already been called.
   } else if (this.paperI_) {
     // Restore the coordinates for I's path points before resizing.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, false);
@@ -208,7 +206,6 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
   this.oY_ = this.screenCenterY_;
 
   if (!this.paperO_) {
-
     // Initial variables for calculating circle angles.
     var pathX;
     var pathY;
@@ -275,7 +272,6 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
     // Store the coordinates for O's path points.
     this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, true);
 
-  // Run if drawO_() is called and drawO_(true) has also already been called.
   } else if (this.paperO_) {
     // Restore the original coordinates for O's path points before resizing.
     this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, false);
@@ -559,14 +555,14 @@ ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
 }
 
 ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
-  incrementer, multiplier, clicker) {
+  incrementer, multiplier, clicker, isI) {
 
   var delta1 = this.deltaModifier_ * 100;
   var delta2 = this.deltaModifier_ * 1000;
   var delta3 = this.deltaModifier_ * 10000;
     
     if (modifier < delta3 &&
-      incrementer == true) {
+      incrementer === true) {
         modifier += delta2;
     } else if (multiplier > 1) {
       if (modifier < delta3) {
@@ -592,6 +588,18 @@ ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
       incrementer = true;
       multiplier = 1;
     }
+
+  if (isI === true) {
+    this.iModifier_ = modifier;
+    this.iIncrement_ = incrementer;
+    this.iMultiplier_ = multiplier;
+    this.iClicked_ = clicker;
+  } else {
+    this.oModifier_ = modifier;
+    this.oIncrement_ = incrementer;
+    this.oMultiplier_ = multiplier;
+    this.oClicked_ = clicker;
+  }
 }
 
 /**
@@ -661,7 +669,6 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
           this.width_ + this.world_.particles[i].radius * 10;
     }
   }
-
 };
 
 /**
@@ -701,33 +708,8 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
    */
   if (this.iClicked_ == true) {
 
-    if (this.iModifier_ < this.deltaModifier_ * 10000 &&
-      this.iIncrement_ == true) {
-        this.iModifier_ += this.deltaModifier_ * 1000;
-    } else if (this.iMultiplier_ > 1) {
-      if (this.iModifier_ < this.deltaModifier_ * 10000) {
-        this.iModifier_ += this.deltaModifier_ * 100;
-      }
-      if (this.iMultiplier_ > 1) {
-        this.iMultiplier_ -= 0.1;
-      } else {
-        this.iMultiplier_ = 1;
-      }
-    } else {
-      this.iIncrement_ = false;
-      this.iModifier_ -= this.deltaModifier_ * 1000;
-      if (this.iMultiplier_ > 1) {
-        this.iMultiplier_ -= 0.1;
-      } else {
-        this.iMultiplier_ = 1;
-      }
-    }
-
-    if (this.iModifier_ < this.deltaModifier_ * 1000) {
-      this.iClicked_ = false;
-      this.iIncrement_ = true;
-      this.iMultiplier_ = 1;
-    }
+    this.adjustModifiers_(this.iModifier_, this.iIncrement_, this.iMultiplier_,
+      this.iClicked_, true);
 
     /*
      * Loop through each path segment on the letter I and move each point's
@@ -794,34 +776,8 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
    */
   if (this.oClicked_ === true) {
 
-    if (this.oModifier_ < this.deltaModifier_ * 10000 &&
-      this.oIncrement_ === true) {
-        this.oModifier_ += this.deltaModifier_ * 1000;
-    } else if (this.oMultiplier_ > 1) {
-      if (this.oModifier_ < this.deltaModifier_ * 10000) {
-        this.oModifier_ += this.deltaModifier_ * 10;
-      }
-      if (this.oMultiplier_ > 1) {
-        this.oMultiplier_ -= 0.1;
-      } else {
-        this.oMultiplier_ = 1;
-      }
-    } else {
-      this.oIncrement_ = false;
-      this.oModifier_ -= this.deltaModifier_ * 1000;
-      if (this.oMultiplier_ > 1) {
-        this.oMultiplier_ -= 0.1;
-      } else {
-        this.oMultiplier_ = 1;
-      }
-    }
-
-    // If oModifier drops too low, reset variables to their default state.
-    if (this.oModifier_ < this.deltaModifier_ * 1000) {
-      this.oClicked_ = false;
-      this.oIncrement_ = true;
-      this.oMultiplier_ = 1;
-    }
+    this.adjustModifiers_(this.oModifier_, this.oIncrement_, this.oMultiplier_,
+      this.oClicked_, false);
 
     this.delay_['feedback'] = this.oMultiplier_ / 10;
 

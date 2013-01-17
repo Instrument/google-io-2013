@@ -204,6 +204,7 @@ if (DEBUG_MODE) {
     containerElem.style.left = 0;
     containerElem.style.right = 0;
     containerElem.style.height = '1.5em';
+    containerElem.style.lineHeight = '1.5em';
     containerElem.style.background = 'rgba(0,0,0,0.2)';
     containerElem.style.zIndex = 20;
 
