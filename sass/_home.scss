@@ -34,7 +34,7 @@
   z-index: 1000;
   pointer-events: none;
   position: absolute;
-  bottom: 100px;
+  bottom: 5%;
   left: 50%;
   &.success {
     background: green;
@@ -51,5 +51,5 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 100px;
+  bottom: 5%;
   text-align: center; }
