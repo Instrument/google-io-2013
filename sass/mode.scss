@@ -35,10 +35,6 @@ body {
   line-height: 30px;
   left: 2%;
   pointer-events: none;
-  @include transition(left 200ms ease-out);
-
-  .dark & {
-  }
 }
 #back {
   right: 2%;

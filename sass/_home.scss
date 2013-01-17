@@ -22,19 +22,34 @@
     height: 20px;
     cursor: pointer; }
 
-#pattern-container {
+#pattern {
+  display: none;
+  border: 1px solid #393939;
+  height: 34px; 
+  @include border-radius(17px);
+  background-color: #fff;
+  border: 2px solid #f3f3f3;
+  padding: 3px 5px 0 10px;
+  line-height: 30px;
+  z-index: 1000;
+  pointer-events: none;
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  &.success {
+    background: green;
+  }
+  &.failure {
+    background: red;
+  }
+}
+
+#date {
+  font-family: 'Open Sans';
+  font-size: 22px;
+  color: rgba(black, 0.4);
   position: absolute;
   left: 0;
   right: 0;
   bottom: 100px;
   text-align: center; }
-
-#pattern {
-  font-size: 14px;
-  font-family: monospace;
-  color: black;
-  background: white;
-  display: inline-block;
-  @include border-radius(5px);
-  border: 1px solid black;
-  padding: 3px 6px; }

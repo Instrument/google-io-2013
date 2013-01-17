@@ -263,7 +263,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
     this.oGroup_['strokeColor'] = '#3777e2';
     this.oGroup_['strokeWidth'] = 1;
-    this.oGroup_['rotate'](-45);
+    this.oGroup_['rotate'](90);
 
     // Create arrays to store the coordinates for O's path points.
     this.oPathsX_ = [];
@@ -436,8 +436,8 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
   this.ctx_.fillStyle = '#424242';
-  this.ctx_.shadowColor = '#fff';
-  this.ctx_.shadowBlur = 10;
+  /*this.ctx_.shadowColor = '#fff';
+  this.ctx_.shadowBlur = 10;*/
 
   var canvas = this.getPaperCanvas_();
 
@@ -791,42 +791,42 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
       this.oPaths_[i]['segments'][0]['point']['x'] =
         this.modCoords_(this.oPathsX_[i][0], true,
-        this.oGroup_['position']['x'], this.oPathsX_[i][0], this.oModifier_,
+        0, 0, this.oModifier_,
         this.oMultiplier_);
 
       this.oPaths_[i]['segments'][0]['point']['y'] = 
         this.modCoords_(this.oPathsY_[i][0], false,
-        this.oGroup_['position']['y'], this.oPathsY_[i][0], this.oModifier_,
+        0, 0, this.oModifier_,
         this.oMultiplier_);
 
       this.oPaths_[i]['segments'][1]['point']['x'] =
         this.modCoords_(this.oPathsX_[i][1], false,
-        this.oGroup_['position']['x'], this.oPathsX_[i][1], this.oModifier_,
+        0, 0, this.oModifier_,
         this.oMultiplier_);
 
       this.oPaths_[i]['segments'][1]['point']['y'] = 
         this.modCoords_(this.oPathsY_[i][1], true,
-        this.oGroup_['position']['y'], this.oPathsY_[i][1], this.oModifier_,
+        this.oPathsY_[i][1], this.oPathsY_[i][1] * .95, this.oModifier_,
         this.oMultiplier_);
 
       this.oPaths_[i]['segments'][2]['point']['x'] =
         this.modCoords_(this.oPathsX_[i][2], true,
-        this.oGroup_['position']['x'], this.oPathsX_[i][2], this.oModifier_,
+        0, 0, this.oModifier_,
         this.oMultiplier_);
 
       this.oPaths_[i]['segments'][2]['point']['y'] = 
         this.modCoords_(this.oPathsY_[i][2], false,
-        this.oGroup_['position']['y'], this.oPathsY_[i][2], this.oModifier_,
+        this.oPathsY_[i][2], this.oPathsY_[i][2] * .95, this.oModifier_,
         this.oMultiplier_);
 
       this.oPaths_[i]['segments'][3]['point']['x'] =
         this.modCoords_(this.oPathsX_[i][3], false,
-        this.oGroup_['position']['x'], this.oPathsX_[i][3], this.oModifier_,
+        0, 0, this.oModifier_,
         this.oMultiplier_);
 
       this.oPaths_[i]['segments'][3]['point']['y'] = 
         this.modCoords_(this.oPathsY_[i][3], true,
-        this.oGroup_['position']['y'], this.oPathsY_[i][3], this.oModifier_,
+        0, 0, this.oModifier_,
         this.oMultiplier_);
 
       this.oPaths_[i]['smooth']();
