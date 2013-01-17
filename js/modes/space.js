@@ -171,8 +171,7 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
 
     // Store the coordinates for I's path points.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, true);
-
-  } else if (this.paperI_) {
+  } else {
     // Restore the coordinates for I's path points before resizing.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, false);
 
@@ -188,8 +187,6 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
 
     // Store the coordinates for I's path points based on the new window size.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, true);
-  } else {
-    return;
   }
 };
 
@@ -271,8 +268,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
     // Store the coordinates for O's path points.
     this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, true);
-
-  } else if (this.paperO_) {
+  } else {
     // Restore the original coordinates for O's path points before resizing.
     this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, false);
 
@@ -294,7 +290,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
  * @private
  */
 ww.mode.SpaceMode.prototype.drawSlash_ = function() {
-  // Run only if drawI_(true) and drawO_(true) have been called
+  // If no slash exists and the I and the O have been created.
   if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
@@ -311,8 +307,6 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
-
-  // Run if drawSlash_() is called and drawSlash(true) has already been called.
   } else {
     this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
@@ -554,6 +548,14 @@ ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
   }
 }
 
+/**
+ * Assign a paper object's coordinates to a static array, or vice versa.
+ * @param {Number} modifier The modifier variable to adjust.
+ * @param {Boolean} incrementer The incrementer variable to switch on and off.
+ * @param {Number} multiplier The multiplier variable to adjust.
+ * @param {Boolean} clicker The clicker variable to switch on and off.
+ * @param {Boolean} isI The boolean to determine if I or O should be modified.
+ */
 ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
   incrementer, multiplier, clicker, isI) {
 
