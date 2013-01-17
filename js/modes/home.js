@@ -286,8 +286,6 @@ ww.mode.HomeMode.prototype.goToMode_ = function(key) {
  * @private
  */
 ww.mode.HomeMode.prototype.drawI_ = function() {
-  var i;
-
   // Set I's initial dimensions.
   this.iWidth_ = this.width_ * .175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
@@ -574,7 +572,7 @@ ww.mode.HomeMode.prototype.adjustModifiers_ = function(modifier,
       }
     }
 
-    if (modifier < delta2) {
+    if (modifier < delta1) {
       clicker = false;
       incrementer = true;
       multiplier = 1;
