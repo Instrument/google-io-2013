@@ -13,6 +13,10 @@ ww.mode.HomeMode = function() {
   this.currentPattern_ = '';
   this.maxPatternLength_ = 15;
 
+  this.wentIdleTime_ = 0;
+  this.isIdle_ = true;
+  this.maxIdleTime_ = 15000; // 15 seconds
+
   var context = this.getAudioContext_();
   this.tuna_ = new Tuna(context);
   
@@ -82,6 +86,37 @@ ww.mode.HomeMode.prototype.playProcessedAudio_ = function(filename, filter) {
 };
 
 /**
+ * Reset the last time the user was idle.
+ * @private
+ */
+ww.mode.HomeMode.prototype.resetIdle_ = function() {
+  if (this.isIdle_) {
+    this.leaveIdle_();
+  }
+  this.wentIdleTime_ = this.timeElapsed_;
+};
+
+/**
+ * Enter idle mode.
+ * @private
+ */
+ww.mode.HomeMode.prototype.enterIdle_ = function() {
+  this.isIdle_ = true;
+  this.$date.fadeIn(300);
+  this.$pattern.fadeOut(300);
+};
+
+/**
+ * Leave idle mode.
+ * @private
+ */
+ww.mode.HomeMode.prototype.leaveIdle_ = function() {
+  this.isIdle_ = false;
+  this.$date.fadeOut(300);
+  this.$pattern.fadeIn(300);
+};
+
+/**
  * Method called when activating the I.
  */
 ww.mode.HomeMode.prototype.activateI = function() {
@@ -93,6 +128,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
   this.playProcessedAudio_('boing.wav', this.chorus_);
 
   this.addCharacter_('1');
+  this.resetIdle_();
 };
 
 /**
@@ -107,6 +143,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
   this.playProcessedAudio_('boing.wav', this.delay_);
 
   this.addCharacter_('0');
+  this.resetIdle_();
 };
 
 /**
@@ -137,7 +174,7 @@ ww.mode.HomeMode.prototype.setupPatternMatchers_ = function() {
       for (var i = 0; i < mode.binaryPattern.length; i++) {
         this.matchers_.push({
           key: key,
-          matcher: mode.binaryPattern.slice(0, i + 1),
+          matcher: new RegExp("^" + mode.binaryPattern.slice(0, i + 1)),
           isPartial: ((i + 1) != mode.binaryPattern.length)
         });
       }
@@ -151,6 +188,16 @@ ww.mode.HomeMode.prototype.setupPatternMatchers_ = function() {
  * @param {String} str The new character.
  */
 ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
+  if (this.$pattern.hasClass('success')) {
+    this.$pattern.removeClass('success');
+    this.resetMatcher_();
+  }
+
+  if (this.$pattern.hasClass('failure')) {
+    this.$pattern.removeClass('failure');
+    this.resetMatcher_();
+  }
+
   this.currentPattern_ += str;
 
   if (this.currentPattern_.length > this.maxPatternLength_) {
@@ -159,7 +206,10 @@ ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
   }
 
   this.log('current pattern: ' + this.currentPattern_);
-  $('#pattern').text(this.currentPattern_);
+
+  var patternHTML = this.currentPattern_.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
+  this.$pattern.html(patternHTML);
+  this.$pattern.css('marginLeft', -(this.$pattern.width() / 2));
 
   var matched = this.runMatchers_();
   if (matched) {
@@ -168,8 +218,12 @@ ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
     if (matched.isPartial) {
       // Highlight partial match in UI?
     } else {
+      this.$pattern.addClass('success');
       this.goToMode_(matched.key);
     }
+  } else {
+    this.$pattern.removeClass('success');
+    this.$pattern.addClass('failure');
   }
 };
 
@@ -179,7 +233,6 @@ ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
  */
 ww.mode.HomeMode.prototype.resetMatcher_ = function() {
   this.currentPattern_ = '';
-  $('#pattern').text(this.currentPattern_);
 };
 
 /**
@@ -192,13 +245,11 @@ ww.mode.HomeMode.prototype.runMatchers_ = function() {
 
   for (var i = 0; i < this.matchers_.length; i++) {
     var matcher = this.matchers_[i];
-    var lastXChars = this.currentPattern_.slice(-matcher.matcher.length,
-      this.currentPattern_.length);
-
-    if (lastXChars.indexOf(matcher.matcher) > -1) {
+    var len = matcher.matcher.toString().length - 3;
+    if ((len === this.currentPattern_.length) && matcher.matcher.test(this.currentPattern_)) {
       matches.push({
         matcher: matcher,
-        len: matcher.matcher.length,
+        len: len,
         isPartial: matcher.isPartial
       });
 
@@ -456,6 +507,9 @@ ww.mode.HomeMode.prototype.init = function() {
 ww.mode.HomeMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
+  this.$date = $("#date");
+  this.$pattern = $("#pattern");
+
   var self = this;
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
 
@@ -516,6 +570,14 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
+  if (!this.isIdle_) {
+    var hasBeenIdle = this.timeElapsed_ - this.wentIdleTime_;
+
+    if (hasBeenIdle > this.maxIdleTime_) {
+      this.enterIdle_();
+    }
+  }
+
   /*
    * Delta is initially a very small float. Need to modify it for it to have a
    * stronger effect.
@@ -527,7 +589,7 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
    * It uses delta along with other variables to modify the intensity of the
    * animation.
    */
-  if (this.iClicked_ == true) {
+  if (this.iClicked_ === true) {
 
     if (this.iModifier_ < this.deltaModifier_ * 10000 &&
       this.iIncrement_ == true) {
