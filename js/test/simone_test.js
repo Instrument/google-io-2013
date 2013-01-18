@@ -62,6 +62,8 @@ function testWwModeSimoneModeDidFocus() {
     checkSequenceCount++;
   };
 
+  mode.isPlaying = true;
+
   assertEquals('beginCount should be 0', beginCount, 0);
   assertEquals('startSequenceCount should be 0', startSequenceCount, 0);
   assertEquals('checkSequenceCount should be 0', checkSequenceCount, 0);
@@ -184,14 +186,95 @@ function testWwModeSimoneModeShuffleSequence_() {
   assertFalse('Sequence should be equal to the original after shuffle.', before === after);
 }
 
+// test if current step and guess match
 function testWwModeSimoneModeCheckSequence_() {
-  mode.checkSequence_(0);
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+
+  var guess = 0;
+
+  mode.stepIndex = 0;
+  mode.lastStep = 1;
+  mode.sequence[mode.stepIndex] = guess;
+
+  mode.checkSequence_(guess);
+
+  assertTrue('stepIndex should be increased by 1 after a correct guess', mode.stepIndex === 1);
+}
+
+// test if current step and guess do not match
+function testWwModeSimoneModeCheckSequence_() {
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+
+  var guess = 0;
+
+  mode.stepIndex = 0;
+  mode.lastStep = 1;
+  mode.sequence[mode.stepIndex] = guess + 1; // wrong
+
+  mode.checkSequence_(guess);
+
+  assertFalse('Wrong guess. Should not be playing', mode.isPlaying);
+}
+
+// test if number of steps increases after getting two out of two steps correct
+function testWwModeSimoneModeCheckSequence_() {
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+
+  var firstGuess = 0,
+      secondGuess = 1;
+
+  mode.sequence = [firstGuess, secondGuess, 2, 3]; // two dummy values
+  mode.total = mode.sequence.length;
+
+  mode.stepIndex = 0;
+  mode.lastStep = 1;
+
+  mode.checkSequence_(firstGuess);
+
+  assertTrue('stepIndex should be increased by 1 after a correct guess', mode.stepIndex === 1);
+
+  mode.isAnimating = false;
+  mode.checkSequence_(secondGuess);
+
+  assertTrue('lastStep should be increased by 1 after correct stepping', mode.lastStep === 2);
+}
+
+// test if 4 more numbers get added to the sequence if last step is
+// equal to the total possible steps to make
+function testWwModeSimoneModeCheckSequence_() {
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+
+  var firstGuess = 0,
+      secondGuess = 1;
+
+  mode.sequence = [firstGuess, secondGuess]; // needs to grow
+  mode.total = mode.sequence.length;
+
+  var oldTotal = mode.total;
+
+  mode.stepIndex = 0;
+  mode.lastStep = 1;
+
+  mode.checkSequence_(firstGuess);
+
+  assertTrue('stepIndex should be increased by 1 after a correct guess', mode.stepIndex === 1);
+
+  mode.isAnimating = false;
+  mode.checkSequence_(secondGuess);
+
+  assertTrue('lastStep should be increased by 1 after correct stepping', mode.lastStep === 2);
+
+  assertTrue('total possible steps in sequence should be increased by 4', mode.total === (oldTotal + 4));
 }
 
 function testWwModeSimoneModeBeginGame_() {
-  mode.beginGame_();
+  // mode.beginGame_();
 }
 
 function testWwModeSimoneModeDisplayNext_() {
-  mode.displayNext_();
+  // mode.displayNext_();
 }
