@@ -315,6 +315,8 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
       // wrong step guess
       self.log('Wrong. Expected (' + self.sequence[self.stepIndex] + ')');
 
+      self.trackEvent_('failed', self.sequence.length);
+
       self.isPlaying = false;
       self.levelCount.addClass('game-over');
 

@@ -79,6 +79,16 @@ ww.app.Core.prototype.log = function(msg) {
   }
 };
 
+/**
+ * Send an event to Google Analytics
+ * @private
+ * @param {String} action Name of the action.
+ * @param {Object} value Value of the action.
+ */
+ww.app.Core.prototype.trackEvent_ = function(action, value) {
+  ww.util.trackEvent('app', action, value);
+};
+
 ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
   var onComplete;
 

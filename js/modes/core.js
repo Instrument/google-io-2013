@@ -329,6 +329,17 @@ ww.mode.Core.prototype.goBack = function() {
 };
 
 /**
+ * Send an event to Google Analytics
+ * @private
+ * @param {String} action Name of the action.
+ * @param {Object} value Value of the action.
+ */
+ww.mode.Core.prototype.trackEvent_ = function(action, value) {
+  var category = 'mode-' + this._name;
+  ww.util.trackEvent(category, action, value);
+};
+
+/**
  * Focus this mode (start rendering).
  */
 ww.mode.Core.prototype.focus_ = function() {
@@ -575,6 +586,7 @@ ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
 ww.mode.Core.prototype.activateI = function() {
   // no-op
   this.log('Activated "I"');
+  this.trackEvent_('activated-i');
 };
 
 /**
@@ -583,6 +595,7 @@ ww.mode.Core.prototype.activateI = function() {
 ww.mode.Core.prototype.activateO = function() {
   // no-op
   this.log('Activated "O"');
+  this.trackEvent_('activated-o');
 };
 
 /**

@@ -120,6 +120,8 @@ ww.mode.HomeMode.prototype.leaveIdle_ = function() {
  * Method called when activating the I.
  */
 ww.mode.HomeMode.prototype.activateI = function() {
+  goog.base(this, 'activateI');
+
   this.iClicked_ = true;
   if (this.iMultiplier_ < 10) {
     this.iMultiplier_ += 2;
@@ -135,6 +137,8 @@ ww.mode.HomeMode.prototype.activateI = function() {
  * Method called when activating the O.
  */
 ww.mode.HomeMode.prototype.activateO = function() {
+  goog.base(this, 'activateO');
+
   this.oClicked_ = true;
   if (this.oMultiplier_ < 10) {
     this.oMultiplier_ += 2;
@@ -278,6 +282,7 @@ ww.mode.HomeMode.prototype.runMatchers_ = function() {
  * @param {String} key The mode name.
  */
 ww.mode.HomeMode.prototype.goToMode_ = function(key) {
+  this.trackEvent_('matched-pattern', key);
   this.sendMessage_('goToMode', key);
 };
 
@@ -287,7 +292,7 @@ ww.mode.HomeMode.prototype.goToMode_ = function(key) {
  */
 ww.mode.HomeMode.prototype.drawI_ = function() {
   // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * .175;
+  this.iWidth_ = this.width_ * 0.175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.

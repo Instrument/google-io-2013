@@ -8,6 +8,8 @@ goog.provide('ww.mode.SongMode');
 ww.mode.SongMode = function() {
   goog.base(this, 'song', true, true);
 
+  // TODO: Maybe we need to do this on category change to save bandwidth
+
   this.preloadSound('brass-note-1.m4a');
   this.preloadSound('brass-note-2.m4a');
   this.preloadSound('brass-note-3.m4a');
@@ -174,6 +176,7 @@ ww.mode.SongMode.prototype.changeDrums = function() {
 
 ww.mode.SongMode.prototype.swapSongMode = function(id) {
   this.log('swapping instrument to: ' + id);
+  this.trackEvent_('changed-instrument', id);
 
   this.songs.removeClass('active');
   $('#' + id).addClass('active');
@@ -183,6 +186,7 @@ ww.mode.SongMode.prototype.swapSongMode = function(id) {
 
 ww.mode.SongMode.prototype.beginSound = function(id, loop) {
   this.log('now playing sound for instrument id: ' + this.active + '-' + id);
+  this.trackEvent_('play-sound', this.active + '-' + id);
 
   var self = this;
 

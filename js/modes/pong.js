@@ -66,7 +66,7 @@ ww.mode.PongMode.prototype.init = function() {
  * Reset the ball to its starting position.
  * @private
  */
-ww.mode.PongMode.prototype.resetGame_ = function() {
+ww.mode.PongMode.prototype.resetGame_ = function() {  
   this.setScore_(0);
 
   this['topWallOpacity_'] = 0;
@@ -205,6 +205,9 @@ ww.mode.PongMode.prototype.hitPaddle_ = function() {
  */
 ww.mode.PongMode.prototype.gameOver_ = function() {
   this.log('You Lose');
+
+  this.trackEvent_('lost', this.score_);
+
   this.showReload();
 };
 

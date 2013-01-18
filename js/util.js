@@ -1,11 +1,15 @@
-goog.provide('ww.util');
 goog.provide('ww.raf');
+goog.provide('ww.util');
 
+/**
+ * Whether we're in test mode.
+ * @type {boolean}
+ */
 ww.testMode = window.location.href.indexOf('test') > -1;
 
 /**
  * Used to generate random X and Y coordinates.
- * @return array containing two random uniformly distributed floats.
+ * @return {array} containing two random uniformly distributed floats.
  */
 ww.util.floatComplexGaussianRandom = function() {
   var x1;
@@ -58,6 +62,18 @@ ww.util.pad = function(num, len) {
 
 
 /**
+ * Send an event to Google Analytics
+ * @param {String} category Category of the action.
+ * @param {String} action Name of the action.
+ * @param {Object} value Value of the action.
+ */
+ww.util.trackEvent = function(category, action, value) {
+  if (_gaq) {
+    _gaq.push(['_trackEvent', category, action, value]);
+  }
+};
+
+/**
  * RequestAnimationFrame polyfill.
  */
  (function() {
@@ -88,9 +104,22 @@ ww.util.pad = function(num, len) {
         };
 }());
 
+/**
+ * List of all subscribers.
+ * @type {Array}
+ */
 ww.raf.subscribers_ = {};
+
+/**
+ * If rAF is running
+ * @type {Boolean}
+ */
 ww.raf.isRunning_ = false;
 
+/**
+ * Last frame timestamp.
+ * @type {Number}
+ */
 ww.raf.lastTime = 0;
 
 /**
