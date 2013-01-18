@@ -96,6 +96,7 @@ ww.mode.SongMode.prototype.init = function() {
   ];
 
   this.numDrums = this.drums.length;
+  this.drumBadge = $('#drum-number');
   this.drumIndex = -1;
   this.drumEl = $('#drumkit');
   this.activeDrum = null;
@@ -173,8 +174,10 @@ ww.mode.SongMode.prototype.startDrumChange_ = function() {
 
   if (this.drumIndex < this.numDrums) {
     this.drumEl.addClass('tabbing');
+    this.drumBadge.text(this.drumIndex + 1);
   } else {
     this.drumEl.removeClass('active');
+    this.drumBadge.text('');
     this.drumIndex = -1;
     this.activeDrum['disconnect'](0);
     this.activeDrum = null;
