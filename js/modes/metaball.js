@@ -127,28 +127,9 @@ ww.mode.MetaBallMode.prototype.drawI_ = function() {
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
-  this.ctx_.save();
-
-  this.ctx_.globalCompositeOperation = 'source-atop';
-
-  this.ctx_.translate(target.pos.x - this.gradSize_,
-    target.pos.y - this.gradSize_);
-
-  var radGrad = this.ctx_.createRadialGradient(this.gradSize_,
-    this.gradSize_, 0, this.gradSize_, this.gradSize_, this.gradSize_);
-
-  radGrad.addColorStop(0, 'rgba(0,255,0,1)');
-  radGrad.addColorStop(1, 'rgba(0,255,0,0)');
-
-  this.ctx_.fillStyle = radGrad;
-
-  this.ctx_.fillRect(0, 0, this.gradSize_ * 2, this.gradSize_ * 2);
-
-  this.ctx_.restore();
-
   this.ctx_.arc(target.pos.x, target.pos.y, target.radius, 0, Math.PI * 2);
 
-  this.ctx_.fill();  
+  this.ctx_.fill();
 };
 
 /**
@@ -156,17 +137,19 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
  * @param {Object} target The ball location to draw a gradient.
  * @private
  */
-ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
+ww.mode.MetaBallMode.prototype.drawGradients_ = function(a, b) {
   this.gctx_.save();
+  // Set the size of the ball radial gradients.
+  this.gradSize_ = a.radius * 3;
 
-  this.gctx_.translate(target.pos.x - this.gradSize_,
-    target.pos.y - this.gradSize_);
+  this.gctx_.translate(a.pos.x - this.gradSize_,
+    a.pos.y - this.gradSize_);
 
   var radGrad = this.gctx_.createRadialGradient(this.gradSize_,
     this.gradSize_, 0, this.gradSize_, this.gradSize_, this.gradSize_);
 
-  radGrad.addColorStop(0, 'rgba(255,0,0,1)');
-  radGrad.addColorStop(1, 'rgba(255,0,0,0)');
+  radGrad.addColorStop(0, a['color'] + '1)');
+  radGrad.addColorStop(1, b['color'] + '0)');
 
   this.gctx_.fillStyle = radGrad;
   this.gctx_.fillRect(0, 0, this.gradSize_ * 4, this.gradSize_ * 4);
@@ -251,6 +234,11 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
     this.ctx_.quadraticCurveTo(anchorX1, anchorY1, posXB1, posYB1);
     this.ctx_.lineTo(posXB2, posYB2);
     this.ctx_.quadraticCurveTo(anchorX2, anchorY2, posXA2, posYA2);
+
+    this.gctx_.moveTo(posXA1, posYA1);
+    this.gctx_.quadraticCurveTo(anchorX1, anchorY1, posXB1, posYB1);
+    this.gctx_.lineTo(posXB2, posYB2);
+    this.gctx_.quadraticCurveTo(anchorX2, anchorY2, posXA2, posYA2);
   }
 
   this.ctx_.fill();
@@ -295,6 +283,19 @@ ww.mode.MetaBallMode.prototype.init = function() {
 
   this.ballCount_ = this.world_.particles.length;
 
+  // Set O's radius.
+  this.oRad_ = this.width_ * 0.1944444444;
+  this.world_.particles[0].radius = this.oRad_;
+
+  // Create an array of colors.
+  this.colors_ = [
+    'rgba(210, 59, 48,',
+    'rgba(67, 134, 251,',
+    'rgba(249, 188, 71,'
+  ];
+
+  this.world_.particles[0]['color'] = this.colors_[0];
+
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
@@ -305,15 +306,9 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.mouseX_ = this.screenCenterX_;
   this.mouseY_ = this.screenCenterY_;
 
-  // Set O's radius.
-  this.oRad_ = (this.width_ * 0.1944444444) / this.ballCount_;
-
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
-
-  // Set the size of the ball radial gradients.
-  this.gradSize_ = this.oRad_ * 2;
 };
 
 /**
@@ -328,15 +323,13 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
-  // this.ctx_.globalCompositeOperation = 'source-atop';
   this.ctx_.fillStyle = 'black';
 
-  this.$gcanvas_ = $('#gradient-canvas');
+  this.$gcanvas_ = $('<canvas></canvas>');
   this.gcanvas_ = this.$gcanvas_[0];
   this.gcanvas_.width = this.width_;
   this.gcanvas_.height = this.height_;
   this.gctx_ = this.gcanvas_.getContext('2d');
-  this.gctx_.globalCompositeOperation = 'destination-atop';
 
   this.ballCount_ = 1;
 
@@ -356,11 +349,15 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
         var activeBall = self.world_.particles[i];
 
-        if (activeBall === self.world_.particles[0]) {
+        if (activeBall === self.world_.particles[0] && self.ballCount_ < 4) {
           self.world_.particles.push(new Particle());
           var newBall = self.world_.particles[self.world_.particles.length - 1];
           activeBall = newBall;
-          this.ballCount_ = self.world_.particles.length;
+          activeBall.pos.x = self.mouseX_;
+          activeBall.pos.y = self.mouseY_;
+          activeBall['color'] = self.colors_[self.ballCount_];
+          self.ballCount_ = self.world_.particles.length;
+          activeBall.radius = self.oRad_ / self.ballCount_;
         }
       }
     }
@@ -437,11 +434,9 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
   this.world_.particles[0].pos.x = this.oX_;
   this.world_.particles[0].pos.y = this.oY_;
 
-  this.world_.particles[0].radius = this.oRad_;
-
-  for (var i = 1; i < this.ballCount_; i++) {
-    this.world_.particles[i].radius = this.oRad_ / 2;
-  }
+  /*if (this.ballCount_ > 1) {
+    this.world_.particles[0].radius = this.oRad_ / this.ballCount_ * 1.75;
+  }*/
 };
 
 /**
@@ -463,7 +458,10 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
 
   for (var i = 0; i < this.ballCount_; i++) {
     this.drawBalls_(this.world_.particles[i]);
-    this.drawGradients_(this.world_.particles[i]);
+
+    for (var ii = 0; ii < this.ballCount_; ii++) {
+      this.drawGradients_(this.world_.particles[i], this.world_.particles[i]);
+    }
   }
 
   for (var i = 0; i < this.ballCount_; i++) {
@@ -477,9 +475,11 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   this.ctx_.closePath();
   this.gctx_.closePath();
 
-  this.gctx_.save();
+  this.ctx_.save();
 
-  this.gctx_.drawImage(this.canvas_, 0, 0);
+  this.ctx_.globalCompositeOperation = 'source-atop';
 
-  this.gctx_.restore();
+  this.ctx_.drawImage(this.gcanvas_, 0, 0);
+
+  this.ctx_.restore();
 };
