@@ -5,6 +5,7 @@ goog.require('ww.mode.BaconMode');
 goog.require('ww.mode.CatMode');
 goog.require('ww.mode.ExplodeMode');
 goog.require('ww.mode.HomeMode');
+goog.require('ww.mode.MetaBallMode');
 goog.require('ww.mode.PinataMode');
 goog.require('ww.mode.PongMode');
 goog.require('ww.mode.SimoneMode');
@@ -40,6 +41,7 @@ ww.mode.register('pinata',   ww.mode.PinataMode,   6, 8); // 00000110
 ww.mode.register('bacon',    ww.mode.BaconMode,    7, 8); // 00000111
 ww.mode.register('simone',   ww.mode.SimoneMode,   8, 8); // 00001000
 ww.mode.register('eightbit', ww.mode.EightBitMode, 9, 8); // 00001001
+ww.mode.register('metaball', ww.mode.MetaBallMode, 10, 8); // 00001010
 
 jQuery(function() {
   var parts = window.location.href.split('/');

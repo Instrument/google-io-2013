@@ -124,9 +124,6 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     var pathEnd;
     var pathLength;
 
-    var i;
-    var ii;
-
     // Create an array to store I's paths.
     this.iPaths_ = [];
 
@@ -135,11 +132,11 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
     this.letterI_ = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](this.letterI_);
-    this.paperI_['fillColor'] = '#transparent';
+    this.paperI_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
 
     this.iGroup_ = new paper['Group'];
 
-    for (i = 0; i < this.iWidth_ / 6; i++) {
+    for (var i = 0; i < this.iWidth_ / 6; i++) {
       this.iPaths_.push(new paper['Path']);
 
       pathX = iTopLeft['x'] + i * 6;
@@ -171,8 +168,7 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
 
     // Store the coordinates for I's path points.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, true);
-
-  } else if (this.paperI_) {
+  } else {
     // Restore the coordinates for I's path points before resizing.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, false);
 
@@ -188,8 +184,6 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
 
     // Store the coordinates for I's path points based on the new window size.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, true);
-  } else {
-    return;
   }
 };
 
@@ -216,20 +210,17 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
     var pathEnd;
     var pathLength;
 
-    var i;
-    var ii;
-
     // Create an array to store O's paths.
     this.oPaths_ = [];
 
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
-    this.paperO_['fillColor'] = 'transparent';
+    this.paperO_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
 
     this.oGroup_ = new paper['Group']();
 
-    for (i = 0; i < 90; i++) {
+    for (var i = 0; i < 90; i++) {
       this.oPaths_.push(new paper['Path']());
 
       pathX = oCenter['x'] + this.oRad_ * Math.cos((i * 2) *
@@ -271,8 +262,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
     // Store the coordinates for O's path points.
     this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, true);
-
-  } else if (this.paperO_) {
+  } else {
     // Restore the original coordinates for O's path points before resizing.
     this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, false);
 
@@ -294,7 +284,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
  * @private
  */
 ww.mode.SpaceMode.prototype.drawSlash_ = function() {
-  // Run only if drawI_(true) and drawO_(true) have been called
+  // If no slash exists and the I and the O have been created.
   if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
@@ -311,8 +301,6 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
-
-  // Run if drawSlash_() is called and drawSlash(true) has already been called.
   } else {
     this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
@@ -335,15 +323,13 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
 ww.mode.SpaceMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  var i;
-
   /**
    * Create a star field.
    */
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
 
-  for (i = 0; i < 500; i++) {
+  for (var i = 0; i < 500; i++) {
     this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
     this.world_.particles.push(new Particle());
@@ -379,10 +365,6 @@ ww.mode.SpaceMode.prototype.init = function() {
    */
   this.mouseX_ = this.screenCenterX_;
   this.mouseY_ = this.screenCenterY_;
-
-  // Variable to store the screen coordinates of the last click/tap/touch.
-  this.lastClick =
-    new paper['Point'](this.screenCenterX_, this.screenCenterY_);
 
   /**
    * Set the letter I's modify variables.
@@ -436,8 +418,6 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
   this.ctx_.fillStyle = '#424242';
-  /*this.ctx_.shadowColor = '#fff';
-  this.ctx_.shadowBlur = 10;*/
 
   var canvas = this.getPaperCanvas_();
 
@@ -489,10 +469,8 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
-  var i;
-
   if (this.world_) {
-    for (i = 0; i < this.world_.particles.length; i++) {
+    for (var i = 0; i < this.world_.particles.length; i++) {
       this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
       this.world_.particles[i].pos.x = this.tempFloat_[0] *
@@ -554,6 +532,14 @@ ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
   }
 }
 
+/**
+ * Assign a paper object's coordinates to a static array, or vice versa.
+ * @param {Number} modifier The modifier variable to adjust.
+ * @param {Boolean} incrementer The incrementer variable to switch on and off.
+ * @param {Number} multiplier The multiplier variable to adjust.
+ * @param {Boolean} clicker The clicker variable to switch on and off.
+ * @param {Boolean} isI The boolean to determine if I or O should be modified.
+ */
 ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
   incrementer, multiplier, clicker, isI) {
 
@@ -583,7 +569,7 @@ ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
       }
     }
 
-    if (modifier < delta2) {
+    if (modifier < delta1) {
       clicker = false;
       incrementer = true;
       multiplier = 1;
@@ -639,10 +625,8 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
 ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   goog.base(this, 'stepPhysics', delta);
 
-  var i;
-
   // Move star positions right and also adjust them based on mouse position.
-  for (i = 0; i < this.world_.particles.length; i++) {
+  for (var i = 0; i < this.world_.particles.length; i++) {
     this.world_.particles[i].pos.x +=
       (this.screenCenterX_ - this.mouseX_) /
       (5000 / this.world_.particles[i].radius) + .1;
