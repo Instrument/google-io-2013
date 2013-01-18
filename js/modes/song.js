@@ -57,7 +57,7 @@ ww.mode.SongMode.prototype.init = function() {
     this.evtStart = 'mousedown.song';
     this.evtEnd = 'mouseup.song';
   }
-  
+
   // setup instruments and animation elements
   this.instruments = $('.instrument');
   this.ripples = {};
@@ -98,50 +98,76 @@ ww.mode.SongMode.prototype.init = function() {
   ];
 
   this.numDrums = this.drums.length;
+  this.drumBadge = $('#drum-number');
   this.drumIndex = -1;
   this.drumEl = $('#drumkit');
   this.activeDrum = null;
 };
 
 
-ww.mode.SongMode.prototype.didFocus =  function() {
+/**
+ * On focus, make the Song mode interactive.
+ */
+ww.mode.SongMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
   var self = this;
 
   self.instruments.bind(self.evtStart, function() {
-    self.beginSound(this.id, false);
-  });
-
-  self.instruments.bind(self.evtEnd, function() {
-    self.endSound(this.id);
+    self.beginSound_(this.id, false);
   });
 
   self.songs.bind(self.evtEnd, function() {
-    self.swapSongMode(this.id);
+    self.swapSongMode_(this.id);
   });
 
   self.drumEl.bind(self.evtStart, function() {
-    self.startDrumChange();
+    self.startDrumChange_();
   });
 
   self.drumEl.bind(self.evtEnd, function() {
-    self.changeDrums();
+    self.changeDrums_();
   });
 };
 
+
+/**
+ * On unfocus, deactivate Song mode. Reset drums and animations.
+ */
 ww.mode.SongMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
   this.instruments.unbind(this.evtStart);
-  this.instruments.unbind(this.evtEnd);
   this.songs.unbind(this.evtEnd);
   this.drumEl.unbind(this.evtStart);
   this.drumEl.unbind(this.evtEnd);
+
+  this.songs.removeClass('active');
+
+  this.activeDrum && this.activeDrum['disconnect'](0);
+  this.source && this.source['disconnect'](0);
+
+  this.activeDrum = null;
+  this.drumIndex = -1;
+  this.drumEl.removeClass('active');
+
+  TWEEN.removeAll();
+
+  var shapes = $('.shape');
+  for (var i = 0, l = shapes.length; i < l; i++) {
+    var shape = shapes[i];
+    this.transformElem_(shape, 'scale(1)');
+    shape.style.opacity = 1;
+  }
 };
 
 
-ww.mode.SongMode.prototype.startDrumChange = function() {
+/**
+ * Prepare to use the next drum. Reset drums if going past the last.
+ * Cycle through the drums, deactivating once trying to go past the last.
+ * @private
+ */
+ww.mode.SongMode.prototype.startDrumChange_ = function() {
   this.drumIndex++;
 
   if (this.drumIndex === 0) {
@@ -150,8 +176,10 @@ ww.mode.SongMode.prototype.startDrumChange = function() {
 
   if (this.drumIndex < this.numDrums) {
     this.drumEl.addClass('tabbing');
+    this.drumBadge.text(this.drumIndex + 1);
   } else {
     this.drumEl.removeClass('active');
+    this.drumBadge.text('');
     this.drumIndex = -1;
     this.activeDrum['disconnect'](0);
     this.activeDrum = null;
@@ -159,7 +187,12 @@ ww.mode.SongMode.prototype.startDrumChange = function() {
 };
 
 
-ww.mode.SongMode.prototype.changeDrums = function() {
+/**
+ * Change to the next drums if drums are still active.
+ * Drums are not active once the next drum is beyond the last.
+ * @private
+ */
+ww.mode.SongMode.prototype.changeDrums_ = function() {
   if (this.drumIndex >= 0) {
     var self = this;
 
@@ -174,18 +207,29 @@ ww.mode.SongMode.prototype.changeDrums = function() {
 };
 
 
-ww.mode.SongMode.prototype.swapSongMode = function(id) {
+/**
+ * Prepare to use the next set of notes of the selected instrument.
+ * @param {String} id Id of the next group of notes to use.
+ * @private
+ */
+ww.mode.SongMode.prototype.swapSongMode_ = function(id) {
   this.log('swapping instrument to: ' + id);
   this.trackEvent_('changed-instrument', id);
 
   this.songs.removeClass('active');
   $('#' + id).addClass('active');
+
   this.active = id;
 };
 
-
-ww.mode.SongMode.prototype.beginSound = function(id, loop) {
-  this.log('now playing sound for instrument id: ' + this.active + '-' + id);
+/**
+ * Begin playing the selected note out of the active instrument group.
+ * @param {String} id Id of the note to use.
+ * @param {Boolean} loop To loop or not to loop the sound.
+ * @private
+ */
+ww.mode.SongMode.prototype.beginSound_ = function(id, loop) {
+  this.log('now playing sound for note id: ' + this.active + '-' + id);
   this.trackEvent_('play-sound', this.active + '-' + id);
 
   var self = this;
@@ -197,13 +241,15 @@ ww.mode.SongMode.prototype.beginSound = function(id, loop) {
   var ripples = this.ripples[id];
   var ripple, delay = 0;
   var duration = ~~self.source.buffer.duration;
-  
+
   for (var i = 0, l = ripples.length; i < l; i++) {
     ripple = ripples[i];
 
     (function(ripple, delay) {
+      // animation durations dependent on length of sound clip
       var startDuration = duration * 0.4 * 1000,
           endDuration = duration * 0.3 * 1000;
+
       var rippleOut = new TWEEN.Tween({ 'scale': 1, 'opacity': 1 });
           rippleOut.to({ 'scale': 1.75, 'opacity': 0.05 }, startDuration);
           rippleOut.delay(delay);
@@ -228,8 +274,3 @@ ww.mode.SongMode.prototype.beginSound = function(id, loop) {
   }
 };
 
-
-ww.mode.SongMode.prototype.endSound = function(id) {
-  this.log('now stopping sound for instrument id: ' + id);
-
-};

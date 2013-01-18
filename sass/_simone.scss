@@ -9,7 +9,7 @@ body {
 #message {
   left: 0;
   line-height: 1.5em;
-  margin-top: -0.75em;
+  margin-top: -0.25em;
   position: absolute;
   text-align: center;
   top: 50%;
@@ -31,62 +31,74 @@ body {
 #play-again {
   background: transparent image-url('simone/refresh.svg') no-repeat 50% 50%;
   @include background-size(100%);
+  bottom: 7%;
   cursor: pointer;
-  display: block;
-  height: 3.5em;
+  display: none;
+  height: 2em;
   left: 50%;
-  margin: 0 0 0 -1.5em;
-  opacity: 0;
-  position: relative;
-  top: 50%;
-  width: 3em;
-  @include transition(all 200ms ease-in);
+  margin: 0 0 0 -1em;
+  position: absolute;
+  top: auto;
+  width: 2em;
   z-index: 1000;
-}
-  #max-level.game-over + #play-again {
-    opacity: 1;
-    margin-top: 2em;
+
+  @include landscape() {
+    bottom: auto;
+    margin-top: -3.75em;
+    top: 50%;
   }
-  
+}
   
 #levels {
+  background: transparent;
+  @include border-radius(1.25em);
   color: #fff;
   left: 50%;
-  height: 20%;
-  margin: -10% 0 0 -10%;
+  height: 2.5em;
+  line-height: 2.5em;
+  margin: -1.25em 0 0 -1.25em;
   position: absolute;
+  text-align: center;
   top: 50%;
-  width: 20%;
+  width: 2.5em;
+  @include transition(all 190ms ease-out);
   @include user-select(none);
 
-  canvas {
-    height: 100%;
-    width: 100%;
+  &.started {
+    background: #424242;
+  }
+
+  &.showing {
+    margin-top: -2em;
   }
 }
-  #max-level {
-    background: #2c2c2c;
-    @include border-radius(1.5em);
-    left: 50%;
-    height: 3em;
-    line-height: 3.2em;
-    margin: -1.5em 0 0 -1.5em;
-    position: relative;
-    text-align: center;
-    top: 50%;
-    width: 3em;
-    @include transition(all 200ms ease-in);
 
-    &.start {
-      background: #424242;
-    }
+#status {
+  @include hide-text;
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  color: #979797;
+  left: 0;
+  line-height: 2em;
+  margin: 1.5em 0 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 50%;
 
-    &.game-over {
-      background: #d53d2f;
-      margin-top: -4em;
-    }
-
-    &.success {
-      background: #069b5a;
-    }
+  &.your-turn {
+    text-indent: 0;
   }
+
+  &.game-over {
+    background-image: image-url('simone/fail.svg');
+    @include background-size(20px);
+  }
+
+  &.success {
+    background-image: image-url('simone/success.svg');
+    @include background-size(25px);
+  }
+
+}
