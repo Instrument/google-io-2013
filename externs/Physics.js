@@ -51,3 +51,24 @@ Vector.prototype = {
   'clone': true,
   'clear': true
 };
+
+var Behaviour = {
+  'GUID': true
+};
+
+Behaviour.prototype = {
+  'GUID': true,
+  'apply': true
+};
+
+var Attraction = {
+
+};
+
+Attraction.prototype = {
+  'target': true,
+  'radius': true,
+  'strength': true,
+  'setRadius': true,
+  'apply': true
+};

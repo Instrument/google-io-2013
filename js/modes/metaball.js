@@ -172,7 +172,8 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
   var drawDistance = Math.sqrt((drawX * drawX) + (drawY * drawY));
 
   // How far away the two circles can be before their connection breaks
-  var breakPoint = (a.radius + b.radius) * 2.34 - ((a.radius / b.radius) + (b.radius / a.radius));
+  var breakPoint = (a.radius + b.radius) * 2.34 -
+    ((a.radius / b.radius) + (b.radius / a.radius));
 
   // Angle between the two circles. All units are radians.
   var angle = -Math.atan2(a.pos.x - b.pos.x, a.pos.y - b.pos.y);
@@ -184,9 +185,9 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
     anchorModifier = 1;
   } else {
     anchorModifier = Math.tan(drawDistance / anchorModifier);
-    if (anchorModifier > -1.06) {
-    anchorModifier = -1.06;
-  }
+    if (anchorModifier > -1.06 && anchorModifier < -1.04) {
+      anchorModifier = -1.06;
+    }
   }
 
   // The x and y coordinates of each side of circle a
@@ -334,6 +335,13 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
   this.ctx_.fillStyle = 'black';
+  /*var imageSmoothing = Modernizr.prefixed('imageSmoothingEnabled', this.ctx_, false);
+
+  if (imageSmoothing) {
+    this.ctx_[imageSmoothing] = true;
+  }*/
+
+  // this.ctx_.webkitImageSmoothingEnabled = false;
 
   this.$gcanvas_ = $('<canvas></canvas>');
   this.gcanvas_ = this.$gcanvas_[0];
@@ -356,6 +364,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
   var downEvt = 'mousedown';
   $(document).bind(downEvt + '.metaball', function(e) {
+    var activeBall;
 
     self.mouseX_ = e.pageX;
     self.mouseY_ = e.pageY;
@@ -366,16 +375,23 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
         Math.abs(self.mouseY_ - self.world_.particles[i].pos.y) <
         self.world_.particles[i].radius) {
 
-        var activeBall = self.world_.particles[i];
+        activeBall = self.world_.particles[i];
 
         if (activeBall === self.world_.particles[0] && self.ballCount_ < 4) {
           self.world_.particles.push(new Particle());
           var newBall = self.world_.particles[self.world_.particles.length - 1];
+          var attraction = new Attraction(self.world_.particles[0].pos);
           activeBall = newBall;
+          activeBall.behaviours.push(attraction);
           activeBall.pos.x = self.mouseX_;
           activeBall.pos.y = self.mouseY_;
+          activeBall.mass = Math.random() * (255 - 1) + 1;
           activeBall['color'] = self.colors_[self.ballCount_];
           self.ballCount_ = self.world_.particles.length;
+        } else if (activeBall != self.world_.particles[0]){
+          activeBall['fixed'] = true;
+          activeBall.vel.x = 0;
+          activeBall.vel.y = 0;
         }
       }
     }
@@ -392,6 +408,9 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
     var upEvt = 'mouseup';
     $(document).bind(upEvt + '.metaball', function(e) {
+      if (activeBall) {
+        activeBall['fixed'] = false;
+      }
       $(document).unbind(upEvt + '.metaball');
       $(document).unbind(moveEvt + '.metaball');
     });
@@ -452,9 +471,41 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
   this.world_.particles[0].pos.x = this.oX_;
   this.world_.particles[0].pos.y = this.oY_;
 
-  /*if (this.ballCount_ > 1) {
-    this.world_.particles[0].radius = this.oRad_ / this.ballCount_ * 1.75;
-  }*/
+  for (var i = 0; i < this.world_.particles.length; i++) {
+    if (this.world_.particles[i]['fixed'] === true) {
+      this.world_.particles[i].pos.x = this.mouseX_;
+      this.world_.particles[i].pos.y = this.mouseY_;
+    }
+    if (this.world_.particles[i].pos.x >
+      this.width_ - this.world_.particles[i].radius) {
+
+      this.world_.particles[i].vel.x *= -1;
+
+      this.world_.particles[i].pos.x = this.width_ -
+        (this.world_.particles[i].radius + 1);
+    } else if (this.world_.particles[i].pos.x <
+      this.world_.particles[i].radius) {
+
+      this.world_.particles[i].vel.x *= -1;
+
+      this.world_.particles[i].pos.x = this.world_.particles[i].radius + 1;
+    }
+
+    if (this.world_.particles[i].pos.y >
+      this.height_ - this.world_.particles[i].radius) {
+
+      this.world_.particles[i].vel.y *= -1;
+
+      this.world_.particles[i].pos.y = this.height_ -
+        (this.world_.particles[i].radius + 1);
+    } else if (this.world_.particles[i].pos.y <
+      this.world_.particles[i].radius) {
+
+      this.world_.particles[i].vel.y *= -1;
+      
+      this.world_.particles[i].pos.y = this.world_.particles[i].radius + 1;
+    }
+  }
 };
 
 /**
