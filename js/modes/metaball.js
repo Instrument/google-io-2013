@@ -127,6 +127,12 @@ ww.mode.MetaBallMode.prototype.drawI_ = function() {
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
+  if (target != this.world_.particles[0]) {
+    target.radius = this.oRad_ * .5;
+  } else {
+    target.radius = this.oRad_;
+  }
+
   this.ctx_.arc(target.pos.x, target.pos.y, target.radius, 0, Math.PI * 2);
 
   this.ctx_.fill();
@@ -137,19 +143,19 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
  * @param {Object} target The ball location to draw a gradient.
  * @private
  */
-ww.mode.MetaBallMode.prototype.drawGradients_ = function(a, b) {
+ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
   this.gctx_.save();
   // Set the size of the ball radial gradients.
-  this.gradSize_ = a.radius * 3;
+  this.gradSize_ = target.radius * 4;
 
-  this.gctx_.translate(a.pos.x - this.gradSize_,
-    a.pos.y - this.gradSize_);
+  this.gctx_.translate(target.pos.x - this.gradSize_,
+    target.pos.y - this.gradSize_);
 
   var radGrad = this.gctx_.createRadialGradient(this.gradSize_,
     this.gradSize_, 0, this.gradSize_, this.gradSize_, this.gradSize_);
 
-  radGrad.addColorStop(0, a['color'] + '1)');
-  radGrad.addColorStop(1, b['color'] + '0)');
+  radGrad.addColorStop(0, target['color'] + '1)');
+  radGrad.addColorStop(1, target['color'] + '0)');
 
   this.gctx_.fillStyle = radGrad;
   this.gctx_.fillRect(0, 0, this.gradSize_ * 4, this.gradSize_ * 4);
@@ -178,6 +184,9 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
     anchorModifier = 1;
   } else {
     anchorModifier = Math.tan(drawDistance / anchorModifier);
+    if (anchorModifier > -1.06) {
+    anchorModifier = -1.06;
+  }
   }
 
   // The x and y coordinates of each side of circle a
@@ -291,7 +300,8 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.colors_ = [
     'rgba(210, 59, 48,',
     'rgba(67, 134, 251,',
-    'rgba(249, 188, 71,'
+    'rgba(249, 188, 71,',
+    'rgba(17, 168, 96,'
   ];
 
   this.world_.particles[0]['color'] = this.colors_[0];
@@ -331,6 +341,15 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.gcanvas_.height = this.height_;
   this.gctx_ = this.gcanvas_.getContext('2d');
 
+  /*this.$mcanvas_ = $('#metaball-canvas');
+  this.mcanvas_ = this.$mcanvas_[0];
+  this.mcanvas_.width = this.width_;
+  this.mcanvas_.height = this.height_;
+  this.mctx_ = this.mcanvas_.getContext('2d');*/
+
+  /*this.ctx_.shadowBlur = 1;
+  this.ctx_.shadowColor = 'black';*/
+
   this.ballCount_ = 1;
 
   var self = this;
@@ -357,7 +376,6 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
           activeBall.pos.y = self.mouseY_;
           activeBall['color'] = self.colors_[self.ballCount_];
           self.ballCount_ = self.world_.particles.length;
-          activeBall.radius = self.oRad_ / self.ballCount_;
         }
       }
     }
@@ -412,7 +430,7 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
   this.screenCenterY_ = this.height_ / 2;
 
   // Set O's radius.
-  this.oRad_ = (this.width_ * 0.1944444444) / this.ballCount_;
+  this.oRad_ = this.width_ * 0.1944444444;
 
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
@@ -449,7 +467,7 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   if (!this.canvas_) { return; }
 
   this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
-  this.gctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
+  this.gctx_.clearRect(0, 0, this.gcanvas_.width + 1, this.gcanvas_.height + 1);
 
   this.ctx_.beginPath();
   this.gctx_.beginPath();
@@ -458,10 +476,7 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
 
   for (var i = 0; i < this.ballCount_; i++) {
     this.drawBalls_(this.world_.particles[i]);
-
-    for (var ii = 0; ii < this.ballCount_; ii++) {
-      this.drawGradients_(this.world_.particles[i], this.world_.particles[i]);
-    }
+    this.drawGradients_(this.world_.particles[i]);
   }
 
   for (var i = 0; i < this.ballCount_; i++) {
@@ -478,8 +493,18 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   this.ctx_.save();
 
   this.ctx_.globalCompositeOperation = 'source-atop';
+  this.gctx_.globalCompositeOperation = 'lighter';
 
   this.ctx_.drawImage(this.gcanvas_, 0, 0);
 
   this.ctx_.restore();
+
+  /*this.mctx_.save();
+
+  this.mctx_.fillStyle = 'rgba(255, 255, 255, .9';
+  this.mctx_.fillRect(0, 0, this.mcanvas_.width + 1, this.mcanvas_.height + 1);
+  this.mctx_.drawImage(this.canvas_, 0, 0);
+
+  this.mctx_.restore();*/
+
 };
