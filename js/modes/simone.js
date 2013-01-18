@@ -41,13 +41,14 @@ ww.mode.SimoneMode.prototype.init = function() {
   this.segmentEls = $('#red, #green, #blue, #yellow').css('opacity', 1);
 
   // keeps track of levels reached in a game
-  this.levelCount = $('#max-level').removeClass().text('');
+  this.levels = $('#levels').removeClass().text('');
+  this.playStatus = $('#status').removeClass();
 
   this.uiContainer = $('#levels').css('opacity', 0);
   this.container = $('#simone');
 
   this.message = $('#message').css('opacity', 1);
-  this.playAgainEl = $('#play-again');
+  this.playAgainEl = $('#play-again').fadeOut();
 
   // display 'how to start playing' message
   // unbind and hide once first game has started
@@ -115,39 +116,6 @@ ww.mode.SimoneMode.prototype.init = function() {
       'type': 2
     }
   ];
-};
-
-
-/**
- * Fades in the selected segment and begins playing audio.
- * @param {number} noteNum Enumerated number for chosen segment + note.
- * @private
- */
-ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
-  if (this.isPlaying && !this.isAnimating) {
-    var note = this.notes[noteNum],
-        segment = this.segments[noteNum],
-        self = this;
-
-    this.log('Playing note: ', note);
-
-    this.source.type = note['type'];
-    this.source.frequency.value = note['frequency'];
-    this.source.detune.value = note['detune'];
-
-    var fadeInQuick = new TWEEN.Tween({ 'opacity': 0.5 });
-        fadeInQuick.to({ 'opacity': 1 }, 100);
-        fadeInQuick['onStart'](function() {
-          self.source.connect(self.analyser);
-          self.analyser.connect(self.audioContext_.destination);
-          self.source.noteOn(0);
-        });
-        fadeInQuick.onUpdate(function() {
-          segment.css('opacity', this['opacity']);
-        });
-
-    this.addTween(fadeInQuick);
-  }
 };
 
 
@@ -247,6 +215,43 @@ ww.mode.SimoneMode.prototype.shuffleSequence_ = function() {
 
 
 /**
+ * Fades in the selected segment and begins playing audio.
+ * @param {number} noteNum Enumerated number for chosen segment + note.
+ * @private
+ */
+ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
+  if (this.isPlaying && !this.isAnimating) {
+    if (this.stepIndex === 0) {
+      this.playStatus.removeClass('your-turn');
+    }
+
+    var note = this.notes[noteNum],
+        segment = this.segments[noteNum],
+        self = this;
+
+    this.log('Playing note: ', note);
+
+    this.source.type = note['type'];
+    this.source.frequency.value = note['frequency'];
+    this.source.detune.value = note['detune'];
+
+    var fadeInQuick = new TWEEN.Tween({ 'opacity': 0.5 });
+        fadeInQuick.to({ 'opacity': 1 }, 100);
+        fadeInQuick['onStart'](function() {
+          self.source.connect(self.analyser);
+          self.analyser.connect(self.audioContext_.destination);
+          self.source.noteOn(0);
+        });
+        fadeInQuick.onUpdate(function() {
+          segment.css('opacity', this['opacity']);
+        });
+
+    this.addTween(fadeInQuick);
+  }
+};
+
+
+/**
  * Check if the guess is the correct segment in the sequence, if not game over!
  * If the guess is in the middle of the sequence and is correct, continue.
  * If the guess is also the last step of the active sequence and is correct,
@@ -255,14 +260,12 @@ ww.mode.SimoneMode.prototype.shuffleSequence_ = function() {
  * @private
  */
 ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
-  this.log('Guessed (' + guess + ')');
+  this.log('Guess (' + guess + '). Expecting (' +
+            this.sequence[this.stepIndex] + ')');
 
   if (this.isPlaying && !this.isAnimating) {
     var self = this,
         guessSeg = self.segments[guess];
-
-    // clear any state on the level counter
-    self.levelCount.removeClass();
 
     var fadeOut = new TWEEN.Tween({ 'opacity': 1 });
         fadeOut.to({ 'opacity': 0.5 }, 200);
@@ -279,20 +282,14 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
 
     // check if selected segment is the expected step in the sequence
     if (self.sequence[self.stepIndex] === guess) {
-      self.log('Correct step guess.');
-
-      // check if a guess is just a step or the last in the sequence
+      // check if guess is just a step or the last in the sequence
       if (self.stepIndex !== self.lastStep) {
-        // increase step index since user hasn't reached the last step yet
-        // step is just a step
+        // guess is just a step, increase
         self.stepIndex++;
       } else {
-        self.log('Reached last step. Show next step.');
-
-        // advance level by one
-        // display success state on level count
+        // success! advance level by one
         self.lastStep++;
-        self.levelCount.addClass('success');
+        self.playStatus.addClass('success');
 
         if (self.lastStep === self.total) {
           // reached the end of the sequence
@@ -313,16 +310,17 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
       }
     } else {
       // wrong step guess
-      self.log('Wrong. Expected (' + self.sequence[self.stepIndex] + ')');
-
       self.isPlaying = false;
-      self.levelCount.addClass('game-over');
+      self.playStatus.addClass('game-over');
 
       var fadeIn = new TWEEN.Tween({ 'opacity': 0.5 });
           fadeIn.to({ 'opacity': 1 }, 200);
           fadeIn.delay(500);
           fadeIn.onUpdate(function() {
             self.segmentEls.css('opacity', this['opacity']);
+          });
+          fadeIn.onComplete(function() {
+            self.playAgainEl.fadeIn();
           });
 
       self.addTween(fadeIn);
@@ -332,7 +330,7 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
 
 
 /**
- * Begin a new, fresh state game.
+ * Begin a new, fresh game.
  * @private
  */
 ww.mode.SimoneMode.prototype.beginGame_ = function() {
@@ -347,7 +345,9 @@ ww.mode.SimoneMode.prototype.beginGame_ = function() {
     self.lastStep = 0;
 
     self.shuffleSequence_();
-    self.levelCount.removeClass().text('');
+    self.levels.removeClass().text('');
+    self.playStatus.removeClass();
+    self.playAgainEl.fadeOut();
 
     this.log('Playing sequence: ' + this.sequence);
 
@@ -381,8 +381,8 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
         idx,
         note,
         segment,
-        stopIndex = this.lastStep + 1,
-        delay = 500;
+        delay = 500,
+        stopIndex = this.lastStep + 1;
 
     for (var i = 0; i < stopIndex; i++) {
       idx = self.sequence[i];
@@ -396,7 +396,7 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
             fadeIn.delay(delay);
             fadeIn.onStart(function() {
               if (i === 0) {
-                self.levelCount.removeClass('success');
+                self.playStatus.removeClass('success');
               }
 
               self.log(i + ' now playing: ', note);
@@ -421,10 +421,14 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
             fadeOut.onComplete(function() {
               if (i === stopIndex - 1) {
                 self.isAnimating = false;
-                self.levelCount.addClass('start').text(stopIndex);
+                self.levels.text(stopIndex);
+                self.playStatus.addClass('your-turn');
               }
 
               self.source['disconnect']();
+              if (self.plays === 1 || self.plays > 1 && self.stepIndex === 0) {
+                self.levels.addClass('started');
+              }
             });
 
         self.addTween(fadeIn);
