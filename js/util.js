@@ -68,7 +68,7 @@ ww.util.pad = function(num, len) {
  * @param {Object} value Value of the action.
  */
 ww.util.trackEvent = function(category, action, value) {
-  if (_gaq) {
+  if ('undefined' !== typeof _gaq) {
     _gaq.push(['_trackEvent', category, action, value]);
   }
 };
