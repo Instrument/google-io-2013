@@ -127,6 +127,8 @@ ww.mode.MetaBallMode.prototype.drawI_ = function() {
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
+  this.ctx_.beginPath();
+
   if (target != this.world_.particles[0]) {
     target.radius = this.oRad_ * .5;
   } else {
@@ -136,6 +138,8 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
   this.ctx_.arc(target.pos.x, target.pos.y, target.radius, 0, Math.PI * 2);
 
   this.ctx_.fill();
+
+  this.ctx_.closePath();
 };
 
 /**
@@ -144,6 +148,8 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
+  this.gctx_.beginPath();
+
   this.gctx_.save();
   // Set the size of the ball radial gradients.
   this.gradSize_ = target.radius * 4;
@@ -161,6 +167,8 @@ ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
   this.gctx_.fillRect(0, 0, this.gradSize_ * 4, this.gradSize_ * 4);
 
   this.gctx_.restore();
+
+  this.gctx_.closePath();
 };
 
 ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
@@ -238,20 +246,18 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
     var anchorY2 = ((dynamicPosYB2 - dynamicPosYA1) / 2) + a.pos.y;
   }
 
+  this.ctx_.beginPath();
 
   if (breakPoint > drawDistance) {
     this.ctx_.moveTo(posXA1, posYA1);
     this.ctx_.quadraticCurveTo(anchorX1, anchorY1, posXB1, posYB1);
     this.ctx_.lineTo(posXB2, posYB2);
     this.ctx_.quadraticCurveTo(anchorX2, anchorY2, posXA2, posYA2);
-
-    this.gctx_.moveTo(posXA1, posYA1);
-    this.gctx_.quadraticCurveTo(anchorX1, anchorY1, posXB1, posYB1);
-    this.gctx_.lineTo(posXB2, posYB2);
-    this.gctx_.quadraticCurveTo(anchorX2, anchorY2, posXA2, posYA2);
   }
 
   this.ctx_.fill();
+
+  this.ctx_.closePath();
 };
 
 /**
@@ -362,8 +368,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var downEvt = 'mousedown';
-  $(document).bind(downEvt + '.metaball', function(e) {
+  var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
+  this.$canvas_.bind(downEvt + '.metaball', function(e) {
     var activeBall;
 
     self.mouseX_ = e.pageX;
@@ -396,7 +402,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
       }
     }
     var moveEvt = Modernizr.touch ? 'touchmove' : 'mousemove';
-    $(document).bind(moveEvt + '.metaball', function(e) {
+    self.$canvas_.bind(moveEvt + '.metaball', function(e) {
       self.mouseX_ = e.pageX;
       self.mouseY_ = e.pageY;
 
@@ -404,16 +410,20 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
         activeBall.pos.x = self.mouseX_;
         activeBall.pos.y = self.mouseY_;
       }
+
     });
 
-    var upEvt = 'mouseup';
-    $(document).bind(upEvt + '.metaball', function(e) {
+    var upEvt = Modernizr.touch ? 'touchend' : 'mouseup';
+    self.$canvas_.bind(upEvt + '.metaball', function(e) {
       if (activeBall) {
         activeBall['fixed'] = false;
       }
-      $(document).unbind(upEvt + '.metaball');
-      $(document).unbind(moveEvt + '.metaball');
+      self.$canvas_.unbind(upEvt + '.metaball');
+      self.$canvas_.unbind(moveEvt + '.metaball');
     });
+
+    e.preventDefault();
+    e.stopPropagation();
   });
 };
 
@@ -423,8 +433,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 ww.mode.MetaBallMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
-  $(document).unbind(downEvt + '.metaball');
+  var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
+  this.$canvas_.unbind(downEvt + '.metaball');
 };
 
 /**
@@ -520,9 +530,6 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
   this.gctx_.clearRect(0, 0, this.gcanvas_.width + 1, this.gcanvas_.height + 1);
 
-  this.ctx_.beginPath();
-  this.gctx_.beginPath();
-
   this.drawI_();
 
   for (var i = 0; i < this.ballCount_; i++) {
@@ -537,9 +544,6 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   }
 
   this.drawSlash_();
-
-  this.ctx_.closePath();
-  this.gctx_.closePath();
 
   this.ctx_.save();
 
