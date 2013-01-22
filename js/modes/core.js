@@ -40,7 +40,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   this.width_ = 0;
   this.height_ = 0;
 
-  // TODO: Throttle
   var self = this;
   this.$window_.bind('message', function(evt) {
     var data = evt.originalEvent.data;
@@ -67,9 +66,9 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
     self.init();
 
-    self.$window_.resize(function() {
+    self.$window_.resize(ww.util.throttle(function() {
       self.onResize(true);
-    });
+    }, 50));
     self.onResize();
 
     var modeDetails = ww.mode.findModeByName(self.name_);

@@ -23,7 +23,7 @@ ww.app.Core = function() {
   var self = this;
   this.$window_.resize(ww.util.throttle(function() {
     self.onResize_();
-  }, 100));
+  }, 50));
   this.onResize_();
 
   // Start event listeners.
