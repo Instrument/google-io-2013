@@ -130,8 +130,8 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     // Create a new paper.js path based on the previous variables.
     var iTopLeft = new paper['Point'](this.ix, this.iy);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
-    this.letterI_ = new paper['Rectangle'](iTopLeft, iSize);
-    this.paperI_ = new paper['Path']['Rectangle'](this.letterI_);
+    this.letterI = new paper['Rectangle'](iTopLeft, iSize);
+    this.paperI_ = new paper['Path']['Rectangle'](this.letterI);
     this.paperI_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
 
     this.iGroup_ = new paper['Group'];
@@ -428,11 +428,15 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   tool['onMouseDown'] = function(event) {
     self.lastClick = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
-      self.activateO();
+      if (self.hasFocus) {
+        self.activateO();
+      }
     }
 
     if (self.paperI_['hitTest'](event['point'])) {
-      self.activateI();
+      if (self.hasFocus) {
+        self.activateI();
+      }
     }
   };
 

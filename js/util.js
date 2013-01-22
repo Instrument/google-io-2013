@@ -22,9 +22,9 @@ ww.util.floatComplexGaussianRandom = function() {
    * plane. W is its magnitude squared.
    */
   do {
-      x1 = 2.0 * Math.random() - 1.0;
-      x2 = 2.0 * Math.random() - 1.0;
-      w = x1 * x1 + x2 * x2;
+    x1 = 2.0 * Math.random() - 1.0;
+    x2 = 2.0 * Math.random() - 1.0;
+    w = x1 * x1 + x2 * x2;
   } while (w >= 1.0);
 
   w = Math.sqrt((-1.0 * Math.log(w)) / w);
@@ -71,6 +71,37 @@ ww.util.trackEvent = function(category, action, value) {
   if ('undefined' !== typeof _gaq) {
     _gaq.push(['_trackEvent', category, action, value]);
   }
+};
+
+/**
+ * Throttling function will limit callbacks to once every wait window.
+ * @param {Function} func Function to throttle.
+ * @param {Number} wait Wait window.
+ * @return {Function} Throttled function.
+ */
+ww.util.throttle = function(func, wait) {
+  var context, args, timeout, result;
+  var previous = 0;
+  var later = function() {
+    previous = ww.util.rightNow();
+    timeout = null;
+    result = func.apply(context, args);
+  };
+  return function() {
+    var now = ww.util.rightNow();
+    var remaining = wait - (now - previous);
+    context = this;
+    args = arguments;
+    if (remaining <= 0) {
+      clearTimeout(timeout);
+      timeout = null;
+      previous = now;
+      result = func.apply(context, args);
+    } else if (!timeout) {
+      timeout = setTimeout(later, remaining);
+    }
+    return result;
+  };
 };
 
 /**

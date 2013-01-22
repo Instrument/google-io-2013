@@ -48,8 +48,8 @@ ww.mode.EightBitMode.prototype.drawI_ = function(isNew) {
     // Create a new paper.js path based on the previous variables.
     var iTopLeft = new paper['Point'](this.i_X, this.i_Y);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
-    this.letterI_ = new paper['Rectangle'](iTopLeft, iSize);
-    this.paperI_ = new paper['Path']['Rectangle'](this.letterI_);
+    this.letterI = new paper['Rectangle'](iTopLeft, iSize);
+    this.paperI_ = new paper['Path']['Rectangle'](this.letterI);
     this.paperI_['fillColor'] = '#11a860';
 
     // Create arrays to store the original coordinates for I's path points.
@@ -328,11 +328,15 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   tool['onMouseDown'] = function(event) {
     self.lastClick = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
-      self.activateO();
+      if (self.hasFocus) {
+        self.activateO();
+      }
     }
 
     if (self.paperI_['hitTest'](event['point'])) {
-      self.activateI();
+      if (self.hasFocus) {
+        self.activateI();
+      }
     }
   };
 

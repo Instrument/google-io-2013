@@ -1,5 +1,4 @@
 goog.provide('ww.mode.Core');
-goog.require('goog.events');
 goog.require('ww.util');
 goog.require('ww.raf');
 
@@ -37,10 +36,14 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     this.addDebugUI_();
   }
 
-  var self = this;
+  this.$window_ = $(window);
+  this.width_ = 0;
+  this.height_ = 0;
 
-  goog.events.listen(window, 'message', function(evt) {
-    var data = evt.getBrowserEvent().data;
+  // TODO: Throttle
+  var self = this;
+  this.$window_.bind('message', function(evt) {
+    var data = evt.originalEvent.data;
     self.log('Got message: ' + data['name'], data);
 
     if (data['name'] === 'focus') {
@@ -50,12 +53,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     }
   });
 
-  this.window_ = $(window);
-  this.width_ = 0;
-  this.height_ = 0;
-
-  // TODO: Throttle
-
   // Catch top-level touch events and cancel them to avoid
   // mobile browser scroll.
   if (Modernizr.touch) {
@@ -63,16 +60,14 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     document.body.style[Modernizr.prefixed('userDrag')] = 'none';
     document.body.style[Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
   }
-
-  // $(document.body).addClass(this.name_ + '-mode');
   
   $(function() {
-    self.letterI = $('#letter-i');
-    self.letterO = $('#letter-o');
+    self.$letterI_ = $('#letter-i');
+    self.$letterO_ = $('#letter-o');
 
     self.init();
 
-    self.window_.resize(function() {
+    self.$window_.resize(function() {
       self.onResize(true);
     });
     self.onResize();
@@ -153,8 +148,8 @@ ww.mode.Core.prototype.showReload = function() {
  * @param {Boolean} redraw Whether resize redraws.
  */
 ww.mode.Core.prototype.onResize = function(redraw) {
-  this.width_ = this.window_.width();
-  this.height_ = this.window_.height();
+  this.width_ = this.$window_.width();
+  this.height_ = this.$window_.height();
   this.log('Resize ' + this.width_ + 'x' + this.height_);
 
   if (this.paperCanvas_) {
@@ -367,11 +362,11 @@ ww.mode.Core.prototype.didFocus = function() {
 
   var evt = Modernizr.touch ? 'touchend' : 'mouseup';
 
-  this.letterI.bind(evt + '.core', function() {
+  this.$letterI_.bind(evt + '.core', function() {
     self.activateI();
   });
 
-  this.letterO.bind(evt + '.core', function() {
+  this.$letterO_.bind(evt + '.core', function() {
     self.activateO();
   });
 
@@ -417,8 +412,8 @@ ww.mode.Core.prototype.unfocus_ = function() {
 ww.mode.Core.prototype.didUnfocus = function() {
   var evt = Modernizr.touch ? 'touchend' : 'mouseup';
 
-  this.letterI.unbind(evt + '.core');
-  this.letterO.unbind(evt + '.core');
+  this.$letterI_.unbind(evt + '.core');
+  this.$letterO_.unbind(evt + '.core');
   
   if (this.$back) {
     this.$back.unbind(evt + '.core');
