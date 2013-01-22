@@ -180,8 +180,7 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
   var drawDistance = Math.sqrt((drawX * drawX) + (drawY * drawY));
 
   // How far away the two circles can be before their connection breaks
-  var breakPoint = (a.radius + b.radius) * 2.34 -
-    ((a.radius / b.radius) + (b.radius / a.radius));
+  var breakPoint = (a.radius + b.radius) * 2.33;
 
   // Angle between the two circles. All units are radians.
   var angle = -Math.atan2(a.pos.x - b.pos.x, a.pos.y - b.pos.y);
@@ -226,25 +225,65 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
    * Set anchor points for a quadratic curve at the midpoints between each
    * circle.
    */
+  var anchorMidpointX;
+  var anchorMidpointY;
+  var distAX;
+  var distAY;
+  var distBX;
+  var distBY;
   if (a.pos.x > b.pos.x) {
-    var anchorMidpointX = ((a.pos.x - b.pos.x) / 2) + b.pos.x;
+    anchorMidpointX = ((a.pos.x - b.pos.x) / 2) + b.pos.x;
+    distAX = a.pos.x - anchorMidpointX;
+    distBX = anchorMidpointX - b.pos.x;
     var anchorX1 = ((dynamicPosXA1 - dynamicPosXB2) / 2) + b.pos.x;
     var anchorX2 = ((dynamicPosXA2 - dynamicPosXB1) / 2) + b.pos.x;
   } else {
-    var anchorMidpointX = ((b.pos.x - a.pos.x) / 2) + a.pos.x;
+    anchorMidpointX = ((b.pos.x - a.pos.x) / 2) + a.pos.x;
+    distAX = anchorMidpointX - a.pos.x;
+    distBX = b.pos.x - anchorMidpointX;
     var anchorX1 = ((dynamicPosXB1 - dynamicPosXA2) / 2) + a.pos.x;
     var anchorX2 = ((dynamicPosXB2 - dynamicPosXA1) / 2) + a.pos.x;
   }
 
   if (a.pos.y > b.pos.y) {
-    var anchorMidpointY = ((a.pos.y - b.pos.y) / 2) + b.pos.y;
+    anchorMidpointY = ((a.pos.y - b.pos.y) / 2) + b.pos.y;
+    distAY = a.pos.y - anchorMidpointY;
+    distBY = anchorMidpointY - b.pos.y;
     var anchorY1 = ((dynamicPosYA1 - dynamicPosYB2) / 2) + b.pos.y;
     var anchorY2 = ((dynamicPosYA2 - dynamicPosYB1) / 2) + b.pos.y;
   } else {
-    var anchorMidpointY = ((b.pos.y - a.pos.y) / 2) + a.pos.y;
+    anchorMidpointY = ((b.pos.y - a.pos.y) / 2) + a.pos.y;
+    distAY = anchorMidpointY - a.pos.y;
+    distBY = b.pos.y - anchorMidpointY;
     var anchorY1 = ((dynamicPosYB1 - dynamicPosYA2) / 2) + a.pos.y;
     var anchorY2 = ((dynamicPosYB2 - dynamicPosYA1) / 2) + a.pos.y;
   }
+
+  /*var midDistA = Math.sqrt((distAX * distAX) + (distAY * distAY));
+  var midDistB = Math.sqrt((distBX * distBX) + (distBY * distBY));
+
+  var missingSideA = Math.sqrt((a.radius * a.radius) + (midDistA * midDistA));
+  var missingSideB = Math.sqrt((b.radius * b.radius) + (midDistB * midDistB));
+
+  var angleA = Math.sin(distAY / midDistA);
+  var angleA2 = Math.sin(a.radius / midDistA);
+  angleA = (angleA + angleA2);
+
+  posXA1 = a.pos.x + a.radius * Math.cos(angleA);
+  posYA1 = a.pos.y + a.radius * Math.sin(angleA);
+
+  posXA2 = a.pos.x + a.radius * -Math.cos(angleA);
+  posYA2 = a.pos.y + a.radius * -Math.sin(angleA);
+
+  var angleB = Math.sin(distBY / midDistB);
+  var angleB2 = Math.sin(b.radius / midDistB);
+  angleB = (angleB + angleB2);
+
+  posXB1 = b.pos.x + b.radius * Math.cos(angleB);
+  posYB1 = b.pos.y + b.radius * Math.sin(angleB);
+
+  posXB2 = b.pos.x + b.radius * -Math.cos(angleB);
+  posYB2 = b.pos.y + b.radius * -Math.sin(angleB);*/
 
   this.ctx_.beginPath();
 
@@ -274,7 +313,8 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
   this.slashEndY_ = this.screenCenterY_ + (this.iHeight_ / 2) +
     ((this.iHeight_ * 1.5) * 0.17475728);
 
-  this.ctx_.strokeStyle = '#e5e5e5';
+  this.ctx_.fillStyle = '#e5e5e5';
+  // this.ctx_.lineWidth = 1;
   this.ctx_.lineWidth = this.width_ * 0.01388889;
 
   this.ctx_.beginPath();
@@ -282,7 +322,7 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
   this.ctx_.moveTo(this.slashStartX_, this.slashStartY_);
   this.ctx_.lineTo(this.slashEndX_, this.slashEndY_);
 
-  this.ctx_.stroke();
+  this.ctx_.fill();
 };
 
 /**
@@ -538,7 +578,7 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   }
 
   for (var i = 0; i < this.ballCount_; i++) {
-    for (var ii = 0; ii < this.ballCount_; ii++) {
+    for (var ii = i + 1; ii < this.ballCount_; ii++) {
       this.drawConnections_(this.world_.particles[i], this.world_.particles[ii]);
     }
   }
