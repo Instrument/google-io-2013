@@ -6,7 +6,7 @@ goog.provide('ww.mode.FireplaceMode');
  */
 ww.mode.FireplaceMode = function() {
   goog.base(this, 'fireplace', true);
-  // this.preloadSound('bomb.wav');
+  this.preloadSound('fire.mp3');
 };
 goog.inherits(ww.mode.FireplaceMode, ww.mode.Core);
 
@@ -18,11 +18,6 @@ ww.mode.FireplaceMode.prototype.init = function() {
     backgroundRepeat: 'no-repeat',
     'background-size': '100% 100%'
   });
-
-  // var self = this;
-  // setInterval(function() {
-  //   self.playSound('bomb.wav');
-  // }, 2000);
 };
 
 ww.mode.FireplaceMode.prototype.didFocus = function() {
