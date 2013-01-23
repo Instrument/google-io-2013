@@ -7,6 +7,10 @@
   @include screen($break-medium) {
     padding: 2% 10%;
   }
+
+  canvas {
+    z-index: -1;
+  }
 }
 
 #controls {

@@ -6,7 +6,7 @@ goog.provide('ww.mode.SynthMode');
  * @constructor
  */
 ww.mode.SynthMode = function() {
-  goog.base(this, 'synth', true, true);
+  goog.base(this, 'synth', true, true, false);
 };
 goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 
@@ -16,11 +16,9 @@ ww.mode.SynthMode.prototype.init = function() {
 
   if (Modernizr.touch) {
     this.evtStart = 'touchstart.synth';
-    this.evtMove = 'touchmove.synth';
     this.evtEnd = 'touchend.synth';
   } else {
     this.evtStart = 'mousedown.synth';
-    this.evtMove = 'mousemove.synth';
     this.evtEnd = 'mouseup.synth';
   }
 
@@ -47,6 +45,42 @@ ww.mode.SynthMode.prototype.init = function() {
   this.createSound_();
 };
 
+ww.mode.SynthMode.prototype.onFrame = function(delta) {
+  goog.base(this, 'onFrame', delta);
+
+  if (!this.isPlaying) {
+    return;
+  }
+
+  var data = new Uint8Array(this.analyser.frequencyBinCount);
+  this.analyser.getByteFrequencyData(data);
+  
+  var size = ~~(this.width_ / data.length) + 1,
+      x = 0, y = 0;
+  for (var i = 0, l = data.length; i < l; i++) {
+    y = (this.height_ / 2 + 256) - 256 - data[i];
+    this.path['segments'][i]['point']['y'] = y;
+  }
+
+  this.path['smooth']();
+};
+
+
+ww.mode.SynthMode.prototype.onResize = function(redraw) {
+  goog.base(this, 'onResize', false);
+
+  if (this.path) {
+    var x = ~~(this.width_ / 256) + 1;
+    for (var i = 0, l = this.path['segments'].length; i < l; i++) {
+      this.path['segments'][i]['point']['x'] = x * i;
+    }
+  }
+
+  if (redraw) {
+    this.redraw();
+  }
+};
+
 
 /**
  * On focus, make the Synth interactive.
@@ -55,6 +89,21 @@ ww.mode.SynthMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
   var self = this;
+
+  if (!self.path && !self.points) {
+    self.getPaperCanvas_();
+
+    var size = ~~(this.width_ / 256) + 1;
+
+    self.path = new paper['Path']();
+    self.path['strokeColor'] = '#ebebeb';
+    self.path['strokeWidth'] = size;
+
+    for (var i = 0; i < 256; i++) {
+      var point = new paper['Point'](size * i, self.height_ / 2);
+      self.path.add(point);
+    }
+  }
 
   self.isPlaying = false;
   self.connectPower_(); // connect
@@ -187,77 +236,3 @@ ww.mode.SynthMode.prototype.pauseSound_ = function() {
 };
 
 
-// var ctx = graph.getContext('2d');
-// ctx.translate(0, 100);
-
-// function setupCanvas() {
-//     var canvas = document.getElementById('canvas');
-//     gfx = canvas.getContext('2d');
-//     webkitRequestAnimationFrame(logSpectrum);
-// }
-
-// var shift = 360;
-// var scale = ~~(window.innerHeight * 0.5);
-
-// function logSpectrum() {
-//   // var freqByteData = new Uint8Array(analyser.frequencyBinCount);
-//   // analyser.getByteFrequencyData(freqByteData);
-//   // console.log(freqByteData);
-
-
-//   // Viz code pulled from
-//   // http://joshondesign.com/p/books/canvasdeepdive/chapter12.html#drawing
-//   webkitRequestAnimationFrame(logSpectrum);
-//   if (!isPlaying) {
-//     return;
-//   }
-//   gfx.clearRect(0, 0, 800, 600);
-//   gfx.fillStyle = 'white';
-//   gfx.fillRect(0, 0, 800, 600);
-
-//   var data = new Uint8Array(analyser.frequencyBinCount);
-//   analyser.getByteFrequencyData(data);
-//   gfx.fillStyle = 'red';
-//   for (var i = 0; i < data.length; i++) {
-//       gfx.fillRect(i * 4, 256 - data[i] * 2, 3, 100);
-//   }
-
-//   var detune = Math.abs(source.detune.value / 4800);
-//   var freq = source.frequency.value * 0.001;
-
-//   ctx.clearRect(0, -100, graph.width, graph.height);
-
-//   var gainNode = audioContext.createGainNode();
-//   source.connect(gainNode);
-//   gainNode.connect(audioContext.destination);
-//   gainNode.gain.value = 0.0001;
-
-//   var colors = ['red', 'blue', 'green'];
-//   var x = 0, y = 0, size;
-//   shift--;
-
-//   while (x + shift < graph.width + shift) {
-//     size = Math.sin(freq * (x + shift) * Math.PI / 180);
-
-//     for (var i = -1; i < colors.length - 1; i++) {
-//       y = Math.sin(freq * (x + shift + (i * 120)) * Math.PI / 180) * detune;
-      
-//       if (y >= 0) {
-//         y = scale * detune - (y - 0) * (scale * detune / 2);
-//       }
-
-//       if (y < 0) {
-//         y = scale * detune + (0 - y) * (scale * detune / 2);
-//       }
-
-//       ctx.fillStyle = colors[i + 1];
-//       ctx.fillRect(x, y, size, size);
-//     }
-
-//     x++;
-//   }
-
-//   if (shift < 0) {
-//     shift = 360;
-//   }
-// }
