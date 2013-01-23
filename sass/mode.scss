@@ -139,6 +139,10 @@ canvas {
   @import "space";
 }
 
+.synth-mode {
+  @import "synth";
+}
+
 .metaball-mode {
   @import "metaball";
 }

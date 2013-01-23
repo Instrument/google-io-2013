@@ -11,6 +11,7 @@ goog.require('ww.mode.PongMode');
 goog.require('ww.mode.SimoneMode');
 goog.require('ww.mode.SongMode');
 goog.require('ww.mode.SpaceMode');
+goog.require('ww.mode.SynthMode');
 goog.require('ww.mode.EightBitMode');
 
 /** @define {boolean} */
@@ -42,6 +43,7 @@ ww.mode.register('bacon',    ww.mode.BaconMode,    7, 8); // 00000111
 ww.mode.register('simone',   ww.mode.SimoneMode,   8, 8); // 00001000
 ww.mode.register('eightbit', ww.mode.EightBitMode, 9, 8); // 00001001
 ww.mode.register('metaball', ww.mode.MetaBallMode, 10, 8); // 00001010
+ww.mode.register('synth', ww.mode.SynthMode, 11, 8); // 00001011
 
 jQuery(function() {
   var parts = window.location.href.split('/');
