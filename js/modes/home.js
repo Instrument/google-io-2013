@@ -344,6 +344,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
+    // this.paperO_ = new paper['Path']['RegularPolygon'](oCenter, 100, this.oRad_);
     this.paperO_['fillColor'] = '#3777e2';
 
     // Create arrays to store the coordinates for O's path points.
