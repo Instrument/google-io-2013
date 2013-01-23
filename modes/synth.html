@@ -1,8 +1,8 @@
 <!doctype html>
-<html>
+<html class="synth-mode">
 	<head>
-		<title>IO - Synth</title>
-    <!--
+		<title>IO</title>
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
     <script src="../js/vendor/modernizr-latest.js"></script>
     <link rel="stylesheet" href="../css/mode.css">
     <script src="../js/vendor/jquery-1.6.2.js"></script>
@@ -11,38 +11,35 @@
     <script src="../js/vendor/physics.js"></script>
     <script src="../js/vendor/tuna.js"></script>
     <script src="../js/mode.min.js"></script>
-    -->
 	</head>
 	<body>
-    
-    <div id="synth">
-    
-      <input id="power" type="button" value="Play" />    
-    
-      <ol>
-        <li><input class="param" type="range" id="control-1" min="0" max="3" step="1" value="0"></li>
-        <li><input class="param" type="range" id="control-2" min="10" max="10000" step="1" value="440"></li>
-        <li><input class="param" type="range" id="control-3" min="-4800" max="4800" step="1" value="0"></li>
-        <li><input class="param" type="range" id="control-4" min="0" max="100" step="1" value="0"></li>
-      </ol>
-      
-      <select id="effect">
-        <option value="dry">Dry</option>
-        <option value="delay">Delay</option>
-        <option value="tremolo">Tremolo</option>
-        <option value="chorus">Chorus</option>
-        <option value="phaser">Phaser</option>
-        <option value="filter">Filter</option>
-        <option value="wahwah">WahWah</option>
-        <option value="overdrive">Overdrive</option>
-      </select>
+    <div id="controls-container">
+      <svg version="1.1" id="io" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   width="100%" height="100%" viewBox="0 0 776 622.512" enable-background="new 0 0 776 622.512" xml:space="preserve">
+        <rect id="letter-i" y="111.256" fill="#11A861" width="190" height="400"/>
+        <circle id="letter-o" fill="#3777E3" cx="564.5" cy="311.256" r="211.5"/>
+        <line id="slash" fill="none" stroke="#E6E6E6" stroke-width="19.3658" stroke-miterlimit="10" x1="391.905" y1="2.896" x2="198.619" y2="619.617"/>
+      </svg>
+      <div id="states">
+        <input id="power" type="button" value="Play">
+        <select id="effect">
+          <option value="dry">Dry</option>
+          <option value="delay">Delay</option>
+          <option value="tremolo">Tremolo</option>
+          <option value="chorus">Chorus</option>
+          <option value="phaser">Phaser</option>
+          <option value="filter">Filter</option>
+          <option value="wahwah">WahWah</option>
+          <option value="overdrive">Overdrive</option>
+        </select>
+      </div>
+      <div id="controls">
+        <ul>
+          <li><input class="param" type="range" id="oscillator-type" min="0" max="3" step="1" value="0"></li>
+          <li><input class="param" type="range" id="oscillator-frequency" min="1" max="1000" step="1" value="80"></li>
+          <li><input class="param" type="range" id="oscillator-detune" min="-4800" max="4800" step="1" value="650"></li>
+        </ul>
+      </div>
     </div>
-    
-    <canvas id="canvas" height="600" width="800"></canvas>
-    
-		<script src="../js/vendor/jquery-1.6.2.js"></script>
-		<script src="../js/vendor/tuna.js"></script>
-		<script src="../js/modes/synth.js"></script>
-		
 	</body>
 </html>

@@ -1,0 +1,58 @@
+#controls-container {
+  @extend %absolute-full;
+  height: 100%;
+  padding: 2% 20%;
+  width: 100%;
+
+  @include screen($break-medium) {
+    padding: 2% 10%;
+  }
+
+  canvas {
+    z-index: -1;
+  }
+}
+
+#controls {
+  margin: -3em 0 0;
+  position: absolute;
+  right: 20%;
+  text-align: center;
+  top: 50%;
+  width: 33%;
+
+  @include screen($break-medium) {
+    right: 15%;
+  }
+
+  ul {
+    @include no-bullets;
+    margin: 0;
+    padding: 0;
+
+    li {
+      height: 2em;
+      line-height: 2em;
+
+      @include screen($break-medium) {
+        height: 1em;
+        line-height: 1em;
+        
+        &:first-child {
+          height: 3em;
+        }
+      }
+    }
+
+    input {
+      vertical-align: middle;
+      width: 80%;
+    }
+  }
+}
+
+#states {
+  position: absolute;
+  top: 10%;
+  left: 2%;
+}

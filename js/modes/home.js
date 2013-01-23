@@ -127,7 +127,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
     this.iMultiplier_ += 2;
   }
 
-  this.playProcessedAudio_('boing.wav', this.chorus_);
+  this.playProcessedAudio_('i.wav', this.chorus_);
 
   this.addCharacter_('1');
   this.resetIdle_();
@@ -144,7 +144,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
     this.oMultiplier_ += 2;
   }
 
-  this.playProcessedAudio_('boing.wav', this.delay_);
+  this.playProcessedAudio_('o.wav', this.delay_);
 
   this.addCharacter_('0');
   this.resetIdle_();
@@ -344,6 +344,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
+    // this.paperO_ = new paper['Path']['RegularPolygon'](oCenter, 100, this.oRad_);
     this.paperO_['fillColor'] = '#3777e2';
 
     // Create arrays to store the coordinates for O's path points.
