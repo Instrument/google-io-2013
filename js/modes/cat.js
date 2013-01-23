@@ -26,7 +26,7 @@ ww.mode.CatMode.prototype.activateI = function() {
   stretchOut.to({ 'scaleY': 1.55 }, 200);
   stretchOut.easing(TWEEN.Easing.Bounce.InOut);
   stretchOut.onUpdate(function() {
-    self.transformElem_(self.letterI[0], 'scaleY(' + this['scaleY'] + ')');
+    self.transformElem_(self.$letterI_[0], 'scaleY(' + this['scaleY'] + ')');
   });
 
   var stretchBack = new TWEEN.Tween({ 'scaleY': 1.55 });
@@ -34,7 +34,7 @@ ww.mode.CatMode.prototype.activateI = function() {
   stretchBack.easing(TWEEN.Easing.Bounce.InOut);
   stretchBack.delay(200);
   stretchBack.onUpdate(function() {
-    self.transformElem_(self.letterI[0], 'scaleY(' + this['scaleY'] + ')');
+    self.transformElem_(self.$letterI_[0], 'scaleY(' + this['scaleY'] + ')');
   });
 
   this.addTween(stretchOut);
@@ -63,7 +63,7 @@ ww.mode.CatMode.prototype.activateO = function() {
   moveOut.onUpdate(function() {
     var translate = 'translate(' + this['x'] + 'px, ' + this['y'] + 'px) ';
         translate += 'scale(' + this['scale'] + ')';
-    self.transformElem_(self.letterO[0], translate);
+    self.transformElem_(self.$letterO_[0], translate);
   });
 
   var moveBack = new TWEEN.Tween({
@@ -78,7 +78,7 @@ ww.mode.CatMode.prototype.activateO = function() {
   moveBack.onUpdate(function() {
     var translate = 'translate(' + this['x'] + 'px, ' + this['y'] + 'px) ';
         translate += 'scale(' + this['scale'] + ')';
-    self.transformElem_(self.letterO[0], translate);
+    self.transformElem_(self.$letterO_[0], translate);
   });
 
   this.addTween(moveOut);

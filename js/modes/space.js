@@ -19,6 +19,7 @@ ww.mode.SpaceMode = function() {
    * dryLevel: 0 to 1+
    * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
    * bypass: the value 1 starts the effect as bypassed, 0 or 1
+   * @private
    */
   this.delay_ = new this.tuna_.Delay({
     feedback: 0,
@@ -36,6 +37,7 @@ ww.mode.SpaceMode = function() {
    * delay: 0 to 1
    * dryLevel: 0 to 1+
    * bypass: the value 1 starts the effect as bypassed, 0 or 1
+   * @private
    */
   this.chorus_ = new this.tuna_.Chorus({
     rate: 0.01,
@@ -130,8 +132,8 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     // Create a new paper.js path based on the previous variables.
     var iTopLeft = new paper['Point'](this.ix, this.iy);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
-    this.letterI_ = new paper['Rectangle'](iTopLeft, iSize);
-    this.paperI_ = new paper['Path']['Rectangle'](this.letterI_);
+    this.letterI = new paper['Rectangle'](iTopLeft, iSize);
+    this.paperI_ = new paper['Path']['Rectangle'](this.letterI);
     this.paperI_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
 
     this.iGroup_ = new paper['Group'];
@@ -428,11 +430,15 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   tool['onMouseDown'] = function(event) {
     self.lastClick = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
-      self.activateO();
+      if (self.hasFocus) {
+        self.activateO();
+      }
     }
 
     if (self.paperI_['hitTest'](event['point'])) {
-      self.activateI();
+      if (self.hasFocus) {
+        self.activateI();
+      }
     }
   };
 
@@ -502,10 +508,11 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
 
 /**
  * Assign a paper object's coordinates to a static array, or vice versa.
- * @param {Array} paperArray The paper.js array to reference.
+ * @param {Array} paper The paper.js array to reference.
  * @param {Array} xArray The array of static X coordinates to reference.
  * @param {Array} yArray The array of static Y coordinates to reference.
  * @param {Boolean} copy Determines if paperArray is copied from or written to.
+ * @private
  */
 ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
   var i;
@@ -530,7 +537,7 @@ ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
       }
     }
   }
-}
+};
 
 /**
  * Assign a paper object's coordinates to a static array, or vice versa.
@@ -539,6 +546,7 @@ ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
  * @param {Number} multiplier The multiplier variable to adjust.
  * @param {Boolean} clicker The clicker variable to switch on and off.
  * @param {Boolean} isI The boolean to determine if I or O should be modified.
+ * @private
  */
 ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
   incrementer, multiplier, clicker, isI) {
@@ -546,7 +554,7 @@ ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
   var delta1 = this.deltaModifier_ * 100;
   var delta2 = this.deltaModifier_ * 1000;
   var delta3 = this.deltaModifier_ * 10000;
-    
+
     if (modifier < delta3 &&
       incrementer === true) {
         modifier += delta2;
@@ -586,7 +594,7 @@ ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
     this.oMultiplier_ = multiplier;
     this.oClicked_ = clicker;
   }
-}
+};
 
 /**
  * Assign a paper object's coordinates to a static array, or vice versa.
@@ -597,6 +605,8 @@ ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
  * @param {Number} mod3 The third modifier used in the equation.
  * @param {Number} mod4 The fourth modifier used in the equation.
  * @param {Float} random Optional float to modify the equation.
+ * @return {Number} result The final value used to modify the source point.
+ * @private
  */
 ww.mode.SpaceMode.prototype.modCoords_ = function(source,
   cos, mod1, mod2, mod3, mod4, random) {
@@ -606,7 +616,7 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
     if (!random) {
       random = 1;
     }
-    
+
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *
         mod3 * mod4 * random;
@@ -616,7 +626,7 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
     }
 
     return result;
-}
+};
 
 /**
  * On each physics tick, adjust star positions.
@@ -708,7 +718,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
         this.iGroup_['position']['x'], this.iPathsX_[i][0], this.iModifier_,
         this.iMultiplier_);
 
-      this.iPaths_[i]['segments'][0]['point']['y'] = 
+      this.iPaths_[i]['segments'][0]['point']['y'] =
         this.modCoords_(this.iPathsY_[i][0], false,
         this.iGroup_['position']['y'], this.iPathsY_[i][0], this.iModifier_,
         this.iMultiplier_);
@@ -718,7 +728,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
         this.iGroup_['position']['x'], this.iPathsX_[i][1], this.iModifier_,
         this.iMultiplier_);
 
-      this.iPaths_[i]['segments'][1]['point']['y'] = 
+      this.iPaths_[i]['segments'][1]['point']['y'] =
         this.modCoords_(this.iPathsY_[i][1], true,
         this.iGroup_['position']['y'], this.iPathsY_[i][1], this.iModifier_,
         this.iMultiplier_);
@@ -728,7 +738,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
         this.iGroup_['position']['x'], this.iPathsX_[i][2], this.iModifier_,
         this.iMultiplier_);
 
-      this.iPaths_[i]['segments'][2]['point']['y'] = 
+      this.iPaths_[i]['segments'][2]['point']['y'] =
         this.modCoords_(this.iPathsY_[i][2], false,
         this.iGroup_['position']['y'], this.iPathsY_[i][2], this.iModifier_,
         this.iMultiplier_);
@@ -738,7 +748,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
         this.iGroup_['position']['x'], this.iPathsX_[i][3], this.iModifier_,
         this.iMultiplier_);
 
-      this.iPaths_[i]['segments'][3]['point']['y'] = 
+      this.iPaths_[i]['segments'][3]['point']['y'] =
         this.modCoords_(this.iPathsY_[i][3], true,
         this.iGroup_['position']['y'], this.iPathsY_[i][3], this.iModifier_,
         this.iMultiplier_);
@@ -778,7 +788,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
         0, 0, this.oModifier_,
         this.oMultiplier_);
 
-      this.oPaths_[i]['segments'][0]['point']['y'] = 
+      this.oPaths_[i]['segments'][0]['point']['y'] =
         this.modCoords_(this.oPathsY_[i][0], false,
         0, 0, this.oModifier_,
         this.oMultiplier_);
@@ -788,7 +798,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
         0, 0, this.oModifier_,
         this.oMultiplier_);
 
-      this.oPaths_[i]['segments'][1]['point']['y'] = 
+      this.oPaths_[i]['segments'][1]['point']['y'] =
         this.modCoords_(this.oPathsY_[i][1], true,
         this.oPathsY_[i][1], this.oPathsY_[i][1] * .95, this.oModifier_,
         this.oMultiplier_);
@@ -798,7 +808,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
         0, 0, this.oModifier_,
         this.oMultiplier_);
 
-      this.oPaths_[i]['segments'][2]['point']['y'] = 
+      this.oPaths_[i]['segments'][2]['point']['y'] =
         this.modCoords_(this.oPathsY_[i][2], false,
         this.oPathsY_[i][2], this.oPathsY_[i][2] * .95, this.oModifier_,
         this.oMultiplier_);
@@ -808,7 +818,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
         0, 0, this.oModifier_,
         this.oMultiplier_);
 
-      this.oPaths_[i]['segments'][3]['point']['y'] = 
+      this.oPaths_[i]['segments'][3]['point']['y'] =
         this.modCoords_(this.oPathsY_[i][3], true,
         0, 0, this.oModifier_,
         this.oMultiplier_);
