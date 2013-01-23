@@ -262,24 +262,22 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
   var missingSideA = Math.sqrt((a.radius * a.radius) + (midDistA * midDistA));
   var missingSideB = Math.sqrt((b.radius * b.radius) + (midDistB * midDistB));
 
-  var angleA = Math.sin(distAY / midDistA);
-  var angleA2 = Math.sin(a.radius / midDistA);
-  angleA = (angleA + angleA2);
+  var angleA = Math.sin(a.radius / midDistA);
+  angleA += angle;
 
-  posXA1 = a.pos.x + a.radius * Math.cos(angleA);
+  posXA1 = a.pos.x + a.radius * -Math.cos(angleA);
   posYA1 = a.pos.y + a.radius * Math.sin(angleA);
 
   posXA2 = a.pos.x + a.radius * -Math.cos(angleA);
   posYA2 = a.pos.y + a.radius * -Math.sin(angleA);
 
-  var angleB = Math.sin(distBY / midDistB);
-  var angleB2 = Math.sin(b.radius / midDistB);
-  angleB = (angleB + angleB2);
+  var angleB = Math.sin(b.radius / midDistB);
+  angleB += angle;
 
   posXB1 = b.pos.x + b.radius * Math.cos(angleB);
   posYB1 = b.pos.y + b.radius * Math.sin(angleB);
 
-  posXB2 = b.pos.x + b.radius * -Math.cos(angleB);
+  posXB2 = b.pos.x + b.radius * Math.cos(angleB);
   posYB2 = b.pos.y + b.radius * -Math.sin(angleB);*/
 
   this.ctx_.beginPath();
