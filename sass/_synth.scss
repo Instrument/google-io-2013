@@ -3,6 +3,10 @@
   height: 100%;
   padding: 2% 20%;
   width: 100%;
+
+  @include screen($break-medium) {
+    padding: 2% 10%;
+  }
 }
 
 #controls {
@@ -13,6 +17,10 @@
   top: 50%;
   width: 33%;
 
+  @include screen($break-medium) {
+    right: 15%;
+  }
+
   ul {
     @include no-bullets;
     margin: 0;
@@ -21,6 +29,15 @@
     li {
       height: 2em;
       line-height: 2em;
+
+      @include screen($break-medium) {
+        height: 1em;
+        line-height: 1em;
+        
+        &:first-child {
+          height: 3em;
+        }
+      }
     }
 
     input.param {
