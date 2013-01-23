@@ -58,7 +58,7 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   var size = ~~(this.width_ / data.length) + 1,
       x = 0, y = 0;
   for (var i = 0, l = data.length; i < l; i++) {
-    y = (this.height_ / 2 + 256) - 256 - data[i];
+    y = this.height_ / 2 - data[i] * 1.5;
     this.path['segments'][i]['point']['y'] = y;
   }
 
@@ -99,7 +99,7 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.path['strokeColor'] = 'red';
     self.path['strokeWidth'] = size;
 
-    for (var i = 0; i < 256; i++) {
+    for (var i = -1; i <= 256; i++) {
       var point = new paper['Point'](size * i, self.height_ / 2);
       self.path.add(point);
     }

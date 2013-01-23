@@ -127,7 +127,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
     this.iMultiplier_ += 2;
   }
 
-  this.playProcessedAudio_('boing.wav', this.chorus_);
+  this.playProcessedAudio_('i.wav', this.chorus_);
 
   this.addCharacter_('1');
   this.resetIdle_();
@@ -144,7 +144,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
     this.oMultiplier_ += 2;
   }
 
-  this.playProcessedAudio_('boing.wav', this.delay_);
+  this.playProcessedAudio_('o.wav', this.delay_);
 
   this.addCharacter_('0');
   this.resetIdle_();
