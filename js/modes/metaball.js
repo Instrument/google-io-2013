@@ -7,41 +7,32 @@ goog.provide('ww.mode.MetaBallMode');
 ww.mode.MetaBallMode = function() {
   goog.base(this, 'metaball', true, true, true);
 
-  var context = this.getAudioContext_();
-  this.tuna_ = new Tuna(context);
+  // Set up audio
+  this.getAudioContext_();
+  this.source1 = this.audioContext_.createOscillator();
+  this.source2 = this.audioContext_.createOscillator();
+  this.source3 = this.audioContext_.createOscillator();
 
-  /**
-   * Create a delay audio filter. Value ranges are as follows.
-   * feedback: 0 to 1+
-   * delayTime: how many milliseconds should the wet signal be delayed?
-   * wetLevel: 0 to 1+
-   * dryLevel: 0 to 1+
-   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.delay_ = new this.tuna_.Delay({
-    feedback: 0,
-    delayTime: 0,
-    wetLevel: 0,
-    dryLevel: 0,
-    cutoff: 20,
-    bypass: 0
-  });
-
-  /**
-   * Create a chorus audio filter. Value ranges are as follows.
-   * rate: 0.01 to 8+
-   * feedback: 0 to 1+
-   * delay: 0 to 1
-   * dryLevel: 0 to 1+
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.chorus_ = new this.tuna_.Chorus({
-    rate: 0.01,
-    feedback: 0.2,
-    delay: 0,
-    bypass: 0
-  });
+  this.notes_ = [
+    {
+      // ball 1
+      'frequency': 0,
+      'detune': 0,
+      'type': 1
+    },
+    {
+      // ball 2
+      'frequency': 0,
+      'detune': 0,
+      'type': 1
+    },
+    {
+      // ball 3
+      'frequency': 0,
+      'detune': 0,
+      'type': 1
+    }
+  ];
 };
 goog.inherits(ww.mode.MetaBallMode, ww.mode.Core);
 
@@ -555,6 +546,41 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
       
       this.world_.particles[i].pos.y = this.world_.particles[i].radius + 1;
     }
+
+    if (this.world_.particles[i] != this.world_.particles[0]) {
+      this.notes_[i - 1]['frequency'] = this.world_.particles[0].pos.x -
+        this.world_.particles[i].pos.x;
+
+      this.notes_[i - 1]['detune'] = this.world_.particles[0].pos.y -
+        this.world_.particles[i].pos.y;
+    }
+  }
+
+  if (this.world_.particles[1]) {
+    this.source1.type = this.notes_[0]['type'];
+    this.source1.frequency.value = this.notes_[0]['frequency'];
+    this.source1.detune.value = this.notes_[0]['detune'];
+
+    this.source1.connect(this.audioContext_.destination);
+    this.source1.noteOn(0);
+  }
+
+  if (this.world_.particles[2]) {
+    this.source2.type = this.notes_[1]['type'];
+    this.source2.frequency.value = this.notes_[1]['frequency'];
+    this.source2.detune.value = this.notes_[1]['detune'];
+
+    this.source2.connect(this.audioContext_.destination);
+    this.source2.noteOn(0);
+  }
+
+  if (this.world_.particles[3]) {
+    this.source3.type = this.notes_[2]['type'];
+    this.source3.frequency.value = this.notes_[2]['frequency'];
+    this.source3.detune.value = this.notes_[2]['detune'];
+
+    this.source3.connect(this.audioContext_.destination);
+    this.source3.noteOn(0);
   }
 };
 
