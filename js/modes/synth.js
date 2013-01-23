@@ -96,7 +96,7 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     var size = ~~(this.width_ / 256) + 1;
 
     self.path = new paper['Path']();
-    self.path['strokeColor'] = '#ebebeb';
+    self.path['strokeColor'] = 'red';
     self.path['strokeWidth'] = size;
 
     for (var i = 0; i < 256; i++) {

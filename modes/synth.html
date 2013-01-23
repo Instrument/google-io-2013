@@ -20,21 +20,21 @@
         <circle id="letter-o" fill="#3777E3" cx="564.5" cy="311.256" r="211.5"/>
         <line id="slash" fill="none" stroke="#E6E6E6" stroke-width="19.3658" stroke-miterlimit="10" x1="391.905" y1="2.896" x2="198.619" y2="619.617"/>
       </svg>
+      <div id="states">
+        <input id="power" type="button" value="Play">
+        <select id="effect">
+          <option value="dry">Dry</option>
+          <option value="delay">Delay</option>
+          <option value="tremolo">Tremolo</option>
+          <option value="chorus">Chorus</option>
+          <option value="phaser">Phaser</option>
+          <option value="filter">Filter</option>
+          <option value="wahwah">WahWah</option>
+          <option value="overdrive">Overdrive</option>
+        </select>
+      </div>
       <div id="controls">
         <ul>
-          <li>
-            <input id="power" type="button" value="Play">
-            <select id="effect">
-              <option value="dry">Dry</option>
-              <option value="delay">Delay</option>
-              <option value="tremolo">Tremolo</option>
-              <option value="chorus">Chorus</option>
-              <option value="phaser">Phaser</option>
-              <option value="filter">Filter</option>
-              <option value="wahwah">WahWah</option>
-              <option value="overdrive">Overdrive</option>
-            </select>
-          </li>
           <li><input class="param" type="range" id="oscillator-type" min="0" max="3" step="1" value="0"></li>
           <li><input class="param" type="range" id="oscillator-frequency" min="1" max="1000" step="1" value="80"></li>
           <li><input class="param" type="range" id="oscillator-detune" min="-4800" max="4800" step="1" value="650"></li>
