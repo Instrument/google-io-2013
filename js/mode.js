@@ -61,7 +61,7 @@ ww.mode.register('pinata',    ww.mode.PinataMode,     6, 8); // 00000110
 ww.mode.register('bacon',     ww.mode.BaconMode,      7, 8); // 00000111
 ww.mode.register('simone',    ww.mode.SimoneMode,     8, 8); // 00001000
 // ww.mode.register('eightbit',  ww.mode.EightBitMode,   9, 8); // 00001001
-ww.mode.register('metaball',  ww.mode.MetaBallMode,  10, 8); // 00001011
+ww.mode.register('metaball',  ww.mode.MetaBallMode,  10, 8); // 00001010
 ww.mode.register('fireplace', ww.mode.FireplaceMode, 11, 8); // 00001011
 ww.mode.register('synth', ww.mode.SynthMode, 12, 8);         // 00001100
 
