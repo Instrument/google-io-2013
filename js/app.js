@@ -1,7 +1,4 @@
 goog.provide('ww.app');
-goog.require('goog.array');
-goog.require('goog.dom');
-goog.require('goog.events');
 goog.require('ww.raf');
 goog.require('ww.util');
 
@@ -9,67 +6,89 @@ goog.require('ww.util');
 var DEBUG_MODE = false;
 
 /**
+ * The "app" controls the initial viewport ("index.html"), initializes new
+ * modes in iframes when requested and animates between them.
  * @constructor
  */
 ww.app.Core = function() {
-  this.window_ = $(window);
+  // Save key for CSS3 transforms.
+  this.transformKey_ = Modernizr.prefixed('transform');
+
+  // Instance window and sizing.
+  this.$window_ = $(window);
   this.width_ = 0;
   this.height_ = 0;
 
-  this.transformKey_ = Modernizr.prefixed('transform');
-
-  // TODO: Throttle
+  // Listen (throttled) to window resize events.
   var self = this;
-  this.window_.resize(function() {
-    self.onResize();
-  });
-  this.onResize();
-};
+  this.$window_.resize(ww.util.throttle(function() {
+    self.onResize_();
+  }, 50));
+  this.onResize_();
 
-ww.app.Core.prototype.renderFrame_ = function(delta) {
-  if (!TWEEN.update()) {
-    ww.raf.unsubscribe('app');
-  }
+  // Start event listeners.
+  this.start_();
 };
 
 /**
- * Handles a browser window resize.
+ * Handles a browser window resize event.
+ * @private
  */
-ww.app.Core.prototype.onResize = function() {
-  this.width_ = this.window_.width();
-  this.height_ = this.window_.height();
+ww.app.Core.prototype.onResize_ = function() {
+  this.width_ = this.$window_.width();
+  this.height_ = this.$window_.height();
 
+  // Update mode iframe sizes.
   $('iframe').attr('width', this.width_).attr('height', this.height_);
 };
 
-ww.app.Core.prototype.start = function() {
+/**
+ * Start listening to message events and initialize home mode.
+ * @private
+ */
+ww.app.Core.prototype.start_ = function() {
   var self = this;
 
+  // Callback to run when a mode says it is ready.
   this.onReady_ = function() {};
 
-  goog.events.listen(window, 'message', function(evt) {
-    var data = evt.getBrowserEvent().data;
-    self.log('Got message: ' + data['name'], data);
+  // Listen to message events.
+  this.$window_.bind('message', function(evt) {
+    var data = evt.originalEvent.data;
+    self.log_('Got message: ' + data['name'], data);
 
     if (data['name'].match(/.ready/)) {
       self.onReady_(data);
     } else if (data['name'] === 'goToMode') {
-      self.loadModeByName(data['data'], true);
+      self.loadModeByName_(data['data'], true);
     } else if (data['name'] === 'goToHome') {
-      self.loadModeByName('home', true, true);
+      self.loadModeByName_('home', true, true);
     }
   });
 
-  this.loadModeByName('home', false);
+  // Load home mode.
+  this.loadModeByName_('home', false);
 };
 
-ww.app.Core.prototype.loadModeByName = function(modeName, transition, reverse) {
+/**
+ * Load (setup iframe) for a mode by name.
+ * @private
+ * @param {String} modeName The name of the mode.
+ * @param {Boolean} transition Whether the mode will animate in.
+ * @param {Boolean} reverse Whether the animation should be reversed.
+ */
+ww.app.Core.prototype.loadModeByName_ = function(modeName, transition, reverse) {
   this.loadedModes_ = this.loadedModes_ || {};
   this.loadedModes_[modeName] = this.loadedModes_[modeName] || { name: modeName };
-  this.loadMode(this.loadedModes_[modeName], transition, reverse);
+  this.loadMode_(this.loadedModes_[modeName], transition, reverse);
 };
 
-ww.app.Core.prototype.log = function(msg) {
+/**
+ * Internal log method.
+ * @private
+ * @param {String} msg Log message;
+ */
+ww.app.Core.prototype.log_ = function(msg) {
   if (DEBUG_MODE && console && console.log) {
     var args = Array.prototype.slice.call(arguments);
     if (typeof args[0] === 'string') {
@@ -89,12 +108,19 @@ ww.app.Core.prototype.trackEvent_ = function(action, value) {
   ww.util.trackEvent('app', action, value);
 };
 
-ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
-  var onComplete;
+/**
+ * Load a mode (iframe) and transition it in.
+ * @private
+ * @param {Object} mode Mode details.
+ * @param {Boolean} transition Whether the transition is animated.
+ * @param {Boolean} reverse Whether the transition is reversed.
+ */
+ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
+  var onComplete,
+      currentFrame = this.currentIframe,
+      self = this;
 
-  var currentFrame = this.currentIframe;
-  var self = this;
-
+  // If a mode is already focused, unfocus it (stop event handling/animation).
   if (currentFrame) {
     currentFrame.contentWindow.postMessage({
       'name': 'unfocus',
@@ -105,18 +131,24 @@ ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
   }
   
   if (transition) {
+    // Transition onload handler
     onComplete = function() {
+      // Tell the mode to start listening to events and animating.
       mode.iframe.contentWindow.postMessage({
         'name': 'focus',
         'data': null
       }, '*');
       
+      // Transition start position.
       var startX = reverse ? -self.width_ : self.width_;
 
+      // Mode new mode into start position.
       mode.iframe.style[self.transformKey_] = 'translateX(' + startX + 'px)';
       mode.iframe.style.visibility = 'visible';
 
+      // After the DOM settles.
       setTimeout(function() {
+        // Animate new mode in.
         var t2 = new TWEEN.Tween({ 'translateX': startX });
         t2.to({ 'translateX': 0 }, 400);
         t2.onUpdate(function() {
@@ -127,6 +159,7 @@ ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
         });
         t2.start();
 
+        // Animate old mode out.
         if (currentFrame) {
           var endX = -startX;
           var t = new TWEEN.Tween({ 'translateX': 0 });
@@ -140,31 +173,38 @@ ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
           t.start();
         }
 
+        // Run the scheduled tweens.
         ww.raf.subscribe('app', self, self.renderFrame_);
       }, 50);
     };
   } else {
+    // Non-transition onload handler
     onComplete = function() {
+      // Tell the mode to start listening to events and animating.
       mode.iframe.contentWindow.postMessage({
         'name': 'focus',
         'data': null
       }, '*');
+
+      // Hide and disable events.
       mode.iframe.style.visibility = 'visible';
       mode.iframe.style.pointerEvents = 'auto';
     };
   }
 
+  // If the mode is already loaded, use that iframe.
   if (mode.iframe) {
     this.currentIframe = mode.iframe;
-    if (goog.isFunction(onComplete)) {
+    if ('function' === typeof onComplete) {
       onComplete();
     }
     return;
   }
 
+  // Once loaded (we get an event of "modeName.ready", call onComplete.
   this.onReady_ = function(data) {
     if (data['name'] === (mode.name + '.ready')) {
-      if (goog.isFunction(onComplete)) {
+      if ('function' === typeof onComplete) {
         onComplete();
       }
     }
@@ -172,19 +212,33 @@ ww.app.Core.prototype.loadMode = function(mode, transition, reverse) {
     this.onReady_ = function() {};
   };
 
-  var iFrameElem = goog.dom.createElement('iframe');
+  // Create the element and add it to the DOM.
+  var iFrameElem = document.createElement('iframe');
   iFrameElem.style.visibility = 'hidden';
   iFrameElem.style.pointerEvents = 'none';
   iFrameElem.src = 'modes/' + mode.name + '.html';
   iFrameElem.width = this.width_;
   iFrameElem.height = this.height_;
-  goog.dom.appendChild(document.body, iFrameElem);
+  $(iFrameElem).appendTo(document.body);
 
   this.currentIframe = iFrameElem;
+
+  // Store iframe element for later.
   mode.iframe = iFrameElem;
 };
 
+/**
+ * requestAnimationFrame callback method.
+ * @private
+ * @param {Number} delta Delta amount.
+ */
+ww.app.Core.prototype.renderFrame_ = function(delta) {
+  if (!TWEEN.update()) {
+    ww.raf.unsubscribe('app');
+  }
+};
+
+// On DocumentReady, start controller.
 $(function() {
-  var app = new ww.app.Core();
-  app.start();
+  new ww.app.Core();
 });

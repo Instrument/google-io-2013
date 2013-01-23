@@ -38,7 +38,7 @@ ww.mode.BaconMode.prototype.activateI = function() {
   stretchOut.to({ 'scaleX': 1.75, 'scaleY': 1.2 }, 400);
   stretchOut.easing(TWEEN.Easing.Elastic.In);
   stretchOut.onUpdate(function() {
-    self.transformElem_(self.letterI[0], 'scaleY(' + this['scaleY'] + ')');
+    self.transformElem_(self.$letterI_[0], 'scaleY(' + this['scaleY'] + ')');
     self.transformElem_(self.stripes[0], 'scaleX(' + this['scaleX'] + ')');
   });
 
@@ -47,7 +47,7 @@ ww.mode.BaconMode.prototype.activateI = function() {
   stretchBack.easing(TWEEN.Easing.Elastic.Out);
   stretchBack.delay(400);
   stretchBack.onUpdate(function() {
-    self.transformElem_(self.letterI[0], 'scaleY(' + this['scaleY'] + ')');
+    self.transformElem_(self.$letterI_[0], 'scaleY(' + this['scaleY'] + ')');
     self.transformElem_(self.stripes[0], 'scaleX(' + this['scaleX'] + ')');
   });
 
