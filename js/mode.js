@@ -15,6 +15,9 @@ goog.require('ww.mode.SynthMode');
 // goog.require('ww.mode.EightBitMode');
 goog.require('ww.mode.FireplaceMode');
 
+/** @define {boolean} */
+var DEBUG_MODE = false;
+
 /**
  * Global list of registered modes.
  * @type {Object}

@@ -107,7 +107,7 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
 
   // update balls to bounce within canvas bounds.
   for (var i = 0; i < length; i++) {
-    var ball = this.active[i];
+    ball = this.active[i];
     ball['vector']['y'] += ball['gravity'];
     ball['vector']['x'] *= 0.99;
 
