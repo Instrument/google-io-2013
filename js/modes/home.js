@@ -344,7 +344,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
     // this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
-    this.paperO_ = new paper['Path']['RegularPolygon'](oCenter, 50, this.oRad_);
+    this.paperO_ = new paper['Path']['RegularPolygon'](oCenter, 100, this.oRad_);
     this.paperO_['fillColor'] = '#3777e2';
 
     // Create arrays to store the coordinates for O's path points.
@@ -353,6 +353,15 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 
     // Store the coordinates for O's path points.
     this.copyXY_(this.paperO_, this.oPointX_, this.oPointY_, true);
+
+    this.floatA_ = [];
+    this.floatB_ = [];
+
+    for (var i = 0; i < this.paperO_['segments'].length; i++) {
+      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
+      this.floatA_.push(Math.random() * (50 - 25) + 25);
+      this.floatB_.push(Math.random() * (24 - 1) + 1);
+    }
   } else {
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
     this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
@@ -753,20 +762,34 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
      */
     var tempDist;
     for (var i = 0; i < this.paperO_['segments'].length; i++) {
-      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
       tempDist = this.paperO_['segments'][i]['point']['getDistance'](this.lastClick_);
-      if (tempDist < this.oRad_) {
-        this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
-          Math.cos(tempDist) * this.oModifier_;
 
-        this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
-          Math.sin(tempDist) * this.oModifier_;
+      if (tempDist < this.oRad_) {
+        if (this.oPointX_[i] > this.paperO_['position']['x']) {
+          this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
+            Math.cos(this.framesRendered_ / 10 + tempDist) + (((this.oRad_ - tempDist) /
+            this.oModifier_) / this.oMultiplier_) * this.oModifier_;
+        } else {
+          this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] -
+            Math.cos(this.framesRendered_ / 10 + tempDist) - (((this.oRad_ - tempDist) /
+            this.oModifier_) / this.oMultiplier_) * this.oModifier_;
+        }
+
+        if (this.oPointY_[i] > this.paperO_['position']['y']) {
+          this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
+            Math.sin(this.framesRendered_ / 10 + tempDist) + (((this.oRad_ - tempDist) /
+            this.oModifier_) / this.oMultiplier_) * this.oModifier_;
+        } else {
+          this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] -
+            Math.sin(this.framesRendered_ / 10 + tempDist) - (((this.oRad_ - tempDist) /
+            this.oModifier_) / this.oMultiplier_) * this.oModifier_;
+        }        
       } else {
         this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
-          Math.cos(this.framesRendered_ / 10) * this.oModifier_ * this.tempFloat_[0];
+          Math.cos(this.framesRendered_ / 10) * this.oModifier_;
 
         this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
-          Math.sin(this.framesRendered_ / 10) * this.oModifier_ * this.tempFloat_[1];
+          Math.sin(this.framesRendered_ / 10) * this.oModifier_;
       }
     }
 
