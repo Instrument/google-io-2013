@@ -14,34 +14,20 @@
 }
 
 #controls {
-  margin: -3em 0 0;
+  display: table;
   position: absolute;
-  right: 20%;
   text-align: center;
-  top: 50%;
-  width: 33%;
-
-  @include screen($break-medium) {
-    right: 15%;
-  }
 
   ul {
     @include no-bullets;
     margin: 0;
     padding: 0;
+    display: table-cell;
+    vertical-align: middle;
 
     li {
-      height: 2em;
-      line-height: 2em;
-
-      @include screen($break-medium) {
-        height: 1em;
-        line-height: 1em;
-        
-        &:first-child {
-          height: 3em;
-        }
-      }
+      height: 1.5em;
+      line-height: 1.5em;
     }
 
     input {
