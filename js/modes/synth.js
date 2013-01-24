@@ -43,6 +43,8 @@ ww.mode.SynthMode.prototype.init = function() {
 
   this.buildEffects_();
   this.createSound_();
+
+  this.count = 360;
 };
 
 ww.mode.SynthMode.prototype.onFrame = function(delta) {
@@ -52,22 +54,57 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
     return;
   }
 
+  this.count = this.count - (delta * 500);
+
   var data = new Uint8Array(this.analyser.frequencyBinCount);
   this.analyser.getByteFrequencyData(data);
   
-  var size = ~~(this.width_ / data.length) + 1,
-      x = 0, y = 0;
   for (var i = 0, l = data.length; i < l; i++) {
-    y = this.height_ / 2 - data[i] * 1.5;
-    this.path['segments'][i]['point']['y'] = y;
+    this.path['segments'][i]['point']['y'] = this.height_ / 2 - data[i] * 1.5;
   }
 
   this.path['smooth']();
+  
+  var detune = Math.abs(Math.round(this.source.detune.value / 2400)) + 1;
+  var freq = this.source.frequency.value;
+  var height = this.height_ / 4;
+
+  this.ctx_.fillStyle = 'pink';
+
+  var x = 0;
+
+  while (x + this.count < this.width_ + this.count) {
+    y = Math.sin(freq * (x + this.count) * Math.PI / 180) * detune;
+
+    if (y >= 0) {
+      y = 300 - (y - 0) * (300 / 2);
+    }
+
+    if (y < 0) {
+      y = 300 + (0 - y) * (300 / 2);
+    }
+
+    y += (this.height_ / 4);
+
+    this.ctx_.fillRect(x, y, 5, 5);
+
+    x++;
+  }
+
+  if (this.count < 0) {
+    this.count = 360;
+  }
 };
 
 
 ww.mode.SynthMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
+
+  if (this.canvas_) {
+    this.canvas_.width = this.width_;
+    this.canvas_.height = this.height_;
+    this.scale = ~~(this.height_ * 0.5);
+  }
 
   if (this.path) {
     var x = ~~(this.width_ / 256) + 1;
@@ -90,17 +127,29 @@ ww.mode.SynthMode.prototype.didFocus = function() {
 
   var self = this;
 
+  if (!self.canvas_) {
+    self.canvas_ = $('#sine-graph')[0];
+    self.canvas_.width = self.width_;
+    self.canvas_.height = self.height_;
+    self.ctx_ = self.canvas_.getContext('2d');
+    self.ctx_.fillStyle = 'pink';
+    self.scale = ~~(this.height_ * 0.5);
+  }
+
   if (!self.path && !self.points) {
     self.getPaperCanvas_();
 
-    var size = ~~(this.width_ / 256) + 1;
+    self.ctx_ = self.paperCanvas_.getContext('2d');
+
+    var size = Math.round(this.width_ / 256);
+    var centerY = self.height_ / 2;
 
     self.path = new paper['Path']();
     self.path['strokeColor'] = 'red';
     self.path['strokeWidth'] = size;
 
     for (var i = -1; i <= 256; i++) {
-      var point = new paper['Point'](size * i, self.height_ / 2);
+      var point = new paper['Point'](size * i, centerY);
       self.path.add(point);
     }
   }
