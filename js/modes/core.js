@@ -503,13 +503,16 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
  * @return {Function} The constructor.
  */
 ww.mode.Core.prototype.getAudioContextConstructor_ = function() {
-  if ('undefined' !== typeof window.AudioContext) {
+  if ('undefined' !== typeof AudioContext) {
+    window.AudioContext = window.AudioContext || AudioContext;
     return window.AudioContext;
-  } else if ('undefined' !== typeof window.webkitAudioContext) {
+  } else if ('undefined' !== typeof webkitAudioContext) {
+    window.webkitAudioContext = window.webkitAudioContext ||
+                                webkitAudioContext;
     return window.webkitAudioContext;
+  } else {
+    return null;
   }
-
-  return null;
 };
 
 /**

@@ -105,7 +105,6 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
       size = paper['view']['size'],
       ball, pre;
 
-  // update balls to bounce within canvas bounds.
   for (var i = 0; i < length; i++) {
     ball = this.active[i];
     ball['vector']['y'] += ball['gravity'];
@@ -133,7 +132,6 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
 
     var ballAndVect = this.utilAdd_(ball['point'], ball['vector']);
     var max = paper['Point']['max'](ball.radius, ballAndVect);
-
 
     ball['point'] = paper['Point']['min'](max, size['width'] - ball.radius);
 
@@ -184,13 +182,13 @@ ww.mode.PinataMode.prototype.utilMultiply_ = function(v1, v2) {
   * @private
   */
 ww.mode.PinataMode.prototype.prepopulate_ = function(max) {
-  var balls = [];
+  var balls = [], ball, point, radius;
 
   for (var i = 0; i < max; i++) {
-    var point = new paper['Point'](this.centerX, this.centerY);
-    var radius = this.scale * Math.random() + 10;
+    point = new paper['Point'](this.centerX, this.centerY);
+    radius = this.scale * Math.random() + 10;
 
-    var ball = new paper['Path']['Circle'](point, radius);
+    ball = new paper['Path']['Circle'](point, radius);
     ball['point'] = point;
     ball['fillColor'] = 'rgba(255,255,255,0.01)';
 
@@ -215,7 +213,7 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(max) {
  * @private
  */
 ww.mode.PinataMode.prototype.popBalls_ = function() {
-  var ball, point, radius, toPop, self = this;
+  var ball, toPop, self = this;
 
   this.playSound('whack.mp3');
 

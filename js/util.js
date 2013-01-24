@@ -1,7 +1,6 @@
 goog.provide('ww.raf');
 goog.provide('ww.util');
 
-var ww = ww || {};
 var _gaq = _gaq || undefined;
 
 /**
