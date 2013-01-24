@@ -403,6 +403,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   // Multiple bound events upon click or touch.
   var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
   this.$canvas_.bind(downEvt + '.metaball', function(e) {
+
     var activeBall;
 
     self.mouseX_ = e.pageX;
@@ -475,6 +476,10 @@ ww.mode.MetaBallMode.prototype.didUnfocus = function() {
 
   var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
   this.$canvas_.unbind(downEvt + '.metaball');
+
+  this.source1.disconnect();
+  this.source2.disconnect();
+  this.source3.disconnect();
 };
 
 /**
