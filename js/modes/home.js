@@ -144,6 +144,15 @@ ww.mode.HomeMode.prototype.activateO = function() {
     this.oMultiplier_ += 2;
   }
 
+  /*for (var i = 0; i < this.paperO_['segments'].length; i++) {
+    var vector = this.oStatic_[i]['point'] + this.oCenter_ -
+      this.lastClick_;
+
+    var distance = Math.max(0, this.paperO_['radius'] - vector.length);
+    this.oStatic_[i]['point'].length += distance;
+    this.oStatic_[i]['vector'] += 10;
+  }*/
+
   this.playProcessedAudio_('o.wav', this.delay_);
 
   this.addCharacter_('0');
@@ -342,9 +351,9 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 
   if (!this.paperO_) {
     // Create a new paper.js path for O based off the previous variables.
-    var oCenter = new paper['Point'](this.oX_, this.oY_);
-    // this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
-    this.paperO_ = new paper['Path']['RegularPolygon'](oCenter, 100, this.oRad_);
+    this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
+    // this.paperO_ = new paper['Path']['Circle'](this.oCenter_, this.oRad_);
+    this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 100, this.oRad_);
     this.paperO_['fillColor'] = '#3777e2';
 
     // Create arrays to store the coordinates for O's path points.
@@ -354,13 +363,15 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
     // Store the coordinates for O's path points.
     this.copyXY_(this.paperO_, this.oPointX_, this.oPointY_, true);
 
-    this.floatA_ = [];
-    this.floatB_ = [];
+    this.oStatic_ = [];
 
     for (var i = 0; i < this.paperO_['segments'].length; i++) {
-      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
-      this.floatA_.push(Math.random() * (50 - 25) + 25);
-      this.floatB_.push(Math.random() * (24 - 1) + 1);
+      this.oStatic_[i] = {
+        'vector': 0,
+        'randOne': Math.random() * 5 + 10,
+        'randTwo': Math.random() * .1 + 1.05,
+        'point': this.paperO_['segments'][i]['point']
+      }
     }
   } else {
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
@@ -760,38 +771,38 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
      * Loop through each path segment on the letter O and move each point's
      * handles based on time as being evaluated by Sine and Cosine.
      */
+
     var tempDist;
+
+    /*for (var i = 0; i < this.paperO_['segments'].length; i++) {
+      this.oStatic_[i]['vector'] = ((this.paperO_['radius'] -
+        this.paperO_['segments'].length) / this.oStatic_[i]['modOne'] +
+        this.oStatic_[i]['vector']) / this.oStatic_[i]['modTwo'];
+    }*/
+
+    var origin;
+    var vector;
+    var vectorX;
+    var vectorY;
+
     for (var i = 0; i < this.paperO_['segments'].length; i++) {
-      tempDist = this.paperO_['segments'][i]['point']['getDistance'](this.lastClick_);
+      vectorX = this.oPointX_[i] - this.oCenter_['x'];
+      vectorY = this.oPointY_[i] - this.oCenter_['y'];
+      tempPoint = new paper['Point'](vectorX, vectorY);
 
-      if (tempDist < this.oRad_) {
-        if (this.oPointX_[i] > this.paperO_['position']['x']) {
-          this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
-            Math.cos(this.framesRendered_ / 10 + tempDist) + (((this.oRad_ - tempDist) /
-            this.oModifier_) / this.oMultiplier_) * this.oModifier_;
-        } else {
-          this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] -
-            Math.cos(this.framesRendered_ / 10 + tempDist) - (((this.oRad_ - tempDist) /
-            this.oModifier_) / this.oMultiplier_) * this.oModifier_;
-        }
+      vector = tempPoint['normalize']();
 
-        if (this.oPointY_[i] > this.paperO_['position']['y']) {
-          this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
-            Math.sin(this.framesRendered_ / 10 + tempDist) + (((this.oRad_ - tempDist) /
-            this.oModifier_) / this.oMultiplier_) * this.oModifier_;
-        } else {
-          this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] -
-            Math.sin(this.framesRendered_ / 10 + tempDist) - (((this.oRad_ - tempDist) /
-            this.oModifier_) / this.oMultiplier_) * this.oModifier_;
-        }        
-      } else {
-        this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
-          Math.cos(this.framesRendered_ / 10) * this.oModifier_;
+      origin = new paper['Point'](this.oPointX_[i], this.oPointY_[i]);
+      tempDist = origin['getDistance'](this.lastClick_);
+      distanceModifier = Math.max(tempDist, 50)
 
-        this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
-          Math.sin(this.framesRendered_ / 10) * this.oModifier_;
-      }
+      this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
+        Math.cos(this.framesRendered_ / 10) * vector['x'] * this.oModifier_ * this.oMultiplier_ / (distanceModifier / this.oRad_);
+
+      this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
+        Math.sin(this.framesRendered_ / 10) * vector['y'] * this.oModifier_ * this.oMultiplier_ / (distanceModifier / this.oRad_);
     }
+
 
      this.paperO_['smooth']();
     /*this.paperO_['segments'][0]['point']['x'] =
