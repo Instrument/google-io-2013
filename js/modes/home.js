@@ -343,8 +343,8 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
   if (!this.paperO_) {
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
-    this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
-    // this.paperO_ = new paper['Path']['RegularPolygon'](oCenter, 100, this.oRad_);
+    // this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
+    this.paperO_ = new paper['Path']['RegularPolygon'](oCenter, 50, this.oRad_);
     this.paperO_['fillColor'] = '#3777e2';
 
     // Create arrays to store the coordinates for O's path points.
@@ -424,7 +424,7 @@ ww.mode.HomeMode.prototype.init = function() {
   this.screenCenterY_ = this.height_ / 2;
 
   // Variable to store the screen coordinates of the last click/tap/touch.
-  this.lastClick =
+  this.lastClick_ =
     new paper['Point'](this.screenCenterX_, this.screenCenterY_);
 
   /**
@@ -468,12 +468,26 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   this.$pattern = $("#pattern");
 
   var self = this;
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
+
+  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  $("#menu").bind(evt2 + '.core', function() {
+    $(document.body).addClass('nav-visible');
+  });
+
+  $("#modal").bind(evt2 + '.core', function() {
+    $(document.body).removeClass('nav-visible');
+  });
+
+  $("#dropdown").bind(evt2 + '.core', function(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+  });
 
   var tool = new paper['Tool']();
 
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   tool['onMouseDown'] = function(event) {
-    self.lastClick = event['point'];
+    self.lastClick_ = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
       if (self.hasFocus) {
         self.activateO();
@@ -488,9 +502,14 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   };
 };
 
-// ww.mode.HomeMode.prototype.didUnfocus = function() {
-//   goog.base(this, 'didUnfocus');
-// };
+ww.mode.HomeMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
+
+  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  $("#menu").unbind(evt2 + '.core');
+  $("#modal").unbind(evt2 + '.core');
+  $("#dropdown").unbind(evt2 + '.core');
+};
 
 /**
  * Handles a browser window resize.
@@ -543,7 +562,7 @@ ww.mode.HomeMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
       paper['segments'][i]['point']['y'] = yArray[i];
     }
   }
-}
+};
 
 /**
  * Assign a paper object's coordinates to a static array, or vice versa.
@@ -732,7 +751,27 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
      * Loop through each path segment on the letter O and move each point's
      * handles based on time as being evaluated by Sine and Cosine.
      */
-    this.paperO_['segments'][0]['point']['x'] =
+    var tempDist;
+    for (var i = 0; i < this.paperO_['segments'].length; i++) {
+      this.tempFloat_ = ww.util.floatComplexGaussianRandom();
+      tempDist = this.paperO_['segments'][i]['point']['getDistance'](this.lastClick_);
+      if (tempDist < this.oRad_) {
+        this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
+          Math.cos(tempDist) * this.oModifier_;
+
+        this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
+          Math.sin(tempDist) * this.oModifier_;
+      } else {
+        this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
+          Math.cos(this.framesRendered_ / 10) * this.oModifier_ * this.tempFloat_[0];
+
+        this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
+          Math.sin(this.framesRendered_ / 10) * this.oModifier_ * this.tempFloat_[1];
+      }
+    }
+
+     this.paperO_['smooth']();
+    /*this.paperO_['segments'][0]['point']['x'] =
       this.modCoords_(this.oPointX_[0], true,
       0, 0, this.oModifier_,
       this.oMultiplier_);
@@ -770,7 +809,7 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     this.paperO_['segments'][3]['point']['y'] =
       this.modCoords_(this.oPointY_[3], true,
       0, 0, this.oModifier_,
-      this.oMultiplier_);
+      this.oMultiplier_);*/
   } else {
     /*
      * If O hasn't been activated recently enough, restore the original handle

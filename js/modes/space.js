@@ -337,7 +337,7 @@ ww.mode.SpaceMode.prototype.init = function() {
     this.world_.particles.push(new Particle());
 
     this.world_.particles[i].setRadius(
-      Math.random() * (2 - 0.1) + 0.1);
+      Math.random() * (2.5 - 0.1) + 0.1);
 
     this.world_.particles[i].pos.x = this.tempFloat_[0] *
       this.width_;
@@ -419,6 +419,8 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
+  // this.ctx_.shadowColor = 'white';
+  this.ctx_.globalCompositeOperation = 'lighter';
   this.ctx_.fillStyle = '#424242';
 
   var canvas = this.getPaperCanvas_();
@@ -614,15 +616,15 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
     var result;
 
     if (!random) {
-      random = 1;
+      random = 2400 / this.width_;
     }
 
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *
-        mod3 * mod4 * random;
+        mod3 * mod4 / random;
     } else {
       result = source + Math.sin(this.framesRendered_ / 10 + (mod1 - mod2)) *
-        mod3 * mod4 * random;
+        mod3 * mod4 / random;
     }
 
     return result;
@@ -639,7 +641,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   for (var i = 0; i < this.world_.particles.length; i++) {
     this.world_.particles[i].pos.x +=
       (this.screenCenterX_ - this.mouseX_) /
-      (5000 / this.world_.particles[i].radius) + .1;
+      (2000 / this.world_.particles[i].radius) + .1;
 
     if (this.world_.particles[i].pos.x > this.width_ * 2) {
       this.world_.particles[i].pos.x =
@@ -652,7 +654,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
 
     this.world_.particles[i].pos.y +=
       (this.screenCenterY_ - this.mouseY_) /
-      (5000 / this.world_.particles[i].radius);
+      (2000 / this.world_.particles[i].radius);
 
     if (this.world_.particles[i].pos.y > this.height_ * 2) {
       this.world_.particles[i].pos.y =
@@ -679,15 +681,15 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
   this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
 
-  this.ctx_.beginPath();
-
   for (i = 0; i < this.world_.particles.length; i++) {
+    // this.ctx_.shadowBlur = this.world_.particles[i].radius * 2;
+    this.ctx_.beginPath();
     this.ctx_.arc(this.world_.particles[i].pos.x,
       this.world_.particles[i].pos.y,
       this.world_.particles[i].radius, 0, Math.PI * 2);
+    this.ctx_.fill();
+    this.ctx_.closePath();
   }
-
-  this.ctx_.fill();
 
   /*
    * Delta is initially a very small float. Need to modify it for it to have a

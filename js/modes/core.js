@@ -503,10 +503,10 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
  * @return {Function} The constructor.
  */
 ww.mode.Core.prototype.getAudioContextConstructor_ = function() {
-  if ('undefined' !== typeof AudioContext) {
-    return AudioContext;
-  } else if ('undefined' !== typeof webkitAudioContext) {
-    return webkitAudioContext;
+  if ('undefined' !== typeof window.AudioContext) {
+    return window.AudioContext;
+  } else if ('undefined' !== typeof window.webkitAudioContext) {
+    return window.webkitAudioContext;
   }
 
   return null;

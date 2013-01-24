@@ -107,7 +107,7 @@ ww.mode.PinataMode.prototype.onFrame = function(delta) {
 
   // update balls to bounce within canvas bounds.
   for (var i = 0; i < length; i++) {
-    ball = this.active[i];
+    var ball = this.active[i];
     ball['vector']['y'] += ball['gravity'];
     ball['vector']['x'] *= 0.99;
 
@@ -187,10 +187,10 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(max) {
   var balls = [];
 
   for (var i = 0; i < max; i++) {
-    point = new paper['Point'](this.centerX, this.centerY);
-    radius = this.scale * Math.random() + 10;
+    var point = new paper['Point'](this.centerX, this.centerY);
+    var radius = this.scale * Math.random() + 10;
 
-    ball = new paper['Path']['Circle'](point, radius);
+    var ball = new paper['Path']['Circle'](point, radius);
     ball['point'] = point;
     ball['fillColor'] = 'rgba(255,255,255,0.01)';
 
