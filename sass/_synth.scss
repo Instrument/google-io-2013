@@ -7,10 +7,14 @@
   @include screen($break-medium) {
     padding: 2% 10%;
   }
+
+  canvas {
+    z-index: -1;
+  }
 }
 
 #controls {
-  margin: -4em 0 0;
+  margin: -3em 0 0;
   position: absolute;
   right: 20%;
   text-align: center;
@@ -40,9 +44,15 @@
       }
     }
 
-    input.param {
+    input {
       vertical-align: middle;
       width: 80%;
     }
   }
+}
+
+#states {
+  position: absolute;
+  top: 10%;
+  left: 2%;
 }

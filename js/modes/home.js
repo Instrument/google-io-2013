@@ -127,7 +127,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
     this.iMultiplier_ += 2;
   }
 
-  this.playProcessedAudio_('boing.wav', this.chorus_);
+  this.playProcessedAudio_('i.wav', this.chorus_);
 
   this.addCharacter_('1');
   this.resetIdle_();
@@ -144,7 +144,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
     this.oMultiplier_ += 2;
   }
 
-  this.playProcessedAudio_('boing.wav', this.delay_);
+  this.playProcessedAudio_('o.wav', this.delay_);
 
   this.addCharacter_('0');
   this.resetIdle_();
@@ -344,6 +344,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
     // Create a new paper.js path for O based off the previous variables.
     var oCenter = new paper['Point'](this.oX_, this.oY_);
     this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
+    // this.paperO_ = new paper['Path']['RegularPolygon'](oCenter, 100, this.oRad_);
     this.paperO_['fillColor'] = '#3777e2';
 
     // Create arrays to store the coordinates for O's path points.
@@ -467,10 +468,24 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   this.$pattern = $("#pattern");
 
   var self = this;
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
+
+  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  $("#menu").bind(evt2 + '.core', function() {
+    $(document.body).addClass('nav-visible');
+  });
+
+  $("#modal").bind(evt2 + '.core', function() {
+    $(document.body).removeClass('nav-visible');
+  });
+
+  $("#dropdown").bind(evt2 + '.core', function(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+  });
 
   var tool = new paper['Tool']();
 
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   tool['onMouseDown'] = function(event) {
     self.lastClick = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
@@ -487,9 +502,14 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   };
 };
 
-// ww.mode.HomeMode.prototype.didUnfocus = function() {
-//   goog.base(this, 'didUnfocus');
-// };
+ww.mode.HomeMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
+
+  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  $("#menu").unbind(evt2 + '.core');
+  $("#modal").unbind(evt2 + '.core');
+  $("#dropdown").unbind(evt2 + '.core');
+};
 
 /**
  * Handles a browser window resize.
@@ -542,7 +562,7 @@ ww.mode.HomeMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
       paper['segments'][i]['point']['y'] = yArray[i];
     }
   }
-}
+};
 
 /**
  * Assign a paper object's coordinates to a static array, or vice versa.
