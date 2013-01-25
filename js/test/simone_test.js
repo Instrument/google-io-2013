@@ -272,9 +272,34 @@ function testWwModeSimoneModeCheckSequence_() {
 }
 
 function testWwModeSimoneModeBeginGame_() {
-  // mode.beginGame_();
+  mode.isPlaying = false;
+  var plays = mode.plays;
+
+  mode.beginGame_();
+
+  assertTrue('Plays should be increased by one', plays + 1 === mode.plays);
+  assertTrue('Should be playing.', mode.isPlaying);
 }
 
 function testWwModeSimoneModeDisplayNext_() {
-  // mode.displayNext_();
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+  mode.lastStep = 2;
+  mode.sequence = [0, 1, 0, 3, 1, 0]; // ensure dummy sequence
+
+  // if 2 is the last step index in zero based indexing
+  // expecting three steps then. each step has 2 tweens.
+  var expected = mode.lastStep * 3;
+                                  
+  var tweens = [];
+
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  assertTrue('Tweens should be empty before.', tweens.length === 0);
+
+  mode.displayNext_();
+
+  assertEquals('A certain number of tweens should have been added.', tweens.length, expected);
 }
