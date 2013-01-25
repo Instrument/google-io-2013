@@ -112,8 +112,8 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.ix = this.screenCenterX_ - this.iWidth_ * 1.5;
-  this.iy = this.screenCenterY_ - this.iHeight_ / 2;
+  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
   if (!this.paperI_) {
     // Initial variables for calculating path coordinates.
@@ -130,10 +130,10 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     this.iPaths_ = [];
 
     // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.ix, this.iy);
+    var iTopLeft = new paper['Point'](this.iX_, this.iY_);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
-    this.letterI = new paper['Rectangle'](iTopLeft, iSize);
-    this.paperI_ = new paper['Path']['Rectangle'](this.letterI);
+    var letterI = new paper['Rectangle'](iTopLeft, iSize);
+    this.paperI_ = new paper['Path']['Rectangle'](letterI);
     this.paperI_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
 
     this.iGroup_ = new paper['Group'];
@@ -175,10 +175,10 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, false);
 
     // Change the position based on new screen size values.
-    this.iGroup_['position'] = {x: this.ix + this.iWidth_ / 2,
-      y: this.iy + this.iHeight_ / 2};
-    this.paperI_['position'] = {x: this.ix + this.iWidth_ / 2,
-      y: this.iy + this.iHeight_ / 2};
+    this.iGroup_['position'] = {x: this.iX_ + this.iWidth_ / 2,
+      y: this.iY_ + this.iHeight_ / 2};
+    this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
+      y: this.iY_ + this.iHeight_ / 2};
 
     // Change the scale based on new screen size values.
     this.iGroup_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
@@ -293,7 +293,7 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
       this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728));
 
-    this.slashEnd_ = new paper['Point'](this.ix + this.iWidth_,
+    this.slashEnd_ = new paper['Point'](this.iX_ + this.iWidth_,
       this.screenCenterY_ + (this.iHeight_ / 2) +
       ((this.iHeight_ * 1.5) * 0.17475728));
 
@@ -308,7 +308,7 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       ((this.iHeight_ * 1.5) * 0.17475728);
 
-    this.slashEnd_['x'] = this.ix + this.iWidth_;
+    this.slashEnd_['x'] = this.iX_ + this.iWidth_;
     this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
       ((this.iHeight_ * 1.5) * 0.17475728);
 

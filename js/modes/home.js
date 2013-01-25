@@ -780,10 +780,12 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
         this.oStatic_[i]['vector']) / this.oStatic_[i]['modTwo'];
     }*/
 
+    var distanceModifier;
     var origin;
     var vector;
     var vectorX;
     var vectorY;
+    var tempPoint;
 
     for (var i = 0; i < this.paperO_['segments'].length; i++) {
       vectorX = this.oPointX_[i] - this.oCenter_['x'];
