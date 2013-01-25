@@ -504,12 +504,9 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
  */
 ww.mode.Core.prototype.getAudioContextConstructor_ = function() {
   if ('undefined' !== typeof AudioContext) {
-    window.AudioContext = window.AudioContext || AudioContext;
-    return window.AudioContext;
+    return AudioContext;
   } else if ('undefined' !== typeof webkitAudioContext) {
-    window.webkitAudioContext = window.webkitAudioContext ||
-                                webkitAudioContext;
-    return window.webkitAudioContext;
+    return webkitAudioContext;
   } else {
     return null;
   }
