@@ -72,6 +72,7 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   this.ctx_.fillStyle = 'pink';
 
   var x = 0;
+  var y = 0;
 
   while (x + this.count < this.width_ + this.count) {
     y = Math.sin(freq * (x + this.count) * Math.PI / 180) * detune;
