@@ -186,12 +186,47 @@ function testWwModeSongModeChangeDrums_() {
 
   assertEquals('playSoundCount should be 0 before drum change', 0, playSoundCount);
 
-  // trigger first drum start
   mode.changeDrums_();
 
   assertEquals('playSoundCount should be 1 after drum change', 1, playSoundCount);
 }
 
 function testWwModeSongModeSwapSongMode_() {
+  var active = $('#' + mode.active);
+  var next = active.next();
 
+  mode.swapSongMode_(next.attr('id'));
+
+  assertEquals('New active id should be different, not the previous active id.',
+                  next.attr('id'), mode.active);
+}
+
+function testWwModeSongModeBeginSound_() {
+  var noteId = 'note-1';
+  var rippleCount = mode.ripples[noteId].length;
+  var playSoundCount = 0;
+
+  mode.constructor.prototype.playSound = function(drum, callback, bool) {
+    playSoundCount++;
+  };
+
+  mode.source = {
+    'buffer': {
+      'duration': 0.01
+    }
+  };
+
+  var tweens = [];
+
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  assertTrue('Tweens should be empty before trigger.', tweens.length === 0);
+  assertEquals('playSoundCount should be 0 before', 0, playSoundCount);
+
+  mode.beginSound_(noteId);
+
+  assertEquals('There should be two tweens added per ripple', rippleCount * 2, tweens.length);
+  assertEquals('playSoundCount should be 1 after', 1, playSoundCount);
 }
