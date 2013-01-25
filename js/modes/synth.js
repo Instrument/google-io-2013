@@ -44,7 +44,7 @@ ww.mode.SynthMode.prototype.init = function() {
   this.buildEffects_();
   this.createSound_();
 
-  this.count = 360;
+  this.count = 360 * (this.width_ % 360);
 };
 
 ww.mode.SynthMode.prototype.onFrame = function(delta) {
@@ -54,22 +54,30 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
     return;
   }
 
-  this.count = this.count - (delta * 500);
+  this.count = this.count - (delta * 1000);
 
   var data = new Uint8Array(this.analyser.frequencyBinCount);
   this.analyser.getByteFrequencyData(data);
-  
+
+  var newY;
   for (var i = 0, l = data.length; i < l; i++) {
-    this.path['segments'][i]['point']['y'] = this.height_ / 2 - data[i] * 1.5;
+    newY = this.centerY - (data[i] * 1.25);
+    this.path['segments'][i]['point']['y'] = newY;
   }
 
   this.path['smooth']();
-  
-  var detune = Math.abs(Math.round(this.source.detune.value / 2400)) + 1;
-  var freq = this.source.frequency.value;
-  var height = this.height_ / 4;
 
-  this.ctx_.fillStyle = 'pink';
+  var detune = Math.max(0.5,
+                Math.abs(Math.round(this.source.detune.value / 2400)));
+  var freq = this.source.frequency.value * 0.00075;
+
+  this.sctx.strokeStyle = 'rgba(230, 230, 230, 0.5)';
+  this.sctx.fillStyle = 'rgba(230, 230, 230, 0.5)';
+  this.sctx.lineWidth = 2;
+
+  this.sctx.clearRect(0, 0, this.width_, this.height_);
+
+  this.sctx.beginPath();
 
   var x = 0;
   var y = 0;
@@ -78,22 +86,25 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
     y = Math.sin(freq * (x + this.count) * Math.PI / 180) * detune;
 
     if (y >= 0) {
-      y = 300 - (y - 0) * (300 / 2);
+      y = this.waveHeight - (y - 0) * (this.waveHeight / 2);
     }
 
     if (y < 0) {
-      y = 300 + (0 - y) * (300 / 2);
+      y = this.waveHeight + (0 - y) * (this.waveHeight / 2);
     }
 
-    y += (this.height_ / 4);
-
-    this.ctx_.fillRect(x, y, 5, 5);
+    this.sctx.fillRect(x, y, 2, 2);
+    this.sctx.lineTo(x, y);
 
     x++;
   }
 
+  this.sctx.closePath();
+  this.sctx.stroke();
+  this.sctx.fill();
+
   if (this.count < 0) {
-    this.count = 360;
+    this.count = 360 * (this.width_ % 360);
   }
 };
 
@@ -101,22 +112,41 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
 ww.mode.SynthMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
 
+  if (this.height_ < 500) {
+    this.centerY = (this.height_ / 2 ) + (this.height_ - 256) / 2;
+  } else {
+    this.centerY = (this.height_ / 2 ) + (256 / 2);
+  }
+
+  this.scale = ~~(this.height_ * 0.5);
+  this.waveHeight = ~~(this.height_ / 2);
+
   if (this.canvas_) {
     this.canvas_.width = this.width_;
     this.canvas_.height = this.height_;
-    this.scale = ~~(this.height_ * 0.5);
   }
 
   if (this.path) {
-    var x = ~~(this.width_ / 256) + 1;
+    var max = Math.max(this.width_, 256);
+    var x = Math.ceil(this.paperCanvas_.width / 256);
+
     for (var i = 0, l = this.path['segments'].length; i < l; i++) {
-      this.path['segments'][i]['point']['x'] = x * i;
+      this.path['segments'][i]['point']['x'] = x * i
+      this.path['segments'][i]['point']['y'] = this.centerY;
     }
   }
 
   if (redraw) {
     this.redraw();
   }
+
+  var boundingO = $('#letter-o')[0]['getBoundingClientRect']();
+  this.synth.css({
+    'top': ~~boundingO['top'] + 'px',
+    'left': ~~boundingO['left'] + 'px',
+    'height': ~~boundingO['height'] + 'px',
+    'width': ~~boundingO['width'] + 'px'
+  });
 };
 
 
@@ -128,32 +158,46 @@ ww.mode.SynthMode.prototype.didFocus = function() {
 
   var self = this;
 
+  if (self.height_ < 500) {
+    self.centerY = (self.height_ / 2 ) + (self.height_ - 256) / 2;
+  } else {
+    self.centerY = (self.height_ / 2 ) + (256 / 2);
+  }
+
+  self.scale = ~~(self.height_ * 0.5);
+  self.waveHeight = ~~(self.height_ / 2);
+
   if (!self.canvas_) {
     self.canvas_ = $('#sine-graph')[0];
     self.canvas_.width = self.width_;
     self.canvas_.height = self.height_;
-    self.ctx_ = self.canvas_.getContext('2d');
-    self.ctx_.fillStyle = 'pink';
-    self.scale = ~~(this.height_ * 0.5);
+    self.sctx = self.canvas_.getContext('2d');
   }
 
   if (!self.path && !self.points) {
     self.getPaperCanvas_();
+    self.ctx = self.paperCanvas_.getContext('2d');
 
-    self.ctx_ = self.paperCanvas_.getContext('2d');
-
-    var size = Math.round(this.width_ / 256);
-    var centerY = self.height_ / 2;
-
+    var max = Math.max(this.width_, 256);
+    var size = Math.ceil(self.paperCanvas_.width / 256);
+   
     self.path = new paper['Path']();
-    self.path['strokeColor'] = 'red';
-    self.path['strokeWidth'] = size;
+    self.path['strokeColor'] = '#e9e9e9';
+    self.path['strokeWidth'] = 3;
 
-    for (var i = -1; i <= 256; i++) {
-      var point = new paper['Point'](size * i, centerY);
+    for (var i = 0; i <= max; i++) {
+      var point = new paper['Point'](size * i, self.centerY);
       self.path.add(point);
     }
   }
+
+  var boundingO = $('#letter-o')[0]['getBoundingClientRect']();
+  self.synth.css({
+    'top': ~~boundingO['top'] + 'px',
+    'left': ~~boundingO['left'] + 'px',
+    'height': ~~boundingO['height'] + 'px',
+    'width': ~~boundingO['width'] + 'px'
+  });
 
   self.isPlaying = false;
   self.connectPower_(); // connect
@@ -162,11 +206,13 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.connectPower_();
   });
 
-  self.params.bind('change.synth', function() {
+  self.params.bind('change.synth', function(e) {
+    e.preventDefault();
     self.createSound_();
   });
 
-  self.effect.bind('change.synth', function() {
+  self.effect.bind('change.synth', function(e) {
+    e.preventDefault();
     self.changeEffect_(this);
   });
 };
@@ -284,5 +330,4 @@ ww.mode.SynthMode.prototype.playSound_ = function() {
 ww.mode.SynthMode.prototype.pauseSound_ = function() {
   this.source.disconnect();
 };
-
 
