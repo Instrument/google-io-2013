@@ -225,10 +225,9 @@ ww.mode.SongMode.prototype.swapSongMode_ = function(id) {
 /**
  * Begin playing the selected note out of the active instrument group.
  * @param {String} id Id of the note to use.
- * @param {Boolean} loop To loop or not to loop the sound.
  * @private
  */
-ww.mode.SongMode.prototype.beginSound_ = function(id, loop) {
+ww.mode.SongMode.prototype.beginSound_ = function(id) {
   this.log('now playing sound for note id: ' + this.active + '-' + id);
   this.trackEvent_('play-sound', this.active + '-' + id);
 
