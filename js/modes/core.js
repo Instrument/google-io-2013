@@ -32,10 +32,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
   this.tweens_ = [];
 
-  if (!ww.testMode && DEBUG_MODE) {
-    this.addDebugUI_();
-  }
-
   this.$window_ = $(window);
   this.width_ = 0;
   this.height_ = 0;
@@ -161,54 +157,6 @@ ww.mode.Core.prototype.onResize = function(redraw) {
     this.redraw();
   }
 };
-
-if (DEBUG_MODE) {
-  /**
-   * Add play/pause/restart UI.
-   * @private
-   */
-  ww.mode.Core.prototype.addDebugUI_ = function() {
-    var self = this;
-
-    var focusElem = document.createElement('button');
-    focusElem.style.fontSize = '12px';
-    focusElem.innerHTML = 'Focus';
-    focusElem.onclick = function() {
-      self.focus_();
-    };
-
-    var unfocusElem = document.createElement('button');
-    unfocusElem.style.fontSize = '12px';
-    unfocusElem.innerHTML = 'Unfocus';
-    unfocusElem.onclick = function() {
-      self.unfocus_();
-    };
-
-    var restartElem = document.createElement('button');
-    restartElem.style.fontSize = '12px';
-    restartElem.innerHTML = 'Restart';
-    restartElem.onclick = function() {
-      self.unfocus_();
-      self.focus_();
-    };
-
-    var containerElem = document.createElement('div');
-    containerElem.style.position = 'fixed';
-    containerElem.style.bottom = 0;
-    containerElem.style.left = 0;
-    containerElem.style.right = 0;
-    containerElem.style.height = '1.5em';
-    containerElem.style.lineHeight = '1.5em';
-    containerElem.style.background = 'rgba(0,0,0,0.2)';
-    containerElem.style.zIndex = 20;
-
-    containerElem.appendChild(focusElem);
-    containerElem.appendChild(unfocusElem);
-    containerElem.appendChild(restartElem);
-
-    document.body.appendChild(containerElem);
-  };
-}
 
 /**
  * Begin running rAF, but only if mode needs it.

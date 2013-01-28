@@ -1,5 +1,6 @@
 goog.require('ww.mode.Core');
 goog.require('ww.util');
+goog.require('ww.PatternMatcher');
 goog.provide('ww.mode.HomeMode');
 
 /**
@@ -8,10 +9,7 @@ goog.provide('ww.mode.HomeMode');
 ww.mode.HomeMode = function() {
   goog.base(this, 'home', true, true);
 
-  this.setupPatternMatchers_();
-
-  this.currentPattern_ = '';
-  this.maxPatternLength_ = 15;
+  this.patternMatcher_ = new ww.PatternMatcher(ww.mode.modes);
 
   this.wentIdleTime_ = 0;
   this.isIdle_ = true;
@@ -102,8 +100,8 @@ ww.mode.HomeMode.prototype.resetIdle_ = function() {
  */
 ww.mode.HomeMode.prototype.enterIdle_ = function() {
   this.isIdle_ = true;
-  this.$date.fadeIn(300);
-  this.$pattern.fadeOut(300);
+  this.$date_.fadeIn(300);
+  this.$pattern_.fadeOut(300);
 };
 
 /**
@@ -112,8 +110,45 @@ ww.mode.HomeMode.prototype.enterIdle_ = function() {
  */
 ww.mode.HomeMode.prototype.leaveIdle_ = function() {
   this.isIdle_ = false;
-  this.$date.fadeOut(300);
-  this.$pattern.fadeIn(300);
+  this.$date_.fadeOut(300);
+  this.$pattern_.fadeIn(300);
+};
+
+ww.mode.HomeMode.prototype.addPatternCharacter = function(character) {
+  if (this.$pattern_.hasClass('success')) {
+    this.$pattern_.removeClass('success');
+    this.patternMatcher_.reset();
+  }
+
+  if (this.$pattern_.hasClass('failure')) {
+    this.$pattern_.removeClass('failure');
+    this.patternMatcher_.reset();
+  }
+
+  var self = this;
+  this.patternMatcher_.addCharacter(character, function(currentPattern, matched) {
+    self.log('current pattern: ' + currentPattern);
+
+    var patternHTML = currentPattern.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
+    self.$pattern_.html(patternHTML);
+    self.$pattern_.css('marginLeft', -(self.$pattern_.width() / 2));
+
+    if (matched) {
+      self.log('matched', matched);
+
+      if (matched.isPartial) {
+        // Highlight partial match in UI?
+      } else {
+        self.$pattern_.addClass('success');
+        self.goToMode_(matched.key);
+      }
+    } else {
+      self.$pattern_.removeClass('success');
+      self.$pattern_.addClass('failure');
+    }
+  });
+
+  this.resetIdle_();
 };
 
 /**
@@ -129,8 +164,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
 
   this.playProcessedAudio_('i.wav', this.chorus_);
 
-  this.addCharacter_('1');
-  this.resetIdle_();
+  this.addPatternCharacter('1');
 };
 
 /**
@@ -155,135 +189,9 @@ ww.mode.HomeMode.prototype.activateO = function() {
 
   this.playProcessedAudio_('o.wav', this.delay_);
 
-  this.addCharacter_('0');
-  this.resetIdle_();
+  this.addPatternCharacter('0');
 };
 
-/**
- * Build matchers from patterns.
- * @private
- */
-ww.mode.HomeMode.prototype.setupPatternMatchers_ = function() {
-  var patterns = {}, key, mode;
-
-  // Privately decode patterns into binary.
-  for (key in ww.mode.modes) {
-    if (ww.mode.modes.hasOwnProperty(key) && ww.mode.modes[key].pattern) {
-      mode = ww.mode.modes[key];
-      patterns[key] = {
-        klass: mode.klass,
-        binaryPattern: ww.util.pad(mode.pattern.toString(2), mode.len)
-      };
-    }
-  }
-
-  // Build per-character matchers
-  this.matchers_ = [];
-
-  for (key in patterns) {
-    if (patterns.hasOwnProperty(key)) {
-      mode = patterns[key];
-      this.log('Building matchers for: ' + mode.binaryPattern);
-      for (var i = 0; i < mode.binaryPattern.length; i++) {
-        this.matchers_.push({
-          key: key,
-          matcher: new RegExp("^" + mode.binaryPattern.slice(0, i + 1)),
-          isPartial: ((i + 1) != mode.binaryPattern.length)
-        });
-      }
-    }
-  }
-};
-
-/**
- * Add a character to the pattern we're tracking.
- * @private
- * @param {String} str The new character.
- */
-ww.mode.HomeMode.prototype.addCharacter_ = function(str) {
-  if (this.$pattern.hasClass('success')) {
-    this.$pattern.removeClass('success');
-    this.resetMatcher_();
-  }
-
-  if (this.$pattern.hasClass('failure')) {
-    this.$pattern.removeClass('failure');
-    this.resetMatcher_();
-  }
-
-  this.currentPattern_ += str;
-
-  if (this.currentPattern_.length > this.maxPatternLength_) {
-    this.currentPattern_ = this.currentPattern_.slice(-this.maxPatternLength_,
-      this.currentPattern_.length);
-  }
-
-  this.log('current pattern: ' + this.currentPattern_);
-
-  var patternHTML = this.currentPattern_.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
-  this.$pattern.html(patternHTML);
-  this.$pattern.css('marginLeft', -(this.$pattern.width() / 2));
-
-  var matched = this.runMatchers_();
-  if (matched) {
-    this.log('matched', matched);
-
-    if (matched.isPartial) {
-      // Highlight partial match in UI?
-    } else {
-      this.$pattern.addClass('success');
-      this.goToMode_(matched.key);
-    }
-  } else {
-    this.$pattern.removeClass('success');
-    this.$pattern.addClass('failure');
-  }
-};
-
-/**
- * Reset the pattern matcher.
- * @private
- */
-ww.mode.HomeMode.prototype.resetMatcher_ = function() {
-  this.currentPattern_ = '';
-};
-
-/**
- * Run the matchers and return the best match.
- * @private
- * @return {Object} The best match.
- */
-ww.mode.HomeMode.prototype.runMatchers_ = function() {
-  var matches = [];
-
-  for (var i = 0; i < this.matchers_.length; i++) {
-    var matcher = this.matchers_[i];
-    var len = matcher.matcher.toString().length - 3;
-    if ((len === this.currentPattern_.length) && matcher.matcher.test(this.currentPattern_)) {
-      matches.push({
-        matcher: matcher,
-        len: len,
-        isPartial: matcher.isPartial
-      });
-
-      if (!matcher.isPartial) {
-        return matcher;
-      }
-    }
-  }
-
-  var found;
-  // Find longest
-  var longestLen = 0;
-  for (var j = 0; j < matches.length; j++) {
-    if (matches[j].len > longestLen) {
-      found = matches[j].matcher;
-      longestLen = matches[j].len;
-    }
-  }
-
-  return found;
-};
 
 /**
  * Tell the app to transition to the specified mode.
@@ -428,7 +336,10 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
 ww.mode.HomeMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.resetMatcher_();
+  this.$date_ = $("#date");
+  this.$pattern_ = $("#pattern");
+
+  this.patternMatcher_.reset();
 
   // Prep paperjs
   this.getPaperCanvas_();
@@ -483,9 +394,6 @@ ww.mode.HomeMode.prototype.init = function() {
  */
 ww.mode.HomeMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
-
-  this.$date = $("#date");
-  this.$pattern = $("#pattern");
 
   var self = this;
 

@@ -73,9 +73,10 @@ $(function() {
       scriptName = page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
 
   // Look up the mode by name.
-  var pair = ww.mode.findModeByName(scriptName),
-      klass = pair.klass;
+  var pair = ww.mode.findModeByName(scriptName);
 
   // Initialize
-  new klass();
+  if (pair && pair.klass) {
+    new pair.klass();
+  }
 });
