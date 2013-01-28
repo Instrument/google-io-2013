@@ -11,6 +11,9 @@ ww.mode.SynthMode = function() {
 goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 
 
+/**
+ * Initailize SynthMode.
+ */
 ww.mode.SynthMode.prototype.init = function() {
   goog.base(this, 'init');
 
@@ -47,6 +50,11 @@ ww.mode.SynthMode.prototype.init = function() {
   this.count = 360 * (this.width_ % 360);
 };
 
+
+/**
+ * Draw a single frame.
+ * @param {Number} delta Ms since last draw.
+ */
 ww.mode.SynthMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
@@ -109,13 +117,17 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
 };
 
 
+/**
+ * Handles a browser window resize.
+ * @param {Boolean} redraw Whether resize redraws.
+ */
 ww.mode.SynthMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
 
   if (this.height_ < 500) {
-    this.centerY = (this.height_ / 2 ) + (this.height_ - 256) / 2;
+    this.centerY = (this.height_ / 2) + (this.height_ - 256) / 2;
   } else {
-    this.centerY = (this.height_ / 2 ) + (256 / 2);
+    this.centerY = (this.height_ / 2) + (256 / 2);
   }
 
   this.scale = ~~(this.height_ * 0.5);
@@ -131,7 +143,7 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     var x = Math.ceil(this.paperCanvas_.width / 256);
 
     for (var i = 0, l = this.path['segments'].length; i < l; i++) {
-      this.path['segments'][i]['point']['x'] = x * i
+      this.path['segments'][i]['point']['x'] = x * i;
       this.path['segments'][i]['point']['y'] = this.centerY;
     }
   }
@@ -159,9 +171,9 @@ ww.mode.SynthMode.prototype.didFocus = function() {
   var self = this;
 
   if (self.height_ < 500) {
-    self.centerY = (self.height_ / 2 ) + (self.height_ - 256) / 2;
+    self.centerY = (self.height_ / 2) + (self.height_ - 256) / 2;
   } else {
-    self.centerY = (self.height_ / 2 ) + (256 / 2);
+    self.centerY = (self.height_ / 2) + (256 / 2);
   }
 
   self.scale = ~~(self.height_ * 0.5);
@@ -180,7 +192,7 @@ ww.mode.SynthMode.prototype.didFocus = function() {
 
     var max = Math.max(this.width_, 256);
     var size = Math.ceil(self.paperCanvas_.width / 256);
-   
+
     self.path = new paper['Path']();
     self.path['strokeColor'] = '#e9e9e9';
     self.path['strokeWidth'] = 3;

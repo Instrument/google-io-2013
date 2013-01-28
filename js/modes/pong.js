@@ -3,6 +3,7 @@ goog.provide('ww.mode.PongMode');
 
 var TWOPI = Math.PI * 2;
 
+
 /**
  * @constructor
  */
@@ -25,6 +26,7 @@ ww.mode.PongMode = function() {
   this.preloadSound('2.wav');
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
+
 
 /**
  * Function to initialize the current mode.
@@ -59,16 +61,32 @@ ww.mode.PongMode.prototype.init = function() {
    * Create paddle.
    */
   this.paddleY_ = this.mouseY_ - this.paddleHeight_ / 2;
+
   this.resetGame_();
 };
+
+
+/**
+ * Reset game state to a new round.
+ * @private
+ */
+ww.mode.PongMode.prototype.startRound_ = function() {
+  this.roundNumber_ = 2;
+  this.gamesPlayed_ = this.gamesPlayed_ || 0;
+  this.gamesPlayed_++;
+  this.setScore_(0);
+
+  this.bonusEl_.style.opacity = 0;
+  this.transformElem_(this.bonusEl_, 'translateX(50px)');
+  this.$lives_.text(this.roundNumber_);
+};
+
 
 /**
  * Reset the ball to its starting position.
  * @private
  */
-ww.mode.PongMode.prototype.resetGame_ = function() {  
-  this.setScore_(0);
-
+ww.mode.PongMode.prototype.resetGame_ = function() {
   this['topWallOpacity_'] = 0;
   this['rightWallOpacity_'] = 0;
   this['bottomWallOpacity_'] = 0;
@@ -84,6 +102,11 @@ ww.mode.PongMode.prototype.resetGame_ = function() {
   this.ball_.vel.y = this.ballSpeed_;
 };
 
+
+/**
+ * Handles a browser window resize.
+ * @param {Boolean} redraw Whether resize redraws.
+ */
 ww.mode.PongMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
 
@@ -97,12 +120,15 @@ ww.mode.PongMode.prototype.onResize = function(redraw) {
   }
 };
 
+
 /**
  * Bind mouse/touch events which focus is gained.
  */
 ww.mode.PongMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
+  this.bonusEl_ = document.getElementById('bonus');
+  this.$lives_ = $('#lives');
   this.$score_ = $('#score');
 
   this.$canvas_ = $('#pong-canvas');
@@ -113,6 +139,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
 
   var self = this;
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
+  var evtEnd = Modernizr.touch ? 'touchend' : 'mouseup';
 
   this.$canvas_.bind(evt + '.pong', function(e) {
     e.preventDefault();
@@ -121,7 +148,10 @@ ww.mode.PongMode.prototype.didFocus = function() {
     self.mouseX_ = e.pageX;
     self.mouseY_ = e.pageY;
   });
+
+  this.startRound_();
 };
+
 
 /**
  * Unbind mouse/touch events which focus is lost.
@@ -129,9 +159,13 @@ ww.mode.PongMode.prototype.didFocus = function() {
 ww.mode.PongMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
+  var self = this;
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
+  var evtEnd = Modernizr.touch ? 'touchend' : 'mouseup';
+
   this.$canvas_.unbind(evt + '.pong');
 };
+
 
 /**
  * Pulse walls when they are hit.
@@ -160,6 +194,7 @@ ww.mode.PongMode.prototype.hitWall_ = function(wall) {
   this.addTween(fadeInTween);
 };
 
+
 /**
  * When the paddle hits the ball.
  * @private
@@ -167,17 +202,56 @@ ww.mode.PongMode.prototype.hitWall_ = function(wall) {
 ww.mode.PongMode.prototype.hitPaddle_ = function() {
   this.playSound('2.wav');
 
-
+  var self = this;
   var newScore = this.score_ + 1;
 
-  if ((this['topWallOpacity_'] > 0) && (this['rightWallOpacity_'] > 0) && (this['bottomWallOpacity_'] > 0)) {
-    newScore += 3;
+  if ((this['topWallOpacity_'] > 0) &&
+      (this['rightWallOpacity_'] > 0) &&
+      (this['bottomWallOpacity_'] > 0)) {
+
+    newScore += 10;
+
+    var bonusOut = new TWEEN.Tween({
+      'opacity': 0,
+      'translateX': 50
+    });
+
+    bonusOut.to({
+      'opacity': 1,
+      'translateX': 0
+    }, 200);
+
+    bonusOut.onUpdate(function() {
+      self.bonusEl_.style.opacity = this['opacity'];
+      self.transformElem_(
+        self.bonusEl_, 'translateX(' + this['translateX'] + 'px)');
+    });
+
+    var bonusBackIn = new TWEEN.Tween({
+      'opacity': 1,
+      'translateX': 0
+    });
+
+    bonusBackIn.to({
+      'opacity': 0,
+      'translateX': 50
+    }, 200);
+
+    bonusBackIn.delay(700);
+
+    bonusBackIn.onUpdate(function() {
+      self.bonusEl_.style.opacity = this['opacity'];
+      self.transformElem_(
+        self.bonusEl_, 'translateX(' + this['translateX'] + 'px)');
+    });
+
+    this.addTween(bonusOut);
+    this.addTween(bonusBackIn);
   }
 
   this.setScore_(newScore);
 
   // Clear sides
-  var self = this;
   var fadeOutTween = new TWEEN.Tween({
     'topWallOpacity': this['topWallOpacity_'],
     'rightWallOpacity': this['rightWallOpacity_'],
@@ -199,6 +273,7 @@ ww.mode.PongMode.prototype.hitPaddle_ = function() {
   // Add points
 };
 
+
 /**
  * When the paddle misses the ball, it's game over.
  * @private
@@ -207,9 +282,11 @@ ww.mode.PongMode.prototype.gameOver_ = function() {
   this.log('You Lose');
 
   this.trackEvent_('lost', this.score_);
+  this.trackEvent_('game number', this.gamesPlayed_);
 
   this.showReload();
 };
+
 
 /**
  * Update the score.
@@ -223,6 +300,7 @@ ww.mode.PongMode.prototype.setScore_ = function(val) {
   }
 };
 
+
 /**
  * Handle collisions.
  * @private
@@ -232,7 +310,14 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
    * Window boundary collision detection.
    */
   if (this.ball_.pos.x <= this.ball_.radius) {
-    this.gameOver_();
+    this.roundNumber_--;
+    this.$lives_.text(Math.max(this.roundNumber_, 0));
+
+    if (this.roundNumber_ < 0) {
+      this.gameOver_();
+    } else {
+      this.resetGame_();
+    }
   }
 
   var self;
@@ -262,7 +347,8 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
 
   if (
     (this.ball_.vel.x < 0) &&
-    (this.ball_.pos.x <= (this.paddleX_ + (this.paddleWidth_ / 2) + this.ball_.radius)) &&
+    (this.ball_.pos.x <= (this.paddleX_ + (this.paddleWidth_ / 2) +
+                          this.ball_.radius)) &&
     (this.ball_.pos.y >= paddleTop) &&
     (this.ball_.pos.y <= paddleBottom)
   ) {
@@ -292,6 +378,7 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
   }
 };
 
+
 /**
  * On each physics tick, check for collisions and adjust speed.
  * @param {Float} delta Time since last tick.
@@ -309,8 +396,8 @@ ww.mode.PongMode.prototype.stepPhysics = function(delta) {
     targetPaddleY = this.height_ - (this.paddleHeight_ / 2);
   }
 
-  var newPaddleY = currentPaddleY + ((targetPaddleY - currentPaddleY) * 0.5 * (delta * 10));
-  this.paddleY_ = newPaddleY;
+  var newPaddleY = (targetPaddleY - currentPaddleY) * 0.5 * (delta * 10);
+  this.paddleY_ = currentPaddleY + newPaddleY;
 
   // Speed up
   if (this.ball_.vel.x > 0) {
@@ -321,14 +408,29 @@ ww.mode.PongMode.prototype.stepPhysics = function(delta) {
 
     if (this.ballSpeed_ <= this.maxBallSpeed_) {
       this.ballSpeed_ *= 1.001;
-      this.ball_.vel.x = (this.ball_.vel.x < 0) ? -this.ballSpeed_ : this.ballSpeed_;
-      this.ball_.vel.y = (this.ball_.vel.y < 0) ? -this.ballSpeed_ : this.ballSpeed_;
+
+      if (this.ball_.vel.x < 0) {
+        this.ball_.vel.x = -this.ballSpeed_;
+      } else {
+        this.ball_.vel.x = this.ballSpeed_;
+      }
+
+      if (this.ball_.vel.y < 0) {
+        this.ball_.vel.y = -this.ballSpeed_;
+      } else {
+        this.ball_.vel.y = this.ballSpeed_;
+      }
     }
   }
 
   this.reflectBall_();
 };
 
+
+/**
+ * Draw a single frame.
+ * @param {Number} delta Ms since last draw.
+ */
 ww.mode.PongMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
@@ -338,11 +440,16 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
 
   this.ctx_.fillStyle = '#e0493e';
   this.ctx_.beginPath();
-  this.ctx_.arc(this.ball_.pos.x, this.ball_.pos.y, this.ball_.radius, 0, TWOPI);
+  this.ctx_.arc(
+    this.ball_.pos.x, this.ball_.pos.y, this.ball_.radius, 0, TWOPI);
   this.ctx_.fill();
 
   this.ctx_.fillStyle = '#d0d0d0';
-  this.ctx_.fillRect(this.paddleX_ - (this.paddleWidth_ / 2), this.paddleY_ - (this.paddleHeight_ / 2), this.paddleWidth_, this.paddleHeight_);
+  this.ctx_.fillRect(
+    this.paddleX_ - (this.paddleWidth_ / 2),
+    this.paddleY_ - (this.paddleHeight_ / 2),
+    this.paddleWidth_,
+    this.paddleHeight_);
 
   this.ctx_.fillStyle = '#f3cdca';
 
