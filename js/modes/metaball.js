@@ -99,34 +99,11 @@ ww.mode.MetaBallMode.prototype.drawI_ = function() {
   this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
-  this.ctx_.fillStyle = '#e5e5e5';
-
   this.ctx_.beginPath();
 
   this.ctx_.fillRect(this.iX_, this.iY_, this.iWidth_, this.iHeight_);
 
   this.ctx_.stroke();
-};
-
-/**
- * Function to draw meta balls.
- * @param {Object} target The ball to draw.
- * @private
- */
-ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
-  this.ctx_.beginPath();
-
-  if (target != this.world_.particles[0]) {
-    target.radius = this.oRad_  / 2;
-  } else {
-    target.radius = this.oRad_;
-  }
-
-  this.ctx_.arc(target.pos.x, target.pos.y, target.radius, 0, Math.PI * 2);
-
-  this.ctx_.stroke();
-
-  this.ctx_.closePath();
 };
 
 /**
@@ -136,7 +113,7 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
  */
 ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
   if (target != this.world_.particles[0]) {
-    target.radius = this.oRad_  / 2;
+    target.radius = this.oRad_ / 2;
   } else {
     target.radius = this.oRad_;
   }
@@ -165,14 +142,30 @@ ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
   this.gctx_.closePath();
 };
 
+/**
+ * Function to calculate a vector.
+ * @param {Number} radians The angle in radians.
+ * @param {Number} length The length with which to calculate the angle.
+ * @return {Object} A new paper point object with the resulting vector.
+ * @private
+ */
 ww.mode.MetaBallMode.prototype.getVector_ = function(radians, length) {
   return new paper['Point']({
     // Convert radians to degrees:
     'angle': radians * 180 / Math.PI,
     'length': length
   });
-}
+};
 
+/**
+ * Function to calculate the connecting paths between balls.
+ * @param {Object} ball1 The first ball to compare.
+ * @param {Object} ball2 The second ball to compare.
+ * @param {Number} v The extremity of the curves generated.
+ * @param {Number} handleLenRate I have no idea what this does.
+ * @return {Number} maxDistance The distance at which ball connections break.
+ * @private
+ */
 ww.mode.MetaBallMode.prototype.metaball_ = function(ball1,
   ball2, v, handleLenRate, maxDistance) {
 
@@ -201,8 +194,6 @@ ww.mode.MetaBallMode.prototype.metaball_ = function(ball1,
     u2 = 0;
   }
 
-  /*var angle1 = Math.atan2(center2['x'] - center1['x'],
-    center1['y'] - center2['y']);*/
   var angle1 = center2['subtract'](center1)['getAngleInRadians']();
   var angle2 = Math.acos((radius1 - radius2) / d);
   var angle1a = angle1 + u1 + (angle2 - u1) * v;
@@ -233,7 +224,7 @@ ww.mode.MetaBallMode.prototype.metaball_ = function(ball1,
   // case circles are overlapping:
   d2 *= Math.min(1, d * 2 / (radius1 + radius2));
 
-  radius1 *= d2;  
+  radius1 *= d2;
   radius2 *= d2;
 
   var path = new paper['Path']([p1a, p2a, p2b, p1b]);
@@ -245,11 +236,11 @@ ww.mode.MetaBallMode.prototype.metaball_ = function(ball1,
   segments[2]['handleOut'] = this.getVector_(angle2b - pi2, radius2);
   segments[3]['handleIn'] = this.getVector_(angle1b + pi2, radius1);
   return path;
-}
+};
 
 /**
  * Function to draw meta ball connections.
- * @param {Object} a The array containing the metaballs.
+ * @param {Object} paths The array containing the metaball paths.
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
@@ -261,155 +252,13 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
 
   for (var i = 0, l = paths.length; i < l; i++) {
     for (var ii = i + 1; ii < paths.length; ii++) {
-      var path = this.metaball_(paths[i], paths[ii], 0.5, this.handleLenRate_, 500);
+      var path = this.metaball_(paths[i], paths[ii], .4, 2.4,
+        this.screenCenterX_ * .9);
       if (path) {
         this.connections_['appendTop'](path);
       }
     }
   }
-}
-
-/**
- * Function to draw meta ball connections.
- * @param {Object} a The starting ball.
- * @param {Object} b The destination ball.
- * @private
- */
-ww.mode.MetaBallMode.prototype.drawConnectionsOld_ = function(a, b) {
-  // The draw distance between the x and y points of a and b.
-  var drawX = (a.pos.x - b.pos.x);
-  var drawY = (a.pos.y - b.pos.y);
-
-  // The draw distance directly between a and b.
-  var drawDistance = Math.sqrt((drawX * drawX) + (drawY * drawY));
-
-  // How far away the two circles can be before their connection breaks.
-  var breakPoint = (a.radius + b.radius) * 1.7;
-
-  // Angle between the two circles. All units are radians.
-  var angle = -Math.atan2(a.pos.x - b.pos.x, a.pos.y - b.pos.y);
-
-  // Modifies how much our dynamic circle coordinates will adjust.
-  var anchorModifier = (a.radius + b.radius);
-  if (drawDistance <= anchorModifier / 1.25) {
-    drawDistance = 1;
-    anchorModifier = 1;
-  } else {
-    anchorModifier = Math.tan(drawDistance / anchorModifier);
-  }
-
-  // The x and y coordinates of each side of circle a.
-  var posXA1 = a.pos.x + a.radius * Math.cos(angle);
-  var posXA2 = a.pos.x + a.radius * -Math.cos(angle);
-  var posYA1 = a.pos.y + a.radius * Math.sin(angle);
-  var posYA2 = a.pos.y + a.radius * -Math.sin(angle);
-
-  // The x and y coordinates of each side of circle a based on distance from b.
-  var dynamicPosXA1 = a.pos.x + (a.radius / anchorModifier) * Math.cos(angle);
-  var dynamicPosXA2 = a.pos.x + (a.radius / anchorModifier) * -Math.cos(angle);
-  var dynamicPosYA1 = a.pos.y + (a.radius / anchorModifier) * Math.sin(angle);
-  var dynamicPosYA2 = a.pos.y + (a.radius / anchorModifier) * -Math.sin(angle);
-
-  // The x and y coordinates of each side of circle b.
-  var posXB1 = b.pos.x + b.radius * Math.cos(angle);
-  var posXB2 = b.pos.x + b.radius * -Math.cos(angle);
-  var posYB1 = b.pos.y + b.radius * Math.sin(angle);
-  var posYB2 = b.pos.y + b.radius * -Math.sin(angle);
-
-  // The x and y coordinates of each side of circle a based on distance from b.
-  var dynamicPosXB1 = b.pos.x + (b.radius / anchorModifier) * Math.cos(angle);
-  var dynamicPosXB2 = b.pos.x + (b.radius / anchorModifier) * -Math.cos(angle);
-  var dynamicPosYB1 = b.pos.y + (b.radius / anchorModifier) * Math.sin(angle);
-  var dynamicPosYB2 = b.pos.y + (b.radius / anchorModifier) * -Math.sin(angle);
-
-  /*
-   * Set anchor points for a quadratic curve at the midpoints between each
-   * circle.
-   */
-  var anchorMidpointX;
-  var anchorMidpointY;
-  var anchorX1;
-  var anchorX2;
-  var anchorY1;
-  var anchorY2;
-
-  if (a.pos.x > b.pos.x) {
-    anchorMidpointX = ((a.pos.x - b.pos.x) / 2) + b.pos.x;
-    anchorX1 = ((dynamicPosXA1 - dynamicPosXB2) / 2) + b.pos.x;
-    anchorX2 = ((dynamicPosXA2 - dynamicPosXB1) / 2) + b.pos.x;
-  } else {
-    anchorMidpointX = ((b.pos.x - a.pos.x) / 2) + a.pos.x;
-    anchorX1 = ((dynamicPosXB1 - dynamicPosXA2) / 2) + a.pos.x;
-    anchorX2 = ((dynamicPosXB2 - dynamicPosXA1) / 2) + a.pos.x;
-  }
-
-  if (a.pos.y > b.pos.y) {
-    anchorMidpointY = ((a.pos.y - b.pos.y) / 2) + b.pos.y;
-    anchorY1 = ((dynamicPosYA1 - dynamicPosYB2) / 2) + b.pos.y;
-    anchorY2 = ((dynamicPosYA2 - dynamicPosYB1) / 2) + b.pos.y;
-  } else {
-    anchorMidpointY = ((b.pos.y - a.pos.y) / 2) + a.pos.y;
-    anchorY1 = ((dynamicPosYB1 - dynamicPosYA2) / 2) + a.pos.y;
-    anchorY2 = ((dynamicPosYB2 - dynamicPosYA1) / 2) + a.pos.y;
-  }
-
-  // In-progress code for drawing proper tangents.
-  /*var midDistA = Math.sqrt((distAX * distAX) + (distAY * distAY));
-  var midDistB = Math.sqrt((distBX * distBX) + (distBY * distBY));
-
-  var missingSideA = Math.sqrt((a.radius * a.radius) + (midDistA * midDistA));
-  var missingSideB = Math.sqrt((b.radius * b.radius) + (midDistB * midDistB));
-
-  var angleA = Math.sin(a.radius / midDistA);
-  angleA += angle;*/
-
-  var angleA1 = -Math.atan2(posXA1 - anchorMidpointX,
-    posYA1 - anchorMidpointY);
-  var angleA2 = -Math.atan2(posXA2 - anchorMidpointX,
-    posYA2 - anchorMidpointY);
-
-  var angleB1 = -Math.atan2(posXB1 - anchorMidpointX,
-    posYB1 - anchorMidpointY);
-  var angleB2 = -Math.atan2(posXB2 - anchorMidpointX,
-    posYB2 - anchorMidpointY);
-
-  posXA1 = a.pos.x + a.radius * Math.cos(angleA1);
-  posYA1 = a.pos.y + a.radius * Math.sin(angleA1);
-
-  posXA2 = a.pos.x + a.radius * -Math.cos(angleA2);
-  posYA2 = a.pos.y + a.radius * -Math.sin(angleA2);
-
-  posXB1 = b.pos.x + b.radius * -Math.cos(angleB1);
-  posYB1 = b.pos.y + b.radius * -Math.sin(angleB1);
-
-  posXB2 = b.pos.x + b.radius * Math.cos(angleB2);
-  posYB2 = b.pos.y + b.radius * Math.sin(angleB2);
-
-  dynamicPosXA1 = a.pos.x + (a.radius / anchorModifier) * Math.cos(angleA1);
-  dynamicPosXA2 = a.pos.x + (a.radius / anchorModifier) * -Math.cos(angleA2);
-  dynamicPosYA1 = a.pos.y + (a.radius / anchorModifier) * Math.sin(angleA1);
-  dynamicPosYA2 = a.pos.y + (a.radius / anchorModifier) * -Math.sin(angleA2);
-
-  dynamicPosXB1 = b.pos.x + (b.radius / anchorModifier) * Math.cos(angleB1);
-  dynamicPosXB2 = b.pos.x + (b.radius / anchorModifier) * -Math.cos(angleB2);
-  dynamicPosYB1 = b.pos.y + (b.radius / anchorModifier) * Math.sin(angleB1);
-  dynamicPosYB2 = b.pos.y + (b.radius / anchorModifier) * -Math.sin(angleB2);
-
-  this.ctx_.beginPath();
-
-  // Draw connections only if the draw distance is smaller than the break point.
-  if (breakPoint > drawDistance) {
-    this.ctx_.moveTo(anchorMidpointX, anchorMidpointY);
-    this.ctx_.arc(anchorMidpointX, anchorMidpointY, 10, 0, Math.PI * 2);
-    this.ctx_.moveTo(posXA1, posYA1);
-    this.ctx_.quadraticCurveTo(anchorX1, anchorY1, posXB1, posYB1);
-    this.ctx_.lineTo(posXB2, posYB2);
-    this.ctx_.quadraticCurveTo(anchorX2, anchorY2, posXA2, posYA2);
-  }
-
-  this.ctx_.stroke();
-
-  this.ctx_.closePath();
 };
 
 /**
@@ -426,9 +275,7 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
   this.slashEndY_ = this.screenCenterY_ + (this.iHeight_ / 2) +
     ((this.iHeight_ * 1.5) * 0.17475728);
 
-  this.ctx_.fillStyle = '#e5e5e5';
-  this.ctx_.lineWidth = 1;
-  // this.ctx_.lineWidth = this.width_ * 0.01388889;
+  this.ctx_.lineWidth = this.width_ * 0.01388889;
 
   this.ctx_.beginPath();
 
@@ -445,7 +292,7 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
 ww.mode.MetaBallMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.getPaperCanvas_();
+  this.getPaperCanvas_(true);
 
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
@@ -458,7 +305,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.oRad_ = this.width_ * 0.1944444444;
   this.world_.particles[0].radius = this.oRad_;
 
-  this.handleLenRate_ = 2.4;
   this.oPaths_ = [];
 
   // Set O's coordinates.
@@ -468,7 +314,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
 
   this.oPaths_.push(new paper['Path']['Circle'](this.oCenter_, this.oRad_));
-
   // Create an array of colors.
   this.colors_ = [
     'rgba(210, 59, 48,',
@@ -506,17 +351,10 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
-  this.ctx_.fillStyle = 'black';
+  this.ctx_.fillStyle = '#e5e5e5';
+  this.ctx_.strokeStyle = '#e5e5e5';
 
-  // Test code for image smoothing.
-  /*var imageSmoothing = Modernizr.prefixed('imageSmoothingEnabled',
-    this.ctx_, false);
-
-  if (imageSmoothing) {
-    this.ctx_[imageSmoothing] = true;
-  }*/
-
-  // this.ctx_.webkitImageSmoothingEnabled = false;
+  this.pctx_ = this.paperCanvas_.getContext('2d');
 
   this.$gcanvas_ = $('<canvas></canvas>');
   this.gcanvas_ = this.$gcanvas_[0];
@@ -550,19 +388,30 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
         // If the O is clicked create a new ball if there are less than 4 balls.
         if (activeBall === self.world_.particles[0] && self.ballCount_ < 4) {
           self.world_.particles.push(new Particle());
+
           self.oPaths_.push(new paper['Path']['Circle'](self.oCenter_,
             self.oRad_ / 2));
+
           var newBall = self.world_.particles[self.world_.particles.length - 1];
-          var attraction = new Attraction(self.world_.particles[0].pos);
           activeBall = newBall;
+
+          var attraction = new Attraction(self.world_.particles[0].pos);
           activeBall.behaviours.push(attraction);
+
           activeBall.pos.x = self.mouseX_;
           activeBall.pos.y = self.mouseY_;
+
           activeBall.mass = Math.random() * (255 - 1) + 1;
+
           activeBall['color'] = self.colors_[self.ballCount_];
+
           self.ballCount_ = self.world_.particles.length;
+
           self.sources_.push(self.audioContext_.createOscillator());
-          self.sources_[self.sources_.length - 1].connect(self.audioContext_.destination);
+
+          self.sources_[self.sources_.length - 1].connect(
+            self.audioContext_.destination);
+
           self.sources_[self.sources_.length - 1].noteOn(0);
         } else if (activeBall != self.world_.particles[0]) {
           // If any other existing ball is clicked, reset it's velocity.
@@ -741,7 +590,7 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
     if (this.oPaths_[i] && this.world_.particles[i]) {
       this.oPaths_[i]['position']['x'] = this.world_.particles[i].pos.x;
       this.oPaths_[i]['position']['y'] = this.world_.particles[i].pos.y;
-      this.oPaths_[i]['fillColor'] = 'black';
+      this.oPaths_[i]['fillColor'] = 'white';
     }
   }
 
@@ -755,7 +604,7 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
  * @param {Integer} delta The timestep variable for animation accuracy.
  */
 ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
-  goog.base(this, 'onFrame', delta);  
+  goog.base(this, 'onFrame', delta);
 
   if (!this.canvas_) { return; }
 
@@ -771,28 +620,19 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
     this.drawGradients_(this.world_.particles[i]);
   }
 
-  // Compare every ball to each other without repeating and draw connections.
-  /*for (var i = 0; i < this.ballCount_; i++) {
-    for (var ii = i + 1; ii < this.ballCount_; ii++) {
-      this.drawConnections_(this.world_.particles[i],
-        this.world_.particles[ii]);
-    }
-  }*/
-
-  
-
   this.drawSlash_();
 
-  this.ctx_.save();
+  this.pctx_.save();
 
   // Make the ball canvas the source of the mask.
-  this.ctx_.globalCompositeOperation = 'source-atop';
+  this.pctx_.globalCompositeOperation = 'source-atop';
 
   // Set the blend mode for the gradients to lighter to make it look cool.
   this.gctx_.globalCompositeOperation = 'lighter';
 
   // Draw the ball canvas onto the gradient canvas to complete the mask.
-  this.ctx_.drawImage(this.gcanvas_, 0, 0);
+  this.pctx_.drawImage(this.gcanvas_, 0, 0);
+  this.ctx_.drawImage(this.paperCanvas_, 0, 0);
 
-  this.ctx_.restore();
+  this.pctx_.restore();
 };
