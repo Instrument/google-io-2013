@@ -522,8 +522,11 @@ ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
 
   for (i = 0; i < paper.length; i++) {
     // If the x and y arrays don't have sub arrays already, create them.
-    if (!xArray[i] && !yArray[i]) {
+    if (!xArray[i]) {
       xArray[i] = [];
+    }
+
+    if (!yArray[i]) {
       yArray[i] = [];
     }
 

@@ -252,3 +252,32 @@ function testWwModeSpaceModeOnResize() {
   assertTrue('drawSlash_ should have been called', callSlash);
   assertTrue('redraw should have been called', callRedraw);
 }
+
+// Test to make sure nested arrays are created if they don't exist
+function testWwModeSpaceModeCopyXY_() {
+  var paper = [
+    {
+      'segments': [
+        {
+          'point': {
+            'x': 0,
+            'y': 0
+          }
+        }
+      ]
+    }
+  ];
+
+  var xArray = [];
+  var yArray = [];
+  // console.log(paper[0]['segments'][0]['point']['x']);
+
+
+  mode.copyXY_(paper, xArray, yArray, true);
+
+  assertNotEquals('Check if a nested x array was created', undefined,
+    xArray[0][0]);
+
+  assertNotEquals('Check if a nested y array was created', undefined,
+    yArray[0][0]);
+}

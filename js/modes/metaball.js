@@ -9,9 +9,7 @@ ww.mode.MetaBallMode = function() {
 
   // Set up audio context and create three sources.
   this.getAudioContext_();
-  this.source1 = this.audioContext_.createOscillator();
-  this.source2 = this.audioContext_.createOscillator();
-  this.source3 = this.audioContext_.createOscillator();
+  this.sources_ = [];
 
   this.notes_ = [
     {
@@ -107,7 +105,7 @@ ww.mode.MetaBallMode.prototype.drawI_ = function() {
 
   this.ctx_.fillRect(this.iX_, this.iY_, this.iWidth_, this.iHeight_);
 
-  this.ctx_.fill();
+  this.ctx_.stroke();
 };
 
 /**
@@ -119,14 +117,14 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
   this.ctx_.beginPath();
 
   if (target != this.world_.particles[0]) {
-    target.radius = this.oRad_ * .5;
+    target.radius = this.oRad_  / 2;
   } else {
     target.radius = this.oRad_;
   }
 
   this.ctx_.arc(target.pos.x, target.pos.y, target.radius, 0, Math.PI * 2);
 
-  this.ctx_.fill();
+  this.ctx_.stroke();
 
   this.ctx_.closePath();
 };
@@ -137,6 +135,12 @@ ww.mode.MetaBallMode.prototype.drawBalls_ = function(target) {
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
+  if (target != this.world_.particles[0]) {
+    target.radius = this.oRad_  / 2;
+  } else {
+    target.radius = this.oRad_;
+  }
+
   this.gctx_.beginPath();
 
   this.gctx_.save();
@@ -161,13 +165,107 @@ ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
   this.gctx_.closePath();
 };
 
+ww.mode.MetaBallMode.prototype.getVector_ = function(radians, length) {
+  return new paper['Point']({
+    // Convert radians to degrees:
+    angle: radians * 180 / Math.PI,
+    length: length
+  });
+}
+
+ww.mode.MetaBallMode.prototype.metaball_ = function(ball1,
+  ball2, v, handleLenRate, maxDistance) {
+
+  var center1 = ball1['position'];
+  var center2 = ball2['position'];
+  var radius1 = ball1['bounds']['width'] / 2;
+  var radius2 = ball2['bounds']['width'] / 2;
+  var pi2 = Math.PI / 2;
+  var d = center1['getDistance'](center2);
+  var u1, u2;
+
+  if (radius1 == 0 || radius2 == 0) {
+    return;
+  }
+
+  if (d > maxDistance || d <= Math.abs(radius1 - radius2)) {
+    return;
+  } else if (d < radius1 + radius2) { // case circles are overlapping
+    u1 = Math.acos((radius1 * radius1 + d * d - radius2 * radius2) /
+      (2 * radius1 * d));
+
+    u2 = Math.acos((radius2 * radius2 + d * d - radius1 * radius1) /
+      (2 * radius2 * d));
+  } else {
+    u1 = 0;
+    u2 = 0;
+  }
+
+  var angle1 = Math.atan2(center2['x'] - center1['x'],
+    center1['y'] - center2['y']);
+  // var angle1 = (center2 - center1)['getAngleInRadians']();
+  var angle2 = Math.acos((radius1 - radius2) / d);
+  var angle1a = angle1 + u1 + (angle2 - u1) * v;
+  var angle1b = angle1 - u1 - (angle2 - u1) * v;
+  var angle2a = angle1 + Math.PI - u2 - (Math.PI - u2 - angle2) * v;
+  var angle2b = angle1 - Math.PI + u2 + (Math.PI - u2 - angle2) * v;
+  var p1a = center1 + this.getVector_(angle1a, radius1);
+  var p1b = center1 + this.getVector_(angle1b, radius1);
+  var p2a = center2 + this.getVector_(angle2a, radius2);
+  var p2b = center2 + this.getVector_(angle2b, radius2);
+
+  // define handle length by the distance between
+  // both ends of the curve to draw
+  var totalRadius = (radius1 + radius2);
+  var d2 = Math.min(v * handleLenRate, (p1a - p2a)['length'] / totalRadius);
+
+  // case circles are overlapping:
+  d2 *= Math.min(1, d * 2 / (radius1 + radius2));
+
+  radius1 *= d2;
+  radius2 *= d2;
+
+  var path = new paper['Path'](p1a, p2a, p2b, p1b);
+  path['style'] = ball1['style'];
+  path['closed'] = true;
+  var segments = path['segments'];
+  segments[0]['handleOut'] = this.getVector_(angle1a - pi2, radius1);
+  segments[1]['handleIn'] = this.getVector_(angle2a + pi2, radius2);
+  segments[2]['handleOut'] = this.getVector_(angle2b - pi2, radius2);
+  segments[3]['handleIn'] = this.getVector_(angle1b + pi2, radius1);
+  return path;
+}
+
+/**
+ * Function to draw meta ball connections.
+ * @param {Object} a The array containing the metaballs.
+ * @private
+ */
+ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
+  if (this.connections_) {
+    this.connections_['remove']();
+  }
+
+  this.connections_ = new paper['Group']();
+
+  for (var i = 0, l = paths.length; i < l; i++) {
+    for (var ii = i + 1; ii < paths.length; ii++) {
+      var path = this.metaball_(paths[i], paths[ii], 0.5, this.handleLenRate_, 300);
+      if (path) {
+        this.connections_['appendTop'](path);
+        // path['removeOnMove']();
+      }
+    }
+  }
+}
+
 /**
  * Function to draw meta ball connections.
  * @param {Object} a The starting ball.
  * @param {Object} b The destination ball.
  * @private
  */
-ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
+ww.mode.MetaBallMode.prototype.drawConnectionsOld_ = function(a, b) {
   // The draw distance between the x and y points of a and b.
   var drawX = (a.pos.x - b.pos.x);
   var drawY = (a.pos.y - b.pos.y);
@@ -176,7 +274,7 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
   var drawDistance = Math.sqrt((drawX * drawX) + (drawY * drawY));
 
   // How far away the two circles can be before their connection breaks.
-  var breakPoint = (a.radius + b.radius) * 2.33;
+  var breakPoint = (a.radius + b.radius) * 1.7;
 
   // Angle between the two circles. All units are radians.
   var angle = -Math.atan2(a.pos.x - b.pos.x, a.pos.y - b.pos.y);
@@ -188,9 +286,6 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
     anchorModifier = 1;
   } else {
     anchorModifier = Math.tan(drawDistance / anchorModifier);
-    if (anchorModifier > -1.06 && anchorModifier < -1.04) {
-      anchorModifier = -1.06;
-    }
   }
 
   // The x and y coordinates of each side of circle a.
@@ -223,36 +318,29 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
    */
   var anchorMidpointX;
   var anchorMidpointY;
-  var distAX;
-  var distAY;
-  var distBX;
-  var distBY;
+  var anchorX1;
+  var anchorX2;
+  var anchorY1;
+  var anchorY2;
+
   if (a.pos.x > b.pos.x) {
     anchorMidpointX = ((a.pos.x - b.pos.x) / 2) + b.pos.x;
-    distAX = a.pos.x - anchorMidpointX;
-    distBX = anchorMidpointX - b.pos.x;
-    var anchorX1 = ((dynamicPosXA1 - dynamicPosXB2) / 2) + b.pos.x;
-    var anchorX2 = ((dynamicPosXA2 - dynamicPosXB1) / 2) + b.pos.x;
+    anchorX1 = ((dynamicPosXA1 - dynamicPosXB2) / 2) + b.pos.x;
+    anchorX2 = ((dynamicPosXA2 - dynamicPosXB1) / 2) + b.pos.x;
   } else {
     anchorMidpointX = ((b.pos.x - a.pos.x) / 2) + a.pos.x;
-    distAX = anchorMidpointX - a.pos.x;
-    distBX = b.pos.x - anchorMidpointX;
-    var anchorX1 = ((dynamicPosXB1 - dynamicPosXA2) / 2) + a.pos.x;
-    var anchorX2 = ((dynamicPosXB2 - dynamicPosXA1) / 2) + a.pos.x;
+    anchorX1 = ((dynamicPosXB1 - dynamicPosXA2) / 2) + a.pos.x;
+    anchorX2 = ((dynamicPosXB2 - dynamicPosXA1) / 2) + a.pos.x;
   }
 
   if (a.pos.y > b.pos.y) {
     anchorMidpointY = ((a.pos.y - b.pos.y) / 2) + b.pos.y;
-    distAY = a.pos.y - anchorMidpointY;
-    distBY = anchorMidpointY - b.pos.y;
-    var anchorY1 = ((dynamicPosYA1 - dynamicPosYB2) / 2) + b.pos.y;
-    var anchorY2 = ((dynamicPosYA2 - dynamicPosYB1) / 2) + b.pos.y;
+    anchorY1 = ((dynamicPosYA1 - dynamicPosYB2) / 2) + b.pos.y;
+    anchorY2 = ((dynamicPosYA2 - dynamicPosYB1) / 2) + b.pos.y;
   } else {
     anchorMidpointY = ((b.pos.y - a.pos.y) / 2) + a.pos.y;
-    distAY = anchorMidpointY - a.pos.y;
-    distBY = b.pos.y - anchorMidpointY;
-    var anchorY1 = ((dynamicPosYB1 - dynamicPosYA2) / 2) + a.pos.y;
-    var anchorY2 = ((dynamicPosYB2 - dynamicPosYA1) / 2) + a.pos.y;
+    anchorY1 = ((dynamicPosYB1 - dynamicPosYA2) / 2) + a.pos.y;
+    anchorY2 = ((dynamicPosYB2 - dynamicPosYA1) / 2) + a.pos.y;
   }
 
   // In-progress code for drawing proper tangents.
@@ -263,34 +351,53 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(a, b) {
   var missingSideB = Math.sqrt((b.radius * b.radius) + (midDistB * midDistB));
 
   var angleA = Math.sin(a.radius / midDistA);
-  angleA += angle;
+  angleA += angle;*/
 
-  posXA1 = a.pos.x + a.radius * -Math.cos(angleA);
-  posYA1 = a.pos.y + a.radius * Math.sin(angleA);
+  var angleA1 = -Math.atan2(posXA1 - anchorMidpointX,
+    posYA1 - anchorMidpointY);
+  var angleA2 = -Math.atan2(posXA2 - anchorMidpointX,
+    posYA2 - anchorMidpointY);
 
-  posXA2 = a.pos.x + a.radius * -Math.cos(angleA);
-  posYA2 = a.pos.y + a.radius * -Math.sin(angleA);
+  var angleB1 = -Math.atan2(posXB1 - anchorMidpointX,
+    posYB1 - anchorMidpointY);
+  var angleB2 = -Math.atan2(posXB2 - anchorMidpointX,
+    posYB2 - anchorMidpointY);
 
-  var angleB = Math.sin(b.radius / midDistB);
-  angleB += angle;
+  posXA1 = a.pos.x + a.radius * Math.cos(angleA1);
+  posYA1 = a.pos.y + a.radius * Math.sin(angleA1);
 
-  posXB1 = b.pos.x + b.radius * Math.cos(angleB);
-  posYB1 = b.pos.y + b.radius * Math.sin(angleB);
+  posXA2 = a.pos.x + a.radius * -Math.cos(angleA2);
+  posYA2 = a.pos.y + a.radius * -Math.sin(angleA2);
 
-  posXB2 = b.pos.x + b.radius * Math.cos(angleB);
-  posYB2 = b.pos.y + b.radius * -Math.sin(angleB);*/
+  posXB1 = b.pos.x + b.radius * -Math.cos(angleB1);
+  posYB1 = b.pos.y + b.radius * -Math.sin(angleB1);
+
+  posXB2 = b.pos.x + b.radius * Math.cos(angleB2);
+  posYB2 = b.pos.y + b.radius * Math.sin(angleB2);
+
+  dynamicPosXA1 = a.pos.x + (a.radius / anchorModifier) * Math.cos(angleA1);
+  dynamicPosXA2 = a.pos.x + (a.radius / anchorModifier) * -Math.cos(angleA2);
+  dynamicPosYA1 = a.pos.y + (a.radius / anchorModifier) * Math.sin(angleA1);
+  dynamicPosYA2 = a.pos.y + (a.radius / anchorModifier) * -Math.sin(angleA2);
+
+  dynamicPosXB1 = b.pos.x + (b.radius / anchorModifier) * Math.cos(angleB1);
+  dynamicPosXB2 = b.pos.x + (b.radius / anchorModifier) * -Math.cos(angleB2);
+  dynamicPosYB1 = b.pos.y + (b.radius / anchorModifier) * Math.sin(angleB1);
+  dynamicPosYB2 = b.pos.y + (b.radius / anchorModifier) * -Math.sin(angleB2);
 
   this.ctx_.beginPath();
 
   // Draw connections only if the draw distance is smaller than the break point.
   if (breakPoint > drawDistance) {
+    this.ctx_.moveTo(anchorMidpointX, anchorMidpointY);
+    this.ctx_.arc(anchorMidpointX, anchorMidpointY, 10, 0, Math.PI * 2);
     this.ctx_.moveTo(posXA1, posYA1);
     this.ctx_.quadraticCurveTo(anchorX1, anchorY1, posXB1, posYB1);
     this.ctx_.lineTo(posXB2, posYB2);
     this.ctx_.quadraticCurveTo(anchorX2, anchorY2, posXA2, posYA2);
   }
 
-  this.ctx_.fill();
+  this.ctx_.stroke();
 
   this.ctx_.closePath();
 };
@@ -310,15 +417,15 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
     ((this.iHeight_ * 1.5) * 0.17475728);
 
   this.ctx_.fillStyle = '#e5e5e5';
-  // this.ctx_.lineWidth = 1;
-  this.ctx_.lineWidth = this.width_ * 0.01388889;
+  this.ctx_.lineWidth = 1;
+  // this.ctx_.lineWidth = this.width_ * 0.01388889;
 
   this.ctx_.beginPath();
 
   this.ctx_.moveTo(this.slashStartX_, this.slashStartY_);
   this.ctx_.lineTo(this.slashEndX_, this.slashEndY_);
 
-  this.ctx_.fill();
+  this.ctx_.stroke();
 };
 
 /**
@@ -327,6 +434,11 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
  */
 ww.mode.MetaBallMode.prototype.init = function() {
   goog.base(this, 'init');
+
+  this.getPaperCanvas_();
+  paper['project']['activeLayer']['style'] = {
+    fillColor: 'black'
+  }
 
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
@@ -339,6 +451,17 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.oRad_ = this.width_ * 0.1944444444;
   this.world_.particles[0].radius = this.oRad_;
 
+  this.handleLenRate_ = 2.4;
+  this.oPaths_ = [];
+
+  // Set O's coordinates.
+  this.oX_ = this.screenCenterX_ + this.oRad_;
+  this.oY_ = this.screenCenterY_;
+
+  this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
+
+  this.oPaths_.push(new paper['Path']['Circle'](this.oCenter_, this.oRad_));
+
   // Create an array of colors.
   this.colors_ = [
     'rgba(210, 59, 48,',
@@ -350,6 +473,9 @@ ww.mode.MetaBallMode.prototype.init = function() {
   // Set the main O color.
   this.world_.particles[0]['color'] = this.colors_[0];
 
+  // Create a variable to store connections between metaballs.
+  this.connections_ = 0;
+
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
@@ -359,10 +485,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
    */
   this.mouseX_ = this.screenCenterX_;
   this.mouseY_ = this.screenCenterY_;
-
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
 };
 
 /**
@@ -376,7 +498,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.canvas_ = this.$canvas_[0];
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
-  this.ctx_ = this.canvas_.getContext('2d');
+  this.ctx_ = this.paperCanvas_.getContext('2d');
   this.ctx_.fillStyle = 'black';
 
   // Test code for image smoothing.
@@ -421,6 +543,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
         // If the O is clicked create a new ball if there are less than 4 balls.
         if (activeBall === self.world_.particles[0] && self.ballCount_ < 4) {
           self.world_.particles.push(new Particle());
+          self.oPaths_.push(new paper['Path']['Circle'](self.oCenter_,
+            self.oRad_ / 2));
           var newBall = self.world_.particles[self.world_.particles.length - 1];
           var attraction = new Attraction(self.world_.particles[0].pos);
           activeBall = newBall;
@@ -430,6 +554,9 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
           activeBall.mass = Math.random() * (255 - 1) + 1;
           activeBall['color'] = self.colors_[self.ballCount_];
           self.ballCount_ = self.world_.particles.length;
+          self.sources_.push(self.audioContext_.createOscillator());
+          self.sources_[self.sources_.length - 1].connect(self.audioContext_.destination);
+          self.sources_[self.sources_.length - 1].noteOn(0);
         } else if (activeBall != self.world_.particles[0]) {
           // If any other existing ball is clicked, reset it's velocity.
           activeBall['fixed'] = true;
@@ -477,9 +604,9 @@ ww.mode.MetaBallMode.prototype.didUnfocus = function() {
   var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
   this.$canvas_.unbind(downEvt + '.metaball');
 
-  this.source1.disconnect();
-  this.source2.disconnect();
-  this.source3.disconnect();
+  for (var i = 0; i < this.sources_.length; i++) {
+    this.sources_[i].disconnect();
+  }
 };
 
 /**
@@ -506,12 +633,26 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
   // Set O's radius.
   this.oRad_ = this.width_ * 0.1944444444;
 
+  if (this.oPaths_[0]) {
+    this.oPaths_[0]['scale'](this.oRad_ * 2 /
+    this.oPaths_[0]['bounds']['height']);
+
+    for (var i = 1; i < this.oPaths_.length; i++) {
+      if (this.oPaths_[i]) {
+        this.oPaths_[i]['scale']((this.oRad_ * 2 /
+          this.oPaths_[i]['bounds']['height']) / 2);
+      }
+    }
+  }
+
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
 
+  this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
+
   // Set the size of the ball radial gradients.
-  this.gradSize_ = this.oRad_ * 2;
+  this.gradSize_ = this.oRad_ * 4;
 
   this.redraw();
 };
@@ -527,11 +668,15 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
   this.world_.particles[0].pos.x = this.oX_;
   this.world_.particles[0].pos.y = this.oY_;
 
+  var i;
+
   // Update positions and velocities for each ball.
-  for (var i = 0; i < this.world_.particles.length; i++) {
+  for (i = 0; i < this.world_.particles.length; i++) {
     if (this.world_.particles[i]['fixed'] === true) {
       this.world_.particles[i].pos.x = this.mouseX_;
       this.world_.particles[i].pos.y = this.mouseY_;
+      this.oPaths_[0]['position']['x'] = this.mouseX_;
+      this.oPaths_[0]['position']['y'] = this.mouseY_;
     }
     if (this.world_.particles[i].pos.x >
       this.width_ - this.world_.particles[i].radius) {
@@ -574,31 +719,20 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
   }
 
   // Play each note if its corresponding ball exists.
-  if (this.world_.particles[1]) {
-    this.source1.type = this.notes_[0]['type'];
-    this.source1.frequency.value = this.notes_[0]['frequency'];
-    this.source1.detune.value = this.notes_[0]['detune'];
-
-    this.source1.connect(this.audioContext_.destination);
-    this.source1.noteOn(0);
+  for (i = 0; i < this.sources_.length; i++) {
+    if (this.world_.particles[i + 1]) {
+      this.sources_[i].type = this.notes_[i]['type'];
+      this.sources_[i].frequency.value = this.notes_[i]['frequency'];
+      this.sources_[i].detune.value = this.notes_[i]['detune'];
+    }
   }
 
-  if (this.world_.particles[2]) {
-    this.source2.type = this.notes_[1]['type'];
-    this.source2.frequency.value = this.notes_[1]['frequency'];
-    this.source2.detune.value = this.notes_[1]['detune'];
-
-    this.source2.connect(this.audioContext_.destination);
-    this.source2.noteOn(0);
-  }
-
-  if (this.world_.particles[3]) {
-    this.source3.type = this.notes_[2]['type'];
-    this.source3.frequency.value = this.notes_[2]['frequency'];
-    this.source3.detune.value = this.notes_[2]['detune'];
-
-    this.source3.connect(this.audioContext_.destination);
-    this.source3.noteOn(0);
+  // Draw the paper objects to the same positions as the coffee physics objects.
+  for (i = 0; i < this.oPaths_.length; i++) {
+    if (this.oPaths_[i] && this.world_.particles[i]) {
+      this.oPaths_[i]['position']['x'] = this.world_.particles[i].pos.x;
+      this.oPaths_[i]['position']['y'] = this.world_.particles[i].pos.y;
+    }
   }
 };
 
@@ -607,7 +741,7 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
  * @param {Integer} delta The timestep variable for animation accuracy.
  */
 ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
-  goog.base(this, 'onFrame', delta);
+  goog.base(this, 'onFrame', delta);  
 
   if (!this.canvas_) { return; }
 
@@ -619,16 +753,20 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
 
   // Loop through every ball and draw it and its gradient.
   for (var i = 0; i < this.ballCount_; i++) {
-    this.drawBalls_(this.world_.particles[i]);
+    // this.drawBalls_(this.world_.particles[i]);
     this.drawGradients_(this.world_.particles[i]);
   }
 
   // Compare every ball to each other without repeating and draw connections.
-  for (var i = 0; i < this.ballCount_; i++) {
+  /*for (var i = 0; i < this.ballCount_; i++) {
     for (var ii = i + 1; ii < this.ballCount_; ii++) {
       this.drawConnections_(this.world_.particles[i],
         this.world_.particles[ii]);
     }
+  }*/
+
+  if (this.oPaths_.length > 1) {
+    this.drawConnections_(this.oPaths_);
   }
 
   this.drawSlash_();
