@@ -4,8 +4,10 @@
 
 var audioContext, // web audio context
     source, // sound source: oscillator
+    filter, // sound filter
     tuna, // effects library
     analyser, // analyser node
+    volume, // base volume setting
     gfx, // canvas
     effects = {}, // place to keep effects
     isPlaying = false, // flag
@@ -26,6 +28,17 @@ function init() {
     analyser.fftSize = 512; // The size of the FFT used for frequency-domain analysis. This must be a power of two
     analyser.smoothingTimeConstant = 0.85; // A value from 0 -> 1 where 0 represents no time averaging with the last analysis frame
 
+    volume = audioContext.createGainNode();
+    volume.gain.value = .5;
+    
+    filter = audioContext.createBiquadFilter();
+    filter.type = 0;  // lowpass
+    filter.frequency.value = 440;
+    
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512; // The size of the FFT used for frequency-domain analysis. This must be a power of two
+    analyser.smoothingTimeConstant = 0.85; // A value from 0 -> 1 where 0 represents no time averaging with the last analysis frame
+    
     buildEffects();
     createSound();
     connectPower();
@@ -83,9 +96,9 @@ function connectControls() {
     // if was dry, disconnect direct,
     // else disconnect effect
     if (previousEffect === 'dry') {
-      source.disconnect(audioContext.destination);
+      volume.disconnect(audioContext.destination);
     } else {
-      effects[previousEffect].disconnect(audioContext.destination);
+      volume.disconnect(audioContext.destination);
     }
     analyser.disconnect(audioContext.destination);
 
