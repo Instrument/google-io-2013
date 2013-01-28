@@ -21,6 +21,8 @@ ww.mode.PongMode = function() {
   this['bottomWallOpacity_'] = 0;
 
   goog.base(this, 'pong', true, true, true);
+  this.preloadSound('1.wav');
+  this.preloadSound('2.wav');
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
 
@@ -33,13 +35,13 @@ ww.mode.PongMode.prototype.init = function() {
   goog.base(this, 'init');
 
   var world = this.getPhysicsWorld_();
-  world['viscosity'] = 0;
+  world.viscosity = 0;
 
   /**
    * Create ball.
    */
   this.ball_ = this.ball_ || new Particle();
-  world['particles'].push(this.ball_);
+  world.particles.push(this.ball_);
 
   /**
    * Gets the width of the viewport and its center point.
@@ -64,7 +66,7 @@ ww.mode.PongMode.prototype.init = function() {
  * Reset the ball to its starting position.
  * @private
  */
-ww.mode.PongMode.prototype.resetGame_ = function() {
+ww.mode.PongMode.prototype.resetGame_ = function() {  
   this.setScore_(0);
 
   this['topWallOpacity_'] = 0;
@@ -75,11 +77,11 @@ ww.mode.PongMode.prototype.resetGame_ = function() {
   this.ballSpeed_ = this.startBallSpeed_;
   this.startXBall_ = this.screenCenterX + (this.width_ / 4);
 
-  this.ball_['setRadius'](this.ballRadius_);
-  this.ball_['pos']['x'] = this.startXBall_;
-  this.ball_['pos']['y'] = this.ballRadius_;
-  this.ball_['vel']['x'] = -this.ballSpeed_;
-  this.ball_['vel']['y'] = this.ballSpeed_;
+  this.ball_.setRadius(this.ballRadius_);
+  this.ball_.pos.x = this.startXBall_;
+  this.ball_.pos.y = this.ballRadius_;
+  this.ball_.vel.x = -this.ballSpeed_;
+  this.ball_.vel.y = this.ballSpeed_;
 };
 
 ww.mode.PongMode.prototype.onResize = function(redraw) {
@@ -110,7 +112,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
   this.ctx_ = this.canvas_.getContext('2d');
 
   var self = this;
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
 
   this.$canvas_.bind(evt + '.pong', function(e) {
     e.preventDefault();
@@ -127,7 +129,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
 ww.mode.PongMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = Modernizr['touch'] ? 'touchmove' : 'mousemove';
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   this.$canvas_.unbind(evt + '.pong');
 };
 
@@ -149,9 +151,9 @@ ww.mode.PongMode.prototype.hitWall_ = function(wall) {
 
   var self = this;
 
-  var fadeInTween = new TWEEN['Tween'](inFromParams);
-  fadeInTween['to'](inToParams, 200);
-  fadeInTween['onUpdate'](function() {
+  var fadeInTween = new TWEEN.Tween(inFromParams);
+  fadeInTween.to(inToParams, 200);
+  fadeInTween.onUpdate(function() {
     self[key] = this[key];
   });
 
@@ -176,17 +178,17 @@ ww.mode.PongMode.prototype.hitPaddle_ = function() {
 
   // Clear sides
   var self = this;
-  var fadeOutTween = new TWEEN['Tween']({
+  var fadeOutTween = new TWEEN.Tween({
     'topWallOpacity': this['topWallOpacity_'],
     'rightWallOpacity': this['rightWallOpacity_'],
     'bottomWallOpacity': this['bottomWallOpacity_']
   });
-  fadeOutTween['to']({
+  fadeOutTween.to({
     'topWallOpacity': 0,
     'rightWallOpacity': 0,
     'bottomWallOpacity': 0
   }, 200);
-  fadeOutTween['onUpdate'](function() {
+  fadeOutTween.onUpdate(function() {
     self['topWallOpacity_'] = this['topWallOpacity'];
     self['rightWallOpacity_'] = this['rightWallOpacity'];
     self['bottomWallOpacity_'] = this['bottomWallOpacity'];
@@ -203,6 +205,9 @@ ww.mode.PongMode.prototype.hitPaddle_ = function() {
  */
 ww.mode.PongMode.prototype.gameOver_ = function() {
   this.log('You Lose');
+
+  this.trackEvent_('lost', this.score_);
+
   this.showReload();
 };
 
@@ -226,26 +231,26 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
   /**
    * Window boundary collision detection.
    */
-  if (this.ball_['pos']['x'] <= this.ball_['radius']) {
+  if (this.ball_.pos.x <= this.ball_.radius) {
     this.gameOver_();
   }
 
   var self;
-  if ((this.ball_['vel']['x'] > 0) &&
-      (this.ball_['pos']['x'] >= this.width_ - this.ball_['radius'])) {
-    this.ball_['vel']['x'] *= -1;
+  if ((this.ball_.vel.x > 0) &&
+      (this.ball_.pos.x >= this.width_ - this.ball_.radius)) {
+    this.ball_.vel.x *= -1;
     this.hitWall_('rightWall');
   }
 
-  if ((this.ball_['vel']['y'] > 0) &&
-     (this.ball_['pos']['y'] >= this.height_ - this.ball_['radius'])) {
-    this.ball_['vel']['y'] *= -1;
+  if ((this.ball_.vel.y > 0) &&
+     (this.ball_.pos.y >= this.height_ - this.ball_.radius)) {
+    this.ball_.vel.y *= -1;
     this.hitWall_('bottomWall');
   }
 
-  if ((this.ball_['vel']['y'] < 0) &&
-      (this.ball_['pos']['y'] <= this.ball_['radius'])) {
-    this.ball_['vel']['y'] *= -1;
+  if ((this.ball_.vel.y < 0) &&
+      (this.ball_.pos.y <= this.ball_.radius)) {
+    this.ball_.vel.y *= -1;
     this.hitWall_('topWall');
   }
 
@@ -256,32 +261,32 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
   var paddleBottom = this.paddleY_ + (this.paddleHeight_ / 2);
 
   if (
-    (this.ball_['vel']['x'] < 0) &&
-    (this.ball_['pos']['x'] <= (this.paddleX_ + (this.paddleWidth_ / 2) + this.ball_['radius'])) &&
-    (this.ball_['pos']['y'] >= paddleTop) &&
-    (this.ball_['pos']['y'] <= paddleBottom)
+    (this.ball_.vel.x < 0) &&
+    (this.ball_.pos.x <= (this.paddleX_ + (this.paddleWidth_ / 2) + this.ball_.radius)) &&
+    (this.ball_.pos.y >= paddleTop) &&
+    (this.ball_.pos.y <= paddleBottom)
   ) {
-    this.ball_['vel']['x'] *= -1;
+    this.ball_.vel.x *= -1;
 
-    var mag = this.ball_['vel']['mag']();
+    var mag = this.ball_.vel.mag();
 
     if (!this.norm_) {
-      this.norm_ = this.ball_['vel']['clone']();
+      this.norm_ = this.ball_.vel.clone();
     } else {
-      this.norm_['copy'](this.ball_['vel']);
+      this.norm_.copy(this.ball_.vel);
     }
 
-    this.norm_['norm']();
+    this.norm_.norm();
 
     this.changeVec_ = this.changeVec_ || new Vector();
-    var diff = (this.ball_['pos']['y'] - this.paddleY_) / (this.paddleHeight_ / 2);
-    this.changeVec_['set'](0, diff);
+    var diff = (this.ball_.pos.y - this.paddleY_) / (this.paddleHeight_ / 2);
+    this.changeVec_.set(0, diff);
 
-    this.norm_['add'](this.changeVec_);
-    this.norm_['norm']();
-    this.norm_['scale'](mag);
+    this.norm_.add(this.changeVec_);
+    this.norm_.norm();
+    this.norm_.scale(mag);
 
-    this.ball_['vel']['copy'](this.norm_);
+    this.ball_.vel.copy(this.norm_);
 
     this.hitPaddle_();
   }
@@ -308,16 +313,16 @@ ww.mode.PongMode.prototype.stepPhysics = function(delta) {
   this.paddleY_ = newPaddleY;
 
   // Speed up
-  if (this.ball_['vel']['x'] > 0) {
+  if (this.ball_.vel.x > 0) {
     if (this.ballRadius_ >= this.minBallRadius_) {
       this.ballRadius_ *= 0.9995;
-      this.ball_['setRadius'](this.ballRadius_);
+      this.ball_.setRadius(this.ballRadius_);
     }
 
     if (this.ballSpeed_ <= this.maxBallSpeed_) {
       this.ballSpeed_ *= 1.001;
-      this.ball_['vel']['x'] = (this.ball_['vel']['x'] < 0) ? -this.ballSpeed_ : this.ballSpeed_;
-      this.ball_['vel']['y'] = (this.ball_['vel']['y'] < 0) ? -this.ballSpeed_ : this.ballSpeed_;
+      this.ball_.vel.x = (this.ball_.vel.x < 0) ? -this.ballSpeed_ : this.ballSpeed_;
+      this.ball_.vel.y = (this.ball_.vel.y < 0) ? -this.ballSpeed_ : this.ballSpeed_;
     }
   }
 
@@ -333,7 +338,7 @@ ww.mode.PongMode.prototype.onFrame = function(delta) {
 
   this.ctx_.fillStyle = '#e0493e';
   this.ctx_.beginPath();
-  this.ctx_.arc(this.ball_['pos']['x'], this.ball_['pos']['y'], this.ball_['radius'], 0, TWOPI);
+  this.ctx_.arc(this.ball_.pos.x, this.ball_.pos.y, this.ball_.radius, 0, TWOPI);
   this.ctx_.fill();
 
   this.ctx_.fillStyle = '#d0d0d0';

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   width="100%" height="100%" viewBox="-119 -4 850 800" enable-background="new -119 -4 850 800" xml:space="preserve">
+  <g id="rectangle" class="instrument">
+    <rect id="rectangle1" class="shape" y="209.518" fill="#11A861" width="122.917" height="258.773"/>
+    <rect id="rectangle2" class="shape" y="209.518" fill="#11A861" width="122.917" height="258.773"/>
+    <rect id="rectangle3" class="shape" y="209.518" fill="#11A861" width="122.917" height="258.773"/>
+    <rect y="209.518" fill="#11A861" width="122.917" height="258.773"/>
+  </g>
+  <g id="circle-yellow" class="instrument">
+    <circle id="circle-yellow1" class="shape" fill="#F6C338" cx="252.951" cy="209.518" r="91.865"/>
+    <circle id="circle-yellow2" class="shape" fill="#F6C338" cx="252.951" cy="209.518" r="91.865"/>
+    <circle id="circle-yellow3" class="shape" fill="#F6C338" cx="252.951" cy="209.518" r="91.865"/>
+    <circle fill="#F6C338" cx="252.951" cy="209.518" r="91.865"/>
+  </g>
+  <g id="polygon" class="instrument">
+    <polygon id="polygon1" class="shape" fill="#DF493E" points="122.917,573.515 157.456,431.671 297.564,390.659 403.138,491.492 368.6,633.336 228.489,674.347"/>
+    <polygon id="polygon2" class="shape" fill="#DF493E" points="122.917,573.515 157.456,431.671 297.564,390.659 403.138,491.492 368.6,633.336 228.489,674.347"/>
+    <polygon id="polygon3" class="shape" fill="#DF493E" points="122.917,573.515 157.456,431.671 297.564,390.659 403.138,491.492 368.6,633.336 228.489,674.347"/>
+    <polygon fill="#DF493E" points="122.917,573.515 157.456,431.671 297.564,390.659 403.138,491.492 368.6,633.336 228.489,674.347"/>
+  </g>
+  <g id="circle-blue" class="instrument">
+    <circle id="circle-blue1" class="shape" fill="#3777E3" cx="475.174" cy="338.905" r="136.827"/>
+    <circle id="circle-blue2" class="shape" fill="#3777E3" cx="475.174" cy="338.905" r="136.827"/>
+    <circle id="circle-blue3" class="shape" fill="#3777E3" cx="475.174" cy="338.905" r="136.827"/>
+    <circle fill="#3777E3" cx="475.174" cy="338.905" r="136.827"/>
+  </g>
+</svg>

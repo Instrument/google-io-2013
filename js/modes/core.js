@@ -1,12 +1,6 @@
 goog.provide('ww.mode.Core');
-goog.require('goog.events');
 goog.require('ww.util');
-
-window['AudioContext'] = (
-  window['AudioContext'] ||
-  window['webkitAudioContext'] ||
-  null
-);
+goog.require('ww.raf');
 
 /**
  * @constructor
@@ -17,14 +11,15 @@ window['AudioContext'] = (
  */
 ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   // Define transform prefix.
-  this.prefix_ = Modernizr['prefixed']('transform');
+  this.prefix_ = Modernizr.prefixed('transform');
 
   this.name_ = name;
 
   this.hasFocus = false;
 
   // By default, modes don't need audio.
-  this.wantsAudio_ = (wantsAudio && window['AudioContext']) || false;
+  var aCtx = this.getAudioContextConstructor_();
+  this.wantsAudio_ = (wantsAudio && aCtx) || false;
 
   // By default, modes don't need audio.
   this.wantsDrawing_ = wantsDrawing || false;
@@ -41,51 +36,57 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     this.addDebugUI_();
   }
 
-  var self = this;
-
-  goog.events.listen(window, 'message', function(evt) {
-    var data = evt.getBrowserEvent().data;
-    self.log('Got message: ' + data['name'], data);
-
-    if (data['name'] === 'focus') {
-      self['focus']();
-    } else if (data['name'] === 'unfocus') {
-      self['unfocus']();
-    }
-  });
-
-  this.window_ = $(window);
+  this.$window_ = $(window);
   this.width_ = 0;
   this.height_ = 0;
 
-  // TODO: Throttle
-  this.window_.resize(function() {
-    self.onResize(true);
+  var self = this;
+  this.$window_.bind('message', function(evt) {
+    var data = evt.originalEvent.data;
+    self.log('Got message: ' + data['name'], data);
+
+    if (data['name'] === 'focus') {
+      self.focus_();
+    } else if (data['name'] === 'unfocus') {
+      self.unfocus_();
+    }
   });
-  this.onResize();
 
   // Catch top-level touch events and cancel them to avoid
   // mobile browser scroll.
-  if (Modernizr['touch']) {
-    document.body.style[Modernizr['prefixed']('userSelect')] = 'none';
-    document.body.style[Modernizr['prefixed']('userSelect')] = 'none';
-    document.body.style[Modernizr['prefixed']('userDrag')] = 'none';
-    document.body.style[Modernizr['prefixed']('tapHighlightColor')] = 'rgba(0,0,0,0)';
+  if (Modernizr.touch) {
+    document.body.style[Modernizr.prefixed('userSelect')] = 'none';
+    document.body.style[Modernizr.prefixed('userDrag')] = 'none';
+    document.body.style[Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
   }
-
-  // $(document.body).addClass(this.name_ + '-mode');
-
-  this.init();
-
-  // Mark this mode as ready.
-  this.ready();
-
-  // Autofocus
+  
   $(function() {
-    self.letterI = $('#letter-i');
-    self.letterO = $('#letter-o');
+    self.$letterI_ = $('#letter-i');
+    self.$letterO_ = $('#letter-o');
 
-    self['focus']();
+    self.init();
+
+    self.$window_.resize(ww.util.throttle(function() {
+      self.onResize(true);
+    }, 50));
+    self.onResize();
+
+    var modeDetails = ww.mode.findModeByName(self.name_);
+
+    if (modeDetails.pattern) {
+      self.$back = $('<div id="back"></div>').prependTo(document.body);
+
+      var modePattern = ww.util.pad(modeDetails.pattern.toString(2), modeDetails.len);
+      var modeHTML = modePattern.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
+
+      $('<div id="code">' + modeHTML + '</div>').prependTo(document.body);
+    }
+
+    // Autofocus
+    self.focus_();
+
+    // Mark this mode as ready.
+    self.ready_();
   });
 };
 
@@ -109,6 +110,8 @@ ww.mode.Core.prototype.log = function(msg) {
 ww.mode.Core.prototype.init = function() {
   this.log('Init');
 
+  this.hasInited_ = true;
+
   if (this.wantsPhysics_) {
     this.resetPhysicsWorld_();
   }
@@ -118,7 +121,7 @@ ww.mode.Core.prototype.init = function() {
  * Block screen with modal reload button.
  */
 ww.mode.Core.prototype.showReload = function() {
-  this['unfocus']();
+  this.unfocus_();
 
   var self = this;
 
@@ -127,10 +130,12 @@ ww.mode.Core.prototype.showReload = function() {
     if (!this.$reloadModal_.length) {
       this.$reloadModal_ = $("<div id='reload'></div>").appendTo(document.body);
     }
-    this.$reloadModal_.bind('tap.reload', function() {
+
+    var evt = Modernizr.touch ? 'touchend' : 'mouseup';
+
+    this.$reloadModal_.bind(evt + '.reload', function() {
       self.$reloadModal_.hide();
-      self.init();
-      self['focus']();
+      self.focus_();
     });
   }
 
@@ -142,8 +147,8 @@ ww.mode.Core.prototype.showReload = function() {
  * @param {Boolean} redraw Whether resize redraws.
  */
 ww.mode.Core.prototype.onResize = function(redraw) {
-  this.width_ = this.window_.width();
-  this.height_ = this.window_.height();
+  this.width_ = this.$window_.width();
+  this.height_ = this.$window_.height();
   this.log('Resize ' + this.width_ + 'x' + this.height_);
 
   if (this.paperCanvas_) {
@@ -166,24 +171,25 @@ if (DEBUG_MODE) {
     var self = this;
 
     var focusElem = document.createElement('button');
-    focusElem.style.fontSize = '15px';
+    focusElem.style.fontSize = '12px';
     focusElem.innerHTML = 'Focus';
     focusElem.onclick = function() {
-      self['focus']();
+      self.focus_();
     };
 
     var unfocusElem = document.createElement('button');
-    unfocusElem.style.fontSize = '15px';
+    unfocusElem.style.fontSize = '12px';
     unfocusElem.innerHTML = 'Unfocus';
     unfocusElem.onclick = function() {
-      self['unfocus']();
+      self.unfocus_();
     };
 
     var restartElem = document.createElement('button');
-    restartElem.style.fontSize = '15px';
+    restartElem.style.fontSize = '12px';
     restartElem.innerHTML = 'Restart';
     restartElem.onclick = function() {
-      self.init();
+      self.unfocus_();
+      self.focus_();
     };
 
     var containerElem = document.createElement('div');
@@ -191,8 +197,10 @@ if (DEBUG_MODE) {
     containerElem.style.bottom = 0;
     containerElem.style.left = 0;
     containerElem.style.right = 0;
-    containerElem.style.height = '40px';
+    containerElem.style.height = '1.5em';
+    containerElem.style.lineHeight = '1.5em';
     containerElem.style.background = 'rgba(0,0,0,0.2)';
+    containerElem.style.zIndex = 20;
 
     containerElem.appendChild(focusElem);
     containerElem.appendChild(unfocusElem);
@@ -212,7 +220,7 @@ ww.mode.Core.prototype.startRendering = function() {
   this.framesRendered_ = 0;
   this.timeElapsed_ = 0;
 
-  ww.raqSubscribe(this.name_, this, this.renderFrame);
+  ww.raf.subscribe(this.name_, this, this.renderFrame);
 };
 
 /**
@@ -222,7 +230,7 @@ ww.mode.Core.prototype.stopRendering = function() {
   // No-op if mode doesn't need rAF
   if (!this.wantsRenderLoop_) { return; }
 
-  ww.raqUnsubscribe(this.name_);
+  ww.raf.unsubscribe(this.name_);
 };
 
 /**
@@ -244,7 +252,7 @@ ww.mode.Core.prototype.renderFrame = function(delta) {
     this.stepPhysics(delta);
   }
 
-  TWEEN['update'](this.timeElapsed_);
+  TWEEN.update(this.timeElapsed_);
 
   if (this.wantsDrawing_) {
     this.onFrame(delta);
@@ -275,9 +283,16 @@ ww.mode.Core.prototype.onFrame = function(delta) {
 
 /**
  * Tell parent frame that this mode is ready.
+ * @private
  */
-ww.mode.Core.prototype.ready = function() {
-  window['currentMode'] = this;
+ww.mode.Core.prototype.ready_ = function() {
+  if (DEBUG_MODE) {
+    window['currentMode'] = this;
+  }
+
+  if (window['onModeReady']) {
+    window['onModeReady'](this);
+  }
 
   this.log('Is ready');
 
@@ -301,10 +316,33 @@ ww.mode.Core.prototype.sendMessage_ = function(msgName, value) {
 };
 
 /**
+ * Return from this mode to the home screen.
+ */
+ww.mode.Core.prototype.goBack = function() {
+  this.sendMessage_('goToHome');
+};
+
+/**
+ * Send an event to Google Analytics
+ * @private
+ * @param {String} action Name of the action.
+ * @param {Object} value Value of the action.
+ */
+ww.mode.Core.prototype.trackEvent_ = function(action, value) {
+  var category = 'mode-' + this._name;
+  ww.util.trackEvent(category, action, value);
+};
+
+/**
  * Focus this mode (start rendering).
  */
-ww.mode.Core.prototype['focus'] = function() {
+ww.mode.Core.prototype.focus_ = function() {
   if (this.hasFocus) { return; }
+
+  // Re-init
+  if (this.hasInited_) {
+    this.init();
+  }
 
   this.log('Got focus');
   this.hasFocus = true;
@@ -321,20 +359,26 @@ ww.mode.Core.prototype['focus'] = function() {
 ww.mode.Core.prototype.didFocus = function() {
   var self = this;
 
-  // Short-cuts to activating letters for basics setup.
-  var hammerOpts = { 'prevent_default': true };
-  this.letterI.bind('tap.core', hammerOpts, function() {
+  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
+
+  this.$letterI_.bind(evt + '.core', function() {
     self.activateI();
   });
 
-  this.letterO.bind('tap.core', hammerOpts, function() {
+  this.$letterO_.bind(evt + '.core', function() {
     self.activateO();
   });
 
+  if (this.$back) {
+    this.$back.bind(evt + '.core', function() {
+      self.goBack();
+    });
+  }
+
   $(document).bind('keypress.core', function(e) {
-    if (e.keyCode === 105) {
+    if ((e.keyCode === 105) || (e.keyCode === 49)) {
       self.activateI();
-    } else if (e.keyCode === 111) {
+    } else if ((e.keyCode === 111) || (e.keyCode === 48)) {
       self.activateO();
     } else {
       return;
@@ -349,7 +393,7 @@ ww.mode.Core.prototype.didFocus = function() {
 /**
  * Unfocus this mode (stop rendering).
  */
-ww.mode.Core.prototype['unfocus'] = function() {
+ww.mode.Core.prototype.unfocus_ = function() {
   if (!this.hasFocus) { return; }
 
   this.log('Lost focus');
@@ -365,8 +409,15 @@ ww.mode.Core.prototype['unfocus'] = function() {
  * Event is called after a mode unfocused.
  */
 ww.mode.Core.prototype.didUnfocus = function() {
-  this.letterI.unbind('tap.core');
-  this.letterO.unbind('tap.core');
+  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
+
+  this.$letterI_.unbind(evt + '.core');
+  this.$letterO_.unbind(evt + '.core');
+  
+  if (this.$back) {
+    this.$back.unbind(evt + '.core');
+  }
+
   $(document).unbind('keypress.core');
 };
 
@@ -378,6 +429,7 @@ ww.mode.Core.prototype.didUnfocus = function() {
  */
 ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
   this.soundBuffersFromURL_ = this.soundBuffersFromURL_ || {};
+  gotSound = gotSound || function(){};
 
   if (this.soundBuffersFromURL_[url]) {
     gotSound(this.soundBuffersFromURL_[url]);
@@ -391,12 +443,10 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
   // Decode asynchronously
   var self = this;
   request.onload = function() {
-    var audioContext = this.getAudioContext_();
-    audioContext['decodeAudioData'](request.response, function(buffer) {
+    var audioContext = self.getAudioContext_();
+    audioContext.decodeAudioData(request.response, function(buffer) {
       self.soundBuffersFromURL_[url] = buffer;
       gotSound(self.soundBuffersFromURL_[url]);
-    }, function() {
-      // debugger;
     });
   };
   request.send();
@@ -409,7 +459,7 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
  */
 ww.mode.Core.prototype.getPhysicsWorld_ = function() {
   if (this.physicsWorld_) { return this.physicsWorld_; }
-  this.physicsWorld_ = new window['Physics']();
+  this.physicsWorld_ = new Physics();
   return this.physicsWorld_;
 };
 
@@ -418,8 +468,8 @@ ww.mode.Core.prototype.getPhysicsWorld_ = function() {
  * @private
  */
 ww.mode.Core.prototype.resetPhysicsWorld_ = function() {
-  if (this.physicsWorld_ && this.physicsWorld_['destroy']) {
-    this.physicsWorld_['destroy']();
+  if (this.physicsWorld_ && this.physicsWorld_.destroy) {
+    this.physicsWorld_.destroy();
   }
 
   this.physicsWorld_ = null;
@@ -433,17 +483,32 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
   if (delta > 0) {
     var world = this.physicsWorld_;
 
-    world['integrate'](delta);
+    world.integrate(delta);
 
     if (this.paperCanvas_) {
-      for (var i = 0; i < world['particles'].length; i++) {
-        var p = world['particles'][i];
+      for (var i = 0; i < world.particles.length; i++) {
+        var p = world.particles[i];
         if ((typeof p['drawObj'] !== 'undefined') && p['drawObj']['position']) {
-          p['drawObj']['position']['x'] = p['pos']['x'];
-          p['drawObj']['position']['y'] = p['pos']['y'];
+          p['drawObj']['position']['x'] = p.pos.x;
+          p['drawObj']['position']['y'] = p.pos.y;
         }
       }
     }
+  }
+};
+
+/**
+ * Get the prefixed audio constructor.
+ * @private
+ * @return {Function} The constructor.
+ */
+ww.mode.Core.prototype.getAudioContextConstructor_ = function() {
+  if ('undefined' !== typeof AudioContext) {
+    return AudioContext;
+  } else if ('undefined' !== typeof webkitAudioContext) {
+    return webkitAudioContext;
+  } else {
+    return null;
   }
 };
 
@@ -453,15 +518,19 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
  * @return {AudioContext} The shared audio context.
  */
 ww.mode.Core.prototype.getAudioContext_ = function() {
-  this.audioContext_ = this.audioContext_ || new window['AudioContext']();
+  if (!this.audioContext_) {
+    var aCtx = this.getAudioContextConstructor_();
+    this.audioContext_ = new aCtx();
+  }
+
   return this.audioContext_;
 };
 
 /**
- * Play a sound by url.
+ * Cache a sound file.
  * @param {String} filename Audio file name.
  */
-ww.mode.Core.prototype.playSound = function(filename) {
+ww.mode.Core.prototype.preloadSound = function(filename) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
@@ -471,13 +540,37 @@ ww.mode.Core.prototype.playSound = function(filename) {
 
   this.log('Requested sound "' + filename + '" from "' + url + '"');
 
+  this.getSoundBufferFromURL_(url);
+};
+
+/**
+ * Play a sound by url.
+ * @param {String} filename Audio file name.
+ * @param {Function} onPlay Callback on play.
+ * @param {Boolean} loop To loop the audio, or to not loop the audio.
+ */
+ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
+  if (!this.wantsAudio_) { return; }
+
+  var url = '../sounds/' + this.name_ + '/' + filename;
+  if (ww.testMode) {
+    url = '../' + url;
+  }
+
+  this.log('Playing sound "' + filename + '"');
+
   var audioContext = this.getAudioContext_();
 
   this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext['createBufferSource']();
-    source['buffer'] = buffer;
-    source['connect'](audioContext['destination']);
-    source['noteOn'](0);
+    var source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.loop = loop || false;
+    source.connect(audioContext.destination);
+    source.noteOn(0);
+
+    if ('function' === typeof onPlay) {
+      onPlay(source);
+    }
   });
 };
 
@@ -487,6 +580,7 @@ ww.mode.Core.prototype.playSound = function(filename) {
 ww.mode.Core.prototype.activateI = function() {
   // no-op
   this.log('Activated "I"');
+  this.trackEvent_('activated-i');
 };
 
 /**
@@ -495,6 +589,7 @@ ww.mode.Core.prototype.activateI = function() {
 ww.mode.Core.prototype.activateO = function() {
   // no-op
   this.log('Activated "O"');
+  this.trackEvent_('activated-o');
 };
 
 /**
@@ -525,5 +620,5 @@ ww.mode.Core.prototype.getPaperCanvas_ = function() {
 };
 
 ww.mode.Core.prototype.addTween = function(tween) {
-  tween['start'](this.timeElapsed_);
+  tween.start(this.timeElapsed_);
 };

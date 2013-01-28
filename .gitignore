@@ -4,5 +4,9 @@
 Gemfile.lock
 /bin/
 js/*.min.js
+js/*.test.js
+css/*
 *.pyc
 js-instrumented
+js/test/*_test.html
+*.sublime-workspace

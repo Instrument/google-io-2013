@@ -1,8 +1,17 @@
+goog.provide('ww.raf');
 goog.provide('ww.util');
+
+var _gaq = _gaq || undefined;
+
+/**
+ * Whether we're in test mode.
+ * @type {boolean}
+ */
+ww.testMode = window.location.href.indexOf('test') > -1;
 
 /**
  * Used to generate random X and Y coordinates.
- * @return array containing two random uniformly distributed floats.
+ * @return {array} containing two random uniformly distributed floats.
  */
 ww.util.floatComplexGaussianRandom = function() {
   var x1;
@@ -15,9 +24,9 @@ ww.util.floatComplexGaussianRandom = function() {
    * plane. W is its magnitude squared.
    */
   do {
-      x1 = 2.0 * Math.random() - 1.0;
-      x2 = 2.0 * Math.random() - 1.0;
-      w = x1 * x1 + x2 * x2;
+    x1 = 2.0 * Math.random() - 1.0;
+    x2 = 2.0 * Math.random() - 1.0;
+    w = x1 * x1 + x2 * x2;
   } while (w >= 1.0);
 
   w = Math.sqrt((-1.0 * Math.log(w)) / w);
@@ -27,6 +36,75 @@ ww.util.floatComplexGaussianRandom = function() {
   return out;
 };
 
+/**
+ * Get the current time, depending on the browser's level of support.
+ * @return {Number}
+ */
+ww.util.rightNow = function() {
+  if (window['performance'] && window['performance']['now']) {
+    return window['performance']['now']();
+  } else {
+    return +(new Date());
+  }
+};
+
+/**
+ * Pad a string to a given number of characters.
+ * @param {Number} num Initial number.
+ * @param {Number} len Desired length.
+ * @return {String} String of desired length.
+ */
+ww.util.pad = function(num, len) {
+  var str = '' + num;
+  while (str.length < len) {
+    str = '0' + str;
+  }
+  return str;
+};
+
+
+/**
+ * Send an event to Google Analytics
+ * @param {String} category Category of the action.
+ * @param {String} action Name of the action.
+ * @param {Object} value Value of the action.
+ */
+ww.util.trackEvent = function(category, action, value) {
+  if ('undefined' !== typeof _gaq) {
+    _gaq.push(['_trackEvent', category, action, value]);
+  }
+};
+
+/**
+ * Throttling function will limit callbacks to once every wait window.
+ * @param {Function} func Function to throttle.
+ * @param {Number} wait Wait window.
+ * @return {Function} Throttled function.
+ */
+ww.util.throttle = function(func, wait) {
+  var context, args, timeout, result;
+  var previous = 0;
+  var later = function() {
+    previous = ww.util.rightNow();
+    timeout = null;
+    result = func.apply(context, args);
+  };
+  return function() {
+    var now = ww.util.rightNow();
+    var remaining = wait - (now - previous);
+    context = this;
+    args = arguments;
+    if (remaining <= 0) {
+      clearTimeout(timeout);
+      timeout = null;
+      previous = now;
+      result = func.apply(context, args);
+    } else if (!timeout) {
+      timeout = setTimeout(later, remaining);
+    }
+    return result;
+  };
+};
 
 /**
  * RequestAnimationFrame polyfill.
@@ -59,58 +137,89 @@ ww.util.floatComplexGaussianRandom = function() {
         };
 }());
 
-ww.raqSubscribers = {};
-ww.raqRunning = false;
+/**
+ * List of all subscribers.
+ * @type {Array}
+ */
+ww.raf.subscribers_ = {};
 
-ww.lastTime = 0;
-ww.testMode = window.location.href.indexOf('test') > -1;
+/**
+ * If rAF is running
+ * @type {Boolean}
+ */
+ww.raf.isRunning_ = false;
 
-var subscriberKey, loopSubscriber, loopCurrentTime, loopDelta;
-ww.raqOnFrame = function(t) {
-  loopCurrentTime = t || new Date().getTime();
-  loopDelta = loopCurrentTime - ww.lastTime;
+/**
+ * Last frame timestamp.
+ * @type {Number}
+ */
+ww.raf.lastTime = 0;
 
-  for (subscriberKey in ww.raqSubscribers) {
-    if (ww.raqSubscribers.hasOwnProperty(subscriberKey)) {
-      loopSubscriber = ww.raqSubscribers[subscriberKey];
+/**
+ * On-frame loop.
+ * @private
+ * @param {Number} t timer.
+ */
+ww.raf.onFrame_ = function(t) {
+  var loopCurrentTime = t || ww.util.rightNow();
+  var loopDelta = loopCurrentTime - ww.raf.lastTime;
+
+  for (var subscriberKey in ww.raf.subscribers_) {
+    if (ww.raf.subscribers_.hasOwnProperty(subscriberKey)) {
+      var loopSubscriber = ww.raf.subscribers_[subscriberKey];
       loopSubscriber[1].call(loopSubscriber[0], loopDelta);
     }
   }
 
-  ww.lastTime = loopCurrentTime;
+  ww.raf.lastTime = loopCurrentTime;
 
-  if (ww.raqRunning) {
-    requestAnimationFrame(ww.raqOnFrame);
+  if (ww.raf.isRunning_) {
+    requestAnimationFrame(ww.raf.onFrame_);
   }
 };
 
-ww.raqUpdateStatus = function() {
+/**
+ * After adding/removing a callback, see if we need to
+ * stop/start the loop.
+ * @private
+ */
+ww.raf.updateStatus_ = function() {
   var len = 0;
-  for (var key in ww.raqSubscribers) {
-    if (ww.raqSubscribers.hasOwnProperty(key)) {
+  for (var key in ww.raf.subscribers_) {
+    if (ww.raf.subscribers_.hasOwnProperty(key)) {
       len++;
     }
   }
 
   if (len > 0) {
-    if (!ww.raqRunning) {
-      ww.raqRunning = true;
-      ww.lastTime = new Date().getTime();
-      ww.raqOnFrame();
+    if (!ww.raf.isRunning_) {
+      ww.raf.isRunning_ = true;
+      ww.raf.lastTime = ww.util.rightNow();
+      ww.raf.onFrame_();
     }
   } else {
-    if (ww.raqRunning) {
-      ww.raqRunning = false;
+    if (ww.raf.isRunning_) {
+      ww.raf.isRunning_ = false;
     }
   }
 };
 
-ww.raqSubscribe = function(name, obj, func) {
-  ww.raqSubscribers[name] = [obj, func];
-  ww.raqUpdateStatus();
+/**
+ * Subscribe a named callback as needing a rAF loop.
+ * @param {String} name The name of the callback.
+ * @param {Object} obj The instance needing to be called.
+ * @param {Function} func The reference to the function to be called.
+ */
+ww.raf.subscribe = function(name, obj, func) {
+  ww.raf.subscribers_[name] = [obj, func];
+  ww.raf.updateStatus_();
 };
 
-ww.raqUnsubscribe = function(name) {
-  delete ww.raqSubscribers[name];
-  ww.raqUpdateStatus();
+/**
+ * Unsubscribe a named callback from needing a rAF loop.
+ * @param {String} name The name of the callback.
+ */
+ww.raf.unsubscribe = function(name) {
+  delete ww.raf.subscribers_[name];
+  ww.raf.updateStatus_();
 };
