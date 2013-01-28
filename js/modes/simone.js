@@ -312,7 +312,7 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
       // wrong step guess
       self.isPlaying = false;
       self.playStatus.addClass('game-over');
-      
+
       self.trackEvent_('failed', self.sequence.length);
 
       var fadeIn = new TWEEN.Tween({ 'opacity': 0.5 });
