@@ -604,15 +604,17 @@ ww.mode.Core.prototype.transformElem_ = function(elem, value) {
 
 /**
  * Get a canvas for use with paperjs.
+ * @param {boolean} doNotAdd Adds a canvas element if left as false.
  * @return {Element} The canvas element.
  */
-ww.mode.Core.prototype.getPaperCanvas_ = function() {
+ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
   if (!this.paperCanvas_) {
     this.paperCanvas_ = document.createElement('canvas');
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
-    $(document.body).prepend(this.paperCanvas_);
-
+    if (!doNotAdd) {
+      $(document.body).prepend(this.paperCanvas_);
+    }
     paper['setup'](this.paperCanvas_);
   }
 
