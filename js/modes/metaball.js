@@ -168,8 +168,8 @@ ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
 ww.mode.MetaBallMode.prototype.getVector_ = function(radians, length) {
   return new paper['Point']({
     // Convert radians to degrees:
-    angle: radians * 180 / Math.PI,
-    length: length
+    'angle': radians * 180 / Math.PI,
+    'length': length
   });
 }
 
@@ -201,31 +201,42 @@ ww.mode.MetaBallMode.prototype.metaball_ = function(ball1,
     u2 = 0;
   }
 
-  var angle1 = Math.atan2(center2['x'] - center1['x'],
-    center1['y'] - center2['y']);
-  // var angle1 = (center2 - center1)['getAngleInRadians']();
+  /*var angle1 = Math.atan2(center2['x'] - center1['x'],
+    center1['y'] - center2['y']);*/
+  var angle1 = center2['subtract'](center1)['getAngleInRadians']();
   var angle2 = Math.acos((radius1 - radius2) / d);
   var angle1a = angle1 + u1 + (angle2 - u1) * v;
   var angle1b = angle1 - u1 - (angle2 - u1) * v;
   var angle2a = angle1 + Math.PI - u2 - (Math.PI - u2 - angle2) * v;
   var angle2b = angle1 - Math.PI + u2 + (Math.PI - u2 - angle2) * v;
-  var p1a = center1 + this.getVector_(angle1a, radius1);
-  var p1b = center1 + this.getVector_(angle1b, radius1);
-  var p2a = center2 + this.getVector_(angle2a, radius2);
-  var p2b = center2 + this.getVector_(angle2b, radius2);
+
+  var p1a = {x: center1['x'] + this.getVector_(angle1a, radius1)['x'],
+    y: center1['y'] + this.getVector_(angle1a, radius1)['y']};
+
+  var p1b = {x: center1['x'] + this.getVector_(angle1b, radius1)['x'],
+    y: center1['y'] + this.getVector_(angle1b, radius1)['y']};
+
+  var p2a = {x: center2['x'] + this.getVector_(angle2a, radius2)['x'],
+    y: center2['y'] + this.getVector_(angle2a, radius2)['y']};
+
+  var p2b = {x: center2['x'] + this.getVector_(angle2b, radius2)['x'],
+    y: center2['y'] + this.getVector_(angle2b, radius2)['y']};
 
   // define handle length by the distance between
   // both ends of the curve to draw
   var totalRadius = (radius1 + radius2);
-  var d2 = Math.min(v * handleLenRate, (p1a - p2a)['length'] / totalRadius);
+  var lengthX = p1a['x'] - p2a['x'];
+  var lengthY = p1a['y'] - p2a['y'];
+  var length = Math.sqrt((lengthX * lengthX) + (lengthY * lengthY));
+  var d2 = Math.min(v * handleLenRate, length / totalRadius);
 
   // case circles are overlapping:
   d2 *= Math.min(1, d * 2 / (radius1 + radius2));
 
-  radius1 *= d2;
+  radius1 *= d2;  
   radius2 *= d2;
 
-  var path = new paper['Path'](p1a, p2a, p2b, p1b);
+  var path = new paper['Path']([p1a, p2a, p2b, p1b]);
   path['style'] = ball1['style'];
   path['closed'] = true;
   var segments = path['segments'];
@@ -250,10 +261,9 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
 
   for (var i = 0, l = paths.length; i < l; i++) {
     for (var ii = i + 1; ii < paths.length; ii++) {
-      var path = this.metaball_(paths[i], paths[ii], 0.5, this.handleLenRate_, 300);
+      var path = this.metaball_(paths[i], paths[ii], 0.5, this.handleLenRate_, 500);
       if (path) {
         this.connections_['appendTop'](path);
-        // path['removeOnMove']();
       }
     }
   }
@@ -436,9 +446,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
   goog.base(this, 'init');
 
   this.getPaperCanvas_();
-  paper['project']['activeLayer']['style'] = {
-    fillColor: 'black'
-  }
 
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
@@ -498,7 +505,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.canvas_ = this.$canvas_[0];
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
-  this.ctx_ = this.paperCanvas_.getContext('2d');
+  this.ctx_ = this.canvas_.getContext('2d');
   this.ctx_.fillStyle = 'black';
 
   // Test code for image smoothing.
@@ -678,6 +685,8 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
       this.oPaths_[0]['position']['x'] = this.mouseX_;
       this.oPaths_[0]['position']['y'] = this.mouseY_;
     }
+
+    // Bounce off the sides of the window.
     if (this.world_.particles[i].pos.x >
       this.width_ - this.world_.particles[i].radius) {
 
@@ -732,7 +741,12 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
     if (this.oPaths_[i] && this.world_.particles[i]) {
       this.oPaths_[i]['position']['x'] = this.world_.particles[i].pos.x;
       this.oPaths_[i]['position']['y'] = this.world_.particles[i].pos.y;
+      this.oPaths_[i]['fillColor'] = 'black';
     }
+  }
+
+  if (this.oPaths_.length > 1) {
+    this.drawConnections_(this.oPaths_);
   }
 };
 
@@ -765,9 +779,7 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
     }
   }*/
 
-  if (this.oPaths_.length > 1) {
-    this.drawConnections_(this.oPaths_);
-  }
+  
 
   this.drawSlash_();
 
