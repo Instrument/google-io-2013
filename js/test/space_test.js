@@ -351,3 +351,100 @@ function testWwModeSpaceModeAdjustModifiers_() {
 
   assertFalse('iClicked_ should be false', mode.iClicked_);
 }
+
+// Test O's modifiers.
+function testWwModeSpaceModeAdjustModifiers_() {
+  mode.deltaModifier_ = 1;
+  var modifier = 1;
+  var incrementer = true;
+  var multiplier = 1;
+  var clicker = true;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, false);
+
+  assertTrue('oModifier_ should be greater than modifier',
+    mode.oModifier_ > modifier);
+
+  assertTrue('oIncrement_ should be true', mode.oIncrement_);
+
+  assertEquals('oMultiplier_ should equal multiplier', multiplier, mode.oMultiplier_);
+
+  assertTrue('oClicked_ should be true', mode.oClicked_);
+
+  modifier = 3;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, false);
+
+  multiplier = 10;
+  incrementer = false;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, false);
+
+  assertTrue('oMultiplier_ should be less than multiplier',
+    mode.oMultiplier_ < multiplier);
+
+  modifier = 20000;
+  incrementer = true;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, false);
+
+  assertEquals('oModifier_ should not have incremented higher', modifier,
+    mode.oModifier_);
+
+  multiplier = 1;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, false);
+
+  assertFalse('oIncrement_ should be false', mode.oIncrement_);
+
+  modifier = 1;
+  incrementer = false;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, false);
+
+  assertFalse('oClicked_ should be false', mode.oClicked_);
+}
+
+function testWwModeSpaceModeModCoords_() {
+  mode.framesRendered_ = 10;
+  var source = 10;
+  var mod1 = 2;
+  var mod2 = 1;
+  var mod3 = 3;
+  var mod4 = 4;
+
+  var result = mode.modCoords_(source, true, mod1, mod2, mod3, mod4);
+  var resultTest = 10 +
+    Math.cos(10 / 10 + (2 - 1)) * 3 * 4 / (2400 / mode.width_);
+
+  assertEquals('Result should equal resultTest', resultTest, result);
+
+  result = mode.modCoords_(source, false, mod1, mod2, mod3, mod4);
+  resultTest = 10 + Math.sin(10 / 10 + (2 - 1)) * 3 * 4 / (2400 / mode.width_);
+    
+  assertEquals('Result should equal resultTest', resultTest, result);
+}
+
+function testWwModeSpaceModeOnFrame() {
+  mode.iClicked_ = true;
+  mode.oClicked_ = true;
+
+  mode.onFrame();
+
+  assertNotEquals('iPaths_ should have changed', mode.iPathsX_[0][0],
+    mode.iPaths_[0]['segments'][0]['point']['x']);
+
+  assertNotEquals('oPaths_ should have changed', mode.oPathsX_[0][0],
+    mode.oPaths_[0]['segments'][0]['point']['x']);
+
+  mode.iClicked_ = false;
+  mode.oClicked_ = false;
+
+  mode.onFrame();
+
+  assertEquals('iPaths_ should be restored to its initial value',
+    mode.iPathsX_[0][0], mode.iPaths_[0]['segments'][0]['point']['x']);
+
+  assertEquals('oPaths_ should be restored to its initial value',
+    mode.oPathsX_[0][0], mode.oPaths_[0]['segments'][0]['point']['x']);
+}
