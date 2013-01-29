@@ -1,3 +1,20 @@
+var savedFunctions = {};
+function setUp() {
+  for (var key in mode.constructor.prototype) {
+    if (mode.constructor.prototype.hasOwnProperty(key)) {
+      savedFunctions[key] = mode.constructor.prototype[key];
+    }
+  }
+}
+
+function tearDown() {
+  for (var key in savedFunctions) {
+    if (savedFunctions.hasOwnProperty(key)) {
+      mode.constructor.prototype[key] = savedFunctions[key];
+    }
+  }
+}
+
 // Test if I becomes clicked and increments its multiplier correctly.
 function testWwModeSpaceModeActivateI() {
   assertFalse('iClicked_ should be false', mode.iClicked_);
@@ -184,14 +201,6 @@ function testWwModeSpaceModeInit() {
   assertTrue('O should now be detected as created', oCreated);
 }
 
-// Make sure initial variables are created.
-function testWwModeSpaceModeDidFocus() {
-  mode.unfocus_();
-  mode.focus_();
-
-
-}
-
 // Don't update canvas and particle properties if they don't already exist. 
 function testWwModeSpaceModeOnResize() {
   mode.tempFloat_ = 0;
@@ -253,7 +262,6 @@ function testWwModeSpaceModeOnResize() {
   assertTrue('redraw should have been called', callRedraw);
 }
 
-// Test to make sure nested arrays are created if they don't exist
 function testWwModeSpaceModeCopyXY_() {
   var paper = [
     {
@@ -270,8 +278,6 @@ function testWwModeSpaceModeCopyXY_() {
 
   var xArray = [];
   var yArray = [];
-  // console.log(paper[0]['segments'][0]['point']['x']);
-
 
   mode.copyXY_(paper, xArray, yArray, true);
 
@@ -280,4 +286,68 @@ function testWwModeSpaceModeCopyXY_() {
 
   assertNotEquals('Check if a nested y array was created', undefined,
     yArray[0][0]);
+
+  xArray[0][0] = 1;
+  yArray[0][0] = 1;
+
+  mode.copyXY_(paper, xArray, yArray, false);
+
+  assertEquals('Check if the paper array was assigned the xArray values',
+    xArray[0][0], paper[0]['segments'][0]['point']['x']);
+
+  assertEquals('Check if the paper array was assigned the yArray values',
+    yArray[0][0], paper[0]['segments'][0]['point']['y']);
+}
+
+// Test I's modifiers.
+function testWwModeSpaceModeAdjustModifiers_() {
+  mode.deltaModifier_ = 1;
+  var modifier = 1;
+  var incrementer = true;
+  var multiplier = 1;
+  var clicker = true;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, true);
+
+  assertTrue('iModifier_ should be greater than modifier',
+    mode.iModifier_ > modifier);
+
+  assertTrue('iIncrement_ should be true', mode.iIncrement_);
+
+  assertEquals('iMultiplier_ should equal multiplier', multiplier, mode.iMultiplier_);
+
+  assertTrue('iClicked_ should be true', mode.iClicked_);
+
+  modifier = 3;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, true);
+
+  multiplier = 10;
+  incrementer = false;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, true);
+
+  assertTrue('iMultiplier_ should be less than multiplier',
+    mode.iMultiplier_ < multiplier);
+
+  modifier = 20000;
+  incrementer = true;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, true);
+
+  assertEquals('iModifier_ should not have incremented higher', modifier,
+    mode.iModifier_);
+
+  multiplier = 1;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, true);
+
+  assertFalse('iIncrement_ should be false', mode.iIncrement_);
+
+  modifier = 1;
+  incrementer = false;
+
+  mode.adjustModifiers_(modifier, incrementer, multiplier, clicker, true);
+
+  assertFalse('iClicked_ should be false', mode.iClicked_);
 }
