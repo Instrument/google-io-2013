@@ -9,26 +9,25 @@ ww.mode.MetaBallMode = function() {
 
   // Set up audio context and create three sources.
   this.getAudioContext_();
-  this.sources_ = [];
 
   this.notes_ = [
     {
       // ball 1
       'frequency': 0,
       'detune': 0,
-      'type': 1
+      'type': 0
     },
     {
       // ball 2
       'frequency': 0,
       'detune': 0,
-      'type': 1
+      'type': 0
     },
     {
       // ball 3
       'frequency': 0,
       'detune': 0,
-      'type': 1
+      'type': 0
     }
   ];
 };
@@ -292,6 +291,9 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
 ww.mode.MetaBallMode.prototype.init = function() {
   goog.base(this, 'init');
 
+  this.sources_ = [];
+  this.gainNodes_ = [];
+
   this.getPaperCanvas_(true);
 
   this.world_ = this.getPhysicsWorld_();
@@ -304,6 +306,19 @@ ww.mode.MetaBallMode.prototype.init = function() {
   // Set O's radius.
   this.oRad_ = this.width_ * 0.1944444444;
   this.world_.particles[0].radius = this.oRad_;
+
+  // If paper objects already exist, remove them.
+  if (this.oPaths_) {
+    for (var i = 0; i < this.oPaths_.length; i++) {
+      this.oPaths_[i]['remove']();
+    }
+  }
+
+  if (paper['projects'][0]['layers'][0]['children']) {
+    for (var i = 0; i < paper['projects'][0]['layers'][0]['children'].length; i++) {
+      paper['projects'][0]['layers'][0]['children'][i]['remove']();
+    }
+  }
 
   this.oPaths_ = [];
 
@@ -324,9 +339,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
 
   // Set the main O color.
   this.world_.particles[0]['color'] = this.colors_[0];
-
-  // Create a variable to store connections between metaballs.
-  this.connections_ = 0;
 
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
@@ -408,11 +420,15 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
           self.ballCount_ = self.world_.particles.length;
 
           self.sources_.push(self.audioContext_.createOscillator());
+          self.gainNodes_.push(self.audioContext_.createGainNode());
 
           self.sources_[self.sources_.length - 1].connect(
+            self.gainNodes_[self.sources_.length - 1]);
+          self.gainNodes_[self.sources_.length - 1].connect(
             self.audioContext_.destination);
 
-          self.sources_[self.sources_.length - 1].noteOn(0);
+          self.sources_[self.sources_.length - 1].start(0);
+          self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
         } else if (activeBall != self.world_.particles[0]) {
           // If any other existing ball is clicked, reset it's velocity.
           activeBall['fixed'] = true;
@@ -462,6 +478,7 @@ ww.mode.MetaBallMode.prototype.didUnfocus = function() {
 
   for (var i = 0; i < this.sources_.length; i++) {
     this.sources_[i].disconnect();
+    this.gainNodes_[i].disconnect();
   }
 };
 
