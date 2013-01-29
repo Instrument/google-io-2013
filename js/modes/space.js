@@ -606,25 +606,21 @@ ww.mode.SpaceMode.prototype.adjustModifiers_ = function(modifier,
  * @param {Number} mod2 The second modifier used in the equation.
  * @param {Number} mod3 The third modifier used in the equation.
  * @param {Number} mod4 The fourth modifier used in the equation.
- * @param {Float} random Optional float to modify the equation.
  * @return {Number} result The final value used to modify the source point.
  * @private
  */
 ww.mode.SpaceMode.prototype.modCoords_ = function(source,
-  cos, mod1, mod2, mod3, mod4, random) {
+  cos, mod1, mod2, mod3, mod4) {
 
     var result;
-
-    if (!random) {
-      random = 2400 / this.width_;
-    }
+    var adjustForScreenSize = 2400 / this.width_;
 
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *
-        mod3 * mod4 / random;
+        mod3 * mod4 / adjustForScreenSize;
     } else {
       result = source + Math.sin(this.framesRendered_ / 10 + (mod1 - mod2)) *
-        mod3 * mod4 / random;
+        mod3 * mod4 / adjustForScreenSize;
     }
 
     return result;
