@@ -517,10 +517,7 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
  * @private
  */
 ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
-  var i;
-  var ii;
-
-  for (i = 0; i < paper.length; i++) {
+  for (var i = 0; i < paper.length; i++) {
     // If the x and y arrays don't have sub arrays already, create them.
     if (!xArray[i]) {
       xArray[i] = [];
@@ -530,7 +527,7 @@ ww.mode.SpaceMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
       yArray[i] = [];
     }
 
-    for (ii = 0; ii < paper[i]['segments'].length; ii++) {
+    for (var ii = 0; ii < paper[i]['segments'].length; ii++) {
       if (copy) {
         xArray[i][ii] = paper[i]['segments'][ii]['point']['x'];
 
