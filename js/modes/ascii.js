@@ -210,7 +210,7 @@ var from = this.paperO_['position'];
 // The destination point of the gradient color will be the
 // center point of the path + 80pt in horizontal direction:
 var to = this.paperO_['position']['clone']();
-to['x'] += this.oRad_ * 1.3;
+to['x'] += this.oRad_ * 1.7;
 
 // Create the gradient color:
 var gradientColor = new paper['GradientColor'](gradient, from, to);
@@ -232,9 +232,9 @@ var gradientColor = new paper['GradientColor'](gradient, from, to);
       this.oStatic_[i] = {
         'vector': 0,
         'randOne': Math.random() * 5 + 10,
-        'randTwo': Math.random() * .1 + 1.05,
+        'randTwo': Math.random() * 0.1 + 1.05,
         'point': this.paperO_['segments'][i]['point']
-      }
+      };
     }
   } else {
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
