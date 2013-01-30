@@ -14,6 +14,7 @@ goog.require('ww.mode.SpaceMode');
 goog.require('ww.mode.SynthMode');
 // goog.require('ww.mode.EightBitMode');
 goog.require('ww.mode.FireplaceMode');
+goog.require('ww.mode.AsciiMode');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -63,7 +64,8 @@ ww.mode.register('simone',    ww.mode.SimoneMode,     8, 8); // 00001000
 // ww.mode.register('eightbit',  ww.mode.EightBitMode,   9, 8); // 00001001
 ww.mode.register('metaball',  ww.mode.MetaBallMode,  10, 8); // 00001010
 ww.mode.register('fireplace', ww.mode.FireplaceMode, 11, 8); // 00001011
-ww.mode.register('synth', ww.mode.SynthMode, 12, 8);         // 00001100
+ww.mode.register('synth',     ww.mode.SynthMode,     13, 8); // 00001101
+ww.mode.register('ascii',     ww.mode.AsciiMode,     14, 8); // 00001110
 
 // On DocumentReady
 $(function() {
