@@ -66,26 +66,6 @@ ww.mode.MetaBallMode.prototype.playProcessedAudio_ = function(filename,
 };
 
 /**
- * Method called when activating the I.
- */
-ww.mode.MetaBallMode.prototype.activateI = function() {
-  this.iClicked_ = true;
-  if (this.iMultiplier_ < 10) {
-    this.iMultiplier_ += 2;
-  }
-};
-
-/**
- * Method called when activating the O.
- */
-ww.mode.MetaBallMode.prototype.activateO = function() {
-  this.oClicked_ = true;
-  if (this.oMultiplier_ < 10) {
-    this.oMultiplier_ += 2;
-  }
-};
-
-/**
  * Function to create and draw I.
  * @private
  */
@@ -366,10 +346,11 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.ctx_.fillStyle = '#e5e5e5';
   this.ctx_.strokeStyle = '#e5e5e5';
 
+  this.paperCanvas_.width = this.width_;
+  this.paperCanvas_.height = this.height_;
   this.pctx_ = this.paperCanvas_.getContext('2d');
-
-  this.$gcanvas_ = $('<canvas></canvas>');
-  this.gcanvas_ = this.$gcanvas_[0];
+  
+  this.gcanvas_ = document.createElement('canvas');
   this.gcanvas_.width = this.width_;
   this.gcanvas_.height = this.height_;
   this.gctx_ = this.gcanvas_.getContext('2d');
@@ -493,6 +474,11 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
     this.canvas_.width = this.width_;
     this.canvas_.height = this.height_;
   }
+
+  if (this.paperCanvas_) {
+    this.paperCanvas_.width = this.width_;
+    this.paperCanvas_.height = this.height_;
+  }  
 
   if (this.gcanvas_) {
     this.gcanvas_.width = this.width_;
@@ -648,8 +634,13 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   this.gctx_.globalCompositeOperation = 'lighter';
 
   // Draw the ball canvas onto the gradient canvas to complete the mask.
-  this.pctx_.drawImage(this.gcanvas_, 0, 0);
-  this.ctx_.drawImage(this.paperCanvas_, 0, 0);
+  if (0 < this.gcanvas_.height) {
+    this.pctx_.drawImage(this.gcanvas_, 0, 0);
+  }
+
+  if (0 < this.paperCanvas_.height) {
+    this.ctx_.drawImage(this.paperCanvas_, 0, 0);
+  }
 
   this.pctx_.restore();
 };
