@@ -331,13 +331,13 @@ ww.mode.SpaceMode.prototype.init = function() {
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
 
-  for (var i = 0; i < 500; i++) {
+  for (var i = 0; i < 5000; i++) {
     this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
     this.world_.particles.push(new Particle());
 
     this.world_.particles[i].setRadius(
-      Math.random() * (2.5 - 0.1) + 0.1);
+      Math.random() * (1.5 - 0.1) + 0.1);
 
     this.world_.particles[i].pos.x = this.tempFloat_[0] *
       this.width_;
@@ -421,7 +421,7 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   this.ctx_ = this.canvas_.getContext('2d');
   // this.ctx_.shadowColor = 'white';
   this.ctx_.globalCompositeOperation = 'lighter';
-  this.ctx_.fillStyle = '#424242';
+  this.ctx_.fillStyle = '#e4e4e4';
 
   var canvas = this.getPaperCanvas_();
 
@@ -637,7 +637,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   for (var i = 0; i < this.world_.particles.length; i++) {
     this.world_.particles[i].pos.x +=
       (this.screenCenterX_ - this.mouseX_) /
-      (2000 / this.world_.particles[i].radius) + .1;
+      (10000 / this.world_.particles[i].radius) + .1;
 
     if (this.world_.particles[i].pos.x > this.width_ * 2) {
       this.world_.particles[i].pos.x =
@@ -650,7 +650,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
 
     this.world_.particles[i].pos.y +=
       (this.screenCenterY_ - this.mouseY_) /
-      (2000 / this.world_.particles[i].radius);
+      (10000 / this.world_.particles[i].radius);
 
     if (this.world_.particles[i].pos.y > this.height_ * 2) {
       this.world_.particles[i].pos.y =
@@ -680,8 +680,8 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   for (i = 0; i < this.world_.particles.length; i++) {
     // this.ctx_.shadowBlur = this.world_.particles[i].radius * 2;
     this.ctx_.beginPath();
-    this.ctx_.arc(this.world_.particles[i].pos.x,
-      this.world_.particles[i].pos.y,
+    this.ctx_.arc(this.world_.particles[i].pos.x + .5,
+      this.world_.particles[i].pos.y + .5,
       this.world_.particles[i].radius, 0, Math.PI * 2);
     this.ctx_.fill();
     this.ctx_.closePath();
