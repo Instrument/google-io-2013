@@ -124,6 +124,8 @@ function testWwModeMetaBallModeDidFocus() {
 }
 
 function testWwModeMetaBallModeOnResize() {
+  mode.init();
+
   mode.canvas_.width = 1;
   mode.canvas_.height = 1;
 
@@ -135,6 +137,9 @@ function testWwModeMetaBallModeOnResize() {
 
   mode.oPaths_[0]['bounds']['height'] = 10;
   var oHeight = mode.oPaths_[0]['bounds']['height'];
+
+  mode.oPaths_.push(new paper['Path']['Circle'](mode.oCenter_, 100));
+  var oHeight2 = mode.oPaths_[1]['bounds']['height'];
 
   mode.onResize();
 
@@ -155,6 +160,9 @@ function testWwModeMetaBallModeOnResize() {
 
   assertNotEquals('the scale for oPaths_ objects should have changed', oHeight,
     mode.oPaths_[0]['bounds']['height']);
+
+  assertNotEquals('the scale for oPaths_ objects should have changed', oHeight2,
+    mode.oPaths_[1]['bounds']['height']);
 }
 
 // Check if balls have hit the bounds of the window.
@@ -193,8 +201,8 @@ function testWwModeMetaBallModeStepPhysics() {
   limitX = mode.world_.particles[1].radius + 1;
   limitY = mode.world_.particles[1].radius + 1;
 
-  mode.world_.particles[1].pos.x = -10;
-  mode.world_.particles[1].pos.y = -10;
+  mode.world_.particles[1].pos.x = -100;
+  mode.world_.particles[1].pos.y = -100;
 
   mode.stepPhysics();
 
