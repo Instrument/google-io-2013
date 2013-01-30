@@ -619,7 +619,6 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
 
   // Loop through every ball and draw it and its gradient.
   for (var i = 0; i < this.ballCount_; i++) {
-    // this.drawBalls_(this.world_.particles[i]);
     this.drawGradients_(this.world_.particles[i]);
   }
 
