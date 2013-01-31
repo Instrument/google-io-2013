@@ -82,7 +82,7 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
 
   // Draw sine wave.
   var detune = Math.abs(Math.abs(this.source.detune.value / 2400) - 2) + .5;
-  var freq = this.source.frequency.value * .1; // * 0.00075;
+  var freq = this.source.frequency.value * .05; // * 0.00075;
 
   console.log(freq,detune,this.source.frequency.value);
 
