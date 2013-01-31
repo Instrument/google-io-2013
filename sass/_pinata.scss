@@ -17,10 +17,3 @@
 #pinata-canvas {
   pointer-events: none;
 }
-
-#reload {
-  background-image: image-url('pong/refresh.svg');
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  @include background-size(2em);
-}

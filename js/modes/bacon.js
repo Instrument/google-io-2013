@@ -6,7 +6,7 @@ goog.provide('ww.mode.BaconMode');
  * @constructor
  */
 ww.mode.BaconMode = function() {
-  goog.base(this, 'bacon', true, true, true);
+  goog.base(this, 'bacon', true, true, false);
 
   this.preloadSound('bacon-sizzle.m4a');
   this.preloadSound('egg-cracked.m4a');
@@ -21,7 +21,7 @@ goog.inherits(ww.mode.BaconMode, ww.mode.Core);
  */
 ww.mode.BaconMode.prototype.init = function() {
   goog.base(this, 'init');
-  this.stripes = $('#bacon-fat');
+  this.stripes = $('[id*=fat-]');
 
   this.stillHasShell = true;
   this.eggWhole = $('#egg-whole')[0];
@@ -51,6 +51,8 @@ ww.mode.BaconMode.prototype.activateI = function() {
   stretchOut.onUpdate(function() {
     self.transformElem_(self.$letterI_[0], 'scaleY(' + this['scaleY'] + ')');
     self.transformElem_(self.stripes[0], 'scaleX(' + this['scaleX'] + ')');
+    self.transformElem_(self.stripes[1], 'scaleX(' + this['scaleX'] + ')');
+    self.transformElem_(self.stripes[2], 'scaleX(' + this['scaleX'] + ')');
   });
 
   var stretchBack = new TWEEN.Tween({ 'scaleX': 1.75, 'scaleY': 1.2 });
@@ -60,6 +62,8 @@ ww.mode.BaconMode.prototype.activateI = function() {
   stretchBack.onUpdate(function() {
     self.transformElem_(self.$letterI_[0], 'scaleY(' + this['scaleY'] + ')');
     self.transformElem_(self.stripes[0], 'scaleX(' + this['scaleX'] + ')');
+    self.transformElem_(self.stripes[1], 'scaleX(' + this['scaleX'] + ')');
+    self.transformElem_(self.stripes[2], 'scaleX(' + this['scaleX'] + ')');
   });
 
   this.addTween(stretchOut);
@@ -110,7 +114,7 @@ ww.mode.BaconMode.prototype.showCracked_ = function() {
     self.transformElem_(self.eggWhole, 'scale(' + this['scale'] + ')');
   });
 
-  var showWhites = new TWEEN.Tween({ 'scale': 10 });
+  var showWhites = new TWEEN.Tween({ 'scale': 2 });
   showWhites.to({ 'scale': 1 }, 200);
 
   showWhites.onStart(function() {

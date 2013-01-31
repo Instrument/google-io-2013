@@ -54,6 +54,10 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     document.body.style[Modernizr.prefixed('userSelect')] = 'none';
     document.body.style[Modernizr.prefixed('userDrag')] = 'none';
     document.body.style[Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
+
+    this.$window_.bind('touchmove.core', function(e) {
+      e.preventDefault();
+    });
   }
   
   $(function() {

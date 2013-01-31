@@ -17,6 +17,8 @@ $break-large: 1024px;
 }
 
 body {
+  background: #f9f9f9;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   @include user-select(none);
 }
 
@@ -74,16 +76,6 @@ body {
     background-image: image-url('shared/o-dark.svg'); }
 }
 
-%absolute-full {
-  bottom: 0;
-  left: 0;
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%;
-}
-
 @mixin landscape()
 {
   @media screen and (orientation:landscape)
@@ -92,6 +84,15 @@ body {
   }
 }
 
+%absolute-full {
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
 
 html, body {
   height: 100%;
@@ -109,13 +110,17 @@ canvas {
 }
 
 #reload {
+  background-color: rgba(255,255,255,0.8);
+  background-image: image-url('refresh.svg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(2em);
   cursor: pointer;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(255,255,255,0.8);
   display: none;
 }
 
@@ -162,4 +167,11 @@ canvas {
 
 .ascii-mode {
   @import "ascii";
+}
+
+.bowling-mode,
+.burger-mode,
+.donut-mode,
+.rocket-mode {
+  @import "fun-modes";
 }

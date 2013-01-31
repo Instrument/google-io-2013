@@ -1,15 +1,3 @@
-body {
-  background: #f9f9f9;
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-}
-
-#reload {
-  background-image: image-url('pong/refresh.svg');
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  @include background-size(2em);
-}
-
 #stats {
   bottom: 20px;
   position: absolute;

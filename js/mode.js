@@ -15,6 +15,10 @@ goog.require('ww.mode.SynthMode');
 // goog.require('ww.mode.EightBitMode');
 goog.require('ww.mode.FireplaceMode');
 goog.require('ww.mode.AsciiMode');
+goog.require('ww.mode.BowlingMode');
+goog.require('ww.mode.RocketMode');
+goog.require('ww.mode.DonutMode');
+goog.require('ww.mode.BurgerMode');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -66,6 +70,10 @@ ww.mode.register('metaball',  ww.mode.MetaBallMode,  10, 8); // 00001010
 ww.mode.register('fireplace', ww.mode.FireplaceMode, 11, 8); // 00001011
 ww.mode.register('synth',     ww.mode.SynthMode,     13, 8); // 00001101
 ww.mode.register('ascii',     ww.mode.AsciiMode,     14, 8); // 00001110
+ww.mode.register('bowling',   ww.mode.BowlingMode,   15, 8); // 00001111
+ww.mode.register('rocket',    ww.mode.RocketMode,    16, 8); // 00010000
+ww.mode.register('donut',     ww.mode.DonutMode,     17, 8); // 00010001
+ww.mode.register('burger',    ww.mode.BurgerMode,    18, 8); // 00010010
 
 // On DocumentReady
 $(function() {
