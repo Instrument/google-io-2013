@@ -169,9 +169,4 @@ canvas {
   @import "ascii";
 }
 
-.bowling-mode,
-.burger-mode,
-.donut-mode,
-.rocket-mode {
-  @import "fun-modes";
-}
+@import "fun-modes";
