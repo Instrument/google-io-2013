@@ -96,18 +96,3 @@ function testWwModeBaconModeActivateO() {
   assertEquals('playSound should have been called twice from activateO', playedAudio, 2);
   assertTrue('fileName should not be empty', fileName !== '');
 }
-
-// test that one tween animation gets added within activateO
-function testWwModeBaconModeActivateO() {
-  var letterO = $('#letter-o');
-  var tweens = [];
-
-  mode.constructor.prototype.addTween = function(tween) {
-    tweens.push(tween);
-  };
-
-  assertTrue('Number of tweens added should be 0', tweens.length === 0);
-
-  letterO.trigger('mouseup');
-  assertTrue('Number of tweens should be 1', tweens.length === 1);
-}
