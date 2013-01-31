@@ -6,7 +6,7 @@ goog.provide('ww.mode.BaconMode');
  * @constructor
  */
 ww.mode.BaconMode = function() {
-  goog.base(this, 'bacon', true, true);
+  goog.base(this, 'bacon', true, true, true);
 
   this.preloadSound('bacon-sizzle.m4a');
   this.preloadSound('egg-cracked.m4a');

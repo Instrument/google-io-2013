@@ -407,7 +407,7 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
  */
 ww.mode.Core.prototype.getPhysicsWorld_ = function() {
   if (this.physicsWorld_) { return this.physicsWorld_; }
-  this.physicsWorld_ = new Physics();
+  this.physicsWorld_ = new Physics(new Verlet());
   return this.physicsWorld_;
 };
 

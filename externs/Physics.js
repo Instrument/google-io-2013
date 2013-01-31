@@ -72,3 +72,47 @@ Attraction.prototype = {
   'setRadius': true,
   'apply': true
 };
+
+var Collision = {
+
+};
+
+Collision.prototype = {
+  'useMass': true,
+  'callback': true,
+  'pool': true,
+  '_delta': true
+}
+
+var EdgeBounce = {
+
+};
+
+EdgeBounce.prototype = {
+  'min': true,
+  'max': true
+}
+
+var EdgeWrap = {
+
+};
+
+EdgeWrap.prototype = {
+  'min': true,
+  'max': true
+};
+
+var Wander = {
+
+};
+
+Wander.prototype = {
+  'jitter': true,
+  'radius': true,
+  'strength': true,
+  'theta': true
+};
+
+var ConstantForce = {
+
+};

@@ -119,15 +119,22 @@ canvas {
   display: none;
 }
 
-@import "bacon";
-@import "cat";
-@import "letters";
+.bacon-mode {
+  @import "bacon";
+}
+
+.cat-mode {
+  @import "letters";
+  @import "cat";
+}
 
 .home-mode {
   @import "home";
 }
 
-@import "pinata";
+.pinata-mode {
+  @import "pinata";
+}
 
 .pong-mode {
   @import "pong";
