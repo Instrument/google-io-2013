@@ -71,17 +71,19 @@ ww.mode.HomeMode.prototype.playProcessedAudio_ = function(filename, filter) {
   this.log('Requested sound "' + filename + '" from "' + url + '"');
 
   var audioContext = this.audioContext_;
+  var source;
+  var gain;
 
   var self = this;
 
   this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext.createBufferSource();
-    var gain = audioContext.createGainNode();
+    source = audioContext.createBufferSource();
+    gain = audioContext.createGainNode();
     gain.gain.value = 0.1;
     source.buffer = buffer;
-    source.connect(filter.input);
-    filter.connect(gain);
-    gain.connect(audioContext.destination);
+    source.connect(gain);
+    gain.connect(filter.input);
+    filter.connect(audioContext.destination);
     source.noteOn(0);
   });
 };
@@ -162,12 +164,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
 
   this.pushPoints_(this.paperI_, this.lastClick_, 10);
 
-  this.iClicked_ = true;
-  if (this.iMultiplier_ < 10) {
-    this.iMultiplier_ += 2;
-  }
-
-  this.playProcessedAudio_('i.wav', this.chorus_);
+  this.playProcessedAudio_('i.mp3', this.chorus_);
 
   this.addPatternCharacter('1');
 };
@@ -180,7 +177,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
 
   this.pushPoints_(this.paperO_, this.lastClick_, 10);
 
-  this.playProcessedAudio_('o.wav', this.delay_);
+  this.playProcessedAudio_('o.mp3', this.delay_);
 
   this.addPatternCharacter('0');
 };
@@ -201,17 +198,6 @@ ww.mode.HomeMode.prototype.goToMode_ = function(key) {
  * @private
  */
 ww.mode.HomeMode.prototype.drawI_ = function() {
-  // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * 0.175;
-  this.iHeight_ = this.iWidth_ * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
-  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
-
-  this.iCenter_ = new paper['Point'](this.iX_ + this.iWidth_ / 2,
-    this.iY_ + this.iHeight_ / 2);
-
   if (!this.paperI_) {
     // Create a new paper.js path based on the previous variables.
     var iTopLeft = new paper['Point'](this.iX_, this.iY_);
@@ -234,7 +220,6 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
 
       this.paperI_['vectors'].push(point);
     }
-    console.log(this.paperI_['layer']);
   } else {
     // Change the position based on new screen size values.
     this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
@@ -250,15 +235,6 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
  * @private
  */
 ww.mode.HomeMode.prototype.drawO_ = function() {
-  var i;
-
-  // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
-
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
-
   if (!this.paperO_) {
     // Create a new paper.js path for O based off the previous variables.
     this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
@@ -297,7 +273,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
  */
 ww.mode.HomeMode.prototype.drawSlash_ = function() {
   // If no slash exists and the I and the O have been created.
-  if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
+  if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
       this.screenCenterY_ - (this.iHeight_ / 2) -
@@ -421,6 +397,29 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
+  // Set I's initial dimensions.
+  this.iWidth_ = this.width_ * 0.175;
+  this.iHeight_ = this.iWidth_ * 2.12698413;
+
+  // Set coordinates for I's upper left corner.
+  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
+
+  this.iCenter_ = new paper['Point'](this.iX_ + this.iWidth_ / 2,
+    this.iY_ + this.iHeight_ / 2);
+
+  // Set O's radius.
+  this.oRad_ = this.width_ * 0.1944444444;
+
+  // Set O's coordinates.
+  this.oX_ = this.screenCenterX_ + this.oRad_;
+  this.oY_ = this.screenCenterY_;
+
+  /**
+   * Create the slash.
+   */
+  this.drawSlash_();
+
   /**
    * Create the letter I.
    */
@@ -430,12 +429,6 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
    * Create the letter O.
    */
   this.drawO_();
-
-  /**
-   * Create the slash. drawI() and drawO() must be called before drawSlash() to
-   * successfully create the slash.
-   */
-  this.drawSlash_();
 
   if (redraw) {
     this.redraw();
