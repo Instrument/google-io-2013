@@ -10,7 +10,9 @@ ww.mode.SynthMode = function() {
 };
 goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 
-
+/**
+ * Set up synth events, sounds, effects and viz.
+ */
 ww.mode.SynthMode.prototype.init = function() {
   goog.base(this, 'init');
 
@@ -28,6 +30,10 @@ ww.mode.SynthMode.prototype.init = function() {
   this.analyser = this.audioContext_.createAnalyser();
   this.analyser.fftSize = 512;
   this.analyser.smoothingTimeConstant = 0.85;
+
+  this.filter = this.audioContext_.createBiquadFilter();
+  this.filter.type = 0;  // lowpass
+  this.filter.frequency.value = 440;
 
   this.synth = $('#controls');
   this.effect = $('#effect');
@@ -47,15 +53,22 @@ ww.mode.SynthMode.prototype.init = function() {
   this.count = 360 * (this.width_ % 360);
 };
 
+
+/**
+ * Runs code on each requested frame.
+ * @param {Integer} delta The timestep variable for animation accuracy.
+ */
 ww.mode.SynthMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
-
+  
   if (!this.isPlaying) {
     return;
   }
 
-  this.count = this.count - (delta * 1000);
+  this.count = this.count - (delta * 300);
+  this.duration = this.duration + delta;
 
+  // Draw frequency path.
   var data = new Uint8Array(this.analyser.frequencyBinCount);
   this.analyser.getByteFrequencyData(data);
 
@@ -64,58 +77,50 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
     newY = this.centerY - (data[i] * 1.25);
     this.path['segments'][i]['point']['y'] = newY;
   }
-
   this.path['smooth']();
 
-  var detune = Math.max(0.5,
-                Math.abs(Math.round(this.source.detune.value / 2400)));
-  var freq = this.source.frequency.value * 0.00075;
 
-  this.sctx.strokeStyle = 'rgba(230, 230, 230, 0.5)';
-  this.sctx.fillStyle = 'rgba(230, 230, 230, 0.5)';
-  this.sctx.lineWidth = 2;
+  // Draw sine wave.
+  var detune = Math.abs(Math.abs(this.source.detune.value / 2400) - 2) + .5;
+  var freq = this.source.frequency.value * .1; // * 0.00075;
 
-  this.sctx.clearRect(0, 0, this.width_, this.height_);
+  console.log(freq,detune,this.source.frequency.value);
 
-  this.sctx.beginPath();
-
-  var x = 0;
-  var y = 0;
-
-  while (x + this.count < this.width_ + this.count) {
-    y = Math.sin(freq * (x + this.count) * Math.PI / 180) * detune;
-
-    if (y >= 0) {
-      y = this.waveHeight - (y - 0) * (this.waveHeight / 2);
+  var min = 6
+  var amount = freq > min ? freq : min;
+  var height = 100 * detune;
+  var distance = this.width_ / amount;
+  
+  if (this.sinePath['segments'].length - 1 !== amount) {
+    this.sinePath['removeSegments']();
+    for (var i = 0; i <= amount; i++) {
+      var point = new paper['Point'](distance * i, this.centerY);
+      this.sinePath.add(point);
     }
-
-    if (y < 0) {
-      y = this.waveHeight + (0 - y) * (this.waveHeight / 2);
-    }
-
-    this.sctx.fillRect(x, y, 2, 2);
-    this.sctx.lineTo(x, y);
-
-    x++;
+  }
+  
+  for (var i = 0; i <= amount; i++) {
+    var segment = this.sinePath['segments'][i];
+    var sin = Math.sin(this.duration * 3 + i);
+    segment['point']['y'] = sin * height + this.centerY;
   }
 
-  this.sctx.closePath();
-  this.sctx.stroke();
-  this.sctx.fill();
-
-  if (this.count < 0) {
-    this.count = 360 * (this.width_ % 360);
-  }
+  this.sinePath['smooth']();
+    
 };
 
 
+/**
+ * Handles a browser window resize.
+ * @param {Boolean} redraw Whether resize redraws.
+ */
 ww.mode.SynthMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
 
   if (this.height_ < 500) {
-    this.centerY = (this.height_ / 2 ) + (this.height_ - 256) / 2;
+    this.centerY = (this.height_ / 2) + (this.height_ - 256) / 2;
   } else {
-    this.centerY = (this.height_ / 2 ) + (256 / 2);
+    this.centerY = (this.height_ / 2) + (256 / 2);
   }
 
   this.scale = ~~(this.height_ * 0.5);
@@ -131,7 +136,7 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     var x = Math.ceil(this.paperCanvas_.width / 256);
 
     for (var i = 0, l = this.path['segments'].length; i < l; i++) {
-      this.path['segments'][i]['point']['x'] = x * i
+      this.path['segments'][i]['point']['x'] = x * i;
       this.path['segments'][i]['point']['y'] = this.centerY;
     }
   }
@@ -159,20 +164,20 @@ ww.mode.SynthMode.prototype.didFocus = function() {
   var self = this;
 
   if (self.height_ < 500) {
-    self.centerY = (self.height_ / 2 ) + (self.height_ - 256) / 2;
+    self.centerY = (self.height_ / 2) + (self.height_ - 256) / 2;
   } else {
-    self.centerY = (self.height_ / 2 ) + (256 / 2);
+    self.centerY = (self.height_ / 2) + (256 / 2);
   }
 
   self.scale = ~~(self.height_ * 0.5);
   self.waveHeight = ~~(self.height_ / 2);
 
-  if (!self.canvas_) {
-    self.canvas_ = $('#sine-graph')[0];
-    self.canvas_.width = self.width_;
-    self.canvas_.height = self.height_;
-    self.sctx = self.canvas_.getContext('2d');
-  }
+  // if (!self.canvas_) {
+  //   self.canvas_ = $('#sine-graph')[0];
+  //   self.canvas_.width = self.width_;
+  //   self.canvas_.height = self.height_;
+  //   self.sctx = self.canvas_.getContext('2d');
+  // }
 
   if (!self.path && !self.points) {
     self.getPaperCanvas_();
@@ -180,15 +185,20 @@ ww.mode.SynthMode.prototype.didFocus = function() {
 
     var max = Math.max(this.width_, 256);
     var size = Math.ceil(self.paperCanvas_.width / 256);
-   
+
     self.path = new paper['Path']();
     self.path['strokeColor'] = '#e9e9e9';
-    self.path['strokeWidth'] = 3;
+    self.path['strokeWidth'] = 5;
+    
+    self.sinePath = new paper['Path']();
+    self.sinePath['strokeColor'] = 'red';
+    self.sinePath['strokeWidth'] = 2;
 
     for (var i = 0; i <= max; i++) {
       var point = new paper['Point'](size * i, self.centerY);
       self.path.add(point);
     }
+    self.duration = 0;
   }
 
   var boundingO = $('#letter-o')[0]['getBoundingClientRect']();
@@ -319,7 +329,7 @@ ww.mode.SynthMode.prototype.playSound_ = function() {
     this.effects[effect].connect(this.analyser);
   }
 
-  this.analyser.connect(this.audioContext_.destination);
+  // this.analyser.connect(this.audioContext_.destination);
   this.source.noteOn(0);
 };
 
