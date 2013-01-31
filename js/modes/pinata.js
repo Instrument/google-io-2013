@@ -27,7 +27,7 @@ goog.inherits(ww.mode.PinataMode, ww.mode.Core);
 ww.mode.PinataMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  var world = this.getPhysicsWorld_();
+  var world = this.getPhysicsWorld_(new Verlet());
   this.collision_ = new Collision();
   this.force_ = new ConstantForce(new Vector(0, 2000));
 };

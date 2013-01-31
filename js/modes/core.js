@@ -407,11 +407,12 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
 /**
  * Get a physics world.
  * @private
+ * @param {Object} integrator The Physics integrator.
  * @return {Physics} The shared audio context.
  */
-ww.mode.Core.prototype.getPhysicsWorld_ = function() {
+ww.mode.Core.prototype.getPhysicsWorld_ = function(integrator) {
   if (this.physicsWorld_) { return this.physicsWorld_; }
-  this.physicsWorld_ = new Physics(new Verlet());
+  this.physicsWorld_ = new Physics(integrator);
   return this.physicsWorld_;
 };
 
