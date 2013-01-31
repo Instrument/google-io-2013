@@ -173,6 +173,8 @@ ww.mode.HomeMode.prototype.activateI = function() {
 ww.mode.HomeMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
+  this.pushCircle_(this.lastClick_, 10);
+
   this.oClicked_ = true;
   if (this.oMultiplier_ < 10) {
     this.oMultiplier_ += 2;
@@ -260,33 +262,29 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
   if (!this.paperO_) {
     // Create a new paper.js path for O based off the previous variables.
     this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
-    // this.paperO_ = new paper['Path']['Circle'](this.oCenter_, this.oRad_);
-    this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 100, this.oRad_);
+
+    this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
+      this.oRad_);
+
     this.paperO_['fillColor'] = '#3777e2';
 
-    // Create arrays to store the coordinates for O's path points.
-    this.oPointX_ = [];
-    this.oPointY_ = [];
-
-    // Store the coordinates for O's path points.
-    this.copyXY_(this.paperO_, this.oPointX_, this.oPointY_, true);
+    this.paperO_['vectors'] = [];
 
     this.oStatic_ = [];
 
     for (var i = 0; i < this.paperO_['segments'].length; i++) {
-      this.oStatic_[i] = {
-        'vector': 0,
-        'randOne': Math.random() * 5 + 10,
-        'randTwo': Math.random() * .1 + 1.05,
-        'point': this.paperO_['segments'][i]['point']
-      }
+      var point = this.paperO_['segments'][i]['point']['clone']();
+      point = point['subtract'](this.oCenter_);
+
+      point['velocity'] = 0;
+      point['acceleration'] = Math.random() * 5 + 10;
+      point['bounce'] = Math.random() * .1 + 1.05;
+
+      this.paperO_['vectors'].push(point);
     }
   } else {
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
     this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
-
-    // Store the coordinates for the newly moved and scaled control points.
-    this.copyXY_(this.paperO_, this.oPointX_, this.oPointY_, true);
   }
 };
 
@@ -356,7 +354,7 @@ ww.mode.HomeMode.prototype.init = function() {
 
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
-    new paper['Point'](this.screenCenterX_, this.screenCenterY_);
+    new paper['Point'](this.oX_, this.oY_);
 
   /**
    * Set the letter I's modify variables.
@@ -372,21 +370,6 @@ ww.mode.HomeMode.prototype.init = function() {
 
   // Float that increments on each activation of I to affect animation further.
   this.iMultiplier_ = 1;
-
-  /**
-   * Set the letter O's modify variables.
-   */
-  // Boolean that sets to true if O is being activated.
-  this.oClicked_ = false;
-
-  // Boolean that sets to false if O has been activated but delta is too high.
-  this.oIncrement_ = true;
-
-  // Float that increments by delta when O is activated to affect animation.
-  this.oModifier_ = 0;
-
-  // Float that increments on each activation of O to affect animation further.
-  this.oMultiplier_ = 1;
 };
 
 /**
@@ -578,6 +561,42 @@ ww.mode.HomeMode.prototype.modCoords_ = function(source,
     return result;
 }
 
+ww.mode.HomeMode.prototype.pushCircle_ = function(clickPoint, speed) {
+  for (var i = 0; i < this.paperO_['vectors'].length; i++) {
+    var point = this.paperO_['vectors'][i];
+
+    var vector = point['add'](this.oCenter_);
+    vector = vector['subtract'](clickPoint);
+
+    var distance = Math.max(0, this.oRad_ - vector['length']);
+    point['length'] += distance;
+    point['velocity'] += speed;
+  }
+}
+
+ww.mode.HomeMode.prototype.updateVectors_ = function() {
+  for (var i = 0; i < this.paperO_['segments'].length; i++) {
+    var point = this.paperO_['vectors'][i];
+
+    point['velocity'] = ((this.oRad_ - point['length']) /
+      point['acceleration'] + point['velocity']) / point['bounce'];
+
+    point['length'] = Math.max(0, point['length'] + point['velocity']);
+  }
+}
+
+ww.mode.HomeMode.prototype.updateCircle_ = function() {
+  for (var i = 0; i < this.paperO_['segments'].length; i++) {
+    var point = this.paperO_['vectors'][i];
+
+    var newPoint = point['clone']();
+
+    this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter_);
+  }
+
+  this.paperO_['smooth']();
+}
+
 /**
  * Runs code on each requested frame.
  * @param {Integer} delta The timestep variable for animation accuracy.
@@ -594,6 +613,9 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.enterIdle_();
     }
   }
+
+  this.updateVectors_();
+  this.updateCircle_();
 
   /*
    * Delta is initially a very small float. Need to modify it for it to have a
@@ -635,13 +657,13 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       0, 0, this.iModifier_,
       this.iMultiplier_);
 
-    this.paperI_['segments'][2]['point']['x'] =
-      this.modCoords_(this.iPointX_[2], true,
+    this.paperI_['segments'][2]['handleIn'] =
+      this.modCoords_(0, true,
       0, 0, this.iModifier_,
       this.iMultiplier_);
 
-    this.paperI_['segments'][2]['point']['y'] =
-      this.modCoords_(this.iPointY_[2], false,
+    this.paperI_['segments'][2]['handleOut'] =
+      this.modCoords_(0, false,
       0, 0, this.iModifier_,
       this.iMultiplier_);
 
@@ -660,105 +682,5 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
      * coordinates.
      */
     this.copyXY_(this.paperI_, this.iPointX_, this.iPointY_, false);
-  }
-
-  /*
-   * Run the following code if the letter O is activated.
-   * It uses delta along with other variables to modify the intensity of the
-   * animation.
-   */
-  if (this.oClicked_ === true) {
-
-    this.adjustModifiers_(this.oModifier_, this.oIncrement_, this.oMultiplier_,
-      this.oClicked_, false);
-
-    // TODO: externs Tuna.Delay.prototype.feedback
-    this.delay_['feedback'] = this.oMultiplier_ / 10;
-
-    /*
-     * Loop through each path segment on the letter O and move each point's
-     * handles based on time as being evaluated by Sine and Cosine.
-     */
-
-    var tempDist;
-
-    /*for (var i = 0; i < this.paperO_['segments'].length; i++) {
-      this.oStatic_[i]['vector'] = ((this.paperO_['radius'] -
-        this.paperO_['segments'].length) / this.oStatic_[i]['modOne'] +
-        this.oStatic_[i]['vector']) / this.oStatic_[i]['modTwo'];
-    }*/
-
-    var distanceModifier;
-    var origin;
-    var vector;
-    var vectorX;
-    var vectorY;
-    var tempPoint;
-
-    for (var i = 0; i < this.paperO_['segments'].length; i++) {
-      vectorX = this.oPointX_[i] - this.oCenter_['x'];
-      vectorY = this.oPointY_[i] - this.oCenter_['y'];
-      tempPoint = new paper['Point'](vectorX, vectorY);
-
-      vector = tempPoint['normalize']();
-
-      origin = new paper['Point'](this.oPointX_[i], this.oPointY_[i]);
-      tempDist = origin['getDistance'](this.lastClick_);
-      distanceModifier = Math.max(tempDist, 50)
-
-      this.paperO_['segments'][i]['point']['x'] = this.oPointX_[i] +
-        Math.cos(this.framesRendered_ / 10) * vector['x'] * this.oModifier_ * this.oMultiplier_ / (distanceModifier / this.oRad_);
-
-      this.paperO_['segments'][i]['point']['y'] = this.oPointY_[i] +
-        Math.sin(this.framesRendered_ / 10) * vector['y'] * this.oModifier_ * this.oMultiplier_ / (distanceModifier / this.oRad_);
-    }
-
-
-     this.paperO_['smooth']();
-    /*this.paperO_['segments'][0]['point']['x'] =
-      this.modCoords_(this.oPointX_[0], true,
-      0, 0, this.oModifier_,
-      this.oMultiplier_);
-
-    this.paperO_['segments'][0]['point']['y'] =
-      this.modCoords_(this.oPointY_[0], false,
-      0, 0, this.oModifier_,
-      this.oMultiplier_);
-
-    this.paperO_['segments'][1]['point']['x'] =
-      this.modCoords_(this.oPointX_[1], false,
-      0, 0, this.oModifier_,
-      this.oMultiplier_);
-
-    this.paperO_['segments'][1]['point']['y'] =
-      this.modCoords_(this.oPointY_[1], true,
-      0, 0, this.oModifier_,
-      this.oMultiplier_);
-
-    this.paperO_['segments'][2]['point']['x'] =
-      this.modCoords_(this.oPointX_[2], true,
-      0, 0, this.oModifier_,
-      this.oMultiplier_);
-
-    this.paperO_['segments'][2]['point']['y'] =
-      this.modCoords_(this.oPointY_[2], false,
-      0, 0, this.oModifier_,
-      this.oMultiplier_);
-
-    this.paperO_['segments'][3]['point']['x'] =
-      this.modCoords_(this.oPointX_[3], false,
-      0, 0, this.oModifier_,
-      this.oMultiplier_);
-
-    this.paperO_['segments'][3]['point']['y'] =
-      this.modCoords_(this.oPointY_[3], true,
-      0, 0, this.oModifier_,
-      this.oMultiplier_);*/
-  } else {
-    /*
-     * If O hasn't been activated recently enough, restore the original handle
-     * coordinates.
-     */
-    this.copyXY_(this.paperO_, this.oPointX_, this.oPointY_, false);
   }
 };
