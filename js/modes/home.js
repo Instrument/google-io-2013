@@ -76,9 +76,12 @@ ww.mode.HomeMode.prototype.playProcessedAudio_ = function(filename, filter) {
 
   this.getSoundBufferFromURL_(url, function(buffer) {
     var source = audioContext.createBufferSource();
+    var gain = audioContext.createGainNode();
+    gain.gain.value = 0.1;
     source.buffer = buffer;
     source.connect(filter.input);
-    filter.connect(audioContext.destination);
+    filter.connect(gain);
+    gain.connect(audioContext.destination);
     source.noteOn(0);
   });
 };
@@ -157,6 +160,8 @@ ww.mode.HomeMode.prototype.addPatternCharacter = function(character) {
 ww.mode.HomeMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
+  this.pushPoints_(this.paperI_, this.lastClick_, 10);
+
   this.iClicked_ = true;
   if (this.iMultiplier_ < 10) {
     this.iMultiplier_ += 2;
@@ -173,21 +178,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
 ww.mode.HomeMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
-  this.pushCircle_(this.lastClick_, 10);
-
-  this.oClicked_ = true;
-  if (this.oMultiplier_ < 10) {
-    this.oMultiplier_ += 2;
-  }
-
-  /*for (var i = 0; i < this.paperO_['segments'].length; i++) {
-    var vector = this.oStatic_[i]['point'] + this.oCenter_ -
-      this.lastClick_;
-
-    var distance = Math.max(0, this.paperO_['radius'] - vector.length);
-    this.oStatic_[i]['point'].length += distance;
-    this.oStatic_[i]['vector'] += 10;
-  }*/
+  this.pushPoints_(this.paperO_, this.lastClick_, 10);
 
   this.playProcessedAudio_('o.wav', this.delay_);
 
@@ -218,20 +209,32 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
   this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
+  this.iCenter_ = new paper['Point'](this.iX_ + this.iWidth_ / 2,
+    this.iY_ + this.iHeight_ / 2);
+
   if (!this.paperI_) {
     // Create a new paper.js path based on the previous variables.
     var iTopLeft = new paper['Point'](this.iX_, this.iY_);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
-    this.letterI = new paper['Rectangle'](iTopLeft, iSize);
-    this.paperI_ = new paper['Path']['Rectangle'](this.letterI);
+    var letterI = new paper['Rectangle'](iTopLeft, iSize);
+    this.paperI_ = new paper['Path']['Rectangle'](letterI);
     this.paperI_['fillColor'] = '#11a860';
 
-    // Create arrays to store the original coordinates for I's path points.
-    this.iPointX_ = [];
-    this.iPointY_ = [];
+    this.paperI_['closed'] = true;
 
-    // Store the coordinates for I's path points.
-    this.copyXY_(this.paperI_, this.iPointX_, this.iPointY_, true);
+    this.paperI_['vectors'] = [];
+
+    for (var i = 0; i < this.paperI_['segments'].length; i++) {
+      var point = this.paperI_['segments'][i]['point']['clone']();
+      point = point['subtract'](this.iCenter_);
+
+      point['velocity'] = 0;
+      point['acceleration'] = Math.random() * 5 + 10;
+      point['bounce'] = Math.random() * .1 + 1.05;
+
+      this.paperI_['vectors'].push(point);
+    }
+    console.log(this.paperI_['layer']);
   } else {
     // Change the position based on new screen size values.
     this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
@@ -239,9 +242,6 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
 
     // Change the scale based on new screen size values.
     this.paperI_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
-
-    // Store the coordinates for the newly moved and scaled control points.
-    this.copyXY_(this.paperI_, this.iPointX_, this.iPointY_, true);
   }
 };
 
@@ -283,7 +283,10 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
       this.paperO_['vectors'].push(point);
     }
   } else {
+    // Change the position based on new screen size values.
     this.paperO_['position'] = {x: this.oX_, y: this.oY_};
+
+    // Change the scale based on new screen size values.
     this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
   }
 };
@@ -355,21 +358,6 @@ ww.mode.HomeMode.prototype.init = function() {
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX_, this.oY_);
-
-  /**
-   * Set the letter I's modify variables.
-   */
-  // Boolean that sets to true if I is being activated.
-  this.iClicked_ = false;
-
-  // Boolean that sets to false if I has been activated but delta is too high.
-  this.iIncrement_ = true;
-
-  // Float that increments by delta when I is activated to affect animation.
-  this.iModifier_ = 0;
-
-  // Float that increments on each activation of I to affect animation further.
-  this.iMultiplier_ = 1;
 };
 
 /**
@@ -475,126 +463,56 @@ ww.mode.HomeMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
   }
 };
 
-/**
- * Assign a paper object's coordinates to a static array, or vice versa.
- * @param {Number} modifier The modifier variable to adjust.
- * @param {Boolean} incrementer The incrementer variable to switch on and off.
- * @param {Number} multiplier The multiplier variable to adjust.
- * @param {Boolean} clicker The clicker variable to switch on and off.
- * @param {Boolean} isI The boolean to determine if I or O should be modified.
- */
-ww.mode.HomeMode.prototype.adjustModifiers_ = function(modifier,
-  incrementer, multiplier, clicker, isI) {
+ww.mode.HomeMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
+  for (var i = 0; i < path['vectors'].length; i++) {
+    var point = path['vectors'][i];
+    var vector;
+    var distance;
 
-  var delta1 = this.deltaModifier_ * 100;
-  var delta2 = this.deltaModifier_ * 1000;
-  var delta3 = this.deltaModifier_ * 10000;
-    
-    if (modifier < delta3 &&
-      incrementer === true) {
-        modifier += delta2;
-    } else if (multiplier > 1) {
-      if (modifier < delta3) {
-        modifier += delta1;
-      }
-      if (multiplier > 1) {
-        multiplier -= 0.1;
-      } else {
-        multiplier = 1;
-      }
+    if (path === this.paperO_) {
+      vector = point['add'](this.oCenter_);
+      vector = vector['subtract'](clickPoint);
+      distance = Math.max(0, this.oRad_ - vector['length']);
     } else {
-      incrementer = false;
-      modifier -= delta2;
-      if (multiplier > 1) {
-        multiplier -= 0.1;
-      } else {
-        multiplier = 1;
-      }
+      vector = point['add'](this.iCenter_);
+      vector = vector['subtract'](clickPoint);
+      distance = Math.max(0, this.iWidth_ - vector['length']);
     }
 
-    if (modifier < delta1) {
-      clicker = false;
-      incrementer = true;
-      multiplier = 1;
-    }
-
-  if (isI === true) {
-    this.iModifier_ = modifier;
-    this.iIncrement_ = incrementer;
-    this.iMultiplier_ = multiplier;
-    this.iClicked_ = clicker;
-  } else {
-    this.oModifier_ = modifier;
-    this.oIncrement_ = incrementer;
-    this.oMultiplier_ = multiplier;
-    this.oClicked_ = clicker;
-  }
-}
-
-/**
- * Assign a paper object's coordinates to a static array, or vice versa.
- * @param {Number} source The base coordinate to reference.
- * @param {Boolean} cos Equation uses cosine if true, sine if false.
- * @param {Number} mod1 The first modifier used in the equation.
- * @param {Number} mod2 The second modifier used in the equation.
- * @param {Number} mod3 The third modifier used in the equation.
- * @param {Number} mod4 The fourth modifier used in the equation.
- * @param {Float} random Optional float to modify the equation.
- */
-ww.mode.HomeMode.prototype.modCoords_ = function(source,
-  cos, mod1, mod2, mod3, mod4, random) {
-
-    var result;
-
-    if (!random) {
-      random = 1;
-    }
-    
-    if (cos) {
-      result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *
-        mod3 * mod4 * random;
-    } else {
-      result = source + Math.sin(this.framesRendered_ / 10 + (mod1 - mod2)) *
-        mod3 * mod4 * random;
-    }
-
-    return result;
-}
-
-ww.mode.HomeMode.prototype.pushCircle_ = function(clickPoint, speed) {
-  for (var i = 0; i < this.paperO_['vectors'].length; i++) {
-    var point = this.paperO_['vectors'][i];
-
-    var vector = point['add'](this.oCenter_);
-    vector = vector['subtract'](clickPoint);
-
-    var distance = Math.max(0, this.oRad_ - vector['length']);
     point['length'] += distance;
     point['velocity'] += speed;
   }
 }
 
-ww.mode.HomeMode.prototype.updateVectors_ = function() {
-  for (var i = 0; i < this.paperO_['segments'].length; i++) {
-    var point = this.paperO_['vectors'][i];
+ww.mode.HomeMode.prototype.updateVectors_ = function(path) {
+  for (var i = 0; i < path['segments'].length; i++) {
+    var point = path['vectors'][i];
 
-    point['velocity'] = ((this.oRad_ - point['length']) /
-      point['acceleration'] + point['velocity']) / point['bounce'];
+    if (path === this.paperO_) {
+      point['velocity'] = ((this.oRad_ - point['length']) /
+        point['acceleration'] + point['velocity']) / point['bounce'];
+    } else {
+      point['velocity'] = ((this.iWidth_ - point['length']) /
+        point['acceleration'] + point['velocity']) / point['bounce'];
+    }
 
     point['length'] = Math.max(0, point['length'] + point['velocity']);
   }
 }
 
-ww.mode.HomeMode.prototype.updateCircle_ = function() {
-  for (var i = 0; i < this.paperO_['segments'].length; i++) {
-    var point = this.paperO_['vectors'][i];
+ww.mode.HomeMode.prototype.updatePoints_ = function(path) {
+  for (var i = 0; i < path['segments'].length; i++) {
+    var point = path['vectors'][i];
 
     var newPoint = point['clone']();
 
-    this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter_);
+    if (path === this.paperO_) {
+      this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter_);
+      this.paperO_['smooth']();
+    } else {
+      this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter_);
+    }
   }
-
-  this.paperO_['smooth']();
 }
 
 /**
@@ -614,73 +532,9 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     }
   }
 
-  this.updateVectors_();
-  this.updateCircle_();
+  this.updateVectors_(this.paperI_);
+  this.updatePoints_(this.paperI_);
 
-  /*
-   * Delta is initially a very small float. Need to modify it for it to have a
-   * stronger effect.
-   */
-  this.deltaModifier_ = (delta / 100);
-
-  /*
-   * Run the following code if the letter I is activated.
-   * It uses delta along with other variables to modify the intensity of the
-   * animation.
-   */
-  if (this.iClicked_ === true) {
-
-    this.adjustModifiers_(this.iModifier_, this.iIncrement_, this.iMultiplier_,
-      this.iClicked_, true);
-
-    /*
-     * Loop through each path segment on the letter I and move each point's
-     * handles based on time as being evaluated by Sine and Cosine.
-     */
-    this.paperI_['segments'][0]['point']['x'] =
-      this.modCoords_(this.iPointX_[0], true,
-      0, 0, this.iModifier_,
-      this.iMultiplier_);
-
-    this.paperI_['segments'][0]['point']['y'] =
-      this.modCoords_(this.iPointY_[0], false,
-      0, 0, this.iModifier_,
-      this.iMultiplier_);
-
-    this.paperI_['segments'][1]['point']['x'] =
-      this.modCoords_(this.iPointX_[1], false,
-      0, 0, this.iModifier_,
-      this.iMultiplier_);
-
-    this.paperI_['segments'][1]['point']['y'] =
-      this.modCoords_(this.iPointY_[1], true,
-      0, 0, this.iModifier_,
-      this.iMultiplier_);
-
-    this.paperI_['segments'][2]['handleIn'] =
-      this.modCoords_(0, true,
-      0, 0, this.iModifier_,
-      this.iMultiplier_);
-
-    this.paperI_['segments'][2]['handleOut'] =
-      this.modCoords_(0, false,
-      0, 0, this.iModifier_,
-      this.iMultiplier_);
-
-    this.paperI_['segments'][3]['point']['x'] =
-      this.modCoords_(this.iPointX_[3], false,
-      0, 0, this.iModifier_,
-      this.iMultiplier_);
-
-    this.paperI_['segments'][3]['point']['y'] =
-      this.modCoords_(this.iPointY_[3], true,
-      0, 0, this.iModifier_,
-      this.iMultiplier_);
-  } else {
-    /*
-     * If I hasn't been activated recently enough, restore the original handle
-     * coordinates.
-     */
-    this.copyXY_(this.paperI_, this.iPointX_, this.iPointY_, false);
-  }
+  this.updateVectors_(this.paperO_);
+  this.updatePoints_(this.paperO_);
 };
