@@ -31,16 +31,16 @@ ww.mode.SynthMode.prototype.init = function() {
   this.analyser.fftSize = 512;
   this.analyser.smoothingTimeConstant = 0.85;
 
-  this.filter = this.audioContext_.createBiquadFilter();
-  this.filter.type = 0;  // lowpass
-  this.filter.frequency.value = 440;
+  // this.filter = this.audioContext_.createBiquadFilter();
+  // this.filter.type = 0;  // lowpass
+  // this.filter.frequency.value = 440;
 
   this.synth = $('#controls');
   this.effect = $('#effect');
   this.power = $('#power');
   this.params = $('.param');
 
-  this.type = document.getElementById('oscillator-type');
+  // this.type = document.getElementById('oscillator-type');
   this.freq = document.getElementById('oscillator-frequency');
   this.detune = document.getElementById('oscillator-detune');
 
@@ -51,6 +51,17 @@ ww.mode.SynthMode.prototype.init = function() {
   this.createSound_();
 
   this.count = 360 * (this.width_ % 360);
+  
+  this.letterI = $('#letter-i');
+  this.letterO = $('#letter-o');
+  
+  this.waveType = 0;
+  this.lastFreq = 80;
+  this.lastDetune = 650;
+  this.lastHue = 0;
+  this.lastXPercent = .5;
+  this.lastYPercent = .5;
+
 };
 
 
@@ -73,39 +84,50 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   this.analyser.getByteFrequencyData(data);
 
   var newY;
-  for (var i = 0, l = data.length; i < l; i++) {
-    newY = this.centerY - (data[i] * 1.25);
-    this.path['segments'][i]['point']['y'] = newY;
+
+  for (var i = 0, p = this.paths.length; i < p; i++) {
+    for (var j = 0, l = data.length; j < l; j++) {
+      newY = this.centerY - (data[j] * 1.25);
+      this.paths[i]['segments'][j]['point']['y'] = newY + i * 5;
+    }
+    this.paths[i]['smooth']();
   }
-  this.path['smooth']();
 
 
   // Draw sine wave.
-  var detune = Math.abs(Math.abs(this.source.detune.value / 2400) - 2) + .5;
-  var freq = this.source.frequency.value * .05; // * 0.00075;
-
-  console.log(freq,detune,this.source.frequency.value);
+  // var detune = Math.abs(Math.abs(this.source.detune.value / 2400) - 2) + .5;
+  var detune = Math.abs(Math.abs(this.lastDetune / 2400) - 2) + .5;
+  // var freq = this.source.frequency.value * .05; // * 0.00075;
+  var freq = this.lastFreq * .05; // * 0.00075;
 
   var min = 6
-  var amount = freq > min ? freq : min;
+  var amount = Math.floor(freq > min ? freq : min);
   var height = 100 * detune;
   var distance = this.width_ / amount;
-  
-  if (this.sinePath['segments'].length - 1 !== amount) {
-    this.sinePath['removeSegments']();
-    for (var i = 0; i <= amount; i++) {
-      var point = new paper['Point'](distance * i, this.centerY);
-      this.sinePath.add(point);
-    }
-  }
-  
-  for (var i = 0; i <= amount; i++) {
-    var segment = this.sinePath['segments'][i];
-    var sin = Math.sin(this.duration * 3 + i);
-    segment['point']['y'] = sin * height + this.centerY;
-  }
+  var xAdjust = 100 * this.lastXPercent;
+  var yAdjust = 100 * this.lastYPercent;
+  // var rotate = 4 * this.lastXPercent * this.lastYPercent;
 
-  this.sinePath['smooth']();
+  for (var j = 0, p = this.wavePaths.length; j < p; j++) {
+  
+    if (this.wavePaths[j]['segments'].length - 1 !== amount) {
+      this.wavePaths[j]['removeSegments']();
+      for (var i = 0; i <= amount; i++) {
+        var point = new paper['Point'](distance * i + j * xAdjust, this.centerY);
+        this.wavePaths[j].add(point);
+      }
+    }
+  
+    for (var i = 0; i <= amount; i++) {
+      var segment = this.wavePaths[j]['segments'][i];
+      var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i);
+      segment['point']['y'] = (sin * height + this.height_ / 2) + j * yAdjust;
+    }
+
+    this.wavePaths[j]['strokeColor']['hue'] = this.lastHue;
+    // this.wavePaths[j]['rotate'](rotate);
+    this.wavePaths[j]['smooth']();
+  }
     
 };
 
@@ -152,6 +174,10 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     'height': ~~boundingO['height'] + 'px',
     'width': ~~boundingO['width'] + 'px'
   });
+  
+  this.oOffset = $('#letter-o').offset();
+  this.oSize = $('#letter-o')[0]['getBoundingClientRect']()['width'];
+  
 };
 
 
@@ -172,32 +198,43 @@ ww.mode.SynthMode.prototype.didFocus = function() {
   self.scale = ~~(self.height_ * 0.5);
   self.waveHeight = ~~(self.height_ / 2);
 
-  // if (!self.canvas_) {
-  //   self.canvas_ = $('#sine-graph')[0];
-  //   self.canvas_.width = self.width_;
-  //   self.canvas_.height = self.height_;
-  //   self.sctx = self.canvas_.getContext('2d');
-  // }
-
   if (!self.path && !self.points) {
     self.getPaperCanvas_();
     self.ctx = self.paperCanvas_.getContext('2d');
 
     var max = Math.max(this.width_, 256);
     var size = Math.ceil(self.paperCanvas_.width / 256);
+    
+    self.wavePath = new paper['Path']();
+    self.wavePath['strokeColor'] = 'red';
+    self.wavePath['strokeWidth'] = 2;
 
+    self.wavePaths = [];
+    self.wavePaths.push(self.wavePath);
+    
+    for (var i = 0; i < 3; i++) {
+      var path = self.wavePath['clone']();
+      path['strokeColor']['alpha'] = 0.3;
+      self.wavePaths.push(path);
+    }
+    
     self.path = new paper['Path']();
-    self.path['strokeColor'] = '#e9e9e9';
+    self.path['strokeColor'] = new paper['RgbColor'](0, 0, 0, 0.1);
     self.path['strokeWidth'] = 5;
     
-    self.sinePath = new paper['Path']();
-    self.sinePath['strokeColor'] = 'red';
-    self.sinePath['strokeWidth'] = 2;
-
     for (var i = 0; i <= max; i++) {
       var point = new paper['Point'](size * i, self.centerY);
       self.path.add(point);
     }
+    
+    self.paths = [];
+    self.paths.push(self.path);
+    
+    for (var i = 0; i < 3; i++) {
+      var path = self.path['clone']();
+      self.paths.push(path);
+    }
+    
     self.duration = 0;
   }
 
@@ -225,6 +262,27 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     e.preventDefault();
     self.changeEffect_(this);
   });
+  
+  
+  self.letterI.bind(this.evtEnd, function() {
+    self.changeWaveType();
+  });
+  self.letterO.bind(this.evtStart, function() {
+    self.padTouchOn = true;
+    self.lastFreq = self.calculateFrequency(event.pageX, event.pageY);
+  });  
+  self.letterO.bind(this.evtEnd, function() {
+    self.padTouchOn = false;
+  });
+  self.letterO.bind(Modernizr.touch ? 'touchmove' : 'mousemove', function() {
+    if (self.padTouchOn) {
+      self.changeFrequency(event);
+    }
+  });
+  
+  self.oOffset = self.letterO.offset();
+  self.oSize = self.letterO[0]['getBoundingClientRect']()['width'];
+  
 };
 
 
@@ -294,9 +352,9 @@ ww.mode.SynthMode.prototype.buildEffects_ = function() {
  * @private
  */
 ww.mode.SynthMode.prototype.createSound_ = function() {
-  this.source.type = this.type.value;
-  this.source.frequency.value = this.freq.value;
-  this.source.detune.value = this.detune.value;
+  this.source.type = this.waveType; //this.type.value;
+  this.source.frequency.value = this.lastFreq; //this.freq.value;
+  this.source.detune.value = this.lastDetune; //this.detune.value;
 };
 
 
@@ -323,7 +381,11 @@ ww.mode.SynthMode.prototype.playSound_ = function() {
   var effect = this.effect[0].value;
 
   if (effect === 'dry') {
-    this.source.connect(this.analyser);
+    // this.source.connect(this.analyser);
+    
+    this.source.connect(this.effects['delay']['input']);
+    this.effects['delay'].connect(this.analyser);
+    
   } else {
     this.source.connect(this.effects[effect]['input']);
     this.effects[effect].connect(this.analyser);
@@ -339,4 +401,31 @@ ww.mode.SynthMode.prototype.playSound_ = function() {
  */
 ww.mode.SynthMode.prototype.pauseSound_ = function() {
   this.source.disconnect();
+};
+
+
+ww.mode.SynthMode.prototype.changeWaveType = function() {
+  this.waveType++;
+  this.waveType = this.waveType > 3 ? 0 : this.waveType;
+  this.createSound_();
+};
+
+ww.mode.SynthMode.prototype.changeFrequency = function(event) {
+  this.calculateFrequency(event.pageX, event.pageY);
+  this.createSound_();
+};
+
+ww.mode.SynthMode.prototype.calculateFrequency = function(x, y) {
+
+  var xDiff = x - this.oOffset.left;
+  var yDiff = y - this.oOffset.top;
+  var xPercent = xDiff / this.oSize;
+  var yPercent = yDiff / this.oSize;
+  
+  this.lastFreq = 1000 - (1000 * yPercent);
+  this.lastDetune = -4800 + (9600 * xPercent);
+  this.lastHue = 60 - (60 * yPercent);
+  this.lastYPercent = yPercent;
+  this.lastXPercent = xPercent;
+
 };

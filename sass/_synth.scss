@@ -18,6 +18,8 @@
   position: absolute;
   text-align: center;
 
+  display: none;
+
   ul {
     @include no-bullets;
     margin: 0;
