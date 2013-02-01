@@ -427,12 +427,10 @@ ww.mode.HomeMode.prototype.updatePoints_ = function(path) {
 
 /**
  * Runs code on each requested frame.
- * @param {Integer} delta The timestep variable for animation accuracy.
+ * @param {Number} delta Ms since last draw.
  */
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
-
-  var i;
 
   if (!this.isIdle_) {
     var hasBeenIdle = this.timeElapsed_ - this.wentIdleTime_;

@@ -151,9 +151,14 @@ function testWwModeHomeModeDrawSlash_() {
 }
 
 function testWwModeHomeModeInit() {
+  mode.activateO();
+
   mode.oX_ = 10;
 
   mode.init();
+
+  assertEquals('the pattern should be reset', '',
+    mode.patternMatcher_.currentPattern_);
 
   assertEquals('lastClick_ should equal oX_', mode.oX_, mode.lastClick_['x']);
 }
@@ -165,4 +170,88 @@ function testWwModeHomeModeOnResize() {
 
   assertNotEquals('screenCenterX_ should have changed on resize', 20,
     mode.screenCenterX_);
+}
+
+function testWwModeHomeModePushPoints_() {
+  mode.init();
+  mode.onResize();
+
+  mode.paperI_['vectors'][0]['velocity'] = 0;
+
+  mode.pushPoints_(mode.paperI_, mode.lastClick_, 10);
+
+  assertNotEquals('paperI_ should now have velocity', 0,
+    mode.paperI_['vectors'][0]['velocity']);
+
+  mode.paperO_['vectors'][0]['velocity'] = 0;
+
+  mode.pushPoints_(mode.paperO_, mode.lastClick_, 10);
+
+  assertNotEquals('paperO_ should now have velocity', 0,
+    mode.paperO_['vectors'][0]['velocity']);
+}
+
+function testWwModeHomeModeUpdateVectors_() {
+  mode.init();
+  mode.onResize();
+
+  mode.paperI_['vectors'][0]['length'] = 0;
+
+  mode.updateVectors_(mode.paperI_);
+
+  assertNotEquals('paperI_ should now have a new length', 0,
+    mode.paperI_['vectors'][0]['velocity']);
+
+  mode.paperO_['vectors'][0]['length'] = 0;
+
+  mode.updateVectors_(mode.paperO_);
+
+  assertNotEquals('paperO_ should now have a new length', 0,
+    mode.paperO_['vectors'][0]['length']);
+}
+
+function testWwModeHomeModeUpdatePoints_() {
+  mode.init();
+  mode.onResize();
+
+  mode.paperI_['vectors'][0]['length'] = 0;
+
+  mode.updateVectors_(mode.paperI_);
+  mode.updatePoints_(mode.paperI_);
+
+  var tempPoint = mode.paperI_['vectors'][0]['add'](mode.iCenter_);
+
+  assertEquals('paperI_ should match its static coordinates', tempPoint['x'],
+    mode.paperI_['segments'][0]['point']['x']);
+
+  mode.paperO_['vectors'][0]['length'] = 0;
+
+  mode.updateVectors_(mode.paperO_);
+  mode.updatePoints_(mode.paperO_);
+
+  tempPoint = mode.paperO_['vectors'][0]['add'](mode.oCenter_);
+
+  assertEquals('paperO_ should match its static coordinates', tempPoint['x'],
+    mode.paperO_['segments'][0]['point']['x']);
+}
+
+function testWwModeHomeModeOnFrame() {
+  mode.isIdle_ = false;
+
+  mode.timeElapsed_ = 10;
+  mode.wentIdleTime_ = 2;
+  mode.maxIdleTime_ = 5;
+
+  var tempX1 = mode.paperI_['segments'][0]['point']['x'];
+  var tempX2 = mode.paperO_['segments'][0]['point']['x'];
+
+  mode.onFrame();
+
+  assertTrue('isIdle_ should now be true', mode.isIdle_);
+
+  assertNotEquals('paperI_ points should have updated', tempX1,
+    mode.paperI_['segments'][0]['point']['x']);
+
+  assertNotEquals('paperO_ points should have updated', tempX2,
+    mode.paperO_['segments'][0]['point']['x']);
 }
