@@ -1,5 +1,4 @@
 goog.require('ww.mode.Core');
-goog.require('ww.util');
 goog.require('ww.PatternMatcher');
 goog.provide('ww.mode.HomeMode');
 
@@ -16,75 +15,8 @@ ww.mode.HomeMode = function() {
   this.maxIdleTime_ = 15000; // 15 seconds
 
   var context = this.getAudioContext_();
-  this.tuna_ = new Tuna(context);
-  
-  /**
-   * Create a delay audio filter. Value ranges are as follows.
-   * feedback: 0 to 1+
-   * delayTime: how many milliseconds should the wet signal be delayed?
-   * wetLevel: 0 to 1+
-   * dryLevel: 0 to 1+
-   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.delay_ = new this.tuna_.Delay({
-    feedback: 0,
-    delayTime: 0,
-    wetLevel: 0,
-    dryLevel: 0,
-    cutoff: 20,
-    bypass: 0
-  });
-
-  /**
-   * Create a chorus audio filter. Value ranges are as follows.
-   * rate: 0.01 to 8+
-   * feedback: 0 to 1+
-   * delay: 0 to 1
-   * dryLevel: 0 to 1+
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.chorus_ = new this.tuna_.Chorus({
-    rate: 0.01,
-    feedback: 0.2,
-    delay: 0,
-    bypass: 0
-  });
 };
 goog.inherits(ww.mode.HomeMode, ww.mode.Core);
-
-/**
- * Play a sound by url after being processed by Tuna.
- * @private.
- * @param {String} filename Audio file name.
- * @param {Object} filter Audio filter name.
- */
-ww.mode.HomeMode.prototype.playProcessedAudio_ = function(filename, filter) {
-  if (!this.wantsAudio_) { return; }
-
-  var url = '../sounds/' + this.name_ + '/' + filename;
-
-  if (ww.testMode) {
-    url = '../' + url;
-  }
-
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
-
-  var audioContext = this.audioContext_;
-
-  var self = this;
-
-  this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext.createBufferSource();
-    var gain = audioContext.createGainNode();
-    gain.gain.value = 0.1;
-    source.buffer = buffer;
-    source.connect(filter.input);
-    filter.connect(gain);
-    gain.connect(audioContext.destination);
-    source.noteOn(0);
-  });
-};
 
 /**
  * Reset the last time the user was idle.
@@ -162,12 +94,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
 
   this.pushPoints_(this.paperI_, this.lastClick_, 10);
 
-  this.iClicked_ = true;
-  if (this.iMultiplier_ < 10) {
-    this.iMultiplier_ += 2;
-  }
-
-  this.playProcessedAudio_('i.wav', this.chorus_);
+  this.playSound('i.mp3');
 
   this.addPatternCharacter('1');
 };
@@ -180,7 +107,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
 
   this.pushPoints_(this.paperO_, this.lastClick_, 10);
 
-  this.playProcessedAudio_('o.wav', this.delay_);
+  this.playSound('o.mp3');
 
   this.addPatternCharacter('0');
 };
@@ -201,17 +128,6 @@ ww.mode.HomeMode.prototype.goToMode_ = function(key) {
  * @private
  */
 ww.mode.HomeMode.prototype.drawI_ = function() {
-  // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * 0.175;
-  this.iHeight_ = this.iWidth_ * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
-  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
-
-  this.iCenter_ = new paper['Point'](this.iX_ + this.iWidth_ / 2,
-    this.iY_ + this.iHeight_ / 2);
-
   if (!this.paperI_) {
     // Create a new paper.js path based on the previous variables.
     var iTopLeft = new paper['Point'](this.iX_, this.iY_);
@@ -234,7 +150,6 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
 
       this.paperI_['vectors'].push(point);
     }
-    console.log(this.paperI_['layer']);
   } else {
     // Change the position based on new screen size values.
     this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
@@ -250,15 +165,6 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
  * @private
  */
 ww.mode.HomeMode.prototype.drawO_ = function() {
-  var i;
-
-  // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
-
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
-
   if (!this.paperO_) {
     // Create a new paper.js path for O based off the previous variables.
     this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
@@ -269,8 +175,6 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
     this.paperO_['fillColor'] = '#3777e2';
 
     this.paperO_['vectors'] = [];
-
-    this.oStatic_ = [];
 
     for (var i = 0; i < this.paperO_['segments'].length; i++) {
       var point = this.paperO_['segments'][i]['point']['clone']();
@@ -296,8 +200,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
  * @private
  */
 ww.mode.HomeMode.prototype.drawSlash_ = function() {
-  // If no slash exists and the I and the O have been created.
-  if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
+  if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
       this.screenCenterY_ - (this.iHeight_ / 2) -
@@ -344,12 +247,6 @@ ww.mode.HomeMode.prototype.init = function() {
 
   // Prep paperjs
   this.getPaperCanvas_();
-
-  // Variable to modify delta's returned value.
-  this.deltaModifier_ = 0;
-
-  // Temporarily float variable to use for randomizing animation effects.
-  this.tempFloat = [];
 
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
@@ -421,6 +318,29 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
+  // Set I's initial dimensions.
+  this.iWidth_ = this.width_ * 0.175;
+  this.iHeight_ = this.iWidth_ * 2.12698413;
+
+  // Set coordinates for I's upper left corner.
+  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
+
+  this.iCenter_ = new paper['Point'](this.iX_ + this.iWidth_ / 2,
+    this.iY_ + this.iHeight_ / 2);
+
+  // Set O's radius.
+  this.oRad_ = this.width_ * 0.1944444444;
+
+  // Set O's coordinates.
+  this.oX_ = this.screenCenterX_ + this.oRad_;
+  this.oY_ = this.screenCenterY_;
+
+  /**
+   * Create the slash.
+   */
+  this.drawSlash_();
+
   /**
    * Create the letter I.
    */
@@ -431,38 +351,18 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  /**
-   * Create the slash. drawI() and drawO() must be called before drawSlash() to
-   * successfully create the slash.
-   */
-  this.drawSlash_();
-
   if (redraw) {
     this.redraw();
   }
 };
 
 /**
- * Assign a paper object's coordinates to a static array, or vice versa.
- * @param {Array} paperArray The paper.js array to reference.
- * @param {Array} xArray The array of static X coordinates to reference.
- * @param {Array} yArray The array of static Y coordinates to reference.
- * @param {Boolean} copy Determines if paperArray is copied from or written to.
+ * Updates point vectors based on click/tap position.
+ * @param {Object} path The path to modify.
+ * @param {Object} clickPoint The coordinates of the most recent click/tap.
+ * @param {Number} speed Affects the speed of the animation.
+ * @private
  */
-ww.mode.HomeMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
-  for (var i = 0; i < paper['segments'].length; i++) {
-    if (copy) {
-      xArray[i] = paper['segments'][i]['point']['x'];
-
-      yArray[i] = paper['segments'][i]['point']['y'];
-    } else {
-      paper['segments'][i]['point']['x'] = xArray[i];
-
-      paper['segments'][i]['point']['y'] = yArray[i];
-    }
-  }
-};
-
 ww.mode.HomeMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
   for (var i = 0; i < path['vectors'].length; i++) {
     var point = path['vectors'][i];
@@ -484,6 +384,11 @@ ww.mode.HomeMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
   }
 }
 
+/**
+ * Updates point vectors based on their length and velocity values.
+ * @param {Object} path The path to modify.
+ * @private
+ */
 ww.mode.HomeMode.prototype.updateVectors_ = function(path) {
   for (var i = 0; i < path['segments'].length; i++) {
     var point = path['vectors'][i];
@@ -500,6 +405,11 @@ ww.mode.HomeMode.prototype.updateVectors_ = function(path) {
   }
 }
 
+/**
+ * Updates point coordinates based on their vectors.
+ * @param {Object} path The path to modify.
+ * @private
+ */
 ww.mode.HomeMode.prototype.updatePoints_ = function(path) {
   for (var i = 0; i < path['segments'].length; i++) {
     var point = path['vectors'][i];
@@ -517,12 +427,10 @@ ww.mode.HomeMode.prototype.updatePoints_ = function(path) {
 
 /**
  * Runs code on each requested frame.
- * @param {Integer} delta The timestep variable for animation accuracy.
+ * @param {Number} delta Ms since last draw.
  */
 ww.mode.HomeMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
-
-  var i;
 
   if (!this.isIdle_) {
     var hasBeenIdle = this.timeElapsed_ - this.wentIdleTime_;

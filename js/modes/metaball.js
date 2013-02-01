@@ -604,7 +604,7 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
 
 /**
  * Runs code on each requested frame.
- * @param {Integer} delta The timestep variable for animation accuracy.
+ * @param {Number} delta Ms since last draw.
  */
 ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
