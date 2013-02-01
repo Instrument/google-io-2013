@@ -49,32 +49,39 @@ ww.mode.SpaceMode = function() {
 goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
 
 /**
- * Play a sound by url after being processed by Tuna.
- * @private.
+ * Play a sound by url.
  * @param {String} filename Audio file name.
- * @param {Object} filter Audio filter name.
+ * @param {Function} onPlay Callback on play.
+ * @param {Boolean} loop To loop the audio, or to not loop the audio.
  */
-ww.mode.SpaceMode.prototype.playProcessedAudio_ = function(filename, filter) {
+ww.mode.SpaceMode.prototype.playSound = function(filename, filter, onPlay, loop) {
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
-
   if (ww.testMode) {
     url = '../' + url;
   }
 
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
+  this.log('Playing sound "' + filename + '"');
 
-  var audioContext = this.audioContext_;
+  var audioContext = this.getAudioContext_();
 
   var self = this;
 
   this.getSoundBufferFromURL_(url, function(buffer) {
     var source = audioContext.createBufferSource();
+    var gain = audioContext.createGainNode();
+    gain.gain.value = 0.1;
     source.buffer = buffer;
-    source.connect(filter.input);
-    filter.connect(audioContext.destination);
+    source.loop = loop || false;
+    source.connect(gain);
+    gain.connect(self.delay_.input);
+    self.delay_.connect(audioContext.destination);
     source.noteOn(0);
+
+    if ('function' === typeof onPlay) {
+      onPlay(source);
+    }
   });
 };
 
@@ -87,7 +94,7 @@ ww.mode.SpaceMode.prototype.activateI = function() {
     this.iMultiplier_ += 2;
   }
 
-  // this.playProcessedAudio_('boing.wav', this.chorus_);
+  this.playSound('i.mp3');
 };
 
 /**
@@ -99,7 +106,7 @@ ww.mode.SpaceMode.prototype.activateO = function() {
     this.oMultiplier_ += 2;
   }
 
-  // this.playProcessedAudio_('boing.wav', this.delay_);
+  this.playSound('o.mp3');
 };
 
 /**
@@ -107,14 +114,6 @@ ww.mode.SpaceMode.prototype.activateO = function() {
  * @private
  */
 ww.mode.SpaceMode.prototype.drawI_ = function() {
-  // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * .175;
-  this.iHeight_ = this.iWidth_ * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
-  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
-
   if (!this.paperI_) {
     // Initial variables for calculating path coordinates.
     var pathX;
@@ -194,13 +193,6 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
  * @private
  */
 ww.mode.SpaceMode.prototype.drawO_ = function() {
-  // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
-
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
-
   if (!this.paperO_) {
     // Initial variables for calculating circle angles.
     var pathX;
@@ -286,8 +278,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
  * @private
  */
 ww.mode.SpaceMode.prototype.drawSlash_ = function() {
-  // If no slash exists and the I and the O have been created.
-  if (!this.paperSlash_ && this.paperI_ && this.paperO_) {
+  if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
       this.screenCenterY_ - (this.iHeight_ / 2) -
@@ -331,7 +322,7 @@ ww.mode.SpaceMode.prototype.init = function() {
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
 
-  for (var i = 0; i < 5000; i++) {
+  for (var i = 0; i < this.width_ * 2; i++) {
     this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
     this.world_.particles.push(new Particle());
@@ -419,7 +410,6 @@ ww.mode.SpaceMode.prototype.didFocus = function() {
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
-  // this.ctx_.shadowColor = 'white';
   this.ctx_.globalCompositeOperation = 'lighter';
   this.ctx_.fillStyle = '#e4e4e4';
 
@@ -489,6 +479,26 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
     }
   }
 
+  // Set I's initial dimensions.
+  this.iWidth_ = this.width_ * .175;
+  this.iHeight_ = this.iWidth_ * 2.12698413;
+
+  // Set coordinates for I's upper left corner.
+  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
+
+  // Set O's radius.
+  this.oRad_ = this.width_ * 0.1944444444;
+
+  // Set O's coordinates.
+  this.oX_ = this.screenCenterX_ + this.oRad_;
+  this.oY_ = this.screenCenterY_;
+
+  /**
+   * Create the slash.
+   */
+  this.drawSlash_();
+
   /**
    * Create the letter I.
    */
@@ -498,12 +508,6 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
    * Create the letter O.
    */
   this.drawO_();
-
-  /**
-   * Create the slash. drawI() and drawO() must be called before drawSlash() to
-   * successfully create the slash.
-   */
-  this.drawSlash_();
 
   this.redraw();
 };
@@ -702,6 +706,8 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
     this.adjustModifiers_(this.iModifier_, this.iIncrement_, this.iMultiplier_,
       this.iClicked_, true);
+
+    this.delay_['feedback'] = this.iMultiplier_ / 10;
 
     /*
      * Loop through each path segment on the letter I and move each point's

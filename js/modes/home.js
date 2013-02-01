@@ -16,77 +16,8 @@ ww.mode.HomeMode = function() {
   this.maxIdleTime_ = 15000; // 15 seconds
 
   var context = this.getAudioContext_();
-  this.tuna_ = new Tuna(context);
-  
-  /**
-   * Create a delay audio filter. Value ranges are as follows.
-   * feedback: 0 to 1+
-   * delayTime: how many milliseconds should the wet signal be delayed?
-   * wetLevel: 0 to 1+
-   * dryLevel: 0 to 1+
-   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.delay_ = new this.tuna_.Delay({
-    feedback: 0,
-    delayTime: 0,
-    wetLevel: 0,
-    dryLevel: 0,
-    cutoff: 20,
-    bypass: 0
-  });
-
-  /**
-   * Create a chorus audio filter. Value ranges are as follows.
-   * rate: 0.01 to 8+
-   * feedback: 0 to 1+
-   * delay: 0 to 1
-   * dryLevel: 0 to 1+
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   */
-  this.chorus_ = new this.tuna_.Chorus({
-    rate: 0.01,
-    feedback: 0.2,
-    delay: 0,
-    bypass: 0
-  });
 };
 goog.inherits(ww.mode.HomeMode, ww.mode.Core);
-
-/**
- * Play a sound by url after being processed by Tuna.
- * @private.
- * @param {String} filename Audio file name.
- * @param {Object} filter Audio filter name.
- */
-ww.mode.HomeMode.prototype.playProcessedAudio_ = function(filename, filter) {
-  if (!this.wantsAudio_) { return; }
-
-  var url = '../sounds/' + this.name_ + '/' + filename;
-
-  if (ww.testMode) {
-    url = '../' + url;
-  }
-
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
-
-  var audioContext = this.audioContext_;
-  var source;
-  var gain;
-
-  var self = this;
-
-  this.getSoundBufferFromURL_(url, function(buffer) {
-    source = audioContext.createBufferSource();
-    gain = audioContext.createGainNode();
-    gain.gain.value = 0.1;
-    source.buffer = buffer;
-    source.connect(gain);
-    gain.connect(filter.input);
-    filter.connect(audioContext.destination);
-    source.noteOn(0);
-  });
-};
 
 /**
  * Reset the last time the user was idle.
@@ -164,7 +95,7 @@ ww.mode.HomeMode.prototype.activateI = function() {
 
   this.pushPoints_(this.paperI_, this.lastClick_, 10);
 
-  this.playProcessedAudio_('i.mp3', this.chorus_);
+  this.playSound('i.mp3');
 
   this.addPatternCharacter('1');
 };
@@ -177,7 +108,7 @@ ww.mode.HomeMode.prototype.activateO = function() {
 
   this.pushPoints_(this.paperO_, this.lastClick_, 10);
 
-  this.playProcessedAudio_('o.mp3', this.delay_);
+  this.playSound('o.mp3');
 
   this.addPatternCharacter('0');
 };
@@ -272,7 +203,6 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
  * @private
  */
 ww.mode.HomeMode.prototype.drawSlash_ = function() {
-  // If no slash exists and the I and the O have been created.
   if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,

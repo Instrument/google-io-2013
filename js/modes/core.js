@@ -516,9 +516,12 @@ ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
 
   this.getSoundBufferFromURL_(url, function(buffer) {
     var source = audioContext.createBufferSource();
+    var gain = audioContext.createGainNode();
+    gain.gain.value = 0.1;
     source.buffer = buffer;
     source.loop = loop || false;
-    source.connect(audioContext.destination);
+    source.connect(gain);
+    gain.connect(audioContext.destination);
     source.noteOn(0);
 
     if ('function' === typeof onPlay) {

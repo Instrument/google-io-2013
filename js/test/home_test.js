@@ -56,3 +56,31 @@ function testBadPattern() {
   assertEquals('Should not request any mode', false, matchedModeName);
   assertTrue('Added success class', mode.$pattern_.hasClass('failure'));
 }
+
+/*function testWwModeHomeModeActivateI() {
+  mode.patternMatcher_.reset();
+
+  mode.init();
+
+  var tempX = mode.paperI_['vectors'][0]['velocity'];
+
+  mode.activateI();
+
+  assertNotEquals('paperI_ vectors should have changed', tempX, mode.paperI_['vectors'][0]['velocity']);
+
+  assertEquals('currentPattern_ should be 1', '1', mode.patternMatcher_.currentPattern_);
+}
+
+function testWwModeHomeModeActivateO() {
+  mode.patternMatcher_.reset();
+
+  mode.init();
+
+  var tempX = mode.paperO_['vectors'][0]['velocity'];
+
+  mode.activateO();
+
+  assertNotEquals('paperO_ vectors should have changed', tempX, mode.paperO_['vectors'][0]['velocity']);
+
+  assertEquals('currentPattern_ should be 0', '0', mode.patternMatcher_.currentPattern_);
+}*/
