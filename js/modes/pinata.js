@@ -104,7 +104,7 @@ ww.mode.PinataMode.prototype.didFocus = function() {
   this.robot_.behaviours.push(this.collision_);
   this.physicsWorld_.particles.push(this.robot_);
 
-  this.prepopulate_(200);
+  this.prepopulate_(150);
 
   this.current_ = 1;
 };
@@ -170,7 +170,7 @@ ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
         ball.pos.x < 0 - r6 ||
         ball.pos.y > this.height_ + r6 ||
         ball.pos.y < 0 - r6) {
-      // ball is out of bounds, so make it hidden/fixed 
+      // ball is out of bounds, so make it hidden/fixed
       ball.fixed = true;
     }
 
@@ -182,7 +182,7 @@ ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
       this.ctx_.translate(ball.pos.x, ball.pos.y);
       this.ctx_.rotate(ball['rotate']);
 
-      // pill shape      
+      // pill shape
       this.ctx_.beginPath();
       this.ctx_.arc(-radius, 0, radius, 0, TWOPI);
       this.ctx_.arc(radius, 0, radius, 0, TWOPI);
@@ -197,6 +197,7 @@ ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
 
 /**
  * Prepopulate balls.
+ * @param {Number} number Number of balls to prepopulate.
  * @private
  */
 ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
@@ -228,7 +229,6 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
 
 /**
  * Add a number of given balls.
- * @param {Number} number Number of balls to add.
  * @private
  */
 ww.mode.PinataMode.prototype.activateBalls_ = function() {
