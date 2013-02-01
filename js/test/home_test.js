@@ -57,30 +57,112 @@ function testBadPattern() {
   assertTrue('Added success class', mode.$pattern_.hasClass('failure'));
 }
 
-/*function testWwModeHomeModeActivateI() {
+function testWwModeHomeModeActivateI() {
   mode.patternMatcher_.reset();
 
-  mode.init();
+  mode.onResize();
 
   var tempX = mode.paperI_['vectors'][0]['velocity'];
 
   mode.activateI();
 
-  assertNotEquals('paperI_ vectors should have changed', tempX, mode.paperI_['vectors'][0]['velocity']);
+  assertNotEquals('paperI_ vectors should have changed', tempX,
+    mode.paperI_['vectors'][0]['velocity']);
 
-  assertEquals('currentPattern_ should be 1', '1', mode.patternMatcher_.currentPattern_);
+  assertEquals('currentPattern_ should be 1', '1',
+    mode.patternMatcher_.currentPattern_);
 }
 
 function testWwModeHomeModeActivateO() {
   mode.patternMatcher_.reset();
 
-  mode.init();
+  mode.onResize();
 
   var tempX = mode.paperO_['vectors'][0]['velocity'];
 
   mode.activateO();
 
-  assertNotEquals('paperO_ vectors should have changed', tempX, mode.paperO_['vectors'][0]['velocity']);
+  assertNotEquals('paperO_ vectors should have changed', tempX,
+    mode.paperO_['vectors'][0]['velocity']);
 
-  assertEquals('currentPattern_ should be 0', '0', mode.patternMatcher_.currentPattern_);
-}*/
+  assertEquals('currentPattern_ should be 0', '0',
+    mode.patternMatcher_.currentPattern_);
+}
+
+function testWwModeHomeModeDrawI_() {
+  mode.paperI_ = undefined;
+
+  mode.onResize();
+
+  assertNotEquals('paperI_ should have been created', undefined, mode.paperI_);
+
+  var tempPosition = mode.paperI_['position']['x'];
+  var tempSize = mode.paperI_['bounds']['width'];
+
+  mode.iWidth_ = 20;
+
+  mode.drawI_();
+
+  assertNotEquals('paperI_ should have changed position', tempPosition,
+    mode.paperI_['position']['x']);
+
+  assertNotEquals('paperI_ should have changed scale', tempSize,
+    mode.paperI_['bounds']['width']);
+}
+
+function testWwModeHomeModeDrawO_() {
+  mode.paperO_ = undefined;
+
+  mode.onResize();
+
+  assertNotEquals('paperO_ should have been created', undefined, mode.paperO_);
+
+  var tempPosition = mode.paperO_['position']['x'];
+  var tempSize = mode.paperO_['bounds']['width'];
+
+  mode.oX_ = 20;
+  mode.oRad_ = 20;
+
+  mode.drawO_();
+
+  assertNotEquals('paperO_ should have changed position', tempPosition,
+    mode.paperO_['position']['x']);
+
+  assertNotEquals('paperO_ should have changed scale', tempSize,
+    mode.paperO_['bounds']['width']);
+}
+
+function testWwModeHomeModeDrawSlash_() {
+  mode.paperSlash_ = undefined;
+
+  mode.onResize();
+
+  assertNotEquals('paperSlash_ should have been created', undefined,
+    mode.paperSlash_);
+
+  var tempPosition = mode.paperSlash_['segments'][0]['point']['x'];
+
+  mode.oRad_ = 20;
+
+  mode.drawSlash_();
+
+  assertNotEquals('paperSlash_ should have changed position and scale',
+    tempPosition, mode.paperSlash_['segments'][0]['point']['x']);
+}
+
+function testWwModeHomeModeInit() {
+  mode.oX_ = 10;
+
+  mode.init();
+
+  assertEquals('lastClick_ should equal oX_', mode.oX_, mode.lastClick_['x']);
+}
+
+function testWwModeHomeModeOnResize() {
+  mode.screenCenterX_ = 20;
+
+  mode.onResize();
+
+  assertNotEquals('screenCenterX_ should have changed on resize', 20,
+    mode.screenCenterX_);
+}

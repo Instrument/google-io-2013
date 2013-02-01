@@ -1,5 +1,4 @@
 goog.require('ww.mode.Core');
-goog.require('ww.util');
 goog.require('ww.PatternMatcher');
 goog.provide('ww.mode.HomeMode');
 
@@ -177,8 +176,6 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 
     this.paperO_['vectors'] = [];
 
-    this.oStatic_ = [];
-
     for (var i = 0; i < this.paperO_['segments'].length; i++) {
       var point = this.paperO_['segments'][i]['point']['clone']();
       point = point['subtract'](this.oCenter_);
@@ -250,12 +247,6 @@ ww.mode.HomeMode.prototype.init = function() {
 
   // Prep paperjs
   this.getPaperCanvas_();
-
-  // Variable to modify delta's returned value.
-  this.deltaModifier_ = 0;
-
-  // Temporarily float variable to use for randomizing animation effects.
-  this.tempFloat = [];
 
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
@@ -366,26 +357,12 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
 };
 
 /**
- * Assign a paper object's coordinates to a static array, or vice versa.
- * @param {Array} paperArray The paper.js array to reference.
- * @param {Array} xArray The array of static X coordinates to reference.
- * @param {Array} yArray The array of static Y coordinates to reference.
- * @param {Boolean} copy Determines if paperArray is copied from or written to.
+ * Updates point vectors based on click/tap position.
+ * @param {Object} path The path to modify.
+ * @param {Object} clickPoint The coordinates of the most recent click/tap.
+ * @param {Number} speed Affects the speed of the animation.
+ * @private
  */
-ww.mode.HomeMode.prototype.copyXY_ = function(paper, xArray, yArray, copy) {
-  for (var i = 0; i < paper['segments'].length; i++) {
-    if (copy) {
-      xArray[i] = paper['segments'][i]['point']['x'];
-
-      yArray[i] = paper['segments'][i]['point']['y'];
-    } else {
-      paper['segments'][i]['point']['x'] = xArray[i];
-
-      paper['segments'][i]['point']['y'] = yArray[i];
-    }
-  }
-};
-
 ww.mode.HomeMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
   for (var i = 0; i < path['vectors'].length; i++) {
     var point = path['vectors'][i];
@@ -407,6 +384,11 @@ ww.mode.HomeMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
   }
 }
 
+/**
+ * Updates point vectors based on their length and velocity values.
+ * @param {Object} path The path to modify.
+ * @private
+ */
 ww.mode.HomeMode.prototype.updateVectors_ = function(path) {
   for (var i = 0; i < path['segments'].length; i++) {
     var point = path['vectors'][i];
@@ -423,6 +405,11 @@ ww.mode.HomeMode.prototype.updateVectors_ = function(path) {
   }
 }
 
+/**
+ * Updates point coordinates based on their vectors.
+ * @param {Object} path The path to modify.
+ * @private
+ */
 ww.mode.HomeMode.prototype.updatePoints_ = function(path) {
   for (var i = 0; i < path['segments'].length; i++) {
     var point = path['vectors'][i];
