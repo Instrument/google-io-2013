@@ -1,3 +1,12 @@
+body {
+  background: #f9f9f9 image-url('fun-modes/slash+13.svg') no-repeat center center;
+  @include background-size(100% auto);
+
+  @include landscape() {
+    @include background-size(auto 100%);
+  }
+}
+
 // long cat
 #letter-i {
   background-image: image-url('cat/cat-letter-i.png');
