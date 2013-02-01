@@ -29,22 +29,6 @@ ww.mode.SpaceMode = function() {
     cutoff: 20,
     bypass: 0
   });
-
-  /**
-   * Create a chorus audio filter. Value ranges are as follows.
-   * rate: 0.01 to 8+
-   * feedback: 0 to 1+
-   * delay: 0 to 1
-   * dryLevel: 0 to 1+
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   * @private
-   */
-  this.chorus_ = new this.tuna_.Chorus({
-    rate: 0.01,
-    feedback: 0.2,
-    delay: 0,
-    bypass: 0
-  });
 };
 goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
 
@@ -54,7 +38,9 @@ goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
  * @param {Function} onPlay Callback on play.
  * @param {Boolean} loop To loop the audio, or to not loop the audio.
  */
-ww.mode.SpaceMode.prototype.playSound = function(filename, filter, onPlay, loop) {
+ww.mode.SpaceMode.prototype.playSound = function(filename,
+  filter, onPlay, loop) {
+  
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;

@@ -28,8 +28,8 @@ function asciifyImage(oImg) {
   var strChars2 = "";
   var strChars3 = "";
 
-  for (var y = 0; y < iHeight; y += 8) {
-    for (var x = 0; x < iWidth; x += 4) {
+  for (var y = 0; y < iHeight; y += 16) {
+    for (var x = 0; x < iWidth; x += 8) {
       var iOffset = (y*iWidth + x) * 4;
 
       var iRed = oImgData[iOffset];

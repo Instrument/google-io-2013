@@ -165,33 +165,28 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
  * @private
  */
 ww.mode.HomeMode.prototype.drawO_ = function() {
-  if (!this.paperO_) {
-    // Create a new paper.js path for O based off the previous variables.
-    this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
+  if (this.paperO_) {
+    this.paperO_['remove']();
+  }
+  // Create a new paper.js path for O based off the previous variables.
+  this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
 
-    this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
-      this.oRad_);
+  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
+    this.oRad_);
 
-    this.paperO_['fillColor'] = '#3777e2';
+  this.paperO_['fillColor'] = '#3777e2';
 
-    this.paperO_['vectors'] = [];
+  this.paperO_['vectors'] = [];
 
-    for (var i = 0; i < this.paperO_['segments'].length; i++) {
-      var point = this.paperO_['segments'][i]['point']['clone']();
-      point = point['subtract'](this.oCenter_);
+  for (var i = 0; i < this.paperO_['segments'].length; i++) {
+    var point = this.paperO_['segments'][i]['point']['clone']();
+    point = point['subtract'](this.oCenter_);
 
-      point['velocity'] = 0;
-      point['acceleration'] = Math.random() * 5 + 10;
-      point['bounce'] = Math.random() * .1 + 1.05;
+    point['velocity'] = 0;
+    point['acceleration'] = Math.random() * 5 + 10;
+    point['bounce'] = Math.random() * .1 + 1.05;
 
-      this.paperO_['vectors'].push(point);
-    }
-  } else {
-    // Change the position based on new screen size values.
-    this.paperO_['position'] = {x: this.oX_, y: this.oY_};
-
-    // Change the scale based on new screen size values.
-    this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
+    this.paperO_['vectors'].push(point);
   }
 };
 
