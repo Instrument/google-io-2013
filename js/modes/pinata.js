@@ -29,7 +29,7 @@ ww.mode.PinataMode.prototype.init = function() {
 
   var world = this.getPhysicsWorld_();
   this.collision_ = new Collision();
-  this.force_ = new ConstantForce(new Vector(0, 2000));
+  this.force_ = new ConstantForce(new Vector(0, 1000));
 };
 
 
@@ -63,14 +63,50 @@ ww.mode.PinataMode.prototype.didFocus = function() {
   this.canvas_.height = this.height_;
   this.ctx_ = this.ctx_ || this.canvas_.getContext('2d');
 
+  var devicePixelRatio = window.devicePixelRatio || 1,
+      backingStoreRatio = this.ctx_.webkitBackingStorePixelRatio ||
+                          this.ctx_.mozBackingStorePixelRatio ||
+                          this.ctx_.msBackingStorePixelRatio ||
+                          this.ctx_.oBackingStorePixelRatio ||
+                          this.ctx_.backingStorePixelRatio || 1,
+
+      ratio = devicePixelRatio / backingStoreRatio;
+
+  // upscale the this.canvas_ if the two ratios don't match
+  if (devicePixelRatio !== backingStoreRatio) {
+    var oldWidth = this.canvas_.width;
+    var oldHeight = this.canvas_.height;
+
+    this.ratio_ = ratio;
+
+    this.canvas_.width = oldWidth * ratio;
+    this.canvas_.height = oldHeight * ratio;
+
+    this.canvas_.style.width = oldWidth + 'px';
+    this.canvas_.style.height = oldHeight + 'px';
+
+    this.ctx_.scale(ratio, ratio);
+  }
+
+  this.scale_ = Math.round(this.width_ * 0.005);
+
   this.bounds_ = this.$letterO_[0].getBoundingClientRect();
   this.center_ = this.center_ || {};
   this.center_['x'] = ~~(this.bounds_['left'] + (this.bounds_['width'] / 2));
   this.center_['y'] = ~~(this.bounds_['top'] + (this.bounds_['height'] / 2));
 
-  if (this.physicsWorld_ && this.physicsWorld_.particles.length) {
-    this.physicsWorld_.particles = [];
-  }
+  // particle representation of robot
+  this.robot_ = new Particle(5.0);
+  this.robot_.setRadius(this.bounds_['width']);
+  this.robot_.fixed = true;
+  this.robot_.moveTo(new Vector(this.center_['x'], this.center_['y']));
+  this.collision_.pool.push(this.robot_);
+  this.robot_.behaviours.push(this.collision_);
+  this.physicsWorld_.particles.push(this.robot_);
+
+  this.prepopulate_(200);
+
+  this.current_ = 1;
 };
 
 
@@ -82,41 +118,32 @@ ww.mode.PinataMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', redraw);
 
   if (this.canvas_) {
-    this.canvas_.width = this.width_;
-    this.canvas_.height = this.height_;
+    if (this.ratio_) {
+      var oldWidth = this.canvas_.width;
+      var oldHeight = this.canvas_.height;
+
+      this.canvas_.width = oldWidth * this.ratio_;
+      this.canvas_.height = oldHeight * this.ratio_;
+
+      this.canvas_.style.width = oldWidth + 'px';
+      this.canvas_.style.height = oldHeight + 'px';
+
+      this.ctx_.scale(this.ratio_, this.ratio_);
+    } else {
+      this.canvas_.width = this.width_;
+      this.canvas_.height = this.height_;
+    }
   }
 
-  this.bounds_ = this.$letterO_[0].getBoundingClientRect();
+  this.scale_ = Math.round(this.width_ * 0.005);
 
+  this.bounds_ = this.$letterO_[0].getBoundingClientRect();
   this.center_ = this.center_ || {};
   this.center_['x'] = ~~(this.bounds_['left'] + (this.bounds_['width'] / 2));
   this.center_['y'] = ~~(this.bounds_['top'] + (this.bounds_['height'] / 2));
 
-  this.shiftX_ = this.bounds_['width'] / 8;
-  this.shiftY_ = this.bounds_['height'] / 8;
-
-  var bottom = new Vector(this.width_, this.height_ - 1);
-
-  this.edge_ = new EdgeBounce(
-               new Vector(0, 0),
-               new Vector(this.width_ , this.height_));
-
   if (this.physicsWorld_.particles && this.physicsWorld_.particles.length > 0) {
-    var ball;
-    for (var i = 0, l = this.physicsWorld_.particles.length; i < l; i++) {
-      ball = this.physicsWorld_.particles[i];
-
-      // if it's a hidden ball, needs start x/y to be updated
-      if (ball.fixed) {
-        ball['startX'] = this.center_['x'] +
-                         ~~Random(-this.shiftX_, this.shiftX_);
-
-        ball['startY'] = this.center_['y'] +
-                         ~~Random(-this.shiftY_, this.shiftY_);
-
-        ball.moveTo(new Vector(ball['startX'], ball['startY']));
-      }
-    }
+    this.moveAllCandyBack_();
   }
 };
 
@@ -133,13 +160,13 @@ ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
   }
 
   var ball, radius, r2, r6;
-  for (var i = 0, l = this.physicsWorld_.particles.length; i < l; i++) {
+  for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
     ball = this.physicsWorld_.particles[i];
     radius = ball.radius;
     r2 = radius * 2;
     r6 = radius * 6;
 
-    if (ball.pos.x > this.width_ + r6 ||
+    if (ball.pos && ball.pos.x > this.width_ + r6 ||
         ball.pos.x < 0 - r6 ||
         ball.pos.y > this.height_ + r6 ||
         ball.pos.y < 0 - r6) {
@@ -169,49 +196,71 @@ ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
 
 
 /**
+ * Prepopulate balls.
+ * @private
+ */
+ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
+  var ball, dir;
+  for (var i = 0; i < number; i++) {
+    dir = (i % 2 === 0) ? -1 : 1;
+    ball = new Particle(Random(1, 5.0));
+    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2.5);
+
+    ball.fixed = true; // disable from drawing
+
+    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir;
+    ball['startY'] = this.center_['y'] + ball.radius / 2;
+    ball['rotate'] = ~~Random(-360, 360) * (Math.PI / 180);
+    ball['color'] = this.COLORS_[~~Random(0, this.NUM_COLORS)];
+
+    ball.moveTo(new Vector(ball['startX'], ball['startY']));
+
+    ball.vel = new Vector(Random(3, 6) * this.ballSpeed_ * dir,
+                          Random(-3, 0.5) * this.ballSpeed_);
+
+    ball.behaviours.push(this.force_);
+
+    this.physicsWorld_.particles.push(ball);
+  }
+
+  this.deactive_ = this.physicsWorld_.particles.length;
+};
+
+/**
  * Add a number of given balls.
  * @param {Number} number Number of balls to add.
  * @private
  */
-ww.mode.PinataMode.prototype.addCandy_ = function(number) {
-  var ball;
-  for (var i = 0; i < number; i++) {
-    var dir = (i % 2 === 0) ? -1 : 1;
-    ball = new Particle(Random(1, 5.0));
-    ball.setRadius(ball.mass * 4 + 10);
+ww.mode.PinataMode.prototype.activateBalls_ = function() {
+  var ball,
+      pop = Math.min(this.deactive_, ~~Random(1, 3) + this.whackCount_);
 
-    ball['startX'] = this.center_['x'] + ~~Random(-this.shiftX_, this.shiftX_);
-    ball['startY'] = this.center_['y'] + ~~Random(-this.shiftY_, this.shiftY_);
-
-    ball['rotate'] = ~~Random(-360, 360) * (Math.PI / 180);
-
-    ball.moveTo(new Vector(ball['startX'], ball['startY']));
-
-    ball.vel = new Vector(
-                Random(3, 6) * this.ballSpeed_ * dir,
-                Random(-3, 0.5) * this.ballSpeed_);
-
+  for (var i = this.current_; i <= this.current_ + pop; i++) {
+    ball = this.physicsWorld_.particles[i];
     this.collision_.pool.push(ball);
-
     ball.behaviours.push(this.collision_);
-    ball.behaviours.push(this.force_);
-
-    ball['color'] = this.COLORS_[~~Random(0, this.NUM_COLORS)];
-
-    this.physicsWorld_.particles.push(ball);
+    ball.fixed = false;
   }
+
+  this.deactive_ = this.deactive_ - pop;
+  this.current_ = this.current_ + pop;
+  this.log('activated ' + pop + ', ' + this.deactive_ + ' remaining.');
 };
 
 
 /**
+ * Hide and move all balls back to original start positions.
  * @private
  */
 ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
+  this.physicsWorld_.particles[0].moveTo(
+      new Vector(this.center_['x'], this.center_['y']));
+
   var ball;
-  for (var i = 0, l = this.physicsWorld_.particles.length; i < l; i++) {
+  for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
     ball = this.physicsWorld_.particles[i];
     ball.moveTo(new Vector(ball['startX'], ball['startY']));
-    ball.fixed = false;
+    ball.fixed = true;
   }
 };
 
@@ -230,14 +279,13 @@ ww.mode.PinataMode.prototype.activateI = function() {
   if (this.whackCount_ < this.maxWhacks_) {
     this.log('whack ' + this.whackCount_);
 
-    this.addCandy_(~~Random(5, 10));
+    this.activateBalls_();
     this.cracks_[this.whackCount_].style['opacity'] = 1;
 
     this.animateO_();
   } else if (this.whackCount_ === this.maxWhacks_) {
     this.log('reached max whacks. breaking pinata.');
-    this.moveAllCandyBack_();
-    this.addCandy_(~~Random(15, 25));
+    this.activateBalls_();
     this.animatePartsOut_();
   } else {
     this.log('pinata is done. still whacking. so showing reload.');
