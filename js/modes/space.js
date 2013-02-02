@@ -40,7 +40,7 @@ goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
  */
 ww.mode.SpaceMode.prototype.playSound = function(filename,
   filter, onPlay, loop) {
-  
+
   if (!this.wantsAudio_) { return; }
 
   var url = '../sounds/' + this.name_ + '/' + filename;
@@ -234,7 +234,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
     this.oGroup_['strokeColor'] = '#3777e2';
     this.oGroup_['strokeWidth'] = 1;
-    this.oGroup_['rotate'](90);
+    // this.oGroup_['rotate'](90);
 
     // Create arrays to store the coordinates for O's path points.
     this.oPathsX_ = [];
@@ -266,13 +266,14 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 ww.mode.SpaceMode.prototype.drawSlash_ = function() {
   if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
-    this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
+    this.slashStart_ = new paper['Point'](this.screenCenterX_ +
+      (this.width_ * 0.02777778),
       this.screenCenterY_ - (this.iHeight_ / 2) -
-      ((this.iHeight_ * 1.5) * 0.17475728));
+        (this.iHeight_ * 0.09722222));
 
     this.slashEnd_ = new paper['Point'](this.iX_ + this.iWidth_,
       this.screenCenterY_ + (this.iHeight_ / 2) +
-      ((this.iHeight_ * 1.5) * 0.17475728));
+      (this.iHeight_ * 0.09722222));
 
     // Create a new paper.js path for the slash based on screen dimensions.
     this.paperSlash_ = new paper['Path']();
@@ -281,13 +282,13 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
   } else {
-    this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
+    this.slashStart_['x'] = this.screenCenterX_ + (this.width_ * 0.02777778);
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
-      ((this.iHeight_ * 1.5) * 0.17475728);
+      (this.iHeight_ * 0.09722222);
 
     this.slashEnd_['x'] = this.iX_ + this.iWidth_;
     this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
-      ((this.iHeight_ * 1.5) * 0.17475728);
+      (this.iHeight_ * 0.09722222);
 
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
@@ -466,11 +467,12 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   }
 
   // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * .175;
+  this.iWidth_ = this.width_ * 0.175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iX_ = this.screenCenterX_ - this.iWidth_ - (this.width_ * 0.15833333);
+
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
   // Set O's radius.
@@ -479,6 +481,7 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
+  console.log(this.iHeight_);
 
   /**
    * Create the slash.
