@@ -137,7 +137,7 @@ function testWwModeBaconModeActivateO() {
   assertEquals('Animate spinning egg should have been called once', 1, spinEgg);
 }
 
-function testWwModeBaconModeShowCracked() {
+function testWwModeBaconModeShowCracked_() {
   var tweens = [];
 
   mode.constructor.prototype.addTween = function(tween) {
@@ -150,7 +150,7 @@ function testWwModeBaconModeShowCracked() {
   assertEquals('Number of tweens should not be 0', 0, tweens.length);
 }
 
-function testWwModeBaconModeAnimateSpinEgg() {
+function testWwModeBaconModeAnimateSpinEgg_() {
   var tweens = [];
 
   mode.constructor.prototype.addTween = function(tween) {
