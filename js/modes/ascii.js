@@ -684,5 +684,66 @@ ww.mode.AsciiMode.prototype.onFrame = function(delta) {
     this.copyXY_(this.paperO_, this.oPointX_, this.oPointY_, false);
   }
 
-  asciifyImage(this.paperCanvas_);
+  this.asciifyCanvas_(this.paperCanvas_);
+};
+
+/**
+ * Rewritten, but based on blog post/source code with the following license:
+ * Copyright (c) 2008 Jacob Seidelin, jseidelin@nihilogic.dk, http://blog.nihilogic.dk/
+ * MIT License [http://www.nihilogic.dk/licenses/mit-license.txt]
+ */
+
+var aDefaultCharList = (" .,:;i1tfLCG08@").split("");
+
+/**
+ * Convert img element to ascii.
+ * @private
+ * @param {Element} sourceCanvas Source image canvas.
+ */
+ww.mode.AsciiMode.prototype.asciifyCanvas_ = function(sourceCanvas) {
+  var oAscii = document.getElementById('ascii-canvas');
+  var aCharList = aDefaultCharList;
+
+  if (!sourceCanvas.width || sourceCanvas.width < 1) { return; }
+  if (!sourceCanvas.height || sourceCanvas.height < 1) { return; }
+
+  var iWidth = sourceCanvas.width;
+  var iHeight = sourceCanvas.height;
+
+  var oCtx = sourceCanvas.getContext('2d');
+  var sourceCanvasData = oCtx.getImageData(0, 0, iWidth, iHeight).data;
+
+  var strChars = "";
+  var strChars2 = "";
+  var strChars3 = "";
+
+  for (var y = 0; y < iHeight; y += 16) {
+    for (var x = 0; x < iWidth; x += 8) {
+      var iOffset = (y*iWidth + x) * 4;
+
+      var iRed = sourceCanvasData[iOffset];
+      var iGreen = sourceCanvasData[iOffset + 1];
+      var iBlue = sourceCanvasData[iOffset + 2];
+      var iAlpha = sourceCanvasData[iOffset + 3];
+
+      var iCharIdx;
+      if (iAlpha === 0) {
+        iCharIdx = 0;
+      } else {
+        var fBrightness = (0.3*iRed + 0.59*iGreen + 0.11*iBlue) / 255;
+        iCharIdx = (aCharList.length-1) - Math.round(fBrightness * (aCharList.length-1));
+      }
+
+      var strThisChar = aCharList[iCharIdx];
+
+      if (strThisChar == " ") {
+        strThisChar = "&nbsp;";
+      }
+
+      strChars  += strThisChar;
+    }
+    strChars += "\n";
+  }
+
+  oAscii.innerHTML = strChars;
 };
