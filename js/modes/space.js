@@ -8,27 +8,29 @@ goog.provide('ww.mode.SpaceMode');
 ww.mode.SpaceMode = function() {
   goog.base(this, 'space', true, true, true);
 
-  var context = this.getAudioContext_();
-  this.tuna_ = new Tuna(context);
+  if (this.wantsAudio_) {
+    var context = this.getAudioContext_();
+    this.tuna_ = new Tuna(context);
 
-  /**
-   * Create a delay audio filter. Value ranges are as follows.
-   * feedback: 0 to 1+
-   * delayTime: how many milliseconds should the wet signal be delayed?
-   * wetLevel: 0 to 1+
-   * dryLevel: 0 to 1+
-   * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
-   * bypass: the value 1 starts the effect as bypassed, 0 or 1
-   * @private
-   */
-  this.delay_ = new this.tuna_.Delay({
-    feedback: 0,
-    delayTime: 0,
-    wetLevel: 0,
-    dryLevel: 0,
-    cutoff: 20,
-    bypass: 0
-  });
+    /**
+     * Create a delay audio filter. Value ranges are as follows.
+     * feedback: 0 to 1+
+     * delayTime: how many milliseconds should the wet signal be delayed?
+     * wetLevel: 0 to 1+
+     * dryLevel: 0 to 1+
+     * cutoff: cutoff frequency of the built in highpass-filter. 20 to 22050
+     * bypass: the value 1 starts the effect as bypassed, 0 or 1
+     * @private
+     */
+    this.delay_ = new this.tuna_.Delay({
+      feedback: 0,
+      delayTime: 0,
+      wetLevel: 0,
+      dryLevel: 0,
+      cutoff: 20,
+      bypass: 0
+    });
+  }
 };
 goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
 
@@ -121,10 +123,10 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     this.paperI_ = new paper['Path']['Rectangle'](letterI);
     this.paperI_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
 
-    this.iGroup_ = new paper['Group'];
+    this.iGroup_ = new paper['Group']();
 
     for (var i = 0; i < this.iWidth_ / 6; i++) {
-      this.iPaths_.push(new paper['Path']);
+      this.iPaths_.push(new paper['Path']());
 
       pathX = iTopLeft['x'] + i * 6;
       pathY = iTopLeft['y'];
@@ -387,18 +389,26 @@ ww.mode.SpaceMode.prototype.init = function() {
 };
 
 /**
- * Event is called after a mode focused.
+ * Setup defaults for star canvas.
+ * @private
  */
-ww.mode.SpaceMode.prototype.didFocus = function() {
-  goog.base(this, 'didFocus');
+ww.mode.SpaceMode.prototype.setupStarCanvas_ = function() {
+  if (!this.$canvas_ || !this.$canvas_.length) {
+    this.$canvas_ = $('#space-canvas');
+  }
 
-  this.$canvas_ = $('#space-canvas');
-  this.canvas_ = this.$canvas_[0];
+  this.canvas_ = this.canvas_ || this.$canvas_[0];
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
-  this.ctx_ = this.canvas_.getContext('2d');
-  this.ctx_.globalCompositeOperation = 'lighter';
-  this.ctx_.fillStyle = '#e4e4e4';
+};
+
+/**
+ * Event is called before a mode focused.
+ */
+ww.mode.SpaceMode.prototype.willFocus = function() {
+  goog.base(this, 'willFocus');
+
+  this.setupStarCanvas_();
 
   var canvas = this.getPaperCanvas_();
 
@@ -443,18 +453,21 @@ ww.mode.SpaceMode.prototype.didUnfocus = function() {
  * @param {Boolean} redraw Whether resize redraws.
  */
 ww.mode.SpaceMode.prototype.onResize = function(redraw) {
+  var lastWidth = this.width_;
+  var lastHeight = this.height_;
+
   goog.base(this, 'onResize', false);
 
-  if (this.canvas_) {
-    this.canvas_.width = this.width_;
-    this.canvas_.height = this.height_;
-  }
+  var deltaWidth = Math.abs(lastWidth - this.width_);
+  var deltaHeight = Math.abs(lastHeight - this.height_);
+
+  this.setupStarCanvas_();
 
   // Recalculate the center of the screen based on the new window size.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
-  if (this.world_) {
+  if (((deltaWidth > 50) || (deltaHeight > 50)) && this.world_) {
     for (var i = 0; i < this.world_.particles.length; i++) {
       this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
@@ -630,7 +643,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   for (var i = 0; i < this.world_.particles.length; i++) {
     this.world_.particles[i].pos.x +=
       (this.screenCenterX_ - this.mouseX_) /
-      (10000 / this.world_.particles[i].radius) + .1;
+      (10000 / this.world_.particles[i].radius) + 0.1;
 
     if (this.world_.particles[i].pos.x > this.width_ * 2) {
       this.world_.particles[i].pos.x =
@@ -668,16 +681,20 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
 
   if (!this.canvas_) { return; }
 
-  this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
+  var ctx = this.canvas_.getContext('2d');
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = '#e4e4e4';
+
+  ctx.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
 
   for (i = 0; i < this.world_.particles.length; i++) {
-    // this.ctx_.shadowBlur = this.world_.particles[i].radius * 2;
-    this.ctx_.beginPath();
-    this.ctx_.arc(this.world_.particles[i].pos.x + .5,
-      this.world_.particles[i].pos.y + .5,
+    // ctx.shadowBlur = this.world_.particles[i].radius * 2;
+    ctx.beginPath();
+    ctx.arc(this.world_.particles[i].pos.x + 0.5,
+      this.world_.particles[i].pos.y + 0.5,
       this.world_.particles[i].radius, 0, Math.PI * 2);
-    this.ctx_.fill();
-    this.ctx_.closePath();
+    ctx.closePath();
+    ctx.fill();
   }
 
   /*
@@ -691,7 +708,7 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
    * It uses delta along with other variables to modify the intensity of the
    * animation.
    */
-  if (this.iClicked_ == true) {
+  if (this.iClicked_ === true) {
 
     this.adjustModifiers_(this.iModifier_, this.iIncrement_, this.iMultiplier_,
       this.iClicked_, true);

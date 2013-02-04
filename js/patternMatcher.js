@@ -3,7 +3,7 @@ goog.provide('ww.PatternMatcher');
 
 /**
  * @constructor
- * @param {Object} knownPatterns Pattern names and sequences
+ * @param {Object} knownPatterns Pattern names and sequences.
  */
 ww.PatternMatcher = function(knownPatterns) {
   this.currentPattern_ = '';
@@ -14,7 +14,7 @@ ww.PatternMatcher = function(knownPatterns) {
 /**
  * Build matchers from patterns.
  * @private
- * @param {Object} knownPatterns Pattern names and sequences
+ * @param {Object} knownPatterns Pattern names and sequences.
  */
 ww.PatternMatcher.prototype.setupPatternMatchers_ = function(knownPatterns) {
   var patterns = {}, key, mode;
