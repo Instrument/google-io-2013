@@ -1,5 +1,5 @@
-goog.require('ww.mode.Core');
 goog.require('ww.PatternMatcher');
+goog.require('ww.mode.Core');
 goog.provide('ww.mode.HomeMode');
 
 /**
@@ -146,7 +146,7 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
 
       point['velocity'] = 0;
       point['acceleration'] = Math.random() * 5 + 10;
-      point['bounce'] = Math.random() * .1 + 1.05;
+      point['bounce'] = Math.random() * 0.1 + 1.05;
 
       this.paperI_['vectors'].push(point);
     }
@@ -184,7 +184,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 
     point['velocity'] = 0;
     point['acceleration'] = Math.random() * 5 + 10;
-    point['bounce'] = Math.random() * .1 + 1.05;
+    point['bounce'] = Math.random() * 0.1 + 1.05;
 
     this.paperO_['vectors'].push(point);
   }
@@ -236,8 +236,8 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
 ww.mode.HomeMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.$date_ = $("#date");
-  this.$pattern_ = $("#pattern");
+  this.$date_ = $('#date');
+  this.$pattern_ = $('#pattern');
 
   this.patternMatcher_.reset();
 
@@ -262,15 +262,15 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var self = this;
 
   var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $("#menu").bind(evt2 + '.core', function() {
+  $('#menu').bind(evt2 + '.core', function() {
     $(document.body).addClass('nav-visible');
   });
 
-  $("#modal").bind(evt2 + '.core', function() {
+  $('#modal').bind(evt2 + '.core', function() {
     $(document.body).removeClass('nav-visible');
   });
 
-  $("#dropdown").bind(evt2 + '.core', function(evt) {
+  $('#dropdown').bind(evt2 + '.core', function(evt) {
     evt.preventDefault();
     evt.stopPropagation();
   });
@@ -298,9 +298,9 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
   var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $("#menu").unbind(evt2 + '.core');
-  $("#modal").unbind(evt2 + '.core');
-  $("#dropdown").unbind(evt2 + '.core');
+  $('#menu').unbind(evt2 + '.core');
+  $('#modal').unbind(evt2 + '.core');
+  $('#dropdown').unbind(evt2 + '.core');
 };
 
 /**
@@ -379,7 +379,7 @@ ww.mode.HomeMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
     point['length'] += distance;
     point['velocity'] += speed;
   }
-}
+};
 
 /**
  * Updates point vectors based on their length and velocity values.
@@ -400,7 +400,7 @@ ww.mode.HomeMode.prototype.updateVectors_ = function(path) {
 
     point['length'] = Math.max(0, point['length'] + point['velocity']);
   }
-}
+};
 
 /**
  * Updates point coordinates based on their vectors.
@@ -420,7 +420,7 @@ ww.mode.HomeMode.prototype.updatePoints_ = function(path) {
       this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter_);
     }
   }
-}
+};
 
 /**
  * Runs code on each requested frame.

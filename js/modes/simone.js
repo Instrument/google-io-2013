@@ -84,38 +84,40 @@ ww.mode.SimoneMode.prototype.init = function() {
   this.total = this.sequence.length;
 
   // Set up audio
-  this.getAudioContext_();
-  this.source = this.audioContext_.createOscillator();
-  this.analyser = this.audioContext_.createAnalyser();
-  this.analyser.fftSize = 512;
-  this.analyser.smoothingTimeConstant = 0.85;
+  if (this.wantsAudio_) {
+    this.getAudioContext_();
+    this.source = this.audioContext_.createOscillator();
+    this.analyser = this.audioContext_.createAnalyser();
+    this.analyser.fftSize = 512;
+    this.analyser.smoothingTimeConstant = 0.85;
 
-  this.notes = [
-    {
-      // red
-      'frequency': 1806,
-      'detune': -3663,
-      'type': 1
-    },
-    {
-      // green
-      'frequency': 1806,
-      'detune': -4758,
-      'type': 1
-    },
-    {
-      // blue
-      'frequency': 229,
-      'detune': 1053,
-      'type': 1
-    },
-    {
-      // yellow
-      'frequency': 580,
-      'detune': -1137,
-      'type': 2
-    }
-  ];
+    this.notes = [
+      {
+        // red
+        'frequency': 1806,
+        'detune': -3663,
+        'type': 1
+      },
+      {
+        // green
+        'frequency': 1806,
+        'detune': -4758,
+        'type': 1
+      },
+      {
+        // blue
+        'frequency': 229,
+        'detune': 1053,
+        'type': 1
+      },
+      {
+        // yellow
+        'frequency': 580,
+        'detune': -1137,
+        'type': 2
+      }
+    ];
+  }
 };
 
 
@@ -229,19 +231,24 @@ ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
         segment = this.segments[noteNum],
         self = this;
 
-    this.log('Playing note: ', note);
+    if (this.wantsAudio_) {
+      this.log('Playing note: ', note);
 
-    this.source.type = note['type'];
-    this.source.frequency.value = note['frequency'];
-    this.source.detune.value = note['detune'];
+      this.source.type = note['type'];
+      this.source.frequency.value = note['frequency'];
+      this.source.detune.value = note['detune'];
+    }
 
     var fadeInQuick = new TWEEN.Tween({ 'opacity': 0.5 });
         fadeInQuick.to({ 'opacity': 1 }, 100);
+
+    if (this.wantsAudio_) {
         fadeInQuick['onStart'](function() {
           self.source.connect(self.analyser);
           self.analyser.connect(self.audioContext_.destination);
           self.source.noteOn(0);
         });
+    }
         fadeInQuick.onUpdate(function() {
           segment.css('opacity', this['opacity']);
         });
@@ -272,9 +279,11 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
         fadeOut.onUpdate(function() {
           guessSeg.css('opacity', this['opacity']);
         });
+    if (this.wantsAudio_) {
         fadeOut.onComplete(function() {
           self.source['disconnect']();
         });
+    }
 
     self.addTween(fadeOut);
 
@@ -381,18 +390,20 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
 
     var self = this,
         idx,
-        note,
+        noteIdx,
         segment,
         delay = 500,
         stopIndex = this.lastStep + 1;
 
     for (var i = 0; i < stopIndex; i++) {
       idx = self.sequence[i];
-      note = self.notes[idx];
       segment = self.segments[idx];
       delay += 600;
 
-      (function(segment, delay, note, i) {
+      (function(segment, delay, noteIdx, i) {
+        if (self.wantsAudio_) {
+          var note = self.notes[noteIdx];
+        }
         var fadeIn = new TWEEN.Tween({ 'opacity': 0.5 });
             fadeIn.to({ 'opacity': 1}, 200);
             fadeIn.delay(delay);
@@ -401,14 +412,16 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
                 self.playStatus.removeClass('success');
               }
 
-              self.log(i + ' now playing: ', note);
-              self.source['type'] = note['type'];
-              self.source['frequency']['value'] = note['frequency'];
-              self.source['detune']['value'] = note['detune'];
+              if (self.wantsAudio_) {
+                self.log(i + ' now playing: ', note);
+                self.source['type'] = note['type'];
+                self.source['frequency']['value'] = note['frequency'];
+                self.source['detune']['value'] = note['detune'];
 
-              self.source.connect(self.analyser);
-              self.analyser.connect(self.audioContext_.destination);
-              self.source.noteOn(0);
+                self.source.connect(self.analyser);
+                self.analyser.connect(self.audioContext_.destination);
+                self.source.noteOn(0);
+              }
             });
             fadeIn.onUpdate(function() {
               segment[0].style.opacity = this['opacity'];
@@ -427,7 +440,10 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
                 self.playStatus.addClass('your-turn');
               }
 
-              self.source['disconnect']();
+              if (self.wantsAudio_) {
+                self.source['disconnect']();
+              }
+              
               if (self.plays === 1 || self.plays > 1 && self.stepIndex === 0) {
                 self.levels.addClass('started');
               }
@@ -435,7 +451,7 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
 
         self.addTween(fadeIn);
         self.addTween(fadeOut);
-      })(segment, delay, note, i);
+      })(segment, delay, idx, i);
     }
   }
 };

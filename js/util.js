@@ -38,7 +38,7 @@ ww.util.floatComplexGaussianRandom = function() {
 
 /**
  * Get the current time, depending on the browser's level of support.
- * @return {Number}
+ * @return {Number} The current time stamp.
  */
 ww.util.rightNow = function() {
   if (window['performance'] && window['performance']['now']) {
@@ -139,21 +139,24 @@ ww.util.throttle = function(func, wait) {
 
 /**
  * List of all subscribers.
+ * @private
  * @type {Array}
  */
 ww.raf.subscribers_ = {};
 
 /**
  * If rAF is running
+ * @private
  * @type {Boolean}
  */
 ww.raf.isRunning_ = false;
 
 /**
  * Last frame timestamp.
+ * @private
  * @type {Number}
  */
-ww.raf.lastTime = 0;
+ww.raf.lastTime_ = 0;
 
 /**
  * On-frame loop.
@@ -162,7 +165,7 @@ ww.raf.lastTime = 0;
  */
 ww.raf.onFrame_ = function(t) {
   var loopCurrentTime = t || ww.util.rightNow();
-  var loopDelta = loopCurrentTime - ww.raf.lastTime;
+  var loopDelta = loopCurrentTime - ww.raf.lastTime_;
 
   for (var subscriberKey in ww.raf.subscribers_) {
     if (ww.raf.subscribers_.hasOwnProperty(subscriberKey)) {
@@ -171,7 +174,7 @@ ww.raf.onFrame_ = function(t) {
     }
   }
 
-  ww.raf.lastTime = loopCurrentTime;
+  ww.raf.lastTime_ = loopCurrentTime;
 
   if (ww.raf.isRunning_) {
     requestAnimationFrame(ww.raf.onFrame_);
@@ -194,7 +197,7 @@ ww.raf.updateStatus_ = function() {
   if (len > 0) {
     if (!ww.raf.isRunning_) {
       ww.raf.isRunning_ = true;
-      ww.raf.lastTime = ww.util.rightNow();
+      ww.raf.lastTime_ = ww.util.rightNow();
       ww.raf.onFrame_();
     }
   } else {

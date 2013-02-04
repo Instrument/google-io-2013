@@ -296,6 +296,8 @@ ww.mode.Core.prototype.focus_ = function() {
     this.init();
   }
 
+  this.willFocus();
+
   this.log('Got focus');
   this.hasFocus = true;
 
@@ -303,6 +305,13 @@ ww.mode.Core.prototype.focus_ = function() {
   this.startRendering();
 
   this.didFocus();
+};
+
+/**
+ * Event is called before a mode focused.
+ */
+ww.mode.Core.prototype.willFocus = function() {
+  // No-op
 };
 
 /**
@@ -348,6 +357,8 @@ ww.mode.Core.prototype.didFocus = function() {
 ww.mode.Core.prototype.unfocus_ = function() {
   if (!this.hasFocus) { return; }
 
+  this.willUnfocus();
+
   this.log('Lost focus');
   this.hasFocus = false;
 
@@ -355,6 +366,13 @@ ww.mode.Core.prototype.unfocus_ = function() {
   this.stopRendering();
 
   this.didUnfocus();
+};
+
+/**
+ * Event is called before a mode unfocused.
+ */
+ww.mode.Core.prototype.willUnfocus = function() {
+  // No-op
 };
 
 /**
