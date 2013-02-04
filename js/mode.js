@@ -68,7 +68,12 @@ ww.mode.register('simone',    ww.mode.SimoneMode,     8, 8); // 00001000
 ww.mode.register('eightbit',  ww.mode.EightBitMode,   9, 8); // 00001001
 ww.mode.register('metaball',  ww.mode.MetaBallMode,  10, 8); // 00001010
 ww.mode.register('fireplace', ww.mode.FireplaceMode, 11, 8); // 00001011
-ww.mode.register('synth',     ww.mode.SynthMode,     13, 8); // 00001101
+
+// Audio available?
+if (ww.util.getAudioContextConstructor()) {
+  ww.mode.register('synth',     ww.mode.SynthMode,     13, 8); // 00001101
+}
+
 ww.mode.register('ascii',     ww.mode.AsciiMode,     14, 8); // 00001110
 ww.mode.register('bowling',   ww.mode.BowlingMode,   15, 8); // 00001111
 ww.mode.register('rocket',    ww.mode.RocketMode,    16, 8); // 00010000

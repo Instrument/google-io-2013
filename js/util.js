@@ -106,6 +106,22 @@ ww.util.throttle = function(func, wait) {
   };
 };
 
+
+/**
+ * Get the prefixed audio constructor.
+ * @private
+ * @return {Function} The constructor.
+ */
+ww.util.getAudioContextConstructor = function() {
+  if ('undefined' !== typeof AudioContext) {
+    return AudioContext;
+  } else if ('undefined' !== typeof webkitAudioContext) {
+    return webkitAudioContext;
+  } else {
+    return null;
+  }
+};
+
 /**
  * RequestAnimationFrame polyfill.
  */
