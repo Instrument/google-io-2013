@@ -70,12 +70,12 @@ ww.mode.MetaBallMode.prototype.playProcessedAudio_ = function(filename,
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawI_ = function() {
-  // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * .175;
+    // Set I's initial dimensions.
+  this.iWidth_ = this.width_ * 0.175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ * 1.5;
+  this.iX_ = this.screenCenterX_ - this.iWidth_ - (this.width_ * 0.15833333);
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
   this.ctx_.beginPath();
@@ -246,13 +246,13 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
  */
 ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
   // Determine the slash's start and end coordinates based on I and O sizes.
-  this.slashStartX_ = this.screenCenterX_ + this.oRad_ / 8;
+  this.slashStartX_ = this.screenCenterX_ + (this.width_ * 0.02777778);
   this.slashStartY_ = this.screenCenterY_ - (this.iHeight_ / 2) -
-    ((this.iHeight_ * 1.5) * 0.17475728);
+    (this.iHeight_ * 0.09722222);
 
   this.slashEndX_ = this.iX_ + this.iWidth_;
   this.slashEndY_ = this.screenCenterY_ + (this.iHeight_ / 2) +
-    ((this.iHeight_ * 1.5) * 0.17475728);
+    (this.iHeight_ * 0.09722222);
 
   this.ctx_.lineWidth = this.width_ * 0.01388889;
 
@@ -343,8 +343,6 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
-  this.ctx_.fillStyle = '#e5e5e5';
-  this.ctx_.strokeStyle = '#e5e5e5';
 
   this.paperCanvas_.width = this.width_;
   this.paperCanvas_.height = this.height_;
@@ -614,6 +612,9 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   // Clear both canvases every frame
   this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
   this.gctx_.clearRect(0, 0, this.gcanvas_.width + 1, this.gcanvas_.height + 1);
+
+  this.ctx_.fillStyle = '#e5e5e5';
+  this.ctx_.strokeStyle = '#e5e5e5';
 
   this.drawI_();
 
