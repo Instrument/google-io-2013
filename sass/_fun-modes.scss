@@ -1,0 +1,13 @@
+.mode-wrapper {
+  @extend %absolute-full;
+
+  #letter-o {
+    @include transform-origin(50% 50%, false);
+  }
+}
+
+.rocket-mode {
+  #letter-i {
+    @include transform-origin(right top, false);
+  }
+}

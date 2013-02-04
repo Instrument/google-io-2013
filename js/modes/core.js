@@ -32,10 +32,6 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
   this.tweens_ = [];
 
-  if (!ww.testMode && DEBUG_MODE) {
-    this.addDebugUI_();
-  }
-
   this.$window_ = $(window);
   this.width_ = 0;
   this.height_ = 0;
@@ -58,6 +54,10 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
     document.body.style[Modernizr.prefixed('userSelect')] = 'none';
     document.body.style[Modernizr.prefixed('userDrag')] = 'none';
     document.body.style[Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
+
+    this.$window_.bind('touchmove.core', function(e) {
+      e.preventDefault();
+    });
   }
   
   $(function() {
@@ -161,54 +161,6 @@ ww.mode.Core.prototype.onResize = function(redraw) {
     this.redraw();
   }
 };
-
-if (DEBUG_MODE) {
-  /**
-   * Add play/pause/restart UI.
-   * @private
-   */
-  ww.mode.Core.prototype.addDebugUI_ = function() {
-    var self = this;
-
-    var focusElem = document.createElement('button');
-    focusElem.style.fontSize = '12px';
-    focusElem.innerHTML = 'Focus';
-    focusElem.onclick = function() {
-      self.focus_();
-    };
-
-    var unfocusElem = document.createElement('button');
-    unfocusElem.style.fontSize = '12px';
-    unfocusElem.innerHTML = 'Unfocus';
-    unfocusElem.onclick = function() {
-      self.unfocus_();
-    };
-
-    var restartElem = document.createElement('button');
-    restartElem.style.fontSize = '12px';
-    restartElem.innerHTML = 'Restart';
-    restartElem.onclick = function() {
-      self.unfocus_();
-      self.focus_();
-    };
-
-    var containerElem = document.createElement('div');
-    containerElem.style.position = 'fixed';
-    containerElem.style.bottom = 0;
-    containerElem.style.left = 0;
-    containerElem.style.right = 0;
-    containerElem.style.height = '1.5em';
-    containerElem.style.lineHeight = '1.5em';
-    containerElem.style.background = 'rgba(0,0,0,0.2)';
-    containerElem.style.zIndex = 20;
-
-    containerElem.appendChild(focusElem);
-    containerElem.appendChild(unfocusElem);
-    containerElem.appendChild(restartElem);
-
-    document.body.appendChild(containerElem);
-  };
-}
 
 /**
  * Begin running rAF, but only if mode needs it.
@@ -455,11 +407,12 @@ ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
 /**
  * Get a physics world.
  * @private
+ * @param {Object} integrator The Physics integrator.
  * @return {Physics} The shared audio context.
  */
-ww.mode.Core.prototype.getPhysicsWorld_ = function() {
+ww.mode.Core.prototype.getPhysicsWorld_ = function(integrator) {
   if (this.physicsWorld_) { return this.physicsWorld_; }
-  this.physicsWorld_ = new Physics();
+  this.physicsWorld_ = new Physics(integrator);
   return this.physicsWorld_;
 };
 
@@ -563,9 +516,12 @@ ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
 
   this.getSoundBufferFromURL_(url, function(buffer) {
     var source = audioContext.createBufferSource();
+    var gain = audioContext.createGainNode();
+    gain.gain.value = 0.1;
     source.buffer = buffer;
     source.loop = loop || false;
-    source.connect(audioContext.destination);
+    source.connect(gain);
+    gain.connect(audioContext.destination);
     source.noteOn(0);
 
     if ('function' === typeof onPlay) {
@@ -604,15 +560,17 @@ ww.mode.Core.prototype.transformElem_ = function(elem, value) {
 
 /**
  * Get a canvas for use with paperjs.
+ * @param {boolean} doNotAdd Adds a canvas element if left as false.
  * @return {Element} The canvas element.
  */
-ww.mode.Core.prototype.getPaperCanvas_ = function() {
+ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
   if (!this.paperCanvas_) {
     this.paperCanvas_ = document.createElement('canvas');
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
-    $(document.body).prepend(this.paperCanvas_);
-
+    if (!doNotAdd) {
+      $(document.body).prepend(this.paperCanvas_);
+    }
     paper['setup'](this.paperCanvas_);
   }
 

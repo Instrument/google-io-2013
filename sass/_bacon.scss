@@ -1,14 +1,15 @@
-#bacon-container {
-  @extend %absolute-full;
-  height: 100%;
-  padding: 5% 10%;
-  @include transition(all 100ms ease-in);
+* {
+  @include box-sizing(border-box);
 }
 
-#letter-i,
-#letter-o,
-#stripes,
-#egg-whites,
-#yolk {
+#bacon-container {
+  @extend %absolute-full;
+  padding: 5% 20px;
+}
+
+#letter-i, #letter-o,
+#bacon-fat, #bacon-meat,
+#egg-cracked, #egg-whole,
+#egg-whites, #egg-yolk {
   @include transform-origin(50% 50%, false);
 }

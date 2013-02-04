@@ -1,12 +1,14 @@
 goog.require('ww.mode.Core');
-goog.require('ww.util');
+goog.require('ww.PatternMatcher');
 goog.provide('ww.mode.EightBitMode');
 
 /**
  * @constructor
  */
 ww.mode.EightBitMode = function() {
-  goog.base(this, 'eightbit', true, true, true);
+  goog.base(this, 'eightbit', true, true);
+
+  var context = this.getAudioContext_();
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
 
@@ -14,229 +16,147 @@ goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
  * Method called when activating the I.
  */
 ww.mode.EightBitMode.prototype.activateI = function() {
-  this.iClicked_ = true;
-  if (this.iMultiplier_ < 10) {
-    this.iMultiplier_ += 2;
-  }
+  goog.base(this, 'activateI');
+
+  this.pushPoints_(this.paperI_, this.lastClick_, 10);
+
+  this.playSound('i.mp3');
 };
 
 /**
  * Method called when activating the O.
  */
 ww.mode.EightBitMode.prototype.activateO = function() {
-  this.oClicked_ = true;
-  if (this.oMultiplier_ < 10) {
-    this.oMultiplier_ += 2;
-  }
+  goog.base(this, 'activateO');
+
+  this.pushPoints_(this.paperO_, this.lastClick_, 10);
+
+  this.playSound('o.mp3');
 };
 
 /**
  * Function to create and draw I.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.EightBitMode.prototype.drawI_ = function(isNew) {
-  // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * .175;
-  this.iHeight_ = this.iWidth_ * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  this.i_X = this.screenCenterX_ - this.iWidth_ * 1.5;
-  this.i_Y = this.screenCenterY_ - this.iHeight_ / 2;
-
-  if (isNew) {
+ww.mode.EightBitMode.prototype.drawI_ = function() {
+  if (!this.paperI_) {
     // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.i_X, this.i_Y);
+    var iTopLeft = new paper['Point'](this.iX_, this.iY_);
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
-    this.letterI = new paper['Rectangle'](iTopLeft, iSize);
-    this.paperI_ = new paper['Path']['Rectangle'](this.letterI);
+    var letterI = new paper['Rectangle'](iTopLeft, iSize);
+    this.paperI_ = new paper['Path']['Rectangle'](letterI);
+
+    // The stops array: yellow mixes with red between 0 and 15%,
+    // 15% to 30% is pure red, red mixes with black between 30% to 100%:
+    var stops = [['white', 0], ['black', 0.5], ['white', 1]];
+
+    // Create a radial gradient using the color stops array:
+    var gradient = new paper['Gradient'](stops);
+
+    // We will use the center point of the circle shaped path as
+    // the origin point for our gradient color
+    var from = this.paperI_['position']['clone']();
+    from['x'] -= this.iX_ * 1.3;
+
+    // The destination point of the gradient color will be the
+    // center point of the path + 80pt in horizontal direction:
+    var to = this.paperI_['position']['clone']();
+    to['x'] += this.iX_ * 1.3;
+
+    // Create the gradient color:
+    var gradientColor = new paper['GradientColor'](gradient, from, to);
+
     this.paperI_['fillColor'] = '#11a860';
 
-    // Create arrays to store the original coordinates for I's path points.
-    this.i_PointX = [];
-    this.i_PointY_ = [];
+    this.paperI_['closed'] = true;
 
-    for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
-      this.i_PointX.push(this.paperI_['segments'][this.i_]['point']['_x']);
-      this.i_PointY_.push(this.paperI_['segments'][this.i_]['point']['_y']);
+    this.paperI_['vectors'] = [];
+
+    for (var i = 0; i < this.paperI_['segments'].length; i++) {
+      var point = this.paperI_['segments'][i]['point']['clone']();
+      point = point['subtract'](this.iCenter_);
+
+      point['velocity'] = 0;
+      point['acceleration'] = Math.random() * 5 + 10;
+      point['bounce'] = Math.random() * .1 + 1.05;
+
+      this.paperI_['vectors'].push(point);
     }
-
-  // Run if drawI_() is called and drawI_(true) has also already been called.
-  } else if (!isNew && this.paperI_) {
+  } else {
     // Change the position based on new screen size values.
-    this.paperI_['position'] = {x: this.i_X + this.iWidth_ / 2,
-      y: this.i_Y + this.iHeight_ / 2};
+    this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
+      y: this.iY_ + this.iHeight_ / 2};
 
     // Change the scale based on new screen size values.
     this.paperI_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
-
-    // Store the coordinates for the newly moved and scaled control points.
-    for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
-      this.i_PointX[this.i_] =
-        this.paperI_['segments'][this.i_]['point']['_x'];
-
-      this.i_PointY_[this.i_] =
-        this.paperI_['segments'][this.i_]['point']['_y'];
-    }
-  } else {
-    return;
   }
 };
 
 /**
  * Function to create and draw O.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.EightBitMode.prototype.drawO_ = function(isNew) {
-  // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
+ww.mode.EightBitMode.prototype.drawO_ = function() {
+  if (this.paperO_) {
+    this.paperO_['remove']();
+  }
+  // Create a new paper.js path for O based off the previous variables.
+  this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
 
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
+  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
+    this.oRad_);
 
-  // Initial variables for calculating circle angles.
-  var pathX;
-  var pathY;
+  this.paperO_['fillColor'] = '#3777e2';
 
-  var pathStart;
-  var pathMidOne;
-  var pathMidTwo;
-  var pathEnd;
-  var pathLength;
+  this.paperO_['vectors'] = [];
 
-  var altI;
+  for (var i = 0; i < this.paperO_['segments'].length; i++) {
+    var point = this.paperO_['segments'][i]['point']['clone']();
+    point = point['subtract'](this.oCenter_);
 
-  if (isNew) {
-    this.oCreated_ = true;
+    point['velocity'] = 0;
+    point['acceleration'] = Math.random() * 5 + 10;
+    point['bounce'] = Math.random() * .1 + 1.05;
 
-    // Create an array to store O's paths.
-    this.oPaths_ = [];
-
-    // Create a new paper.js path for O based off the previous variables.
-    var oCenter = new paper['Point'](this.oX_, this.oY_);
-    this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
-    this.paperO_['fillColor'] = 'transparent';
-
-    this.oGroup_ = new paper['Group'];
-
-    for (this.i_ = 0; this.i_ < 90; this.i_++) {
-      this.oPaths_.push(new paper['Path']);
-
-      pathX = oCenter['x'] + this.oRad_ * Math.cos((this.i_ * 2) *
-        (Math.PI / 180));
-
-      pathY = oCenter['y'] + this.oRad_ * Math.sin((this.i_ * 2) *
-        (Math.PI / 180));
-
-      pathStart = new paper['Point'](pathX, pathY);
-
-      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-this.i_ * 2)) *
-        (Math.PI / 180));
-
-      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-this.i_ * 2)) *
-        (Math.PI / 180));
-
-      pathEnd = new paper['Point'](pathX, pathY);
-
-      pathLength = pathEnd['getDistance'](pathStart);
-
-      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ +
-        (pathLength / 4));
-
-      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ -
-        (pathLength / 4));
-
-      this.oPaths_[this.i_]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
-
-      this.oGroup_['addChild'](this.oPaths_[this.i_]);
-    }
-
-    this.oGroup_['strokeColor'] = '#3777e2';
-    this.oGroup_['strokeWidth'] = 1;
-    this.oGroup_['rotate'](-45);
-
-    // Create arrays to store the coordinates for O's path points.
-    this.oPathsX_ = [];
-    this.oPathsY_ = [];
-
-    // Store the coordinates for O's path points.
-    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
-      this.oPathsX_[this.i_] = [];
-      this.oPathsY_[this.i_] = [];
-      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
-        this.oPathsX_[this.i_].push(
-          this.oPaths_[this.i_]['segments'][altI]['point']['_x']);
-
-        this.oPathsY_[this.i_].push(
-          this.oPaths_[this.i_]['segments'][altI]['point']['_y']);
-      }
-    }
-
-  // Run if drawO_() is called and drawO_(true) has also already been called.
-  } else if (!isNew && this.oCreated_) {
-    this.paperO_['position'] = {x: this.oX_, y: this.oY_};
-    this.oGroup_['position'] = {x: this.oX_, y: this.oY_};
-
-    this.oGroup_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
-    this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
-
-    // Store the coordinates for O's path points based on the new window size.
-    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
-      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
-        this.oPathsX_[this.i_][altI] =
-          this.oPaths_[this.i_]['segments'][altI]['point']['_x'];
-
-        this.oPathsY_[this.i_][altI] =
-          this.oPaths_[this.i_]['segments'][altI]['point']['_y'];
-      }
-    }
-  } else {
-    return;
+    this.paperO_['vectors'].push(point);
   }
 };
 
 /**
  * Function to create and draw Slash.
  * @private
- * @param {Boolean} isNew Create a new paper object or just edit values.
  */
-ww.mode.EightBitMode.prototype.drawSlash_ = function(isNew) {
-  // Run only if drawI_(true) and drawO_(true) have been called
-  if (isNew && this.paperI_ && this.paperO_) {
+ww.mode.EightBitMode.prototype.drawSlash_ = function() {
+  if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
-    this.slashStart_ = new paper['Point'](this.screenCenterX_ + this.oRad_ / 8,
+    this.slashStart_ = new paper['Point'](this.screenCenterX_ +
+      (this.width_ * 0.02777778),
       this.screenCenterY_ - (this.iHeight_ / 2) -
-      ((this.iHeight_ * 1.5) * 0.17475728));
+        (this.iHeight_ * 0.09722222));
 
-    this.slashEnd_ = new paper['Point'](this.i_X + this.iWidth_,
+    this.slashEnd_ = new paper['Point'](this.iX_ + this.iWidth_,
       this.screenCenterY_ + (this.iHeight_ / 2) +
-      ((this.iHeight_ * 1.5) * 0.17475728));
+      (this.iHeight_ * 0.09722222));
 
     // Create a new paper.js path for the slash based on screen dimensions.
-    this.paperSlash_ = new paper['Path'];
+    this.paperSlash_ = new paper['Path']();
     this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
-
-  // Run if drawSlash_() is called and drawSlash(true) has already been called.
-  } else if (!isNew && this.paperSlash_) {
-    this.slashStart_['x'] = this.screenCenterX_ + this.oRad_ / 8;
+  } else {
+    this.slashStart_['x'] = this.screenCenterX_ + (this.width_ * 0.02777778);
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
-      ((this.iHeight_ * 1.5) * 0.17475728);
+      (this.iHeight_ * 0.09722222);
 
-    this.slashEnd_['x'] = this.i_X + this.iWidth_;
+    this.slashEnd_['x'] = this.iX_ + this.iWidth_;
     this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
-      ((this.iHeight_ * 1.5) * 0.17475728);
+      (this.iHeight_ * 0.09722222);
 
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
 
     this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
-  } else {
-    return;
   }
 };
 
@@ -251,64 +171,13 @@ ww.mode.EightBitMode.prototype.init = function() {
   // Prep paperjs
   this.getPaperCanvas_();
 
-  // Variable to modify delta's returned value.
-  this.deltaModifier_ = 0;
-
-  // Temporarily float variable to use for randomizing animation effects.
-  this.tempFloat_ = [];
-
-  // Generic iterator.
-  this.i_ = 0;
-
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
-  /**
-   * Sets the mouse position to start at the screen center.
-   */
-  this.mouseX_ = this.screenCenterX_;
-  this.mouseY_ = this.screenCenterY_;
-
-  /**
-   * Create the letter I.
-   */
-  // Boolean that sets to true if I is being activated.
-  this.iClicked_ = false;
-
-  // Boolean that sets to false if I has been activated but delta is too high.
-  this.iIncrement_ = true;
-
-  // Float that increments by delta when I is activated to affect animation.
-  this.iModifier_ = 0;
-
-  // Float that increments on each activation of I to affect animation further.
-  this.iMultiplier_ = 1;
-
-  this.drawI_(true);
-
-  /**
-   * Create the letter O.
-   */
-  // Boolean that sets to true if O is being activated.
-  this.oClicked_ = false;
-
-  // Boolean that sets to false if O has been activated but delta is too high.
-  this.oIncrement_ = true;
-
-  // Float that increments by delta when O is activated to affect animation.
-  this.oModifier_ = 0;
-
-  // Float that increments on each activation of O to affect animation further.
-  this.oMultiplier_ = 1;
-
-  this.drawO_(true);
-
-  /**
-   * Create the slash. drawI() and drawO() must be called before drawSlash() to
-   * successfully create the slash.
-   */
-  this.drawSlash_(true);
+  // Variable to store the screen coordinates of the last click/tap/touch.
+  this.lastClick_ =
+    new paper['Point'](this.oX_, this.oY_);
 };
 
 /**
@@ -317,16 +186,29 @@ ww.mode.EightBitMode.prototype.init = function() {
 ww.mode.EightBitMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
-  var canvas = this.getPaperCanvas_();
+  this.pctx_ = this.paperCanvas_.getContext('2d');
 
   var self = this;
 
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
+  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  $("#menu").bind(evt2 + '.core', function() {
+    $(document.body).addClass('nav-visible');
+  });
+
+  $("#modal").bind(evt2 + '.core', function() {
+    $(document.body).removeClass('nav-visible');
+  });
+
+  $("#dropdown").bind(evt2 + '.core', function(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+  });
 
   var tool = new paper['Tool']();
 
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   tool['onMouseDown'] = function(event) {
-    self.lastClick = event['point'];
+    self.lastClick_ = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
       if (self.hasFocus) {
         self.activateO();
@@ -339,14 +221,12 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
       }
     }
   };
+};
 
-  $(canvas).bind(evt, function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+ww.mode.EightBitMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
 
-    self.mouseX_ = e.pageX;
-    self.mouseY_ = e.pageY;
-  });
+  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
 };
 
 /**
@@ -360,13 +240,39 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
+  // Set I's initial dimensions.
+  this.iWidth_ = this.width_ * 0.205;
+  this.iHeight_ = this.iWidth_ * 2.12698413;
+
+  // Set coordinates for I's upper left corner.
+  this.iX_ = this.screenCenterX_ - this.iWidth_ - (this.width_ * 0.15833333);
+
+  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
+
+  this.iCenter_ = new paper['Point'](this.iX_ + this.iWidth_ / 2,
+    this.iY_ + this.iHeight_ / 2);
+
+  // Set O's radius.
+  this.oRad_ = this.width_ * 0.1944444444;
+
+  // Set O's coordinates.
+  this.oX_ = this.screenCenterX_ + this.oRad_;
+  this.oY_ = this.screenCenterY_;
+
   /**
-   * Redraw each shape on window resize. drawI() and drawO() must be called
-   * before drawSlash() to maintain accurate drawing scale for the slash.
+   * Create the slash.
+   */
+  this.drawSlash_();
+
+  /**
+   * Create the letter I.
    */
   this.drawI_();
+
+  /**
+   * Create the letter O.
+   */
   this.drawO_();
-  this.drawSlash_();
 
   if (redraw) {
     this.redraw();
@@ -374,187 +280,124 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
 };
 
 /**
+ * Updates point vectors based on click/tap position.
+ * @param {Object} path The path to modify.
+ * @param {Object} clickPoint The coordinates of the most recent click/tap.
+ * @param {Number} speed Affects the speed of the animation.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
+  for (var i = 0; i < path['vectors'].length; i++) {
+    var point = path['vectors'][i];
+    var vector;
+    var distance;
+
+    if (path === this.paperO_) {
+      vector = point['add'](this.oCenter_);
+      vector = vector['subtract'](clickPoint);
+      distance = Math.max(0, this.oRad_ - vector['length']);
+    } else {
+      vector = point['add'](this.iCenter_);
+      vector = vector['subtract'](clickPoint);
+      distance = Math.max(0, this.iWidth_ - vector['length']);
+    }
+
+    point['length'] += distance;
+    point['velocity'] += speed;
+  }
+}
+
+/**
+ * Updates point vectors based on their length and velocity values.
+ * @param {Object} path The path to modify.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.updateVectors_ = function(path) {
+  for (var i = 0; i < path['segments'].length; i++) {
+    var point = path['vectors'][i];
+
+    if (path === this.paperO_) {
+      point['velocity'] = ((this.oRad_ - point['length']) /
+        point['acceleration'] + point['velocity']) / point['bounce'];
+    } else {
+      point['velocity'] = ((this.iWidth_ - point['length']) /
+        point['acceleration'] + point['velocity']) / point['bounce'];
+    }
+
+    point['length'] = Math.max(0, point['length'] + point['velocity']);
+  }
+}
+
+/**
+ * Updates point coordinates based on their vectors.
+ * @param {Object} path The path to modify.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.updatePoints_ = function(path) {
+  for (var i = 0; i < path['segments'].length; i++) {
+    var point = path['vectors'][i];
+
+    var newPoint = point['clone']();
+
+    if (path === this.paperO_) {
+      this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter_);
+      this.paperO_['smooth']();
+    } else {
+      this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter_);
+    }
+  }
+}
+
+/**
+ * Draws pixels over the paper canvas.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.drawPixels_ = function() {
+  var pixelData = this.pctx_.getImageData(0, 0, this.width_,
+    this.height_);
+
+  this.pctx_.clearRect(0, 0, this.paperCanvas_.width + 1,
+    this.paperCanvas_.height + 1);
+
+  for (i = 0; i < pixelData.data.length; i += Math.round(this.width_ / 4)) {
+    if (pixelData.data[i + 3] != 0) {
+      var r = pixelData.data[i];
+      var g = pixelData.data[i + 1];
+      var b = pixelData.data[i + 2];
+      var pixel = Math.ceil(i / 4);
+      var x = pixel % this.width_;
+      var y = Math.floor(pixel / this.width_);
+
+      var color = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
+
+      this.pctx_.fillStyle = color;
+      this.pctx_.fillRect(x, y, 16, 16);
+    }
+  }
+}
+
+/**
  * Runs code on each requested frame.
- * @param {Integer} delta The timestep variable for animation accuracy.
+ * @param {Number} delta Ms since last draw.
  */
 ww.mode.EightBitMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
-  /*
-   * Delta is initially a very small float. Need to modify it for it to have a
-   * stronger effect.
-   */
-  this.deltaModifier_ = (delta / 100);
+  if (!this.isIdle_) {
+    var hasBeenIdle = this.timeElapsed_ - this.wentIdleTime_;
 
-  /*
-   * Run the following code if the letter I is activated.
-   * It uses delta along with other variables to modify the intensity of the
-   * animation.
-   */
-  if (this.iClicked_ == true) {
-
-    if (this.iModifier_ < this.deltaModifier_ * 10000 &&
-      this.iIncrement_ == true) {
-        this.iModifier_ += this.deltaModifier_ * 1000;
-    } else if (this.iMultiplier_ > 1) {
-      if (this.iModifier_ < this.deltaModifier_ * 10000) {
-        this.iModifier_ += this.deltaModifier_ * 100;
-      }
-      if (this.iMultiplier_ > 1) {
-        this.iMultiplier_ -= 0.1;
-      } else {
-        this.iMultiplier_ = 1;
-      }
-    } else {
-      this.iIncrement_ = false;
-      this.iModifier_ -= this.deltaModifier_ * 1000;
-      if (this.iMultiplier_ > 1) {
-        this.iMultiplier_ -= 0.1;
-      } else {
-        this.iMultiplier_ = 1;
-      }
-    }
-
-    if (this.iModifier_ < this.deltaModifier_ * 1000) {
-      this.iClicked_ = false;
-      this.iIncrement_ = true;
-      this.iMultiplier_ = 1;
-    }
-
-    /*
-     * Loop through each path segment on the letter I and move each point's
-     * handles based on time as being evaluated by Sine and Cosine.
-     */
-    for (this.i_ = 0; this.i_ < this.paperI_['segments'].length; this.i_++) {
-
-      this.paperI_['segments'][this.i_]['point']['_x'] =
-        this.i_PointX[this.i_] +
-        Math.cos(this.framesRendered_ / 10 + this.i_ * 100) * this.iModifier_ *
-        this.iMultiplier_;
-
-      this.paperI_['segments'][this.i_]['point']['_y'] =
-        this.i_PointY_[this.i_] +
-        Math.sin(this.framesRendered_ / 10 + this.i_ * 100) * this.iModifier_ *
-        this.iMultiplier_;
-    }
-  } else {
-    /*
-     * If I hasn't been activated recently enough, restore the original handle
-     * coordinates.
-     */
-    for (this.i_ = 0; this.i_ < this.paperO_['segments'].length; this.i_++) {
-      this.paperI_['segments'][this.i_]['point']['_x'] =
-        this.i_PointX[this.i_];
-
-      this.paperI_['segments'][this.i_]['point']['_y'] =
-        this.i_PointY_[this.i_];
+    if (hasBeenIdle > this.maxIdleTime_) {
+      this.enterIdle_();
     }
   }
 
-  /*
-   * Run the following code if the letter O is activated.
-   * It uses delta along with other variables to modify the intensity of the
-   * animation.
-   */
-  if (this.oClicked_ === true) {
+  this.updateVectors_(this.paperI_);
+  this.updatePoints_(this.paperI_);
 
-    if (this.oModifier_ < this.deltaModifier_ * 20000 &&
-      this.oIncrement_ === true) {
-        this.oModifier_ += this.deltaModifier_ * 1000;
-    } else if (this.oMultiplier_ > 1) {
-      if (this.oModifier_ < this.deltaModifier_ * 20000) {
-        this.oModifier_ += this.deltaModifier_ * 10;
-      }
-      if (this.oMultiplier_ > 1) {
-        this.oMultiplier_ -= 0.1;
-      } else {
-        this.oMultiplier_ = 1;
-      }
-    } else {
-      this.oIncrement_ = false;
-      this.oModifier_ -= this.deltaModifier_ * 1000;
-      if (this.oMultiplier_ > 1) {
-        this.oMultiplier_ -= 0.1;
-      } else {
-        this.oMultiplier_ = 1;
-      }
-    }
+  this.updateVectors_(this.paperO_);
+  this.updatePoints_(this.paperO_);
 
-    // If oModifier drops too low, reset variables to their default state.
-    if (this.oModifier_ < this.deltaModifier_ * 1000) {
-      this.oClicked_ = false;
-      this.oIncrement_ = true;
-      this.oMultiplier_ = 1;
-    }
-
-    this.delay_['feedback'] = this.oMultiplier_ / 10;
-
-    /*
-     * Loop through each path segment on the letter O and move each point's
-     * coordinates based on time as being evaluated by Sine and Cosine.
-     */
-    var altI;
-
-    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
-      this.oPaths_[this.i_]['segments'][0]['point']['_x'] =
-        this.oPathsX_[this.i_][0] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][0])) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['segments'][0]['point']['_y'] =
-        this.oPathsY_[this.i_][0] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][0])) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['segments'][1]['point']['_x'] =
-        this.oPathsX_[this.i_][1] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][1])) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['segments'][1]['point']['_y'] =
-        this.oPathsY_[this.i_][1] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][1])) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['segments'][2]['point']['_x'] =
-        this.oPathsX_[this.i_][2] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][2])) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['segments'][2]['point']['_y'] =
-        this.oPathsY_[this.i_][2] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][2])) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['segments'][3]['point']['_x'] =
-        this.oPathsX_[this.i_][3] +
-        Math.sin(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_x'] - this.oPathsX_[this.i_][3])) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['segments'][3]['point']['_y'] =
-        this.oPathsY_[this.i_][3] +
-        Math.cos(this.framesRendered_ / 10 +
-        (this.oGroup_['position']['_y'] - this.oPathsY_[this.i_][3])) *
-        this.oModifier_ * this.oMultiplier_;
-
-      this.oPaths_[this.i_]['smooth']();
-    }
-  } else {
-    for (this.i_ = 0; this.i_ < this.oPaths_.length; this.i_++) {
-      for (altI = 0; altI < this.oPaths_[this.i_]['segments'].length; altI++) {
-        this.oPaths_[this.i_]['segments'][altI]['_x'] =
-          this.oPathsX_[this.i_][altI];
-
-        this.oPaths_[this.i_]['segments'][altI]['_y'] =
-          this.oPathsY_[this.i_][altI];
-      }
-    }
+  if (this.pctx_) {
+    this.drawPixels_();
   }
 };

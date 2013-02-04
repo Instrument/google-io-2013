@@ -1,13 +1,22 @@
 goog.require('ww.mode.Core');
 goog.provide('ww.mode.PinataMode');
 
+TWOPI = TWOPI || Math.PI * 2;
 
 /**
  * @constructor
  */
 ww.mode.PinataMode = function() {
-  goog.base(this, 'pinata', true, true, false);
+  goog.base(this, 'pinata', true, false, true);
+
   this.preloadSound('whack.mp3');
+  this.preloadSound('whoosh-1.wav');
+  this.preloadSound('whoosh-2.wav');
+
+  this.ballSpeed_ = 250;
+
+  this.COLORS_ = ['#0da960', '#4387fd', '#e04a3f', '#ffd24d'];
+  this.NUM_COLORS = this.COLORS_.length;
 };
 goog.inherits(ww.mode.PinataMode, ww.mode.Core);
 
@@ -18,66 +27,86 @@ goog.inherits(ww.mode.PinataMode, ww.mode.Core);
 ww.mode.PinataMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.COLORS_ = ['#EB475A', '#E05A91', '#925898',
-                  '#E96641', '#19A281', '#FAD14A'];
-
-  this.NUM_COLORS = this.COLORS_.length;
-
-  this.prefix = Modernizr.prefixed('transform');
-
-  var self = this;
-
-  this.centerX = window.innerWidth / 2;
-  this.centerY = window.innerHeight / 2;
-  this.scale = window.innerWidth / 30;
-
-  this.getPaperCanvas_();
-
-  // restart all active elements
-  if (this.active && this.active.length) {
-    var temp;
-    for (var i = 0, l = this.active.length; i < l; i++) {
-      temp = this.active.pop();
-      temp['fillColor'] = 'rgba(255,255,255,0.01)';
-      temp['point'] = new paper['Point'](this.centerX, this.centerY);
-      temp['position'] = temp['point'];
-      this.deactive.push(temp);
-    }
-  } else {
-    this.deactive = this.prepopulate_(200);
-    this.active = [];
-  }
-
-  this.pinata = $('#pinata');
-  this.pinata.css('opacity', '1');
-  this.hitCount = 0;
-  this.maxHit = 10;
+  var world = this.getPhysicsWorld_(new Verlet());
+  this.collision_ = new Collision();
+  this.force_ = new ConstantForce(new Vector(0, 1000));
 };
 
 
 /**
- * On focus, make the pinata interactive.
+ * Bind mouse/touch events which focus is gained.
  */
 ww.mode.PinataMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
-  var self = this;
+  this.$letterO_.css('opacity', 1);
 
-  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
-  self.pinata.bind(evt + '.pinata', function() {
-    self.popBalls_();
-  });
-};
+  this.whackCount_ = 0;
+  this.cracks_ = this.cracks_ || $('[id*=crack-]');
+  this.cracks_.css('opacity', 0);
+  this.maxWhacks_ = this.maxWhacks_ || this.cracks_.length;
 
+  this.crackedElm_ = this.crackedElm_ || $('#cracked');
+  this.crackedElm_.css('opacity', 0);
+  this.crackedParts_ = this.crackedParts_ || $('[id*=part-]');
+  this.maxParts_ = this.maxParts_ || this.crackedParts_.length;
 
-/**
- * On unfocus, deactivate the pinata.
- */
-ww.mode.PinataMode.prototype.didUnfocus = function() {
-  goog.base(this, 'didUnfocus');
+  var part;
+  for (var i = 0; i < this.maxParts_; i++) {
+    part = this.crackedParts_[i];
+    this.transformElem_(part, 'translateX(0px) translateY(0px) rotate(0deg)');
+  }
 
-  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
-  this.pinata.unbind(evt + '.pinata');
+  this.$canvas_ = this.$canvas_ || $('#pinata-canvas');
+  this.canvas_ = this.$canvas_[0];
+  this.canvas_.width = this.width_;
+  this.canvas_.height = this.height_;
+  this.ctx_ = this.ctx_ || this.canvas_.getContext('2d');
+
+  var devicePixelRatio = window.devicePixelRatio || 1,
+      backingStoreRatio = this.ctx_.webkitBackingStorePixelRatio ||
+                          this.ctx_.mozBackingStorePixelRatio ||
+                          this.ctx_.msBackingStorePixelRatio ||
+                          this.ctx_.oBackingStorePixelRatio ||
+                          this.ctx_.backingStorePixelRatio || 1,
+
+      ratio = devicePixelRatio / backingStoreRatio;
+
+  // upscale the this.canvas_ if the two ratios don't match
+  if (devicePixelRatio !== backingStoreRatio) {
+    var oldWidth = this.canvas_.width;
+    var oldHeight = this.canvas_.height;
+
+    this.ratio_ = ratio;
+
+    this.canvas_.width = oldWidth * ratio;
+    this.canvas_.height = oldHeight * ratio;
+
+    this.canvas_.style.width = oldWidth + 'px';
+    this.canvas_.style.height = oldHeight + 'px';
+
+    this.ctx_.scale(ratio, ratio);
+  }
+
+  this.scale_ = Math.round(this.width_ * 0.005);
+
+  this.bounds_ = this.$letterO_[0].getBoundingClientRect();
+  this.center_ = this.center_ || {};
+  this.center_['x'] = ~~(this.bounds_['left'] + (this.bounds_['width'] / 2));
+  this.center_['y'] = ~~(this.bounds_['top'] + (this.bounds_['height'] / 2));
+
+  // particle representation of robot
+  this.robot_ = new Particle(5.0);
+  this.robot_.setRadius(this.bounds_['width']);
+  this.robot_.fixed = true;
+  this.robot_.moveTo(new Vector(this.center_['x'], this.center_['y']));
+  this.collision_.pool.push(this.robot_);
+  this.robot_.behaviours.push(this.collision_);
+  this.physicsWorld_.particles.push(this.robot_);
+
+  this.prepopulate_(150);
+
+  this.current_ = 1;
 };
 
 
@@ -88,181 +117,386 @@ ww.mode.PinataMode.prototype.didUnfocus = function() {
 ww.mode.PinataMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', redraw);
 
-  this.centerX = window.innerWidth / 2;
-  this.centerY = window.innerHeight / 2;
-  this.scale = window.innerWidth / 30;
-};
+  if (this.canvas_) {
+    if (this.ratio_) {
+      var oldWidth = this.canvas_.width;
+      var oldHeight = this.canvas_.height;
 
+      this.canvas_.width = oldWidth * this.ratio_;
+      this.canvas_.height = oldHeight * this.ratio_;
 
-/**
- * Per animated frame, update physics and positioning of balls.
- * @param {number} delta Animation delta.
- */
-ww.mode.PinataMode.prototype.onFrame = function(delta) {
-  goog.base(this, 'onFrame', delta);
+      this.canvas_.style.width = oldWidth + 'px';
+      this.canvas_.style.height = oldHeight + 'px';
 
-  var length = this.active.length,
-      size = paper['view']['size'],
-      ball, pre;
-
-  for (var i = 0; i < length; i++) {
-    ball = this.active[i];
-    ball['vector']['y'] += ball['gravity'];
-    ball['vector']['x'] *= 0.99;
-
-    pre = this.utilAdd_(ball['point'], ball['vector']);
-
-    if (pre['x'] < ball.radius ||
-        pre['x'] > size['width'] - ball.radius) {
-
-      ball['vector']['x'] *= -1 * ball['dampen'];
+      this.ctx_.scale(this.ratio_, this.ratio_);
+    } else {
+      this.canvas_.width = this.width_;
+      this.canvas_.height = this.height_;
     }
+  }
 
-    if (pre['y'] < ball.radius ||
-        pre['y'] > size['height'] - ball.radius) {
+  this.scale_ = Math.round(this.width_ * 0.005);
 
-      if (Math.abs(ball['vector']['x']) < 3) {
-        ball['vector'] = paper['Point']['random']();
-        ball['vector'] = this.utilAdd_(ball['vector'], [-0.5, 0]);
-        ball['vector'] = this.utilMultiply_(ball['vector'], [50, 100]);
-      }
+  this.bounds_ = this.$letterO_[0].getBoundingClientRect();
+  this.center_ = this.center_ || {};
+  this.center_['x'] = ~~(this.bounds_['left'] + (this.bounds_['width'] / 2));
+  this.center_['y'] = ~~(this.bounds_['top'] + (this.bounds_['height'] / 2));
 
-      ball['vector']['y'] *= ball['bounce'];
-    }
-
-    var ballAndVect = this.utilAdd_(ball['point'], ball['vector']);
-    var max = paper['Point']['max'](ball.radius, ballAndVect);
-
-    ball['point'] = paper['Point']['min'](max, size['width'] - ball.radius);
-
-    ball['position'] = ball['point'];
-    ball['rotate'](ball['vector']['x'] / 2);
+  if (this.physicsWorld_.particles && this.physicsWorld_.particles.length > 0) {
+    this.moveAllCandyBack_();
   }
 };
 
 
 /**
- * Utility to add two x/y representations together.
- * @param {object} v1 Vector one.
- * @param {object} v2 Vector two.
- * @return {object} Result of v1 + v2.
- * @private
+ * Step forward in time for physics.
+ * @param {Number} delta Ms since last step.
  */
-ww.mode.PinataMode.prototype.utilAdd_ = function(v1, v2) {
-  var result = {};
+ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
+  goog.base(this, 'stepPhysics', delta);
 
-  result['x'] = (v1['x'] || v1[0]) + (v2['x'] || v2[0]);
-  result['y'] = (v1['y'] || v1[1]) + (v2['y'] || v2[1]);
-
-  return result;
-};
-
-
-/**
- * Utility to multiply two x/y representations together.
- * @param {object} v1 Vector one.
- * @param {object} v2 Vector two.
- * @return {object} Result of v1 * v2.
- * @private
- */
-ww.mode.PinataMode.prototype.utilMultiply_ = function(v1, v2) {
-  var result = {};
-
-  result['x'] = (v1['x'] || v1[0]) * (v2['x'] || v2[0]);
-  result['y'] = (v1['y'] || v1[1]) * (v2['y'] || v2[1]);
-
-  return result;
-};
-
-
-/**
-  * Prepopulate a max number of balls.
-  * @param {number} max Maximum number to prepopulate.
-  * @return {array} Array of prepopulated papaer objects.
-  * @private
-  */
-ww.mode.PinataMode.prototype.prepopulate_ = function(max) {
-  var balls = [], ball, point, radius;
-
-  for (var i = 0; i < max; i++) {
-    point = new paper['Point'](this.centerX, this.centerY);
-    radius = this.scale * Math.random() + 10;
-
-    ball = new paper['Path']['Circle'](point, radius);
-    ball['point'] = point;
-    ball['fillColor'] = 'rgba(255,255,255,0.01)';
-
-    ball['vector'] = paper['Point']['random']();
-    ball['vector'] = this.utilAdd_(ball['vector'], [-0.5, 0]);
-    ball['vector'] = this.utilMultiply_(ball['vector'], [50, 100]);
-
-    ball['dampen'] = 0.4;
-    ball['gravity'] = 3;
-    ball['bounce'] = -0.6;
-    ball.radius = radius;
-
-    balls.push(ball);
+  if (this.canvas_) {
+    this.ctx_.clearRect(0, 0, this.width_, this.height_);
   }
 
-  return balls;
+  var ball, radius, r2, r6;
+  for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
+    ball = this.physicsWorld_.particles[i];
+    radius = ball.radius;
+    r2 = radius * 2;
+    r6 = radius * 6;
+
+    if (ball.pos && ball.pos.x > this.width_ + r6 ||
+        ball.pos.x < 0 - r6 ||
+        ball.pos.y > this.height_ + r6 ||
+        ball.pos.y < 0 - r6) {
+      // ball is out of bounds, so make it hidden/fixed
+      ball.fixed = true;
+    }
+
+    if (!ball.fixed) {
+      ball['rotate'] += 10 * delta;
+      this.ctx_.fillStyle = ball['color'];
+
+      this.ctx_.save();
+      this.ctx_.translate(ball.pos.x, ball.pos.y);
+      this.ctx_.rotate(ball['rotate']);
+
+      // pill shape
+      this.ctx_.beginPath();
+      this.ctx_.arc(-radius, 0, radius, 0, TWOPI);
+      this.ctx_.arc(radius, 0, radius, 0, TWOPI);
+      this.ctx_.fillRect(-radius, -radius, r2, r2);
+      this.ctx_.fill();
+
+      this.ctx_.restore();
+    }
+  }
 };
 
 
 /**
- * Activate a random number of balls.
+ * Prepopulate balls.
+ * @param {Number} number Number of balls to prepopulate.
  * @private
  */
-ww.mode.PinataMode.prototype.popBalls_ = function() {
-  var ball, toPop, self = this;
+ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
+  var ball, dir;
+  for (var i = 0; i < number; i++) {
+    dir = (i % 2 === 0) ? -1 : 1;
+    ball = new Particle(Random(1, 5.0));
+    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2.5);
+
+    ball.fixed = true; // disable from drawing
+
+    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir;
+    ball['startY'] = this.center_['y'] + ball.radius / 2;
+    ball['rotate'] = ~~Random(-360, 360) * (Math.PI / 180);
+    ball['color'] = this.COLORS_[~~Random(0, this.NUM_COLORS)];
+
+    ball.moveTo(new Vector(ball['startX'], ball['startY']));
+
+    ball.vel = new Vector(Random(3, 6) * this.ballSpeed_ * dir,
+                          Random(-3, 0.5) * this.ballSpeed_);
+
+    ball.behaviours.push(this.force_);
+
+    this.physicsWorld_.particles.push(ball);
+  }
+
+  this.deactive_ = this.physicsWorld_.particles.length;
+};
+
+/**
+ * Add a number of given balls.
+ * @private
+ */
+ww.mode.PinataMode.prototype.activateBalls_ = function() {
+  var ball,
+      pop = Math.min(this.deactive_, ~~Random(1, 3) + this.whackCount_);
+
+  for (var i = this.current_; i <= this.current_ + pop; i++) {
+    ball = this.physicsWorld_.particles[i];
+    this.collision_.pool.push(ball);
+    ball.behaviours.push(this.collision_);
+    ball.fixed = false;
+  }
+
+  this.deactive_ = this.deactive_ - pop;
+  this.current_ = this.current_ + pop;
+  this.log('activated ' + pop + ', ' + this.deactive_ + ' remaining.');
+};
+
+
+/**
+ * Hide and move all balls back to original start positions.
+ * @private
+ */
+ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
+  this.physicsWorld_.particles[0].moveTo(
+      new Vector(this.center_['x'], this.center_['y']));
+
+  var ball;
+  for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
+    ball = this.physicsWorld_.particles[i];
+    ball.moveTo(new Vector(ball['startX'], ball['startY']));
+    ball.fixed = true;
+  }
+};
+
+
+/**
+ * Method called when activating the I.
+ * Plays a whack sound and interacts with the O according to number of whacks.
+ */
+ww.mode.PinataMode.prototype.activateI = function() {
+  goog.base(this, 'activateI');
 
   this.playSound('whack.mp3');
 
-  if (this.hitCount < this.maxHit) {
-    this.hitCount++;
-    toPop = Math.min(this.deactive.length, ~~Random(1, 5) * this.hitCount);
+  this.animateI_();
 
-    this.log('hit #' + this.hitCount + '. adding ' + toPop + ' more balls.');
+  if (this.whackCount_ < this.maxWhacks_) {
+    this.log('whack ' + this.whackCount_);
 
-    for (var i = 0; i < toPop; i++) {
-      ball = this.deactive.pop();
-      ball['fillColor'] = this.COLORS_[~~Random(0, this.NUM_COLORS)];
-      this.active.push(ball);
-    }
+    this.activateBalls_();
+    this.cracks_[this.whackCount_].style['opacity'] = 1;
 
-    // TO-DO: SWAP OPACITY CHANGE FOR DIFFERENT PINATA BASHED STATE
-    // this.pinata.css('opacity', (this.maxHit - this.hitCount) / this.maxHit);
-
-    // animate wiggle
-    var deg = ~~Random(10, 45);
-    var dir = (this.hitCount % 2 === 0) ? -1 : 1;
-    var duration = 150;
-    var wiggleOne = new TWEEN.Tween({ 'deg': 0 });
-    wiggleOne.to({ 'deg': dir * deg }, duration);
-    wiggleOne.onUpdate(function() {
-      self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
-    });
-
-    var wiggleTwo = new TWEEN.Tween({ 'deg': dir * deg });
-    wiggleTwo.to({ 'deg': -1 * dir * deg }, duration);
-    wiggleTwo.delay(duration);
-    wiggleTwo.onUpdate(function() {
-      self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
-    });
-
-    var wiggleBack = new TWEEN.Tween({ 'deg': -1 * dir * deg });
-    wiggleBack.to({ 'deg': 0 }, duration);
-    wiggleBack.delay(duration * 2);
-    wiggleBack.onUpdate(function() {
-      self.pinata[0].style[self.prefix] = 'rotate(' + this['deg'] + 'deg)';
-    });
-
-    self.addTween(wiggleOne);
-    self.addTween(wiggleTwo);
-    self.addTween(wiggleBack);
+    this.animateO_();
+  } else if (this.whackCount_ === this.maxWhacks_) {
+    this.log('reached max whacks. breaking pinata.');
+    this.activateBalls_();
+    this.animatePartsOut_();
   } else {
-    this.log(
-      'reached max hits. pinata game over. ' +
-      this.deactive.length + ' balls remaining.'
-    );
+    this.log('pinata is done. still whacking. so showing reload.');
+    this.animatePartsIn_();
   }
+
+  this.whackCount_++;
+};
+
+
+/**
+ * Method called when activating the O.
+ * Plays some kind of whoosh sound.
+ */
+ww.mode.PinataMode.prototype.activateO = function() {
+  goog.base(this, 'activateO');
+
+  if (this.whackCount_ % 2 === 0) {
+    this.playSound('whoosh-1.wav');
+  } else {
+    this.playSound('whoosh-2.wav');
+  }
+
+  this.animateO_();
+};
+
+
+/**
+ * Animates broken O parts out.
+ * @private
+ */
+ww.mode.PinataMode.prototype.animatePartsOut_ = function() {
+  this.log('animating final break.');
+
+  var self = this;
+
+  self.$letterO_.css('opacity', 0);
+  self.crackedElm_.css('opacity', 1);
+
+  for (var i = 0; i < this.maxParts_; i++) {
+    var part = self.crackedParts_[i];
+
+    (function(part, i) {
+      var bounds = part.getBoundingClientRect();
+      var toY = ~~((self.height_ - bounds['top']) / 3);
+      var toX = ~~Random(-200, 200) + 50;
+      var deg = ~~Random(-270, 270) + 360;
+
+      var animateOut = new TWEEN.Tween({
+        'translateY': 0,
+        'translateX': 0
+      });
+
+      animateOut.to({
+        'translateY': toY,
+        'translateX': toX
+      }, 5000);
+
+      animateOut.easing(TWEEN.Easing.Exponential.Out);
+
+      animateOut.onUpdate(function() {
+        var transform = 'translateX(' + this['translateX'] + 'px) ' +
+                        'translateY(' + this['translateY'] + 'px) ' +
+                        'rotate(' + deg++ + 'deg)';
+        self.transformElem_(part, transform);
+      });
+
+      self.addTween(animateOut);
+    })(part, i);
+  }
+};
+
+
+/**
+ * Animates broken O parts back in.
+ * @private
+ */
+ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
+  this.log('animating back after break.');
+
+  var self = this;
+  var windowHeight = window.innerHeight;
+  var windowWidth = window.innerWidth;
+
+  self.$letterO_.css('opacity', 0);
+  self.crackedElm_.css('opacity', 1);
+
+  for (var i = 0; i < this.maxParts_; i++) {
+    var part = self.crackedParts_[i];
+
+    (function(part, i) {
+      var toY = part.style[self.prefix_].split('translateY(')[1];
+          toY = parseInt(toY) || 0;
+
+      var toX = part.style[self.prefix_].split('translateX(')[1];
+          toX = parseInt(toX) || 0;
+
+      var animateBack = new TWEEN.Tween({
+        'translateY': toY,
+        'translateX': toX
+      });
+
+      animateBack.to({
+        'translateY': 0,
+        'translateX': 0
+      }, 500);
+
+      animateBack.easing(TWEEN.Easing.Exponential.Out);
+
+      animateBack.onUpdate(function() {
+        var transform = 'translateX(' + this['translateX'] + 'px) ' +
+                        'translateY(' + this['translateY'] + 'px) ' +
+                        'rotate(0deg)';
+        self.transformElem_(part, transform);
+      });
+
+      if (!(i + 1 < self.maxParts_)) {
+        animateBack.onComplete(function() {
+          self.showReload();
+        });
+      }
+
+      self.addTween(animateBack);
+    })(part, i);
+  }
+};
+
+
+/**
+ * Animates I whack.
+ * @private
+ */
+ww.mode.PinataMode.prototype.animateI_ = function() {
+  var self = this;
+  var stickDuration = 190;
+
+  var whackOver = new TWEEN.Tween({
+    'translateX': 0,
+    'translateY': 0,
+    'rotate': 0
+  });
+
+  whackOver.to({
+    'translateX': 40,
+    'translateY': -40,
+    'rotate': 30
+  }, stickDuration);
+
+  whackOver.onUpdate(function() {
+    self.transformElem_(self.$letterI_[0],
+      'rotate(' + this['rotate'] + 'deg) ' +
+      'translateX(' + this['translateX'] + 'px) ' +
+      'translateY(' + this['translateY'] + 'px)');
+  });
+
+  var whackBack = new TWEEN.Tween({
+    'rotate': 30,
+    'translateX': 40,
+    'translateY': -40
+  });
+
+  whackBack.to({
+    'rotate': 0,
+    'translateX': 0,
+    'translateY': 0
+  }, stickDuration);
+  whackBack.delay(stickDuration);
+
+  whackBack.onUpdate(function() {
+    self.transformElem_(self.$letterI_[0],
+      'rotate(' + this['rotate'] + 'deg) ' +
+      'translateX(' + this['translateX'] + 'px) ' +
+      'translateY(' + this['translateY'] + 'px)');
+  });
+
+  self.addTween(whackOver);
+  self.addTween(whackBack);
+};
+
+
+/**
+ * Animates O swing.
+ * @private
+ */
+ww.mode.PinataMode.prototype.animateO_ = function() {
+  var self = this;
+  var pinataDuration = 200;
+  var deg = ~~Random(10, 45);
+  var dir = (this.whackCount_ % 2 === 0) ? -1 : 1;
+
+  var wiggleOne = new TWEEN.Tween({ 'deg': 0 });
+  wiggleOne.to({ 'deg': dir * deg }, pinataDuration);
+  wiggleOne.onUpdate(function() {
+    self.transformElem_(self.$letterO_[0], 'rotate(' + this['deg'] + 'deg)');
+  });
+
+  var wiggleTwo = new TWEEN.Tween({ 'deg': dir * deg });
+  wiggleTwo.to({ 'deg': -1 * dir * deg }, pinataDuration);
+  wiggleTwo.delay(pinataDuration);
+  wiggleTwo.onUpdate(function() {
+    self.transformElem_(self.$letterO_[0], 'rotate(' + this['deg'] + 'deg)');
+  });
+
+  var wiggleBack = new TWEEN.Tween({ 'deg': -1 * dir * deg });
+  wiggleBack.to({ 'deg': 0 }, pinataDuration);
+  wiggleBack.delay(pinataDuration * 2);
+  wiggleBack.onUpdate(function() {
+    self.transformElem_(self.$letterO_[0], 'rotate(' + this['deg'] + 'deg)');
+  });
+
+  self.addTween(wiggleOne);
+  self.addTween(wiggleTwo);
+  self.addTween(wiggleBack);
 };

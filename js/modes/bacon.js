@@ -6,7 +6,12 @@ goog.provide('ww.mode.BaconMode');
  * @constructor
  */
 ww.mode.BaconMode = function() {
-  goog.base(this, 'bacon', true, true);
+  goog.base(this, 'bacon', true, true, false);
+
+  this.preloadSound('bacon-sizzle.m4a');
+  this.preloadSound('egg-cracked.m4a');
+  this.preloadSound('cracked-open.m4a');
+  this.preloadSound('eggs-sizzling.m4a');
 };
 goog.inherits(ww.mode.BaconMode, ww.mode.Core);
 
@@ -16,9 +21,17 @@ goog.inherits(ww.mode.BaconMode, ww.mode.Core);
  */
 ww.mode.BaconMode.prototype.init = function() {
   goog.base(this, 'init');
-  this.stripes = $('#stripes');
-  this.yolk = $('#yolk');
+  this.stripes = $('[id*=fat-]');
+
+  this.stillHasShell = true;
+  this.eggWhole = $('#egg-whole')[0];
+  this.cracks = $('[id*=crack-]');
+  this.currentCrack = 0;
+  this.totalCracks = this.cracks.length;
+
+  this.yolk = $('#egg-yolk');
   this.whites = $('#egg-whites');
+  this.eggOpened = $('#egg-cracked')[0];
 };
 
 
@@ -30,9 +43,7 @@ ww.mode.BaconMode.prototype.activateI = function() {
 
   var self = this;
 
-  this.playSound('bacon.wav', function(buffer) {
-    self.playingSound = buffer;
-  });
+  this.playSound('bacon-sizzle.m4a');
 
   var stretchOut = new TWEEN.Tween({ 'scaleX': 1, 'scaleY': 1 });
   stretchOut.to({ 'scaleX': 1.75, 'scaleY': 1.2 }, 400);
@@ -40,6 +51,8 @@ ww.mode.BaconMode.prototype.activateI = function() {
   stretchOut.onUpdate(function() {
     self.transformElem_(self.$letterI_[0], 'scaleY(' + this['scaleY'] + ')');
     self.transformElem_(self.stripes[0], 'scaleX(' + this['scaleX'] + ')');
+    self.transformElem_(self.stripes[1], 'scaleX(' + this['scaleX'] + ')');
+    self.transformElem_(self.stripes[2], 'scaleX(' + this['scaleX'] + ')');
   });
 
   var stretchBack = new TWEEN.Tween({ 'scaleX': 1.75, 'scaleY': 1.2 });
@@ -49,6 +62,8 @@ ww.mode.BaconMode.prototype.activateI = function() {
   stretchBack.onUpdate(function() {
     self.transformElem_(self.$letterI_[0], 'scaleY(' + this['scaleY'] + ')');
     self.transformElem_(self.stripes[0], 'scaleX(' + this['scaleX'] + ')');
+    self.transformElem_(self.stripes[1], 'scaleX(' + this['scaleX'] + ')');
+    self.transformElem_(self.stripes[2], 'scaleX(' + this['scaleX'] + ')');
   });
 
   this.addTween(stretchOut);
@@ -61,11 +76,73 @@ ww.mode.BaconMode.prototype.activateI = function() {
  */
 ww.mode.BaconMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
-  this.playSound('eggs.wav');
 
+  if (this.currentCrack < this.totalCracks) {
+    this.cracks[this.currentCrack].style['opacity'] = 1;
+    this.currentCrack++;
+    this.playSound('egg-cracked.m4a');
+  } else {
+    if (this.stillHasShell) {
+      this.playSound('cracked-open.m4a');
+      this.showCracked_();
+    } else {
+      this.playSound('eggs-sizzling.m4a');
+      this.animateSpinEgg_();
+    }
+  }
+};
+
+
+/**
+ * @private
+ */
+ww.mode.BaconMode.prototype.showCracked_ = function() {
   var self = this;
 
-  var shift = -1 * (Math.random() * (270 - 45) + 45);
+  var squishShell = new TWEEN.Tween({
+    'opacity': 1,
+    'scale': 1
+  });
+
+  squishShell.to({
+    'opacity': 0,
+    'scale': 0.25
+  }, 200);
+
+  squishShell.onUpdate(function() {
+    self.eggWhole.style['opacity'] = this['opacity'];
+    self.transformElem_(self.eggWhole, 'scale(' + this['scale'] + ')');
+  });
+
+  var showWhites = new TWEEN.Tween({ 'scale': 2 });
+  showWhites.to({ 'scale': 1 }, 200);
+
+  showWhites.onStart(function() {
+    self.eggOpened.style['opacity'] = 1;
+  });
+
+  showWhites.onUpdate(function() {
+    self.transformElem_(self.eggOpened, 'scale(' + this['scale'] + ')');
+  });
+
+  showWhites.onComplete(function() {
+    self.stillHasShell = false;
+    self.animateSpinEgg_();
+  });
+
+  this.eggOpened.style['opacity'] = 0;
+  this.addTween(squishShell);
+  this.addTween(showWhites);
+};
+
+
+/**
+ * @private
+ */
+ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
+  var self = this;
+
+  var shift = -1 * (Math.random() * (270 - 20) + 20);
   var pos = [Random(-75, 75), Random(-75, 75)];
 
   var degs = self.whites[0].style[self.prefix_].split('rotate(')[1];
@@ -83,7 +160,7 @@ ww.mode.BaconMode.prototype.activateO = function() {
   var sizeY = self.whites[0].style[self.prefix_].split('skewY(')[1];
       sizeY = parseFloat(sizeY) || 0;
 
-  var sizing = [Random(-15, 15), Random(-15, 15)];
+  var sizing = [Random(-10, 10), Random(-10, 10)];
 
   var spinEgg = new TWEEN.Tween({
     'translateX': posX,
@@ -118,3 +195,5 @@ ww.mode.BaconMode.prototype.activateO = function() {
 
   self.addTween(spinEgg);
 };
+
+

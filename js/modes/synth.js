@@ -10,8 +10,9 @@ ww.mode.SynthMode = function() {
 };
 goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 
+
 /**
- * Set up synth events, sounds, effects and viz.
+ * Initailize SynthMode.
  */
 ww.mode.SynthMode.prototype.init = function() {
   goog.base(this, 'init');
@@ -69,8 +70,8 @@ ww.mode.SynthMode.prototype.init = function() {
 
 
 /**
- * Runs code on each requested frame.
- * @param {Integer} delta The timestep variable for animation accuracy.
+ * Draw a single frame.
+ * @param {Number} delta Ms since last draw.
  */
 ww.mode.SynthMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);

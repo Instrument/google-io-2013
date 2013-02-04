@@ -7,7 +7,7 @@ $legacy-support-for-ie6: false;
 $legacy-support-for-ie7: false;
 $legacy-support-for-ie8: false;
 
-$break-small: 480px;
+$break-small: 568px;
 $break-smallest: 320px;
 $break-medium: 768px;
 $break-large: 1024px;
@@ -17,6 +17,8 @@ $break-large: 1024px;
 }
 
 body {
+  background: #f9f9f9;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   @include user-select(none);
 }
 
@@ -74,14 +76,6 @@ body {
     background-image: image-url('shared/o-dark.svg'); }
 }
 
-%absolute-full {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
 @mixin landscape()
 {
   @media screen and (orientation:landscape)
@@ -90,6 +84,15 @@ body {
   }
 }
 
+%absolute-full {
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
 
 html, body {
   height: 100%;
@@ -107,25 +110,36 @@ canvas {
 }
 
 #reload {
+  background-color: rgba(255,255,255,0.8);
+  background-image: image-url('refresh.svg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(2em);
   cursor: pointer;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(255,255,255,0.8);
   display: none;
 }
 
-@import "bacon";
-@import "cat";
-@import "letters";
+.bacon-mode {
+  @import "bacon";
+}
+
+.cat-mode {
+  @import "letters";
+  @import "cat";
+}
 
 .home-mode {
   @import "home";
 }
 
-@import "pinata";
+.pinata-mode {
+  @import "pinata";
+}
 
 .pong-mode {
   @import "pong";
@@ -150,3 +164,9 @@ canvas {
 .metaball-mode {
   @import "metaball";
 }
+
+.ascii-mode {
+  @import "ascii";
+}
+
+@import "fun-modes";

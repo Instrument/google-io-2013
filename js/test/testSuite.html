@@ -9,12 +9,16 @@
 
         function coreSuite() {
             var result = new JsUnitTestSuite();
+            result.addTestPage("pattern_test.html");
             result.addTestPage("cat_test.html");
             result.addTestPage("simone_test.html");
             result.addTestPage("bacon_test.html");
             result.addTestPage("space_test.html");
             result.addTestPage("song_test.html");
             result.addTestPage("synth_test.html");
+            result.addTestPage("metaball_test.html");
+            result.addTestPage("home_test.html");
+            result.addTestPage("pinata_test.html");
             return result;
         }
 

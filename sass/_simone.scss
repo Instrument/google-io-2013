@@ -1,7 +1,6 @@
 body {
   background: #2c2c2c;
   color: #fff;
-  font-family: helvetica, sans-serif;
   font-size: 90%;
   position: relative;
 }
@@ -18,14 +17,9 @@ body {
 
 #simone {
   @extend %absolute-full;
-  padding: 0 5%;
+  padding: 5%;
   text-align: center;
   @include user-select(none);
-
-  @include landscape() {
-    bottom: 10%;
-    top: 10%;
-  }
 }
 
 #play-again {

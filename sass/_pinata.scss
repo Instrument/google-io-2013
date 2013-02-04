@@ -1,34 +1,19 @@
-#pinata-party-box {
-  display: table;
-  height: 100%;
-  position: relative;
-  width: 100%;
+#letter-i {
+  @include transform-origin(center bottom, false);
 }
 
-#pinata {
-  display: table-cell;
-  opacity: 0;
-  text-align: center;
-  vertical-align: middle;
+#letter-o, #cracked, [id*=part-] {
+  @include transform-origin(50% 50%, false);
+}
 
-  img {
-    height: auto;
-    width: 25%;
+#cracked {
+  @include transform(translate3d(0,0,0));
+}
 
-    @include screen(768px) {
-      width: 30%;
-    }
+[id*=part-] {
+  @include transition(all 190ms ease-out);
+}
 
-    @include screen(568px) {
-      width: 25%;
-    }
-
-    @include screen(480px) {
-      width: 30%;
-    }
-
-    @include screen(320px) {
-      width: 45%;
-    }
-  }
+#pinata-canvas {
+  pointer-events: none;
 }

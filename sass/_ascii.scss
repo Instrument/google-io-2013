@@ -1,0 +1,35 @@
+body {
+  background: #000;
+  color: #fff;
+  position: relative;
+}
+
+#ascii-canvas, #ascii-canvas2, #ascii-canvas3 {
+  display: block;
+  white-space: pre;
+  letter-spacing: -2px;
+  font-family: "courier new";
+  font-size: 16px;
+  line-height: 16px;
+  text-align: left;
+  text-decoration: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  color: #00CC00;
+}
+
+// #ascii-canvas {
+//   color: #3777e2;
+// }
+
+// #ascii-canvas2 {
+//   color: #ebebeb;
+// }
+
+// #ascii-canvas3 {
+//   color: #11a860;
+// }

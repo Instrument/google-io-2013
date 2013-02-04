@@ -80,4 +80,5 @@ guard 'closure' do
   watch(/^js\/app\.js/)
   watch(/^js\/mode\.js/)
   watch(/^js\/util\.js/)
+  watch(/^js\/patternMatcher\.js/)
 end

@@ -10,24 +10,16 @@
   width: 40%;
 
   @include screen($break-large) {
-    width: 60%;
+    width: 65%;
   }
 
   @include screen($break-small) {
-    width: 50%;
+    width: 80%;
   }
 
   @include screen($break-smallest) {
-    width: 60%;
+    width: 100%;
   }
-}
-
-#letter-i {
-
-}
-
-#letter-o {
-
 }
 
 #letter-i-container,
@@ -41,12 +33,12 @@
 
 #letter-i-container {
   left: 0;
-  right: 50%;
+  right: 65%;
   text-align: right;
 }
 
 #letter-o-container {
-  left: 50%;
-  right: 0;
+  left: 45%;
+  right: 5%;
   text-align: left;
 }
