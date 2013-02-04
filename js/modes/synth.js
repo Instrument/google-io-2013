@@ -36,6 +36,7 @@ ww.mode.SynthMode.prototype.init = function() {
   // this.filter.frequency.value = 440;
 
   this.synth = $('#controls');
+  this.waveforms = $('#waveforms');
   this.effect = $('#effect');
   this.power = $('#power');
   this.params = $('.param');
@@ -61,6 +62,8 @@ ww.mode.SynthMode.prototype.init = function() {
   this.lastHue = 0;
   this.lastXPercent = .5;
   this.lastYPercent = .5;
+  
+  this.waveMap = ['sine', 'square', 'saw', 'triangle'];
 
 };
 
@@ -84,17 +87,18 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   this.analyser.getByteFrequencyData(data);
 
   var newY;
-
+  var adjustY;
   for (var i = 0, p = this.paths.length; i < p; i++) {
     for (var j = 0, l = data.length; j < l; j++) {
       newY = this.centerY - (data[j] * 1.25);
-      this.paths[i]['segments'][j]['point']['y'] = newY + i * 5;
+      adjustY = newY === this.centerY ? 0 : i * 5;
+      this.paths[i]['segments'][j]['point']['y'] = newY + adjustY;
     }
     this.paths[i]['smooth']();
   }
 
 
-  // Draw sine wave.
+  // Draw wave.
   // var detune = Math.abs(Math.abs(this.source.detune.value / 2400) - 2) + .5;
   var detune = Math.abs(Math.abs(this.lastDetune / 2400) - 2) + .5;
   // var freq = this.source.frequency.value * .05; // * 0.00075;
@@ -119,12 +123,22 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
     }
   
     for (var i = 0; i <= amount; i++) {
+      
       var segment = this.wavePaths[j]['segments'][i];
+      // Sine
       var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i);
-      segment['point']['y'] = (sin * height + this.height_ / 2) + j * yAdjust;
+      segment['point']['y'] = (sin * height + this.height_ / 2) + (j * yAdjust);
+
+      // Triangle
+      // var sin = Math.sin(this.duration);
+      // var ampMod = i % 2 ? height : height * -1;
+      // segment['point']['y'] = (ampMod + this.height_ / 2) + (j * yAdjust);
+      // segment['point']['x'] = (distance * i + j * xAdjust);
+            
     }
 
     this.wavePaths[j]['strokeColor']['hue'] = this.lastHue;
+    // this.wavePaths[j]['fullySelected'] = true;
     // this.wavePaths[j]['rotate'](rotate);
     this.wavePaths[j]['smooth']();
   }
@@ -167,12 +181,20 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     this.redraw();
   }
 
-  var boundingO = $('#letter-o')[0]['getBoundingClientRect']();
-  this.synth.css({
-    'top': ~~boundingO['top'] + 'px',
-    'left': ~~boundingO['left'] + 'px',
-    'height': ~~boundingO['height'] + 'px',
-    'width': ~~boundingO['width'] + 'px'
+  // var boundingO = $('#letter-o')[0]['getBoundingClientRect']();
+  // this.synth.css({
+  //   'top': ~~boundingO['top'] + 'px',
+  //   'left': ~~boundingO['left'] + 'px',
+  //   'height': ~~boundingO['height'] + 'px',
+  //   'width': ~~boundingO['width'] + 'px'
+  // });
+  
+  var boundingI = $('#letter-i')[0]['getBoundingClientRect']();
+  this.waveforms.css({
+    'top': ~~boundingI['top'] + 'px',
+    'left': ~~boundingI['left'] + 'px',
+    'height': ~~boundingI['height'] + 'px',
+    'width': ~~boundingI['width'] + 'px'
   });
   
   this.oOffset = $('#letter-o').offset();
@@ -391,7 +413,7 @@ ww.mode.SynthMode.prototype.playSound_ = function() {
     this.effects[effect].connect(this.analyser);
   }
 
-  // this.analyser.connect(this.audioContext_.destination);
+  this.analyser.connect(this.audioContext_.destination);
   this.source.noteOn(0);
 };
 
@@ -408,6 +430,10 @@ ww.mode.SynthMode.prototype.changeWaveType = function() {
   this.waveType++;
   this.waveType = this.waveType > 3 ? 0 : this.waveType;
   this.createSound_();
+
+  $('.on', this.waveforms).removeClass('on');
+  $('.' + this.waveMap[this.waveType], this.waveforms).addClass('on');
+
 };
 
 ww.mode.SynthMode.prototype.changeFrequency = function(event) {

@@ -44,3 +44,16 @@
   top: 10%;
   left: 2%;
 }
+
+#waveforms {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  text-align: center;
+  pointer-events: none;
+  
+  .on {
+    font-weight: bold;
+  }
+}
