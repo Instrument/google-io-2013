@@ -63,6 +63,8 @@ body {
   background-image: image-url('shared/i-light.svg');
   .dark & {
     background-image: image-url('shared/i-dark.svg'); }
+  .failure &, .success & {
+    background-image: image-url('shared/i-active.svg'); }
 }
 .o {
   width: 16px;
@@ -74,6 +76,8 @@ body {
   background-image: image-url('shared/o-light.svg');
   .dark & {
     background-image: image-url('shared/o-dark.svg'); }
+  .failure &, .success & {
+    background-image: image-url('shared/o-active.svg'); }
 }
 
 @mixin landscape()
