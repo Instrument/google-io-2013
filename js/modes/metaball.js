@@ -7,29 +7,31 @@ goog.provide('ww.mode.MetaBallMode');
 ww.mode.MetaBallMode = function() {
   goog.base(this, 'metaball', true, true, true);
 
-  // Set up audio context and create three sources.
-  this.getAudioContext_();
+  if (this.wantsAudio_) {
+    // Set up audio context and create three sources.
+    this.getAudioContext_();
 
-  this.notes_ = [
-    {
-      // ball 1
-      'frequency': 0,
-      'detune': 0,
-      'type': 0
-    },
-    {
-      // ball 2
-      'frequency': 0,
-      'detune': 0,
-      'type': 0
-    },
-    {
-      // ball 3
-      'frequency': 0,
-      'detune': 0,
-      'type': 0
-    }
-  ];
+    this.notes_ = [
+      {
+        // ball 1
+        'frequency': 0,
+        'detune': 0,
+        'type': 0
+      },
+      {
+        // ball 2
+        'frequency': 0,
+        'detune': 0,
+        'type': 0
+      },
+      {
+        // ball 3
+        'frequency': 0,
+        'detune': 0,
+        'type': 0
+      }
+    ];
+  }
 };
 goog.inherits(ww.mode.MetaBallMode, ww.mode.Core);
 
@@ -331,6 +333,24 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.mouseY_ = this.screenCenterY_;
 };
 
+ww.mode.MetaBallMode.prototype.getCoords_ = function(e) {
+  var coords = [
+    {
+      'x': 0,
+      'y': 0
+    }
+  ];
+  if (e.originalEvent.changedTouches) {
+    coords['x'] = e.originalEvent.changedTouches[0].pageX;
+    coords['y'] = e.originalEvent.changedTouches[0].pageY;
+  } else {
+    coords['x'] = e.pageX;
+    coords['y'] = e.pageX;
+  }
+
+  return coords;
+}
+
 /**
  * Event is called after a mode focused.
  */
@@ -364,8 +384,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
     var activeBall;
 
-    self.mouseX_ = e.pageX;
-    self.mouseY_ = e.pageY;
+    self.mouseX_ = self.getCoords_(e)['x'];
+    self.mouseY_ = self.getCoords_(e)['y'];
 
     // Lock any ball clicked to the mouse coordinates.
     for (var i = 0; i < self.ballCount_; i++) {
@@ -398,16 +418,18 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
           self.ballCount_ = self.world_.particles.length;
 
-          self.sources_.push(self.audioContext_.createOscillator());
-          self.gainNodes_.push(self.audioContext_.createGainNode());
+          if (this.wantsAudio_) {
+            self.sources_.push(self.audioContext_.createOscillator());
+            self.gainNodes_.push(self.audioContext_.createGainNode());
 
-          self.sources_[self.sources_.length - 1].connect(
-            self.gainNodes_[self.sources_.length - 1]);
-          self.gainNodes_[self.sources_.length - 1].connect(
-            self.audioContext_.destination);
+            self.sources_[self.sources_.length - 1].connect(
+              self.gainNodes_[self.sources_.length - 1]);
+            self.gainNodes_[self.sources_.length - 1].connect(
+              self.audioContext_.destination);
 
-          self.sources_[self.sources_.length - 1].start(0);
-          self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
+            self.sources_[self.sources_.length - 1].start(0);
+            self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
+          }
         } else if (activeBall != self.world_.particles[0]) {
           // If any other existing ball is clicked, reset it's velocity.
           activeBall['fixed'] = true;
@@ -420,11 +442,12 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
     // Update mouse or touch coordinates on move.
     var moveEvt = Modernizr.touch ? 'touchmove' : 'mousemove';
     self.$canvas_.bind(moveEvt + '.metaball', function(e) {
-      self.mouseX_ = e.pageX;
-      self.mouseY_ = e.pageY;
+      self.mouseX_ = self.getCoords_(e)['x'];
+      self.mouseY_ = self.getCoords_(e)['y'];
 
       // If a ball has been activated keep it locked to mouse/touch coordinates.
       if (activeBall) {
+        alert(activeBall);
         activeBall.pos.x = self.mouseX_;
         activeBall.pos.y = self.mouseY_;
       }
@@ -567,22 +590,26 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
       this.world_.particles[i].pos.y = this.world_.particles[i].radius + 1;
     }
 
-    // Set the audio properties for each note based on ball positions.
-    if (this.world_.particles[i] != this.world_.particles[0]) {
-      this.notes_[i - 1]['frequency'] = this.world_.particles[0].pos.x -
-        this.world_.particles[i].pos.x;
+    if (this.wantsAudio_) {
+      // Set the audio properties for each note based on ball positions.
+      if (this.world_.particles[i] != this.world_.particles[0]) {
+        this.notes_[i - 1]['frequency'] = this.world_.particles[0].pos.x -
+          this.world_.particles[i].pos.x;
 
-      this.notes_[i - 1]['detune'] = this.world_.particles[0].pos.y -
-        this.world_.particles[i].pos.y;
+        this.notes_[i - 1]['detune'] = this.world_.particles[0].pos.y -
+          this.world_.particles[i].pos.y;
+      }
     }
   }
 
-  // Play each note if its corresponding ball exists.
-  for (i = 0; i < this.sources_.length; i++) {
-    if (this.world_.particles[i + 1]) {
-      this.sources_[i].type = this.notes_[i]['type'];
-      this.sources_[i].frequency.value = this.notes_[i]['frequency'];
-      this.sources_[i].detune.value = this.notes_[i]['detune'];
+  if (this.wantsAudio_) {
+    // Play each note if its corresponding ball exists.
+    for (i = 0; i < this.sources_.length; i++) {
+      if (this.world_.particles[i + 1]) {
+        this.sources_[i].type = this.notes_[i]['type'];
+        this.sources_[i].frequency.value = this.notes_[i]['frequency'];
+        this.sources_[i].detune.value = this.notes_[i]['detune'];
+      }
     }
   }
 

@@ -236,7 +236,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
     this.oGroup_['strokeColor'] = '#3777e2';
     this.oGroup_['strokeWidth'] = 1;
-    // this.oGroup_['rotate'](90);
+    this.oGroup_['rotate'](90);
 
     // Create arrays to store the coordinates for O's path points.
     this.oPathsX_ = [];
@@ -416,7 +416,7 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   var tool = new paper['Tool']();
 
-  tool['onMouseDown'] = function(event) {
+  tool['onMouseUp'] = function(event) {
     self.lastClick = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
       if (self.hasFocus) {
@@ -430,12 +430,6 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
       }
     }
   };
-
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
-  $(document).bind(evt + '.space', function(e) {
-    self.mouseX_ = e.pageX;
-    self.mouseY_ = e.pageY;
-  });
 };
 
 /**
