@@ -13,8 +13,6 @@ ww.mode.HomeMode = function() {
   this.wentIdleTime_ = 0;
   this.isIdle_ = true;
   this.maxIdleTime_ = 15000; // 15 seconds
-
-  var context = this.getAudioContext_();
 };
 goog.inherits(ww.mode.HomeMode, ww.mode.Core);
 
@@ -278,7 +276,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var tool = new paper['Tool']();
 
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
-  tool['onMouseDown'] = function(event) {
+  tool['onMouseUp'] = function(event) {
     self.lastClick_ = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
       if (self.hasFocus) {

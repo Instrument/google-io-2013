@@ -20,7 +20,7 @@ ww.mode.EightBitMode.prototype.activateI = function() {
 
   this.pushPoints_(this.paperI_, this.lastClick_, 10);
 
-  this.playSound('i.mp3');
+  this.playSound('i.wav');
 };
 
 /**
@@ -31,7 +31,7 @@ ww.mode.EightBitMode.prototype.activateO = function() {
 
   this.pushPoints_(this.paperO_, this.lastClick_, 10);
 
-  this.playSound('o.mp3');
+  this.playSound('o.wav');
 };
 
 /**
@@ -45,28 +45,6 @@ ww.mode.EightBitMode.prototype.drawI_ = function() {
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
     var letterI = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](letterI);
-
-    // The stops array: yellow mixes with red between 0 and 15%,
-    // 15% to 30% is pure red, red mixes with black between 30% to 100%:
-    var stops = [['white', 0], ['black', 0.5], ['white', 1]];
-
-    // Create a radial gradient using the color stops array:
-    var gradient = new paper['Gradient'](stops);
-
-    // We will use the center point of the circle shaped path as
-    // the origin point for our gradient color
-    var from = this.paperI_['position']['clone']();
-    from['x'] -= this.iX_ * 1.3;
-
-    // The destination point of the gradient color will be the
-    // center point of the path + 80pt in horizontal direction:
-    var to = this.paperI_['position']['clone']();
-    to['x'] += this.iX_ * 1.3;
-
-    // Create the gradient color:
-    var gradientColor = new paper['GradientColor'](gradient, from, to);
-
-    this.paperI_['fillColor'] = '#11a860';
 
     this.paperI_['closed'] = true;
 
@@ -93,6 +71,34 @@ ww.mode.EightBitMode.prototype.drawI_ = function() {
 };
 
 /**
+ * Function to fill I with a gradient.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.fillI_ = function() {
+  // The stops array: yellow mixes with red between 0 and 15%,
+  // 15% to 30% is pure red, red mixes with black between 30% to 100%:
+  var stops = [['#58d854', 0], ['#005800', 0.5], ['#58d854', 1]];
+
+  // Create a radial gradient using the color stops array:
+  var gradient = new paper['Gradient'](stops);
+
+  // We will use the center point of the circle shaped path as
+  // the origin point for our gradient color
+  var from = this.paperI_['position']['clone']();
+  from['x'] -= this.iX_ * 1.3;
+
+  // The destination point of the gradient color will be the
+  // center point of the path + 80pt in horizontal direction:
+  var to = this.paperI_['position']['clone']();
+  to['x'] += this.iX_ * 1.3;
+
+  // Create the gradient color:
+  var gradientColor = new paper['GradientColor'](gradient, from, to);
+
+  this.paperI_['fillColor'] = gradientColor;
+}
+
+/**
  * Function to create and draw O.
  * @private
  */
@@ -105,8 +111,6 @@ ww.mode.EightBitMode.prototype.drawO_ = function() {
 
   this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
     this.oRad_);
-
-  this.paperO_['fillColor'] = '#3777e2';
 
   this.paperO_['vectors'] = [];
 
@@ -121,6 +125,33 @@ ww.mode.EightBitMode.prototype.drawO_ = function() {
     this.paperO_['vectors'].push(point);
   }
 };
+
+/**
+ * Function to fill O with a gradient.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.fillO_ = function() {
+  // The stops array: yellow mixes with red between 0 and 15%,
+  // 15% to 30% is pure red, red mixes with black between 30% to 100%:
+  var stops = [['#0058f8', 0], ['#0000bc', 0.5], ['#0058f8', 1]];
+
+  // Create a radial gradient using the color stops array:
+  var gradient = new paper['Gradient'](stops, 'radial');
+
+  // We will use the center point of the circle shaped path as
+  // the origin point for our gradient color
+  var from = this.paperO_['position']['clone']();
+
+  // The destination point of the gradient color will be the
+  // center point of the path + 80pt in horizontal direction:
+  var to = this.paperO_['position']['clone']();
+  to['x'] += this.oX_ + this.oRad_;
+
+  // Create the gradient color:
+  var gradientColor = new paper['GradientColor'](gradient, from, to);
+
+  this.paperO_['fillColor'] = gradientColor;
+}
 
 /**
  * Function to create and draw Slash.
@@ -209,13 +240,17 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   tool['onMouseDown'] = function(event) {
     self.lastClick_ = event['point'];
-    if (self.paperO_['hitTest'](event['point'])) {
+    var size = Math.round(self.width_ * 0.0625) + self.oRad_;
+
+    if (self.paperO_['hitTest'](event['point']) ||
+      self.paperO_['position']['getDistance'](self.lastClick_) < size) {
       if (self.hasFocus) {
         self.activateO();
       }
     }
 
-    if (self.paperI_['hitTest'](event['point'])) {
+    if (self.paperI_['hitTest'](event['point']) ||
+      self.paperI_['position']['getDistance'](self.lastClick_) < size) {
       if (self.hasFocus) {
         self.activateI();
       }
@@ -359,7 +394,10 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
   this.pctx_.clearRect(0, 0, this.paperCanvas_.width + 1,
     this.paperCanvas_.height + 1);
 
-  for (i = 0; i < pixelData.data.length; i += Math.round(this.width_ / 4)) {
+  var size = Math.round(this.width_ * 0.0625);
+  var increment = Math.round(size * 80) / 4;
+
+  for (i = 0; i < pixelData.data.length; i += increment) {
     if (pixelData.data[i + 3] != 0) {
       var r = pixelData.data[i];
       var g = pixelData.data[i + 1];
@@ -371,7 +409,7 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
       var color = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
 
       this.pctx_.fillStyle = color;
-      this.pctx_.fillRect(x, y, 16, 16);
+      this.pctx_.fillRect(x, y, size, size);
     }
   }
 }
@@ -390,6 +428,9 @@ ww.mode.EightBitMode.prototype.onFrame = function(delta) {
       this.enterIdle_();
     }
   }
+
+  this.fillI_();
+  this.fillO_();
 
   this.updateVectors_(this.paperI_);
   this.updatePoints_(this.paperI_);
