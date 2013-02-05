@@ -109,13 +109,9 @@ body {
   padding: 0;
 }
 
-// canvas {
-//   @extend %absolute-full;
-// }
-
 #reload {
   background-color: rgba(255,255,255,0.8);
-  background-image: image-url('refresh.svg');
+  background-image: image-url('shared/refresh.svg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
   @include background-size(2em);

@@ -11,72 +11,71 @@ ww.mode.RocketMode = function() {
 goog.inherits(ww.mode.RocketMode, ww.mode.Core);
 
 
-// /**
-//  * Initailize RocketMode.
-//  */
-// ww.mode.RocketMode.prototype.init = function() {
-//   goog.base(this, 'init');
-// };
-
-
 /**
  * Method called when activating the I.
- * Rotate the moon.
+ * Launch the rocket and land.
  */
 ww.mode.RocketMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
   var self = this;
-  var boundsMoon = this.$letterO_[0].getBoundingClientRect();
-  var transform = 'scale(0.25) ';
-  var transform2 = '';
+  var delay = 200,
+      moonBounds = this.$letterO_[0].getBoundingClientRect(),
+      transform, prevTransform;
 
-  self.transformElem_(self.$letterI_[0], transform);
-
-  var boundsRocket = self.$letterI_[0].getBoundingClientRect();
-
-  var startX = ~~boundsMoon['left'] - (~~boundsRocket['width'] * 2);
-  var startY = ~~boundsMoon['top'];
-
-  self.transformElem_(self.$letterI_[0], 'scale(1)');
-
-  var animateToOrbit = new TWEEN.Tween({
-    'scale': 1,
-    'translateX': 0,
+  var rocketLaunch = new TWEEN.Tween({
     'translateY': 0,
-    'rotate': 0
+    'rotate': 0,
+    'scale': 1
   });
 
-  animateToOrbit.to({
-    'scale': 0.25,
-    'translateX': startX,
-    'translateY': startY,
-    'rotate': 45
-  }, 200);
+  rocketLaunch.to({
+    'translateY': 20,
+    'rotate': 145,
+    'scale': 0.25
+  }, delay);
 
-  animateToOrbit.onUpdate(function() {
+  rocketLaunch.onUpdate(function() {
     transform = 'scale(' + this['scale'] + ') ' +
-                'translateX(' + this['translateX'] + 'px) ' +
-                'translateY(' + this['translateY'] + 'px) ' +
+                'translateY(' + this['translateY'] + '%) ' +
                 'rotate(' + this['rotate'] + 'deg)';
     self.transformElem_(self.$letterI_[0], transform);
   });
 
-  animateToOrbit.onComplete(function() {
-    boundsRocket = self.$letterI_[0].getBoundingClientRect();
-    var nextX = ~~boundsMoon['left'] + ~~boundsMoon['width'] / 2;
-    var nextY = ~~boundsMoon['top'] + ~~boundsMoon['height'] / 2;
+  rocketLaunch.onComplete(function(){
+    prevTransform = transform;
 
-    var animateToCenter = new TWEEN.Tween({
-      'scale': 0.25,
-      'translateX': startX,
-      'translateY': startY,
-      'rotate': 45
+    var rocketBounds = self.$letterI_[0].getBoundingClientRect(),
+
+        newY = ~~(rocketBounds['top'] + rocketBounds['height'] / 2 -
+                  moonBounds['top'] - moonBounds['height'] / 2),
+
+        newX = ~~(moonBounds['width'] / 2 - rocketBounds['width'] / 2);
+
+    var toCenter = new TWEEN.Tween({
+      'newY': 0,
+      'newX': 0,
+      'rotate': 0
     });
 
+    toCenter.to({
+      'newY': newY,
+      'newX': -newX,
+      'rotate': 575
+    }, 200);
+
+    toCenter.delay(delay);
+
+    toCenter.onUpdate(function() {
+      transform = prevTransform + ' translate(' + this['newX'] + 'px, ' +
+                  this['newY'] + 'px) ' + 'rotate(' + this['rotate'] + 'deg)';
+      self.transformElem_(self.$letterI_[0], transform);
+    });
+
+    self.addTween(toCenter);
   });
 
-  self.addTween(animateToOrbit);
+  this.addTween(rocketLaunch);
 };
 
 
