@@ -1,10 +1,5 @@
-* {
-  @include box-sizing(border-box);
-}
-
 #bacon-container {
   @extend %absolute-full;
-  padding: 5% 20px;
 }
 
 #letter-i, #letter-o,
