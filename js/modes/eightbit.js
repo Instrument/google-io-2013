@@ -238,7 +238,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   var tool = new paper['Tool']();
 
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
-  tool['onMouseDown'] = function(event) {
+  tool['onMouseUp'] = function(event) {
     self.lastClick_ = event['point'];
     var size = Math.round(self.width_ * 0.0625) + self.oRad_;
 
