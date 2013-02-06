@@ -136,6 +136,9 @@ ww.mode.MetaBallMode.prototype.getVector_ = function(radians, length) {
 
 /**
  * Function to calculate the connecting paths between balls.
+ * Ported from the paper.js Metaball example which was ported from the original
+ *  Metaball script by SATO Hiroyuki.
+ *  http://park12.wakwak.com/~shp/lc/et/en_aics_script.html
  * @param {Object} ball1 The first ball to compare.
  * @param {Object} ball2 The second ball to compare.
  * @param {Number} v The extremity of the curves generated.

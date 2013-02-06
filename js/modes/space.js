@@ -414,6 +414,12 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   var self = this;
 
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
+  $(document).bind(evt + '.space', function(e) {
+    self.mouseX_ = self.getCoords(e)['x'];
+    self.mouseY_ = self.getCoords(e)['y'];
+  });
+
   var tool = new paper['Tool']();
 
   tool['onMouseUp'] = function(event) {
@@ -637,7 +643,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   for (var i = 0; i < this.world_.particles.length; i++) {
     this.world_.particles[i].pos.x +=
       (this.screenCenterX_ - this.mouseX_) /
-      (10000 / this.world_.particles[i].radius) + 0.1;
+      (5000 / this.world_.particles[i].radius) + 0.1;
 
     if (this.world_.particles[i].pos.x > this.width_ * 2) {
       this.world_.particles[i].pos.x =
@@ -650,7 +656,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
 
     this.world_.particles[i].pos.y +=
       (this.screenCenterY_ - this.mouseY_) /
-      (10000 / this.world_.particles[i].radius);
+      (5000 / this.world_.particles[i].radius);
 
     if (this.world_.particles[i].pos.y > this.height_ * 2) {
       this.world_.particles[i].pos.y =
