@@ -20,24 +20,24 @@ goog.inherits(ww.mode.BurgerMode, ww.mode.Core);
 ww.mode.BurgerMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.bitesO_ = $('[id*=burger-bite-]');
-  this.maxBitesO_ = this.bitesO_.length;
-  this.biteOIndex_ = 0;
-
   this.bitesI_ = $('[id*=hot-dog-bite-]');
   this.maxBitesI_ = this.bitesI_.length;
-  this.biteIIndex_ = 0;
+
+  this.bitesO_ = $('[id*=burger-bite-]');
+  this.maxBitesO_ = this.bitesO_.length;
 };
 
 /**
  * Focus is gained.
  */
-ww.mode.PinataMode.prototype.didFocus = function() {
-  this.bitesO_.css('opacity', 0);
-  this.biteOIndex_ = 0;
+ww.mode.BurgerMode.prototype.didFocus = function() {
+  goog.base(this, 'didFocus');
 
   this.bitesI_.css('opacity', 0);
   this.biteIIndex_ = 0;
+
+  this.bitesO_.css('opacity', 0);
+  this.biteOIndex_ = 0;
 };
 
 
