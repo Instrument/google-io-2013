@@ -136,6 +136,9 @@ ww.mode.MetaBallMode.prototype.getVector_ = function(radians, length) {
 
 /**
  * Function to calculate the connecting paths between balls.
+ * Ported from the paper.js Metaball example which was ported from the original
+ *  Metaball script by SATO Hiroyuki.
+ *  http://park12.wakwak.com/~shp/lc/et/en_aics_script.html
  * @param {Object} ball1 The first ball to compare.
  * @param {Object} ball2 The second ball to compare.
  * @param {Number} v The extremity of the curves generated.
@@ -226,10 +229,11 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
   }
 
   this.connections_ = new paper['Group']();
+  var path;
 
-  for (var i = 0, l = paths.length; i < l; i++) {
+  for (var i = 0; i < paths.length; i++) {
     for (var ii = i + 1; ii < paths.length; ii++) {
-      var path = this.metaball_(paths[i], paths[ii], .4, 2.4,
+      path = this.metaball_(paths[i], paths[ii], .4, 2.4,
         this.screenCenterX_ * .9);
       if (path) {
         this.connections_['appendTop'](path);
@@ -329,25 +333,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.mouseY_ = [];
 };
 
-ww.mode.MetaBallMode.prototype.getCoords_ = function(e) {
-  var coords = [
-    {
-      'x': 0,
-      'y': 0
-    }
-  ];
-
-  if (e.originalEvent.changedTouches) {
-    coords['x'] = e.originalEvent.changedTouches[0].pageX;
-    coords['y'] = e.originalEvent.changedTouches[0].pageY;
-  } else {
-    coords['x'] = e.pageX;
-    coords['y'] = e.pageY;
-  }
-
-  return coords;
-}
-
 /**
  * Event is called after a mode focused.
  */
@@ -379,8 +364,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
   this.$canvas_.bind(downEvt + '.metaball', function(e) {
 
-    self.mouseX_ = self.getCoords_(e)['x'];
-    self.mouseY_ = self.getCoords_(e)['y'];
+    self.mouseX_ = self.getCoords(e)['x'];
+    self.mouseY_ = self.getCoords(e)['y'];
 
     var activeBall;
 
@@ -429,7 +414,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
             self.gainNodes_[self.sources_.length - 1].connect(
               self.audioContext_.destination);
 
-            self.sources_[self.sources_.length - 1].start(0);
+            self.sources_[self.sources_.length - 1].noteOn(0);
             self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
           }
         } else if (activeBall != self.world_.particles[0]) {
@@ -444,8 +429,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
     // Update mouse or touch coordinates on move.
     var moveEvt = Modernizr.touch ? 'touchmove' : 'mousemove';
     self.$canvas_.bind(moveEvt + '.metaball', function(e) {
-      self.mouseX_ = self.getCoords_(e)['x'];
-      self.mouseY_ = self.getCoords_(e)['y'];
+      self.mouseX_ = self.getCoords(e)['x'];
+      self.mouseY_ = self.getCoords(e)['y'];
 
       // If a ball has been activated keep it locked to mouse/touch coordinates.
       if (activeBall && activeBall['fixed'] === true) {

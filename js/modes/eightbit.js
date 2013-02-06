@@ -7,8 +7,6 @@ goog.provide('ww.mode.EightBitMode');
  */
 ww.mode.EightBitMode = function() {
   goog.base(this, 'eightbit', true, true, true);
-
-  var context = this.getAudioContext_();
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
 
@@ -220,20 +218,6 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   this.pctx_ = this.paperCanvas_.getContext('2d');
 
   var self = this;
-
-  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $("#menu").bind(evt2 + '.core', function() {
-    $(document.body).addClass('nav-visible');
-  });
-
-  $("#modal").bind(evt2 + '.core', function() {
-    $(document.body).removeClass('nav-visible');
-  });
-
-  $("#dropdown").bind(evt2 + '.core', function(evt) {
-    evt.preventDefault();
-    evt.stopPropagation();
-  });
 
   var tool = new paper['Tool']();
 
