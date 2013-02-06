@@ -202,21 +202,29 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
     this.oGroup_ = new paper['Group']();
 
-    for (var i = 0; i < 90; i++) {
+    var lines = 90;
+    var increment = 2;
+
+    if (this.width_ < 640) {
+      lines = 45;
+      increment = 4;
+    }
+
+    for (var i = 0; i < lines; i++) {
       this.oPaths_.push(new paper['Path']());
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos((i * 2) *
+      pathX = oCenter['x'] + this.oRad_ * Math.cos((i * increment) *
         (Math.PI / 180));
 
-      pathY = oCenter['y'] + this.oRad_ * Math.sin((i * 2) *
+      pathY = oCenter['y'] + this.oRad_ * Math.sin((i * increment) *
         (Math.PI / 180));
 
       pathStart = new paper['Point'](pathX, pathY);
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-i * 2)) *
+      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-i * increment)) *
         (Math.PI / 180));
 
-      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-i * 2)) *
+      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-i * increment)) *
         (Math.PI / 180));
 
       pathEnd = new paper['Point'](pathX, pathY);
@@ -311,7 +319,13 @@ ww.mode.SpaceMode.prototype.init = function() {
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
 
-  for (var i = 0; i < this.width_ * 2; i++) {
+  var starCount = this.width_ * 2;
+
+  if (this.width_ < 640) {
+    starCount = this.width_ / 2;
+  }
+
+  for (var i = 0; i < starCount; i++) {
     this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
     this.world_.particles.push(new Particle());
