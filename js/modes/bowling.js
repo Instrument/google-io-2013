@@ -7,6 +7,8 @@ goog.provide('ww.mode.BowlingMode');
  */
 ww.mode.BowlingMode = function() {
   goog.base(this, 'bowling', true, true, false);
+
+  this.preloadSound('bowling.m4a');
 };
 goog.inherits(ww.mode.BowlingMode, ww.mode.Core);
 
@@ -82,6 +84,9 @@ ww.mode.BowlingMode.prototype.activateO = function() {
   var animatePin = new TWEEN.Tween({ 'rotate': 0, 'scale': 1, 'x': 0 });
   animatePin.to({ 'rotate': -deg, 'scale': 0.65, 'x': -175 }, 300);
   animatePin.delay(500);
+  animatePin.onStart(function() {
+    self.playSound('bowling.m4a');
+  });
   animatePin.onUpdate(function() {
     var transform = 'scale(' + this['scale'] + ') ' +
                     'rotate(' + this['rotate'] + 'deg) ' +
