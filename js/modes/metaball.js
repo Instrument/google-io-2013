@@ -330,6 +330,11 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.mouseY_ = [];
 };
 
+/**
+ * Function to return mouse or touch coordinates depending on what's available.
+ * @param {Object} e The event to get X and Y coordinates from.
+ * @private
+ */
 ww.mode.MetaBallMode.prototype.getCoords_ = function(e) {
   var coords = [
     {
@@ -347,7 +352,7 @@ ww.mode.MetaBallMode.prototype.getCoords_ = function(e) {
   }
 
   return coords;
-}
+};
 
 /**
  * Event is called after a mode focused.

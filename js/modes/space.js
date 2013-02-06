@@ -707,7 +707,9 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     this.adjustModifiers_(this.iModifier_, this.iIncrement_, this.iMultiplier_,
       this.iClicked_, true);
 
-    this.delay_['feedback'] = this.iMultiplier_ / 10;
+    if (this.wantsAudio_) {
+      this.delay_['feedback'] = this.iMultiplier_ / 10;
+    }
 
     /*
      * Loop through each path segment on the letter I and move each point's
@@ -777,7 +779,9 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     this.adjustModifiers_(this.oModifier_, this.oIncrement_, this.oMultiplier_,
       this.oClicked_, false);
 
-    this.delay_['feedback'] = this.oMultiplier_ / 10;
+    if (this.wantsAudio_) {
+      this.delay_['feedback'] = this.oMultiplier_ / 10;
+    }
 
     /*
      * Loop through each path segment on the letter O and move each point's
