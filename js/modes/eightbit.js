@@ -77,20 +77,18 @@ ww.mode.EightBitMode.prototype.drawI_ = function() {
 ww.mode.EightBitMode.prototype.fillI_ = function() {
   // The stops array: yellow mixes with red between 0 and 15%,
   // 15% to 30% is pure red, red mixes with black between 30% to 100%:
-  var stops = [['#58d854', 0], ['#005800', 0.5], ['#58d854', 1]];
+  var stops = [['#4487fc', 0], ['#826eb1', 1]];
 
-  // Create a radial gradient using the color stops array:
+  // Create a linear gradient using the color stops array:
   var gradient = new paper['Gradient'](stops);
 
-  // We will use the center point of the circle shaped path as
-  // the origin point for our gradient color
+  // Left side of the I is the origin of the gradient.
   var from = this.paperI_['position']['clone']();
-  from['x'] -= this.iX_ * 1.3;
+  from['x'] -= this.iWidth_ / 2;
 
-  // The destination point of the gradient color will be the
-  // center point of the path + 80pt in horizontal direction:
+  // Right side of the I is the end point of the gradient.
   var to = this.paperI_['position']['clone']();
-  to['x'] += this.iX_ * 1.3;
+  to['x'] += this.iWidth_ / 2;
 
   // Create the gradient color:
   var gradientColor = new paper['GradientColor'](gradient, from, to);
@@ -133,19 +131,18 @@ ww.mode.EightBitMode.prototype.drawO_ = function() {
 ww.mode.EightBitMode.prototype.fillO_ = function() {
   // The stops array: yellow mixes with red between 0 and 15%,
   // 15% to 30% is pure red, red mixes with black between 30% to 100%:
-  var stops = [['#0058f8', 0], ['#0000bc', 0.5], ['#0058f8', 1]];
+  var stops = [['#93689c', 0], ['#df4a40', 1]];
 
-  // Create a radial gradient using the color stops array:
-  var gradient = new paper['Gradient'](stops, 'radial');
+  // Create a linear gradient using the color stops array:
+  var gradient = new paper['Gradient'](stops);
 
-  // We will use the center point of the circle shaped path as
-  // the origin point for our gradient color
+  // Left side of the O is the origin of the gradient.
   var from = this.paperO_['position']['clone']();
+  from['x'] -= this.oRad_;
 
-  // The destination point of the gradient color will be the
-  // center point of the path + 80pt in horizontal direction:
+  // Right side of the O is the end point of the gradient.
   var to = this.paperO_['position']['clone']();
-  to['x'] += this.oX_ + this.oRad_;
+  to['x'] += this.oRad_;
 
   // Create the gradient color:
   var gradientColor = new paper['GradientColor'](gradient, from, to);

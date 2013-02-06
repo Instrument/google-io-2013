@@ -132,7 +132,6 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
     var letterI = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](letterI);
-    this.paperI_['fillColor'] = '#11a860';
 
     this.paperI_['closed'] = true;
 
@@ -159,6 +158,32 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
 };
 
 /**
+ * Function to fill I with a gradient.
+ * @private
+ */
+ww.mode.HomeMode.prototype.fillI_ = function() {
+  // The stops array: yellow mixes with red between 0 and 15%,
+  // 15% to 30% is pure red, red mixes with black between 30% to 100%:
+  var stops = [['#4487fc', 0], ['#826eb1', 1]];
+
+  // Create a linear gradient using the color stops array:
+  var gradient = new paper['Gradient'](stops);
+
+  // Left side of the I is the origin of the gradient.
+  var from = this.paperI_['position']['clone']();
+  from['x'] -= this.iWidth_ / 2;
+
+  // Right side of the I is the end point of the gradient.
+  var to = this.paperI_['position']['clone']();
+  to['x'] += this.iWidth_ / 2;
+
+  // Create the gradient color:
+  var gradientColor = new paper['GradientColor'](gradient, from, to);
+
+  this.paperI_['fillColor'] = gradientColor;
+};
+
+/**
  * Function to create and draw O.
  * @private
  */
@@ -172,8 +197,6 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
   this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
     this.oRad_);
 
-  this.paperO_['fillColor'] = '#3777e2';
-
   this.paperO_['vectors'] = [];
 
   for (var i = 0; i < this.paperO_['segments'].length; i++) {
@@ -186,6 +209,32 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 
     this.paperO_['vectors'].push(point);
   }
+};
+
+/**
+ * Function to fill O with a gradient.
+ * @private
+ */
+ww.mode.HomeMode.prototype.fillO_ = function() {
+  // The stops array: yellow mixes with red between 0 and 15%,
+  // 15% to 30% is pure red, red mixes with black between 30% to 100%:
+  var stops = [['#93689c', 0], ['#df4a40', 1]];
+
+  // Create a linear gradient using the color stops array:
+  var gradient = new paper['Gradient'](stops);
+
+  // Left side of the O is the origin of the gradient.
+  var from = this.paperO_['position']['clone']();
+  from['x'] -= this.oRad_;
+
+  // Right side of the O is the end point of the gradient.
+  var to = this.paperO_['position']['clone']();
+  to['x'] += this.oRad_;
+
+  // Create the gradient color:
+  var gradientColor = new paper['GradientColor'](gradient, from, to);
+
+  this.paperO_['fillColor'] = gradientColor;
 };
 
 /**
@@ -222,7 +271,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
 
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
+    this.paperSlash_['strokeWidth'] = 1;
   }
 };
 
@@ -434,6 +483,9 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.enterIdle_();
     }
   }
+
+  this.fillI_();
+  this.fillO_();
 
   this.updateVectors_(this.paperI_);
   this.updatePoints_(this.paperI_);
