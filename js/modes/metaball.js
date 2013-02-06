@@ -329,8 +329,8 @@ ww.mode.MetaBallMode.prototype.init = function() {
   /**
    * Sets the mouse position to start at the screen center.
    */
-  this.mouseX_ = this.screenCenterX_;
-  this.mouseY_ = this.screenCenterY_;
+  this.mouseX_ = [];
+  this.mouseY_ = [];
 };
 
 ww.mode.MetaBallMode.prototype.getCoords_ = function(e) {
@@ -340,12 +340,13 @@ ww.mode.MetaBallMode.prototype.getCoords_ = function(e) {
       'y': 0
     }
   ];
+
   if (e.originalEvent.changedTouches) {
     coords['x'] = e.originalEvent.changedTouches[0].pageX;
     coords['y'] = e.originalEvent.changedTouches[0].pageY;
   } else {
     coords['x'] = e.pageX;
-    coords['y'] = e.pageX;
+    coords['y'] = e.pageY;
   }
 
   return coords;
@@ -382,13 +383,17 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
   this.$canvas_.bind(downEvt + '.metaball', function(e) {
 
-    var activeBall;
-
     self.mouseX_ = self.getCoords_(e)['x'];
     self.mouseY_ = self.getCoords_(e)['y'];
 
+    var activeBall;
+
     // Lock any ball clicked to the mouse coordinates.
     for (var i = 0; i < self.ballCount_; i++) {
+      if (self.world_.particles[i]['fixed']) {
+        self.world_.particles[i]['fixed'] = false;
+      }
+      
       if (Math.abs(self.mouseX_ - self.world_.particles[i].pos.x) <
         self.world_.particles[i].radius &&
         Math.abs(self.mouseY_ - self.world_.particles[i].pos.y) <
@@ -415,6 +420,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
           activeBall.mass = Math.random() * (255 - 1) + 1;
 
           activeBall['color'] = self.colors_[self.ballCount_];
+          activeBall['fixed'] = true;
 
           self.ballCount_ = self.world_.particles.length;
 
@@ -446,12 +452,10 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
       self.mouseY_ = self.getCoords_(e)['y'];
 
       // If a ball has been activated keep it locked to mouse/touch coordinates.
-      if (activeBall) {
-        alert(activeBall);
+      if (activeBall && activeBall['fixed'] === true) {
         activeBall.pos.x = self.mouseX_;
         activeBall.pos.y = self.mouseY_;
       }
-
     });
 
     // On mouseup or touchend, let go of all our events and unlock any balls.
@@ -555,8 +559,8 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
     if (this.world_.particles[i]['fixed'] === true) {
       this.world_.particles[i].pos.x = this.mouseX_;
       this.world_.particles[i].pos.y = this.mouseY_;
-      this.oPaths_[0]['position']['x'] = this.mouseX_;
-      this.oPaths_[0]['position']['y'] = this.mouseY_;
+      this.oPaths_[i]['position']['x'] = this.mouseX_;
+      this.oPaths_[i]['position']['y'] = this.mouseY_;
     }
 
     // Bounce off the sides of the window.
