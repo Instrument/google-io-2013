@@ -7,6 +7,8 @@ goog.provide('ww.mode.BowlingMode');
  */
 ww.mode.BowlingMode = function() {
   goog.base(this, 'bowling', true, true, false);
+
+  this.preloadSound('bowling.m4a');
 };
 goog.inherits(ww.mode.BowlingMode, ww.mode.Core);
 
@@ -71,7 +73,7 @@ ww.mode.BowlingMode.prototype.activateO = function() {
   });
 
   var animateMove = new TWEEN.Tween({ 'translateX': 0 });
-  animateMove.to({ 'translateX': 160 }, 500);
+  animateMove.to({ 'translateX': 180 }, 500);
   animateMove.delay(200);
   animateMove.easing(TWEEN.Easing.Exponential.In);
   animateMove.onUpdate(function() {
@@ -82,6 +84,9 @@ ww.mode.BowlingMode.prototype.activateO = function() {
   var animatePin = new TWEEN.Tween({ 'rotate': 0, 'scale': 1, 'x': 0 });
   animatePin.to({ 'rotate': -deg, 'scale': 0.65, 'x': -175 }, 300);
   animatePin.delay(500);
+  animatePin.onStart(function() {
+    self.playSound('bowling.m4a');
+  });
   animatePin.onUpdate(function() {
     var transform = 'scale(' + this['scale'] + ') ' +
                     'rotate(' + this['rotate'] + 'deg) ' +
@@ -89,12 +94,18 @@ ww.mode.BowlingMode.prototype.activateO = function() {
     self.transformElem_(self.$letterI_[0], transform);
   });
 
-  var reset = new TWEEN.Tween({ 'dummy': 0 });
-  reset.delay(800);
-  reset.onComplete(function() {
+  var reset = new TWEEN.Tween({ 'opacity': 0 });
+  reset.to({ 'opacity': 1 }, 500);
+  reset.delay(2000);
+  reset.onStart(function() {
     self.transformElem_(self.ballWrapper_, 'rotate(0deg)');
     self.transformElem_(self.$letterO_[0], 'translate(0px, 0px)');
     self.transformElem_(self.$letterI_[0], 'scale(1) rotate(0deg)');
+  });
+  reset.onUpdate(function() {
+    self.ballWrapper_.style['opacity'] = this['opacity'];
+    self.$letterI_[0].style['opacity'] = this['opacity'];
+    self.$letterO_[0].style['opacity'] = this['opacity'];
   });
 
   this.addTween(animateSpin);

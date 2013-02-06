@@ -63,6 +63,8 @@ body {
   background-image: image-url('shared/i-light.svg');
   .dark & {
     background-image: image-url('shared/i-dark.svg'); }
+  .failure &, .success & {
+    background-image: image-url('shared/i-active.svg'); }
 }
 .o {
   width: 16px;
@@ -74,6 +76,8 @@ body {
   background-image: image-url('shared/o-light.svg');
   .dark & {
     background-image: image-url('shared/o-dark.svg'); }
+  .failure &, .success & {
+    background-image: image-url('shared/o-active.svg'); }
 }
 
 @mixin landscape()
@@ -105,13 +109,9 @@ body {
   padding: 0;
 }
 
-// canvas {
-//   @extend %absolute-full;
-// }
-
 #reload {
   background-color: rgba(255,255,255,0.8);
-  background-image: image-url('refresh.svg');
+  background-image: image-url('shared/refresh.svg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
   @include background-size(2em);

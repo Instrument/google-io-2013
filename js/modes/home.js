@@ -13,8 +13,6 @@ ww.mode.HomeMode = function() {
   this.wentIdleTime_ = 0;
   this.isIdle_ = true;
   this.maxIdleTime_ = 15000; // 15 seconds
-
-  var context = this.getAudioContext_();
 };
 goog.inherits(ww.mode.HomeMode, ww.mode.Core);
 
@@ -134,7 +132,6 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
     var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
     var letterI = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](letterI);
-    this.paperI_['fillColor'] = '#11a860';
 
     this.paperI_['closed'] = true;
 
@@ -161,6 +158,32 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
 };
 
 /**
+ * Function to fill I with a gradient.
+ * @private
+ */
+ww.mode.HomeMode.prototype.fillI_ = function() {
+  // The stops array: yellow mixes with red between 0 and 15%,
+  // 15% to 30% is pure red, red mixes with black between 30% to 100%:
+  var stops = [['#4487fc', 0], ['#826eb1', 1]];
+
+  // Create a linear gradient using the color stops array:
+  var gradient = new paper['Gradient'](stops);
+
+  // Left side of the I is the origin of the gradient.
+  var from = this.paperI_['position']['clone']();
+  from['x'] -= this.iWidth_ / 2;
+
+  // Right side of the I is the end point of the gradient.
+  var to = this.paperI_['position']['clone']();
+  to['x'] += this.iWidth_ / 2;
+
+  // Create the gradient color:
+  var gradientColor = new paper['GradientColor'](gradient, from, to);
+
+  this.paperI_['fillColor'] = gradientColor;
+};
+
+/**
  * Function to create and draw O.
  * @private
  */
@@ -173,8 +196,6 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 
   this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
     this.oRad_);
-
-  this.paperO_['fillColor'] = '#3777e2';
 
   this.paperO_['vectors'] = [];
 
@@ -191,6 +212,32 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 };
 
 /**
+ * Function to fill O with a gradient.
+ * @private
+ */
+ww.mode.HomeMode.prototype.fillO_ = function() {
+  // The stops array: yellow mixes with red between 0 and 15%,
+  // 15% to 30% is pure red, red mixes with black between 30% to 100%:
+  var stops = [['#93689c', 0], ['#df4a40', 1]];
+
+  // Create a linear gradient using the color stops array:
+  var gradient = new paper['Gradient'](stops);
+
+  // Left side of the O is the origin of the gradient.
+  var from = this.paperO_['position']['clone']();
+  from['x'] -= this.oRad_;
+
+  // Right side of the O is the end point of the gradient.
+  var to = this.paperO_['position']['clone']();
+  to['x'] += this.oRad_;
+
+  // Create the gradient color:
+  var gradientColor = new paper['GradientColor'](gradient, from, to);
+
+  this.paperO_['fillColor'] = gradientColor;
+};
+
+/**
  * Function to create and draw Slash.
  * @private
  */
@@ -198,7 +245,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
   if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ +
-      (this.width_ * 0.02777778),
+      Math.min(this.width_ * 0.02777778, 18),
       this.screenCenterY_ - (this.iHeight_ / 2) -
         (this.iHeight_ * 0.09722222));
 
@@ -208,12 +255,13 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
 
     // Create a new paper.js path for the slash based on screen dimensions.
     this.paperSlash_ = new paper['Path']();
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
+    this.paperSlash_['strokeWidth'] = Math.min(this.width_ * 0.01388889, 10);
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
   } else {
-    this.slashStart_['x'] = this.screenCenterX_ + (this.width_ * 0.02777778);
+    this.slashStart_['x'] = this.screenCenterX_ +
+      Math.min(this.width_ * 0.02777778, 18);
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       (this.iHeight_ * 0.09722222);
 
@@ -224,7 +272,7 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
 
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
+    this.paperSlash_['strokeWidth'] = Math.min(this.width_ * 0.01388889, 10);
   }
 };
 
@@ -278,7 +326,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var tool = new paper['Tool']();
 
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
-  tool['onMouseDown'] = function(event) {
+  tool['onMouseUp'] = function(event) {
     self.lastClick_ = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
       if (self.hasFocus) {
@@ -315,11 +363,12 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
   this.screenCenterY_ = this.height_ / 2;
 
   // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * 0.205;
+  this.iWidth_ = Math.min(this.width_ * 0.205, 90);
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ - (this.width_ * 0.15833333);
+  this.iX_ = this.screenCenterX_ - this.iWidth_ -
+    Math.min(this.width_ * 0.15833333, 68);
 
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
@@ -327,7 +376,7 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
     this.iY_ + this.iHeight_ / 2);
 
   // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
+  this.oRad_ = Math.min(this.width_ * 0.1944444444, 90);
 
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
@@ -436,6 +485,9 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
       this.enterIdle_();
     }
   }
+
+  this.fillI_();
+  this.fillO_();
 
   this.updateVectors_(this.paperI_);
   this.updatePoints_(this.paperI_);
