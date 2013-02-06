@@ -226,10 +226,11 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
   }
 
   this.connections_ = new paper['Group']();
+  var path;
 
-  for (var i = 0, l = paths.length; i < l; i++) {
+  for (var i = 0; i < paths.length; i++) {
     for (var ii = i + 1; ii < paths.length; ii++) {
-      var path = this.metaball_(paths[i], paths[ii], .4, 2.4,
+      path = this.metaball_(paths[i], paths[ii], .4, 2.4,
         this.screenCenterX_ * .9);
       if (path) {
         this.connections_['appendTop'](path);
