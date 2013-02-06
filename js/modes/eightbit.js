@@ -6,7 +6,7 @@ goog.provide('ww.mode.EightBitMode');
  * @constructor
  */
 ww.mode.EightBitMode = function() {
-  goog.base(this, 'eightbit', true, true);
+  goog.base(this, 'eightbit', true, true, true);
 
   var context = this.getAudioContext_();
 };
@@ -195,6 +195,9 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function() {
  */
 ww.mode.EightBitMode.prototype.init = function() {
   goog.base(this, 'init');
+
+  // Create physics world to support stepPhysics.
+  this.world_ = this.getPhysicsWorld_();
 
   // Prep paperjs
   this.getPaperCanvas_();
@@ -412,6 +415,23 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
 }
 
 /**
+ * On each physics tick, update vectors.
+ * @param {Float} delta Time since last tick.
+ */
+ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
+  goog.base(this, 'stepPhysics', delta);
+
+  this.fillI_();
+  this.fillO_();
+
+  this.updateVectors_(this.paperI_);
+  this.updatePoints_(this.paperI_);
+
+  this.updateVectors_(this.paperO_);
+  this.updatePoints_(this.paperO_);  
+};
+
+/**
  * Runs code on each requested frame.
  * @param {Number} delta Ms since last draw.
  */
@@ -425,15 +445,6 @@ ww.mode.EightBitMode.prototype.onFrame = function(delta) {
       this.enterIdle_();
     }
   }
-
-  this.fillI_();
-  this.fillO_();
-
-  this.updateVectors_(this.paperI_);
-  this.updatePoints_(this.paperI_);
-
-  this.updateVectors_(this.paperO_);
-  this.updatePoints_(this.paperO_);
 
   if (this.pctx_) {
     this.drawPixels_();
