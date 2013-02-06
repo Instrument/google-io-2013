@@ -420,7 +420,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
           self.ballCount_ = self.world_.particles.length;
 
-          if (this.wantsAudio_) {
+          if (self.wantsAudio_) {
             self.sources_.push(self.audioContext_.createOscillator());
             self.gainNodes_.push(self.audioContext_.createGainNode());
 
