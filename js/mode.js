@@ -54,31 +54,31 @@ ww.mode.findModeByName = function(name) {
 };
 
 // Home mode.
-ww.mode.register('home',     ww.mode.HomeMode,        null);
+ww.mode.register('home',      ww.mode.HomeMode,      null);
 
 // Other modes.
-ww.mode.register('song',      ww.mode.SongMode,       1, 8); // 00000001
-ww.mode.register('cat',       ww.mode.CatMode,        2, 8); // 00000010
-ww.mode.register('space',     ww.mode.SpaceMode,      3, 8); // 00000011
-ww.mode.register('pong',      ww.mode.PongMode,       4, 8); // 00000100
-ww.mode.register('explode',   ww.mode.ExplodeMode,    5, 8); // 00000101
-ww.mode.register('pinata',    ww.mode.PinataMode,     6, 8); // 00000110
-ww.mode.register('bacon',     ww.mode.BaconMode,      7, 8); // 00000111
-ww.mode.register('simone',    ww.mode.SimoneMode,     8, 8); // 00001000
-ww.mode.register('eightbit',  ww.mode.EightBitMode,   9, 8); // 00001001
-ww.mode.register('metaball',  ww.mode.MetaBallMode,  10, 8); // 00001010
-ww.mode.register('fireplace', ww.mode.FireplaceMode, 11, 8); // 00001011
+ww.mode.register('cat',       ww.mode.CatMode,       231, 8); // 11100111
+ww.mode.register('space',     ww.mode.SpaceMode,     42,  8); // 00101010
+ww.mode.register('pong',      ww.mode.PongMode,      129, 8); // 10000001
+// ww.mode.register('explode',   ww.mode.ExplodeMode,   5,   8); // 00000101
+ww.mode.register('pinata',    ww.mode.PinataMode,    15,  8); // 00001111
+ww.mode.register('bacon',     ww.mode.BaconMode,     144, 8); // 10010000
+ww.mode.register('simone',    ww.mode.SimoneMode,    211, 8); // 11010011
+ww.mode.register('eightbit',  ww.mode.EightBitMode,  83,  8); // 01010011
+ww.mode.register('metaball',  ww.mode.MetaBallMode,  170, 8); // 10101010
+// ww.mode.register('fireplace', ww.mode.FireplaceMode, 11, 8); // 00001011
 
 // Audio available?
 if (ww.util.getAudioContextConstructor()) {
-  ww.mode.register('synth',     ww.mode.SynthMode,     13, 8); // 00001101
+  ww.mode.register('song',      ww.mode.SongMode,    219, 8); // 11011011
+  ww.mode.register('synth',     ww.mode.SynthMode,   136, 8); // 10001000
 }
 
-ww.mode.register('ascii',     ww.mode.AsciiMode,     14, 8); // 00001110
-ww.mode.register('bowling',   ww.mode.BowlingMode,   15, 8); // 00001111
-ww.mode.register('rocket',    ww.mode.RocketMode,    16, 8); // 00010000
-ww.mode.register('donut',     ww.mode.DonutMode,     17, 8); // 00010001
-ww.mode.register('burger',    ww.mode.BurgerMode,    18, 8); // 00010010
+ww.mode.register('ascii',     ww.mode.AsciiMode,     127, 8); // 01111111
+ww.mode.register('bowling',   ww.mode.BowlingMode,   117, 8); // 01110101
+ww.mode.register('rocket',    ww.mode.RocketMode,    69,  8); // 01000101
+ww.mode.register('donut',     ww.mode.DonutMode,     150, 8); // 10010110
+ww.mode.register('burger',    ww.mode.BurgerMode,    57,  8); // 00111001
 
 // On DocumentReady
 $(function() {
