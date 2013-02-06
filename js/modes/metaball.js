@@ -99,8 +99,6 @@ ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
     target.radius = this.oRad_;
   }
 
-  this.gctx_.beginPath();
-
   this.gctx_.save();
 
   // Set the size of the ball radial gradients.
@@ -119,8 +117,6 @@ ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
   this.gctx_.fillRect(0, 0, this.gradSize_ * 4, this.gradSize_ * 4);
 
   this.gctx_.restore();
-
-  this.gctx_.closePath();
 };
 
 /**
