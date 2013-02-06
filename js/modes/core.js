@@ -583,3 +583,26 @@ ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
 ww.mode.Core.prototype.addTween = function(tween) {
   tween.start(this.timeElapsed_);
 };
+
+/**
+ * Function to return mouse or touch coordinates depending on what's available.
+ * @param {Object} e The event to get X and Y coordinates from.
+ */
+ww.mode.Core.prototype.getCoords = function(e) {
+  var coords = [
+    {
+      'x': 0,
+      'y': 0
+    }
+  ];
+
+  if (e.originalEvent.changedTouches) {
+    coords['x'] = e.originalEvent.changedTouches[0].pageX;
+    coords['y'] = e.originalEvent.changedTouches[0].pageY;
+  } else {
+    coords['x'] = e.pageX;
+    coords['y'] = e.pageY;
+  }
+
+  return coords;
+};

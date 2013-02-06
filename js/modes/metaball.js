@@ -331,30 +331,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
 };
 
 /**
- * Function to return mouse or touch coordinates depending on what's available.
- * @param {Object} e The event to get X and Y coordinates from.
- * @private
- */
-ww.mode.MetaBallMode.prototype.getCoords_ = function(e) {
-  var coords = [
-    {
-      'x': 0,
-      'y': 0
-    }
-  ];
-
-  if (e.originalEvent.changedTouches) {
-    coords['x'] = e.originalEvent.changedTouches[0].pageX;
-    coords['y'] = e.originalEvent.changedTouches[0].pageY;
-  } else {
-    coords['x'] = e.pageX;
-    coords['y'] = e.pageY;
-  }
-
-  return coords;
-};
-
-/**
  * Event is called after a mode focused.
  */
 ww.mode.MetaBallMode.prototype.didFocus = function() {
@@ -385,8 +361,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
   this.$canvas_.bind(downEvt + '.metaball', function(e) {
 
-    self.mouseX_ = self.getCoords_(e)['x'];
-    self.mouseY_ = self.getCoords_(e)['y'];
+    self.mouseX_ = self.getCoords(e)['x'];
+    self.mouseY_ = self.getCoords(e)['y'];
 
     var activeBall;
 
@@ -435,7 +411,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
             self.gainNodes_[self.sources_.length - 1].connect(
               self.audioContext_.destination);
 
-            self.sources_[self.sources_.length - 1].start(0);
+            self.sources_[self.sources_.length - 1].noteOn(0);
             self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
           }
         } else if (activeBall != self.world_.particles[0]) {
@@ -450,8 +426,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
     // Update mouse or touch coordinates on move.
     var moveEvt = Modernizr.touch ? 'touchmove' : 'mousemove';
     self.$canvas_.bind(moveEvt + '.metaball', function(e) {
-      self.mouseX_ = self.getCoords_(e)['x'];
-      self.mouseY_ = self.getCoords_(e)['y'];
+      self.mouseX_ = self.getCoords(e)['x'];
+      self.mouseY_ = self.getCoords(e)['y'];
 
       // If a ball has been activated keep it locked to mouse/touch coordinates.
       if (activeBall && activeBall['fixed'] === true) {

@@ -17,7 +17,7 @@ ww.mode.AsciiMode.prototype.activateI = function() {
 
   this.pushPoints_(this.paperI_, this.lastClick_, 10);
 
-  // this.playSound('boing.wav');
+  this.playSound('boing.wav');
 };
 
 /**
@@ -28,7 +28,7 @@ ww.mode.AsciiMode.prototype.activateO = function() {
 
   this.pushPoints_(this.paperO_, this.lastClick_, 10);
 
-  // this.playSound('boing.wav');
+  this.playSound('boing.wav');
 };
 
 /**
@@ -209,30 +209,6 @@ ww.mode.AsciiMode.prototype.init = function() {
 };
 
 /**
- * Function to return mouse or touch coordinates depending on what's available.
- * @param {Object} e The event to get X and Y coordinates from.
- * @private
- */
-ww.mode.AsciiMode.prototype.getCoords_ = function(e) {
-  var coords = [
-    {
-      'x': 0,
-      'y': 0
-    }
-  ];
-
-  if (e.originalEvent.changedTouches) {
-    coords['x'] = e.originalEvent.changedTouches[0].pageX;
-    coords['y'] = e.originalEvent.changedTouches[0].pageY;
-  } else {
-    coords['x'] = e.pageX;
-    coords['y'] = e.pageY;
-  }
-
-  return coords;
-};
-
-/**
  * Event is called after a mode focused.
  */
 ww.mode.AsciiMode.prototype.didFocus = function() {
@@ -247,8 +223,8 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
 
   var evt = Modernizr.touch ? 'touchend' : 'mouseup';
   this.$canvas_.bind(evt + '.ascii', function(e) {
-    self.lastClick_ = new paper['Point'](self.getCoords_(e)['x'],
-      self.getCoords_(e)['y']);
+    self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
+      self.getCoords(e)['y']);
 
     if (self.lastClick_['getDistance'](self.paperO_['position']) < self.oRad_) {
       if (self.hasFocus) {

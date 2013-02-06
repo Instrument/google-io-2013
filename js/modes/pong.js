@@ -120,7 +120,6 @@ ww.mode.PongMode.prototype.onResize = function(redraw) {
   }
 };
 
-
 /**
  * Bind mouse/touch events which focus is gained.
  */
@@ -145,8 +144,8 @@ ww.mode.PongMode.prototype.didFocus = function() {
     e.preventDefault();
     e.stopPropagation();
 
-    self.mouseX_ = e.pageX;
-    self.mouseY_ = e.pageY;
+    self.mouseX_ = self.getCoords(e)['x'];
+    self.mouseY_ = self.getCoords(e)['y'];
   });
 
   this.startRound_();
