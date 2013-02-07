@@ -20,7 +20,7 @@ function testFullPattern() {
     matchedModeName = key;
   };
 
-  mode.addPatternCharacter('00000001');
+  mode.addPatternCharacter('11011011');
 
   assertEquals('Should request song mode', 'song', matchedModeName);
   assertTrue('Added success class', mode.$pattern_.hasClass('success'));
@@ -35,7 +35,8 @@ function testPartialPattern() {
     matchedModeName = key;
   };
 
-  mode.addPatternCharacter('0000000');
+  mode.addPatternCharacter('00');
+
 
   assertEquals('Should not request any mode', false, matchedModeName);
   assertFalse('No success class', mode.$pattern_.hasClass('success'));
@@ -142,7 +143,7 @@ function testWwModeHomeModeDrawSlash_() {
 
   var tempPosition = mode.paperSlash_['segments'][0]['point']['x'];
 
-  mode.oRad_ = 20;
+  mode.screenCenterX_ = 20;
 
   mode.drawSlash_();
 

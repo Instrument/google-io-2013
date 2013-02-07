@@ -234,8 +234,9 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
 ww.mode.PinataMode.prototype.activateBalls_ = function() {
   var ball,
       pop = Math.min(this.deactive_, ~~Random(1, 3) + this.whackCount_);
-
+this.log(pop);
   for (var i = this.current_; i <= this.current_ + pop; i++) {
+    this.log('adding a new ball');
     ball = this.physicsWorld_.particles[i];
     this.collision_.pool.push(ball);
     ball.behaviours.push(this.collision_);

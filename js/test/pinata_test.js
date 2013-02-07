@@ -1,3 +1,32 @@
+function testWwModePinataModeActivateBalls_() {
+  var prevDeactive = mode.deactive_;
+  var prevCurrent = mode.current_;
+
+  assertEquals('Only one ball hould be in the collision pool initially (represents the pinata)', 1, mode.collision_.pool.length);
+
+  mode.activateBalls_();
+  assertTrue('There should be balls in the collision pool after activateBalls_', mode.collision_.pool.length > 1);
+  assertTrue('Deactive amount should be decreased after activateBalls_', mode.deactive_ < prevDeactive);
+  assertTrue('Current active amount should be increased after activateBalls_', mode.current_ > prevCurrent);
+}
+
+function testWwModePinataModeMoveAllCandyBack_() {
+  var particle = mode.physicsWorld_.particles[1]; // get a particle that's not the pinata (0)
+  var startX = particle['startX'];
+  var startY = particle['startY'];
+
+  // move particle to some other location
+  particle.moveTo(new Vector(0 - startX, 0 - startY));
+
+  mode.moveAllCandyBack_();
+
+  var endX = particle.pos.x;
+  var endY = particle.pos.y;
+
+  assertEquals('X should be reset to startX', startX, endX);
+  assertEquals('Y should be reset to startY', startY, endY);
+}
+
 function testWwModePinataModeDidFocus() {
   mode.unfocus_();
 
@@ -147,4 +176,30 @@ function testWwModePinataModeActivateO() {
 
   letterO.trigger('mouseup');
   assertEquals('playedSound should been called twice', 2, playedSound);
+}
+
+function testWwModePinataModeAnimatePartsIn_() {
+  var tweens = [];
+
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  assertTrue('Number of tweens added should be 0', tweens.length === 0);
+
+  mode.animatePartsIn_();
+  assertTrue('Number of tweens should be greater than 0. Got (' + tweens.length + ')', tweens.length > 0);
+}
+
+function testWwModePinataModeAnimatePartsOut_() {
+  var tweens = [];
+
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  assertTrue('Number of tweens added should be 0', tweens.length === 0);
+
+  mode.animatePartsOut_();
+  assertTrue('Number of tweens should be greater than 0. Got (' + tweens.length + ')', tweens.length > 0);
 }

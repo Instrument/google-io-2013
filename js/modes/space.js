@@ -202,21 +202,29 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
     this.oGroup_ = new paper['Group']();
 
-    for (var i = 0; i < 90; i++) {
+    var lines = 90;
+    var increment = 2;
+
+    if (this.width_ < 640) {
+      lines = 45;
+      increment = 4;
+    }
+
+    for (var i = 0; i < lines; i++) {
       this.oPaths_.push(new paper['Path']());
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos((i * 2) *
+      pathX = oCenter['x'] + this.oRad_ * Math.cos((i * increment) *
         (Math.PI / 180));
 
-      pathY = oCenter['y'] + this.oRad_ * Math.sin((i * 2) *
+      pathY = oCenter['y'] + this.oRad_ * Math.sin((i * increment) *
         (Math.PI / 180));
 
       pathStart = new paper['Point'](pathX, pathY);
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-i * 2)) *
+      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-i * increment)) *
         (Math.PI / 180));
 
-      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-i * 2)) *
+      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-i * increment)) *
         (Math.PI / 180));
 
       pathEnd = new paper['Point'](pathX, pathY);
@@ -298,6 +306,20 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
 };
 
 /**
+ * Function to size the '13' svg respective to the O size.
+ * @param {Object} el The dom element containing the '13' svg.
+ * @private
+ */
+ww.mode.SpaceMode.prototype.draw13_ = function(el) {
+  el.css({
+    'width': this.oRad_ * 0.33333333,
+    'height': this.oRad_ * 0.25555556,
+    'left': this.oX_ + (this.oRad_ * 0.38888889),
+    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+  });
+};
+
+/**
  * Function to initialize the current mode.
  * Requests a paper canvas and creates paths.
  * Sets initial variables.
@@ -311,7 +333,13 @@ ww.mode.SpaceMode.prototype.init = function() {
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
 
-  for (var i = 0; i < this.width_ * 2; i++) {
+  var starCount = this.width_ * 2;
+
+  if (this.width_ < 640) {
+    starCount = this.width_ / 2;
+  }
+
+  for (var i = 0; i < starCount; i++) {
     this.tempFloat_ = ww.util.floatComplexGaussianRandom();
 
     this.world_.particles.push(new Particle());
@@ -414,6 +442,12 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   var self = this;
 
+  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
+  $(document).bind(evt + '.space', function(e) {
+    self.mouseX_ = self.getCoords(e)['x'];
+    self.mouseY_ = self.getCoords(e)['y'];
+  });
+
   var tool = new paper['Tool']();
 
   tool['onMouseUp'] = function(event) {
@@ -504,6 +538,10 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
    * Create the letter O.
    */
   this.drawO_();
+
+  if ($('.mode-wrapper')) {
+   this.draw13_($('.mode-wrapper')); 
+  }
 
   this.redraw();
 };
@@ -637,7 +675,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
   for (var i = 0; i < this.world_.particles.length; i++) {
     this.world_.particles[i].pos.x +=
       (this.screenCenterX_ - this.mouseX_) /
-      (10000 / this.world_.particles[i].radius) + 0.1;
+      (5000 / this.world_.particles[i].radius) + 0.1;
 
     if (this.world_.particles[i].pos.x > this.width_ * 2) {
       this.world_.particles[i].pos.x =
@@ -650,7 +688,7 @@ ww.mode.SpaceMode.prototype.stepPhysics = function(delta) {
 
     this.world_.particles[i].pos.y +=
       (this.screenCenterY_ - this.mouseY_) /
-      (10000 / this.world_.particles[i].radius);
+      (5000 / this.world_.particles[i].radius);
 
     if (this.world_.particles[i].pos.y > this.height_ * 2) {
       this.world_.particles[i].pos.y =
@@ -707,7 +745,9 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     this.adjustModifiers_(this.iModifier_, this.iIncrement_, this.iMultiplier_,
       this.iClicked_, true);
 
-    this.delay_['feedback'] = this.iMultiplier_ / 10;
+    if (this.wantsAudio_) {
+      this.delay_['feedback'] = this.iMultiplier_ / 10;
+    }
 
     /*
      * Loop through each path segment on the letter I and move each point's
@@ -777,7 +817,9 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
     this.adjustModifiers_(this.oModifier_, this.oIncrement_, this.oMultiplier_,
       this.oClicked_, false);
 
-    this.delay_['feedback'] = this.oMultiplier_ / 10;
+    if (this.wantsAudio_) {
+      this.delay_['feedback'] = this.oMultiplier_ / 10;
+    }
 
     /*
      * Loop through each path segment on the letter O and move each point's

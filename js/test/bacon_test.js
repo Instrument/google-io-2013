@@ -1,4 +1,3 @@
-// test if activateI gets called from triggering i
 function testWwModeBaconModeActivateI() {
   var letterI = $('#letter-i');
 
@@ -16,7 +15,6 @@ function testWwModeBaconModeActivateI() {
   assertEquals('activateI should been called twice', activatedI, 2);
 }
 
-// test if playSound gets called within activateI
 function testWwModeBaconModeActivateI() {
   var letterI = $('#letter-i');
 
@@ -40,7 +38,6 @@ function testWwModeBaconModeActivateI() {
   assertTrue('fileName should not be empty', fileName !== '');
 }
 
-// test that two tween animations get added within activateI
 function testWwModeBaconModeActivateI() {
   var letterI = $('#letter-i');
   var tweens = [];
@@ -55,7 +52,6 @@ function testWwModeBaconModeActivateI() {
   assertTrue('Number of tweens should be 2. Got (' + tweens.length + ')', tweens.length === 2);
 }
 
-// test if activateO gets called from triggering o
 function testWwModeBaconModeActivateO() {
   var letterO = $('#letter-o');
 
@@ -73,7 +69,6 @@ function testWwModeBaconModeActivateO() {
   assertEquals('activateO should been called twice', activatedO, 2);
 }
 
-// test if playSound gets called within activateO
 function testWwModeBaconModeActivateO() {
   var letterO = $('#letter-o');
 
@@ -97,7 +92,6 @@ function testWwModeBaconModeActivateO() {
   assertTrue('fileName should not be empty', fileName !== '');
 }
 
-// test that two tween animations get added within activateO
 function testWwModeBaconModeActivateO() {
   var letterO = $('#letter-o');
 

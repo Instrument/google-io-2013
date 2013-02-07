@@ -7,8 +7,6 @@ goog.provide('ww.mode.EightBitMode');
  */
 ww.mode.EightBitMode = function() {
   goog.base(this, 'eightbit', true, true, true);
-
-  var context = this.getAudioContext_();
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
 
@@ -107,7 +105,7 @@ ww.mode.EightBitMode.prototype.drawO_ = function() {
   // Create a new paper.js path for O based off the previous variables.
   this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
 
-  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
+  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 6,
     this.oRad_);
 
   this.paperO_['vectors'] = [];
@@ -189,6 +187,20 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function() {
 };
 
 /**
+ * Function to size the '13' svg respective to the O size.
+ * @param {Object} el The dom element containing the '13' svg.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.draw13_ = function(el) {
+  el.css({
+    'width': this.oRad_ * 0.33333333,
+    'height': this.oRad_ * 0.25555556,
+    'left': this.oX_ + (this.oRad_ * 0.38888889),
+    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+  });
+};
+
+/**
  * Function to initialize the current mode.
  * Requests a paper canvas and creates paths.
  * Sets initial variables.
@@ -220,20 +232,6 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   this.pctx_ = this.paperCanvas_.getContext('2d');
 
   var self = this;
-
-  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $("#menu").bind(evt2 + '.core', function() {
-    $(document.body).addClass('nav-visible');
-  });
-
-  $("#modal").bind(evt2 + '.core', function() {
-    $(document.body).removeClass('nav-visible');
-  });
-
-  $("#dropdown").bind(evt2 + '.core', function(evt) {
-    evt.preventDefault();
-    evt.stopPropagation();
-  });
 
   var tool = new paper['Tool']();
 
@@ -309,6 +307,10 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
+  if ($('.mode-wrapper')) {
+   this.draw13_($('.mode-wrapper')); 
+  }
+
   if (redraw) {
     this.redraw();
   }
@@ -339,6 +341,7 @@ ww.mode.EightBitMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
 
     point['length'] += distance;
     point['velocity'] += speed;
+    point['velocity'] = Math.min(5, point['velocity']);
   }
 }
 
