@@ -135,6 +135,7 @@ body {
 
 .home-mode {
   @import "home";
+  @import "draw-modes";
 }
 
 .pinata-mode {
@@ -155,6 +156,7 @@ body {
 
 .space-mode {
   @import "space";
+  @import "draw-modes";
 }
 
 .synth-mode {
@@ -163,10 +165,16 @@ body {
 
 .metaball-mode {
   @import "metaball";
+  @import "draw-modes";
 }
 
 .ascii-mode {
   @import "ascii";
+  @import "draw-modes";
+}
+
+.eightbit-mode {
+  @import "draw-modes";
 }
 
 @import "fun-modes";

@@ -187,6 +187,20 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function() {
 };
 
 /**
+ * Function to size the '13' svg respective to the O size.
+ * @param {Object} el The dom element containing the '13' svg.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.draw13_ = function(el) {
+  el.css({
+    'width': this.oRad_ * 0.33333333,
+    'height': this.oRad_ * 0.25555556,
+    'left': this.oX_ + (this.oRad_ * 0.38888889),
+    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+  });
+};
+
+/**
  * Function to initialize the current mode.
  * Requests a paper canvas and creates paths.
  * Sets initial variables.
@@ -292,6 +306,10 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
    * Create the letter O.
    */
   this.drawO_();
+
+  if ($('.mode-wrapper')) {
+   this.draw13_($('.mode-wrapper')); 
+  }
 
   if (redraw) {
     this.redraw();

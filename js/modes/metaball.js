@@ -267,6 +267,20 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
 };
 
 /**
+ * Function to size the '13' svg respective to the O size.
+ * @param {Object} el The dom element containing the '13' svg.
+ * @private
+ */
+ww.mode.MetaBallMode.prototype.draw13_ = function(el) {
+  el.css({
+    'width': this.oRad_ * 0.33333333,
+    'height': this.oRad_ * 0.25555556,
+    'left': this.oX_ + (this.oRad_ * 0.38888889),
+    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+  });
+};
+
+/**
  * Function to initialize the current mode.
  * Sets initial variables.
  */
@@ -518,6 +532,10 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
 
   // Set the size of the ball radial gradients.
   this.gradSize_ = this.oRad_ * 4;
+
+  if ($('.mode-wrapper')) {
+   this.draw13_($('.mode-wrapper')); 
+  }
 
   this.redraw();
 };
