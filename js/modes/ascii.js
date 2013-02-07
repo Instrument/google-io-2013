@@ -104,7 +104,7 @@ ww.mode.AsciiMode.prototype.drawO_ = function() {
   // Create a new paper.js path for O based off the previous variables.
   this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
 
-  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
+  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 6,
     this.oRad_);
 
   this.paperO_['vectors'] = [];
@@ -325,6 +325,7 @@ ww.mode.AsciiMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
 
     point['length'] += distance;
     point['velocity'] += speed;
+    point['velocity'] = Math.min(5, point['velocity']);
   }
 }
 
