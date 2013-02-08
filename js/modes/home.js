@@ -377,12 +377,11 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
   this.screenCenterY_ = this.height_ / 2;
 
   // Set I's initial dimensions.
-  this.iWidth_ = Math.min(this.width_ * 0.205, 90);
+  this.iWidth_ = this.width_ * 0.205;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ -
-    Math.min(this.width_ * 0.15833333, 68);
+  this.iX_ = this.screenCenterX_ - this.iWidth_ - this.width_ * 0.15833333;
 
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
@@ -390,7 +389,7 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
     this.iY_ + this.iHeight_ / 2);
 
   // Set O's radius.
-  this.oRad_ = Math.min(this.width_ * 0.1944444444, 90);
+  this.oRad_ = this.width_ * 0.1944444444;
 
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;

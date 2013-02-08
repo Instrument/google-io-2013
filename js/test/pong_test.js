@@ -84,7 +84,7 @@ function testWwModePongModeOnResize() {
     mode.canvas_.width);
 }
 
-function testWwModePongModehitWall_() {
+function testWwModePongModeHitWall_() {
   var tweens = [];
 
   mode.constructor.prototype.addTween = function(tween) {
@@ -96,7 +96,7 @@ function testWwModePongModehitWall_() {
   assertEquals('tweens should now have a single tween added', 1, tweens.length);
 }
 
-function testWwModePongModehitPaddle_() {
+function testWwModePongModeHitPaddle_() {
   var tweens = [];
   mode.score_ = 1;
 
@@ -119,3 +119,23 @@ function testWwModePongModehitPaddle_() {
   assertEquals('tweens should now have three tweens added', 3, tweens.length);
   assertEquals('score should now be 13', 13, mode.score_);
 }
+
+function testWwModePongModeGameOver_() {
+  mode.gameOver_();
+
+  assertNotEquals('the reload modal should have been created', undefined,
+    $('#reload'));
+}
+
+function testWwModePongModeSetScore_() {
+  mode.setScore_(10);
+
+  assertEquals('the score should be set to 10', 10, mode.score_);
+}
+
+/*function testWwModePongModeReflectBall_() {
+  mode.resetGame_();
+  mode.startRound_();
+
+  mode.ball_.pos.x = 0;
+}*/
