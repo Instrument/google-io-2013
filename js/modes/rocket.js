@@ -87,6 +87,10 @@ ww.mode.RocketMode.prototype.activateI = function() {
 
   var rotateBack = new TWEEN.Tween({ 'rotate': 0 });
   rotateBack.to({ 'rotate': -90 }, 100);
+  rotateBack.onStart(function() {
+    prevTransform = prevTransform + ' scaleY(-1) ';
+    self.transformElem_(self.$letterI_[0], prevTransform);
+  });
   rotateBack.delay(delay);
   rotateBack.onUpdate(function() {
     transform = prevTransform + 'rotate(' + this['rotate'] + 'deg) ';
