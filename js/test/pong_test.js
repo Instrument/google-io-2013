@@ -1,3 +1,20 @@
+var savedFunctions = {};
+function setUp() {
+  for (var key in mode.constructor.prototype) {
+    if (mode.constructor.prototype.hasOwnProperty(key)) {
+      savedFunctions[key] = mode.constructor.prototype[key];
+    }
+  }
+}
+
+function tearDown() {
+  for (var key in savedFunctions) {
+    if (savedFunctions.hasOwnProperty(key)) {
+      mode.constructor.prototype[key] = savedFunctions[key];
+    }
+  }
+}
+
 function testWwModePongModeInit() {
   mode['topWallOpacity_'] = 1;
 
@@ -65,4 +82,40 @@ function testWwModePongModeOnResize() {
 
   assertNotEquals('screenCenterX_ should have changed on resize', 20,
     mode.canvas_.width);
+}
+
+function testWwModePongModehitWall_() {
+  var tweens = [];
+
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  mode.hitWall_();
+
+  assertEquals('tweens should now have a single tween added', 1, tweens.length);
+}
+
+function testWwModePongModehitPaddle_() {
+  var tweens = [];
+  mode.score_ = 1;
+
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  mode.hitPaddle_();
+
+  assertEquals('tweens should now have one tween added', 1, tweens.length);
+  assertEquals('score should now be 2', 2, mode.score_);
+
+  tweens = [];
+  mode['topWallOpacity_'] = 1;
+  mode['rightWallOpacity_'] = 1;
+  mode['bottomWallOpacity_'] = 1;
+
+  mode.hitPaddle_();
+
+  assertEquals('tweens should now have three tweens added', 3, tweens.length);
+  assertEquals('score should now be 13', 13, mode.score_);
 }
