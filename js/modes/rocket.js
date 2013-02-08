@@ -8,6 +8,8 @@ goog.provide('ww.mode.RocketMode');
 ww.mode.RocketMode = function() {
   goog.base(this, 'rocket', true, true, false);
 
+  this.preloadSound('rocket-launch.mp3');
+
   this.moon_ = document.getElementById('moon-1');
 
   // mooon over used to make the rocket look like it's going behind the moon
@@ -32,6 +34,8 @@ goog.inherits(ww.mode.RocketMode, ww.mode.Core);
  */
 ww.mode.RocketMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
+
+  this.playSound('rocket-launch.mp3');
 
   var self = this,
       delay = 100,
