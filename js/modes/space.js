@@ -522,7 +522,6 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
-  console.log(this.iHeight_);
 
   /**
    * Create the slash.
