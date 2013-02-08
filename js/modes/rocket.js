@@ -42,7 +42,8 @@ ww.mode.RocketMode.prototype.activateI = function() {
       duration = 400,
       moonBounds = this.$letterO_[0].getBoundingClientRect(),
       rocketBounds = self.$letterI_[0].getBoundingClientRect(),
-      distance = ~~(moonBounds['right'] - rocketBounds['left']),
+      distance = ~~(moonBounds['right'] - rocketBounds['left'] +
+                    + moonBounds['width'] / 2),
       transform, prevTransform;
 
   var rotateIn = new TWEEN.Tween({ 'rotate': 0 });
@@ -56,7 +57,7 @@ ww.mode.RocketMode.prototype.activateI = function() {
   });
 
   var orbitOver = new TWEEN.Tween({ 'translateY': 0, 'scale': 1 });
-  orbitOver.to({ 'translateY': distance, 'scale': 0.5 }, duration);
+  orbitOver.to({ 'translateY': distance, 'scale': 0.25 }, duration);
   orbitOver.delay(delay);
   orbitOver.onUpdate(function() {
     transform = prevTransform + 'scale(' + this['scale'] + ') ' +
@@ -72,7 +73,7 @@ ww.mode.RocketMode.prototype.activateI = function() {
   delay += duration;
 
   var orbitBack = new TWEEN.Tween({ 'translateY': 0, 'scale': 1 });
-  orbitBack.to({ 'translateY': distance, 'scale': 2 }, duration);
+  orbitBack.to({ 'translateY': distance, 'scale': 4 }, duration);
   orbitBack.delay(delay);
   orbitBack.onStart(function() {
     self.moonOver_.style['opacity'] = 1;
