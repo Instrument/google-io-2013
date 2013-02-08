@@ -7,13 +7,16 @@
 }
 
 .rocket-mode {
-  #letter-i {
-    @include transform-origin(right top, false);
+  #letter-i, #moon-1, #moon-2 {
+    @include transform-origin(50% 50%, false);
+  }
+
+  #letter-o-over {
+    pointer-events: none;
   }
 }
 
 .bowling-mode {
-
   #letter-o {
     @include transform(translate3d(0,0,0));
   }
