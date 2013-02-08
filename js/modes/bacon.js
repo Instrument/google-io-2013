@@ -142,8 +142,8 @@ ww.mode.BaconMode.prototype.showCracked_ = function() {
 ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   var self = this;
 
-  var shift = -1 * (Math.random() * (270 - 20) + 20);
-  var pos = [Random(-75, 75), Random(-75, 75)];
+  var shift = -1 * ~~(Math.random() * (270 - 20) + 20);
+  var pos = [~~Random(-75, 75), ~~Random(-75, 75)];
 
   var degs = self.whites[0].style[self.prefix_].split('rotate(')[1];
       degs = parseInt(degs) || 0;
@@ -155,12 +155,12 @@ ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
       posY = parseInt(posY) || 0;
 
   var sizeX = self.whites[0].style[self.prefix_].split('skewX(')[1];
-      sizeX = parseFloat(sizeX) || 0;
+      sizeX = ~~parseFloat(sizeX) || 0;
 
   var sizeY = self.whites[0].style[self.prefix_].split('skewY(')[1];
-      sizeY = parseFloat(sizeY) || 0;
+      sizeY = ~~parseFloat(sizeY) || 0;
 
-  var sizing = [Random(-10, 10), Random(-10, 10)];
+  var sizing = [~~Random(-10, 10), ~~Random(-10, 10)];
 
   var spinEgg = new TWEEN.Tween({
     'translateX': posX,
@@ -181,13 +181,13 @@ ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   spinEgg.easing(TWEEN.Easing.Elastic.In);
 
   spinEgg.onUpdate(function() {
-    var translate = 'translateX(' + this['translateX'] + 'px) ';
-        translate += 'translateY(' + this['translateY'] + 'px) ';
-        translate += 'rotate(' + (-1 * this['rotate']) + 'deg) ';
+    var translate = 'translateX(' + this['translateX'] + 'px) ' +
+                    'translateY(' + this['translateY'] + 'px) ' +
+                    'rotate(' + (-1 * this['rotate']) + 'deg) ';
 
-    var whites = 'rotate(' + this['rotate'] + 'deg) ';
-        whites += 'skewX(' + this['skewX'] + 'deg) ';
-        whites += 'skewY(' + this['skewY'] + 'deg)';
+    var whites = 'rotate(' + this['rotate'] + 'deg) ' +
+                 'skewX(' + this['skewX'] + 'deg) ' +
+                 'skewY(' + this['skewY'] + 'deg)';
 
     self.transformElem_(self.whites[0], whites);
     self.transformElem_(self.yolk[0], translate);
