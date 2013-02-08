@@ -187,6 +187,20 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function() {
 };
 
 /**
+ * Function to size the '13' svg respective to the O size.
+ * @param {Object} el The dom element containing the '13' svg.
+ * @private
+ */
+ww.mode.EightBitMode.prototype.draw13_ = function(el) {
+  el.css({
+    'width': this.oRad_ * 0.33333333,
+    'height': this.oRad_ * 0.25555556,
+    'left': this.oX_ + (this.oRad_ * 0.38888889),
+    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+  });
+};
+
+/**
  * Function to initialize the current mode.
  * Requests a paper canvas and creates paths.
  * Sets initial variables.
@@ -214,8 +228,6 @@ ww.mode.EightBitMode.prototype.init = function() {
  */
 ww.mode.EightBitMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
-
-  this.pctx_ = this.paperCanvas_.getContext('2d');
 
   var self = this;
 
@@ -292,6 +304,10 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
    * Create the letter O.
    */
   this.drawO_();
+
+  if ($('.mode-wrapper')) {
+   this.draw13_($('.mode-wrapper')); 
+  }
 
   if (redraw) {
     this.redraw();
@@ -372,12 +388,17 @@ ww.mode.EightBitMode.prototype.updatePoints_ = function(path) {
  * Draws pixels over the paper canvas.
  * @private
  */
-ww.mode.EightBitMode.prototype.drawPixels_ = function() {
-  var pixelData = this.pctx_.getImageData(0, 0, this.width_,
-    this.height_);
+ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
+  if (!sourceCanvas.width || sourceCanvas.width < 1) { return; }
+  if (!sourceCanvas.height || sourceCanvas.height < 1) { return; }
 
-  this.pctx_.clearRect(0, 0, this.paperCanvas_.width + 1,
-    this.paperCanvas_.height + 1);
+  var pctx = sourceCanvas.getContext('2d');
+
+  var pixelData = pctx.getImageData(0, 0, sourceCanvas.width,
+    sourceCanvas.height);
+
+  pctx.clearRect(0, 0, sourceCanvas.width + 1,
+    sourceCanvas.height + 1);
 
   var size = Math.round(this.width_ * 0.0625);
   var increment = Math.round(size * 80) / 4;
@@ -393,10 +414,12 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
 
       var color = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
 
-      this.pctx_.fillStyle = color;
-      this.pctx_.fillRect(x, y, size, size);
+      pctx.fillStyle = color;
+      pctx.fillRect(x, y, size, size);
     }
   }
+
+  return pixelData.data.length;
 }
 
 /**
@@ -423,15 +446,5 @@ ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
 ww.mode.EightBitMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
-  if (!this.isIdle_) {
-    var hasBeenIdle = this.timeElapsed_ - this.wentIdleTime_;
-
-    if (hasBeenIdle > this.maxIdleTime_) {
-      this.enterIdle_();
-    }
-  }
-
-  if (this.pctx_) {
-    this.drawPixels_();
-  }
+  this.drawPixels_(this.paperCanvas_);
 };

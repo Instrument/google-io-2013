@@ -36,38 +36,6 @@ ww.mode.MetaBallMode = function() {
 goog.inherits(ww.mode.MetaBallMode, ww.mode.Core);
 
 /**
- * Play a sound by url after being processed by Tuna.
- * @private.
- * @param {String} filename Audio file name.
- * @param {Object} filter Audio filter name.
- */
-ww.mode.MetaBallMode.prototype.playProcessedAudio_ = function(filename,
-  filter) {
-
-  if (!this.wantsAudio_) { return; }
-
-  var url = '../sounds/' + this.name_ + '/' + filename;
-
-  if (ww.testMode) {
-    url = '../' + url;
-  }
-
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
-
-  var audioContext = this.audioContext_;
-
-  var self = this;
-
-  this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(filter.input);
-    filter.connect(audioContext.destination);
-    source.noteOn(0);
-  });
-};
-
-/**
  * Function to create and draw I.
  * @private
  */
@@ -264,6 +232,20 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
   this.ctx_.lineTo(this.slashEndX_, this.slashEndY_);
 
   this.ctx_.stroke();
+};
+
+/**
+ * Function to size the '13' svg respective to the O size.
+ * @param {Object} el The dom element containing the '13' svg.
+ * @private
+ */
+ww.mode.MetaBallMode.prototype.draw13_ = function(el) {
+  el.css({
+    'width': this.oRad_ * 0.33333333,
+    'height': this.oRad_ * 0.25555556,
+    'left': this.oX_ + (this.oRad_ * 0.38888889),
+    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+  });
 };
 
 /**
@@ -518,6 +500,10 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
 
   // Set the size of the ball radial gradients.
   this.gradSize_ = this.oRad_ * 4;
+
+  if ($('.mode-wrapper')) {
+   this.draw13_($('.mode-wrapper')); 
+  }
 
   this.redraw();
 };

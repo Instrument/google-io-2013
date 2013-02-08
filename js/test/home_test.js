@@ -1,3 +1,20 @@
+var savedFunctions = {};
+function setUp() {
+  for (var key in mode.constructor.prototype) {
+    if (mode.constructor.prototype.hasOwnProperty(key)) {
+      savedFunctions[key] = mode.constructor.prototype[key];
+    }
+  }
+}
+
+function tearDown() {
+  for (var key in savedFunctions) {
+    if (savedFunctions.hasOwnProperty(key)) {
+      mode.constructor.prototype[key] = savedFunctions[key];
+    }
+  }
+}
+
 function testIdle() {
   assertTrue('Should start out idle', mode.isIdle_);
 
@@ -20,7 +37,7 @@ function testFullPattern() {
     matchedModeName = key;
   };
 
-  mode.addPatternCharacter('00000001');
+  mode.addPatternCharacter('11011011');
 
   assertEquals('Should request song mode', 'song', matchedModeName);
   assertTrue('Added success class', mode.$pattern_.hasClass('success'));
@@ -35,7 +52,8 @@ function testPartialPattern() {
     matchedModeName = key;
   };
 
-  mode.addPatternCharacter('0000000');
+  mode.addPatternCharacter('00');
+
 
   assertEquals('Should not request any mode', false, matchedModeName);
   assertFalse('No success class', mode.$pattern_.hasClass('success'));
@@ -55,6 +73,21 @@ function testBadPattern() {
 
   assertEquals('Should not request any mode', false, matchedModeName);
   assertTrue('Added success class', mode.$pattern_.hasClass('failure'));
+}
+
+function testGoToMode() {
+  var messageName = '';
+  var messageValue = '';
+
+  mode.constructor.prototype.sendMessage_ = function(key1, key2) {
+    messageName = key1;
+    messageValue = key2;
+  };
+
+  mode.goToMode_('value');
+
+  assertEquals('messageName should be goToMode', 'goToMode', messageName);
+  assertEquals('messageValue should be value', 'value', messageValue);
 }
 
 function testWwModeHomeModeActivateI() {
@@ -142,7 +175,7 @@ function testWwModeHomeModeDrawSlash_() {
 
   var tempPosition = mode.paperSlash_['segments'][0]['point']['x'];
 
-  mode.oRad_ = 20;
+  mode.screenCenterX_ = 20;
 
   mode.drawSlash_();
 
