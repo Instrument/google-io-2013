@@ -36,38 +36,6 @@ ww.mode.MetaBallMode = function() {
 goog.inherits(ww.mode.MetaBallMode, ww.mode.Core);
 
 /**
- * Play a sound by url after being processed by Tuna.
- * @private.
- * @param {String} filename Audio file name.
- * @param {Object} filter Audio filter name.
- */
-ww.mode.MetaBallMode.prototype.playProcessedAudio_ = function(filename,
-  filter) {
-
-  if (!this.wantsAudio_) { return; }
-
-  var url = '../sounds/' + this.name_ + '/' + filename;
-
-  if (ww.testMode) {
-    url = '../' + url;
-  }
-
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
-
-  var audioContext = this.audioContext_;
-
-  var self = this;
-
-  this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(filter.input);
-    filter.connect(audioContext.destination);
-    source.noteOn(0);
-  });
-};
-
-/**
  * Function to create and draw I.
  * @private
  */

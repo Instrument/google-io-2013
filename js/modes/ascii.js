@@ -412,21 +412,14 @@ ww.mode.AsciiMode.prototype.stepPhysics = function(delta) {
 ww.mode.AsciiMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
-  if (!this.isIdle_) {
-    var hasBeenIdle = this.timeElapsed_ - this.wentIdleTime_;
-
-    if (hasBeenIdle > this.maxIdleTime_) {
-      this.enterIdle_();
-    }
-  }
-
   this.asciifyCanvas_(this.paperCanvas_);
 };
 
 
 /**
  * Rewritten, but based on blog post/source code with the following license:
- * Copyright (c) 2008 Jacob Seidelin, jseidelin@nihilogic.dk, http://blog.nihilogic.dk/
+ * Copyright (c) 2008 Jacob Seidelin, jseidelin@nihilogic.dk,
+ *  http://blog.nihilogic.dk/
  * MIT License [http://www.nihilogic.dk/licenses/mit-license.txt]
  */
 
@@ -471,7 +464,8 @@ ww.mode.AsciiMode.prototype.asciifyCanvas_ = function(sourceCanvas) {
         iCharIdx = 0;
       } else {
         var fBrightness = (0.3*iRed + 0.59*iGreen + 0.11*iBlue) / 255;
-        iCharIdx = (aCharList.length-1) - Math.round(fBrightness * (aCharList.length-1));
+        iCharIdx = (aCharList.length-1) - Math.round(fBrightness *
+          (aCharList.length-1));
       }
 
       var strThisChar = aCharList[iCharIdx];
@@ -486,4 +480,6 @@ ww.mode.AsciiMode.prototype.asciifyCanvas_ = function(sourceCanvas) {
   }
 
   oAscii.innerHTML = strChars;
+
+  return strChars;
 };

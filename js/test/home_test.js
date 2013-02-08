@@ -1,3 +1,20 @@
+var savedFunctions = {};
+function setUp() {
+  for (var key in mode.constructor.prototype) {
+    if (mode.constructor.prototype.hasOwnProperty(key)) {
+      savedFunctions[key] = mode.constructor.prototype[key];
+    }
+  }
+}
+
+function tearDown() {
+  for (var key in savedFunctions) {
+    if (savedFunctions.hasOwnProperty(key)) {
+      mode.constructor.prototype[key] = savedFunctions[key];
+    }
+  }
+}
+
 function testIdle() {
   assertTrue('Should start out idle', mode.isIdle_);
 
@@ -56,6 +73,21 @@ function testBadPattern() {
 
   assertEquals('Should not request any mode', false, matchedModeName);
   assertTrue('Added success class', mode.$pattern_.hasClass('failure'));
+}
+
+function testGoToMode() {
+  var messageName = '';
+  var messageValue = '';
+
+  mode.constructor.prototype.sendMessage_ = function(key1, key2) {
+    messageName = key1;
+    messageValue = key2;
+  };
+
+  mode.goToMode_('value');
+
+  assertEquals('messageName should be goToMode', 'goToMode', messageName);
+  assertEquals('messageValue should be value', 'value', messageValue);
 }
 
 function testWwModeHomeModeActivateI() {

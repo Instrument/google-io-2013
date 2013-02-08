@@ -1,4 +1,21 @@
-function testWwModeEightBitModeActivateI() {
+var savedFunctions = {};
+function setUp() {
+  for (var key in mode.constructor.prototype) {
+    if (mode.constructor.prototype.hasOwnProperty(key)) {
+      savedFunctions[key] = mode.constructor.prototype[key];
+    }
+  }
+}
+
+function tearDown() {
+  for (var key in savedFunctions) {
+    if (savedFunctions.hasOwnProperty(key)) {
+      mode.constructor.prototype[key] = savedFunctions[key];
+    }
+  }
+}
+
+function testWwModeAsciiModeActivateI() {
   mode.onResize();
 
   var tempX = mode.paperI_['vectors'][0]['velocity'];
@@ -9,7 +26,7 @@ function testWwModeEightBitModeActivateI() {
     mode.paperI_['vectors'][0]['velocity']);
 }
 
-function testWwModeEightBitModeActivateO() {
+function testWwModeAsciiModeActivateO() {
   mode.onResize();
 
   var tempX = mode.paperO_['vectors'][0]['velocity'];
@@ -20,7 +37,7 @@ function testWwModeEightBitModeActivateO() {
     mode.paperO_['vectors'][0]['velocity']);
 }
 
-function testWwModeEightBitModeDrawI_() {
+function testWwModeAsciiModeDrawI_() {
   mode.paperI_ = undefined;
 
   mode.onResize();
@@ -41,7 +58,7 @@ function testWwModeEightBitModeDrawI_() {
     mode.paperI_['bounds']['width']);
 }
 
-function testWwModeEightBitModeDrawO_() {
+function testWwModeAsciiModeDrawO_() {
   mode.paperO_ = undefined;
 
   mode.onResize();
@@ -63,7 +80,7 @@ function testWwModeEightBitModeDrawO_() {
     mode.paperO_['bounds']['width']);
 }
 
-function testWwModeEightBitModeDrawSlash_() {
+function testWwModeAsciiModeDrawSlash_() {
   mode.paperSlash_ = undefined;
 
   mode.onResize();
@@ -81,7 +98,7 @@ function testWwModeEightBitModeDrawSlash_() {
     tempPosition, mode.paperSlash_['segments'][0]['point']['x']);
 }
 
-function testWwModeEightBitModeInit() {
+function testWwModeAsciiModeInit() {
   mode.activateO();
 
   mode.oX_ = 10;
@@ -91,7 +108,7 @@ function testWwModeEightBitModeInit() {
   assertEquals('lastClick_ should equal oX_', mode.oX_, mode.lastClick_['x']);
 }
 
-function testWwModeEightBitModeOnResize() {
+function testWwModeAsciiModeOnResize() {
   mode.screenCenterX_ = 20;
 
   mode.onResize();
@@ -100,7 +117,7 @@ function testWwModeEightBitModeOnResize() {
     mode.screenCenterX_);
 }
 
-function testWwModeEightBitModePushPoints_() {
+function testWwModeAsciiModePushPoints_() {
   mode.init();
   mode.onResize();
 
@@ -119,7 +136,7 @@ function testWwModeEightBitModePushPoints_() {
     mode.paperO_['vectors'][0]['velocity']);
 }
 
-function testWwModeEightBitModeUpdateVectors_() {
+function testWwModeAsciiModeUpdateVectors_() {
   mode.init();
   mode.onResize();
 
@@ -138,7 +155,7 @@ function testWwModeEightBitModeUpdateVectors_() {
     mode.paperO_['vectors'][0]['length']);
 }
 
-function testWwModeEightBitModeUpdatePoints_() {
+function testWwModeAsciiModeUpdatePoints_() {
   mode.init();
   mode.onResize();
 
@@ -163,17 +180,7 @@ function testWwModeEightBitModeUpdatePoints_() {
     mode.paperO_['segments'][0]['point']['x']);
 }
 
-// Tests seem to fire faster than canvas data can be instantiated. As a result
-// I cannot currently test if pixels are being redrawn.
-function testWwModeEightBitModeDrawPixels_() {
-  mode.paperCanvas_.height = 10
-
-  var pixelCount = mode.drawPixels_(mode.paperCanvas_);
-
-  assertNotEquals('drawPixels_ should return a value', undefined, pixelCount);
-}
-
-function testWwModeEightBitModeStepPhysics() {
+function testWwModeAsciiModeStepPhysics() {
   var tempX1 = mode.paperI_['segments'][0]['point']['x'];
   var tempX2 = mode.paperO_['segments'][0]['point']['x'];
 
@@ -186,16 +193,22 @@ function testWwModeEightBitModeStepPhysics() {
     mode.paperO_['segments'][0]['point']['x']);
 }
 
-function testWwModeEightBitModeOnFrame() {
+function testWwModeAsciiModeOnFrame() {
   var redrawPixel = false;
 
-  mode.constructor.prototype.drawPixels_ = function() {
+  mode.constructor.prototype.asciifyCanvas_ = function() {
     redrawPixel = true;
   };
-
-  mode.paperCanvas_.height = 10;
 
   mode.onFrame();
 
   assertTrue('redrawPixel should now be true', redrawPixel);
+}
+
+function testWwModeAsciiModeAsciifyCanvas_() {
+  mode.paperCanvas_.height = 10;
+
+  var asciiString = mode.asciifyCanvas_(mode.paperCanvas_);
+
+  assertNotEquals('asciiString should have data', undefined, asciiString);
 }
