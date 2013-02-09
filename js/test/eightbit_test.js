@@ -163,8 +163,6 @@ function testWwModeEightBitModeUpdatePoints_() {
     mode.paperO_['segments'][0]['point']['x']);
 }
 
-// Tests seem to fire faster than canvas data can be instantiated. As a result
-// I cannot currently test if pixels are being redrawn.
 function testWwModeEightBitModeDrawPixels_() {
   mode.paperCanvas_.height = 10
 

@@ -175,7 +175,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
 
         // Run the scheduled tweens.
         ww.raf.subscribe('app', self, self.renderFrame_);
-      }, 50);
+      }, 500);
     };
   } else {
     // Non-transition onload handler

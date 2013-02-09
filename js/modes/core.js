@@ -160,6 +160,7 @@ ww.mode.Core.prototype.onResize = function(redraw) {
   if (redraw) {
     this.redraw();
   }
+
 };
 
 /**
@@ -571,6 +572,11 @@ ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
     this.paperCanvas_ = document.createElement('canvas');
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
+    $(this.paperCanvas_).css({
+      'position': 'absolute',
+      'left': 0,
+      'top': 0
+    });
     if (!doNotAdd) {
       $(document.body).prepend(this.paperCanvas_);
     }

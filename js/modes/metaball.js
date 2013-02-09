@@ -328,8 +328,6 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
 
-  this.paperCanvas_.width = this.width_;
-  this.paperCanvas_.height = this.height_;
   this.pctx_ = this.paperCanvas_.getContext('2d');
   
   this.gcanvas_ = document.createElement('canvas');
@@ -462,11 +460,6 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
     this.canvas_.width = this.width_;
     this.canvas_.height = this.height_;
   }
-
-  if (this.paperCanvas_) {
-    this.paperCanvas_.width = this.width_;
-    this.paperCanvas_.height = this.height_;
-  }  
 
   if (this.gcanvas_) {
     this.gcanvas_.width = this.width_;
