@@ -5,13 +5,7 @@ body {
   padding: 0;
 }
 
-#io-wrapper {
-  position: absolute;
-  overflow: hidden;
-  z-index: 1;
-}
-
-iframe {
+.mode {
   border: 0;
   background: transparent;
   position: absolute;
@@ -19,3 +13,5 @@ iframe {
   left: 0;
   z-index: 5;
 }
+
+@import "mode";

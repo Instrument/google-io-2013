@@ -4,14 +4,17 @@ goog.require('ww.raf');
 
 /**
  * @constructor
+ * @param {Element} containerElem Element of the mode.
  * @param {String} name Name of the mode.
  * @param {Boolean} wantsAudio Whether this mode needs webAudio.
  * @param {Boolean} wantsDrawing Whether this mode needs to draw onFrame.
  * @param {Boolean} wantsPhysics Whether this mode needs physics.
  */
-ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
+ww.mode.Core = function(containerElem, name, wantsAudio, wantsDrawing, wantsPhysics) {
   // Define transform prefix.
   this.prefix_ = Modernizr.prefixed('transform');
+
+  this.containerElem_ = containerElem;
 
   this.name_ = name;
 
@@ -35,51 +38,28 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
   this.$window_ = $(window);
   this.width_ = 0;
   this.height_ = 0;
-
-  var self = this;
-  this.$window_.bind('message', function(evt) {
-    var data = evt.originalEvent.data;
-    self.log('Got message: ' + data['name'], data);
-
-    if (data['name'] === 'focus') {
-      self.focus_();
-    } else if (data['name'] === 'unfocus') {
-      self.unfocus_();
-    }
-  });
-
-  // Catch top-level touch events and cancel them to avoid
-  // mobile browser scroll.
-  if (Modernizr.touch) {
-    document.body.style[Modernizr.prefixed('userSelect')] = 'none';
-    document.body.style[Modernizr.prefixed('userDrag')] = 'none';
-    document.body.style[Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
-
-    this.$window_.bind('touchmove.core', function(e) {
-      e.preventDefault();
-    });
-  }
   
-  $(function() {
-    self.$letterI_ = $('#letter-i');
-    self.$letterO_ = $('#letter-o');
+  var self = this;
+  setTimeout(function() {
+    self.$letterI_ = $(self.containerElem_).find('#letter-i');
+    self.$letterO_ = $(self.containerElem_).find('#letter-o');
 
     self.init();
 
-    self.$window_.resize(ww.util.throttle(function() {
-      self.onResize(true);
-    }, 50));
+    // self.$window_.resize(ww.util.throttle(function() {
+    //   self.onResize(true);
+    // }, 50));
     self.onResize();
 
     var modeDetails = ww.mode.findModeByName(self.name_);
 
     if (modeDetails.pattern) {
-      self.$back = $('<div id="back"></div>').prependTo(document.body);
+      self.$back = $('<div id="back"></div>').prependTo(self.containerElem_);
 
       var modePattern = ww.util.pad(modeDetails.pattern.toString(2), modeDetails.len);
       var modeHTML = modePattern.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
 
-      $('<div id="code">' + modeHTML + '</div>').prependTo(document.body);
+      $('<div id="code">' + modeHTML + '</div>').prependTo(self.containerElem_);
     }
 
     // Autofocus
@@ -87,7 +67,11 @@ ww.mode.Core = function(name, wantsAudio, wantsDrawing, wantsPhysics) {
 
     // Mark this mode as ready.
     self.ready_();
-  });
+  }, 10);
+};
+
+ww.mode.Core.prototype.find = function(query) {
+  return $(this.containerElem_).find(query);
 };
 
 /**
@@ -126,9 +110,9 @@ ww.mode.Core.prototype.showReload = function() {
   var self = this;
 
   if (!this.$reloadModal_) {
-    this.$reloadModal_ = $('#reload');
+    this.$reloadModal_ = $(this.containerElem_).find('#reload');
     if (!this.$reloadModal_.length) {
-      this.$reloadModal_ = $("<div id='reload'></div>").appendTo(document.body);
+      this.$reloadModal_ = $("<div id='reload'></div>").appendTo(this.containerElem_);
     }
 
     var evt = Modernizr.touch ? 'touchend' : 'mouseup';
@@ -147,8 +131,8 @@ ww.mode.Core.prototype.showReload = function() {
  * @param {Boolean} redraw Whether resize redraws.
  */
 ww.mode.Core.prototype.onResize = function(redraw) {
-  this.width_ = this.$window_.width();
-  this.height_ = this.$window_.height();
+  this.width_ = $(this.containerElem_).width();
+  this.height_ = $(this.containerElem_).height();
   this.log('Resize ' + this.width_ + 'x' + this.height_);
 
   if (this.paperCanvas_) {
@@ -239,18 +223,28 @@ ww.mode.Core.prototype.onFrame = function(delta) {
  * @private
  */
 ww.mode.Core.prototype.ready_ = function() {
-  if (DEBUG_MODE) {
-    window['currentMode'] = this;
-  }
+  // if (DEBUG_MODE) {
+  //   window['currentMode'] = this;
+  // }
 
-  if (window['onModeReady']) {
-    window['onModeReady'](this);
-  }
+  // if (window['onModeReady']) {
+  //   window['onModeReady'](this);
+  // }
 
   this.log('Is ready');
 
   // Notify parent frame that we are ready.
   this.sendMessage_(this.name_ + '.ready');
+};
+
+ww.mode.Core.prototype.postMessage = function(data) {
+  this.log('Got message: ' + data['name'], data);
+
+  if (data['name'] === 'focus') {
+    this.focus_();
+  } else if (data['name'] === 'unfocus') {
+    this.unfocus_();
+  }
 };
 
 /**
@@ -260,11 +254,11 @@ ww.mode.Core.prototype.ready_ = function() {
  * @param {Object} value The data to send.
  */
 ww.mode.Core.prototype.sendMessage_ = function(msgName, value) {
-  if (window.parent && window.parent.postMessage) {
-    window.parent.postMessage({
+  if (window['app'] && window['app'].postMessage) {
+    window['app'].postMessage({
       'name': msgName,
       'data': value
-    }, '*');
+    });
   }
 };
 
@@ -337,19 +331,19 @@ ww.mode.Core.prototype.didFocus = function() {
     });
   }
 
-  $(document).bind('keypress.core', function(e) {
-    if ((e.keyCode === 105) || (e.keyCode === 49)) {
-      self.activateI();
-    } else if ((e.keyCode === 111) || (e.keyCode === 48)) {
-      self.activateO();
-    } else {
-      return;
-    }
+  // $(document).bind('keypress.core', function(e) {
+  //   if ((e.keyCode === 105) || (e.keyCode === 49)) {
+  //     self.activateI();
+  //   } else if ((e.keyCode === 111) || (e.keyCode === 48)) {
+  //     self.activateO();
+  //   } else {
+  //     return;
+  //   }
 
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  });
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   return false;
+  // });
 };
 
 /**
@@ -389,7 +383,7 @@ ww.mode.Core.prototype.didUnfocus = function() {
     this.$back.unbind(evt + '.core');
   }
 
-  $(document).unbind('keypress.core');
+  // $(document).unbind('keypress.core');
 };
 
 /**
@@ -490,7 +484,7 @@ ww.mode.Core.prototype.getAudioContext_ = function() {
 ww.mode.Core.prototype.preloadSound = function(filename) {
   if (!this.wantsAudio_) { return; }
 
-  var url = '../sounds/' + this.name_ + '/' + filename;
+  var url = 'sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }
@@ -509,7 +503,7 @@ ww.mode.Core.prototype.preloadSound = function(filename) {
 ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
   if (!this.wantsAudio_) { return; }
 
-  var url = '../sounds/' + this.name_ + '/' + filename;
+  var url = 'sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }
@@ -574,7 +568,7 @@ ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
     this.paperCanvas_.height = this.height_;
     
     if (!doNotAdd) {
-      $(document.body).prepend(this.paperCanvas_);
+      $(this.containerElem_).prepend(this.paperCanvas_);
     }
     paper['setup'](this.paperCanvas_);
   }
