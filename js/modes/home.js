@@ -5,8 +5,8 @@ goog.provide('ww.mode.HomeMode');
 /**
  * @constructor
  */
-ww.mode.HomeMode = function() {
-  goog.base(this, 'home', true, true);
+ww.mode.HomeMode = function(containerElem) {
+  goog.base(this, containerElem, 'home', true, true);
 
   this.patternMatcher_ = new ww.PatternMatcher(ww.mode.modes);
 
@@ -298,8 +298,8 @@ ww.mode.HomeMode.prototype.draw13_ = function(el) {
 ww.mode.HomeMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.$date_ = $('#date');
-  this.$pattern_ = $('#pattern');
+  this.$date_ = $(this.containerElem_).find('#date');
+  this.$pattern_ = $(this.containerElem_).find('#pattern');
 
   this.patternMatcher_.reset();
 
@@ -324,15 +324,15 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var self = this;
 
   var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $('#menu').bind(evt2 + '.core', function() {
-    $(document.body).addClass('nav-visible');
+  $(this.containerElem_).find('#menu').bind(evt2 + '.core', function() {
+    $(this.containerElem_).addClass('nav-visible');
   });
 
-  $('#modal').bind(evt2 + '.core', function() {
-    $(document.body).removeClass('nav-visible');
+  $(this.containerElem_).find('#modal').bind(evt2 + '.core', function() {
+    $(this.containerElem_).removeClass('nav-visible');
   });
 
-  $('#dropdown').bind(evt2 + '.core', function(evt) {
+  $(this.containerElem_).find('#dropdown').bind(evt2 + '.core', function(evt) {
     evt.preventDefault();
     evt.stopPropagation();
   });
@@ -360,9 +360,9 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
   var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $('#menu').unbind(evt2 + '.core');
-  $('#modal').unbind(evt2 + '.core');
-  $('#dropdown').unbind(evt2 + '.core');
+  $(this.containerElem_).find('#menu').unbind(evt2 + '.core');
+  $(this.containerElem_).find('#modal').unbind(evt2 + '.core');
+  $(this.containerElem_).find('#dropdown').unbind(evt2 + '.core');
 };
 
 /**
@@ -410,8 +410,8 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  if ($('.mode-wrapper')) {
-   this.draw13_($('.mode-wrapper')); 
+  if ($(this.containerElem_).find('.mode-wrapper')) {
+   this.draw13_($(this.containerElem_).find('.mode-wrapper')); 
   }
 
   if (redraw) {

@@ -20,9 +20,6 @@ goog.require('ww.mode.RocketMode');
 goog.require('ww.mode.DonutMode');
 goog.require('ww.mode.BurgerMode');
 
-/** @define {boolean} */
-var DEBUG_MODE = false;
-
 /**
  * Global list of registered modes.
  * @type {Object}
@@ -81,17 +78,17 @@ ww.mode.register('donut',     ww.mode.DonutMode,     150, 8); // 10010110
 ww.mode.register('burger',    ww.mode.BurgerMode,    57,  8); // 00111001
 
 // On DocumentReady
-$(function() {
-  // Extract the name from the URL.
-  var parts = window.location.href.split('/'),
-      page = parts[parts.length - 1],
-      scriptName = page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
+// $(function() {
+//   // Extract the name from the URL.
+//   var parts = window.location.href.split('/'),
+//       page = parts[parts.length - 1],
+//       scriptName = page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
 
-  // Look up the mode by name.
-  var pair = ww.mode.findModeByName(scriptName);
+//   // Look up the mode by name.
+//   var pair = ww.mode.findModeByName(scriptName);
 
-  // Initialize
-  if (pair && pair.klass) {
-    new pair.klass();
-  }
-});
+//   // Initialize
+//   if (pair && pair.klass) {
+//     new pair.klass();
+//   }
+// });

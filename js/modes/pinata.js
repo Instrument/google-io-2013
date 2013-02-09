@@ -6,8 +6,8 @@ TWOPI = TWOPI || Math.PI * 2;
 /**
  * @constructor
  */
-ww.mode.PinataMode = function() {
-  goog.base(this, 'pinata', true, false, true);
+ww.mode.PinataMode = function(containerElem) {
+  goog.base(this, containerElem, 'pinata', true, false, true);
 
   if (this.wantsAudio_) {
     this.preloadSound('whack.mp3');
