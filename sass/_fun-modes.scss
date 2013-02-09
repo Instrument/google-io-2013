@@ -17,10 +17,6 @@
 }
 
 .bowling-mode {
-  #letter-o {
-    @include transform(translate3d(0,0,0));
-  }
-
   #letter-i, #letter-o-wrapper {
     @include transform-origin(50% 50%, false);
   }

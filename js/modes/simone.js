@@ -243,15 +243,16 @@ ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
         fadeInQuick.to({ 'opacity': 1 }, 100);
 
     if (this.wantsAudio_) {
-        fadeInQuick['onStart'](function() {
-          self.source.connect(self.analyser);
-          self.analyser.connect(self.audioContext_.destination);
-          self.source.noteOn(0);
-        });
+      fadeInQuick['onStart'](function() {
+        self.source.connect(self.analyser);
+        self.analyser.connect(self.audioContext_.destination);
+        self.source.noteOn(0);
+      });
     }
-        fadeInQuick.onUpdate(function() {
-          segment.css('opacity', this['opacity']);
-        });
+
+    fadeInQuick.onUpdate(function() {
+      segment.css('opacity', this['opacity']);
+    });
 
     this.addTween(fadeInQuick);
   }
@@ -272,17 +273,21 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
 
   if (this.isPlaying && !this.isAnimating) {
     var self = this,
-        guessSeg = self.segments[guess];
+        guessSeg = self.segments[guess],
+        duration = (this.wantsAudio_) ? 200 : 400;
 
     var fadeOut = new TWEEN.Tween({ 'opacity': 1 });
-        fadeOut.to({ 'opacity': 0.5 }, 200);
-        fadeOut.onUpdate(function() {
-          guessSeg.css('opacity', this['opacity']);
-        });
+    fadeOut.to({ 'opacity': 0.5 }, duration);
+    fadeOut.onUpdate(function() {
+      guessSeg.css('opacity', this['opacity']);
+    });
+
     if (this.wantsAudio_) {
-        fadeOut.onComplete(function() {
-          self.source['disconnect']();
-        });
+      fadeOut.onComplete(function() {
+        self.source['disconnect']();
+      });
+    } else {
+      fadeOut.delay(200);
     }
 
     self.addTween(fadeOut);

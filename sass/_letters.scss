@@ -25,10 +25,9 @@
 #letter-i-container,
 #letter-o-container {
   bottom: 0;
-  @include box-sizing(border-box);
   position: absolute;
   top: 0;
-  @include transform(translate3d(0, 0, 0));
+  // @include transform(translate3d(0, 0, 0));
 }
 
 #letter-i-container {

@@ -9,9 +9,11 @@ TWOPI = TWOPI || Math.PI * 2;
 ww.mode.PinataMode = function() {
   goog.base(this, 'pinata', true, false, true);
 
-  this.preloadSound('whack.mp3');
-  this.preloadSound('whoosh-1.wav');
-  this.preloadSound('whoosh-2.wav');
+  if (this.wantsAudio_) {
+    this.preloadSound('whack.mp3');
+    this.preloadSound('whoosh-1.wav');
+    this.preloadSound('whoosh-2.wav');
+  }
 
   this.ballSpeed_ = 250;
 
@@ -277,7 +279,9 @@ ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
 ww.mode.PinataMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
-  this.playSound('whack.mp3');
+  if (this.wantsAudio_) {
+    this.playSound('whack.mp3');
+  }
 
   this.animateI_();
 
@@ -308,10 +312,12 @@ ww.mode.PinataMode.prototype.activateI = function() {
 ww.mode.PinataMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
-  if (this.whackCount_ % 2 === 0) {
-    this.playSound('whoosh-1.wav');
-  } else {
-    this.playSound('whoosh-2.wav');
+  if (this.wantsAudio_) {
+    if (this.whackCount_ % 2 === 0) {
+      this.playSound('whoosh-1.wav');
+    } else {
+      this.playSound('whoosh-2.wav');
+    }
   }
 
   this.animateO_();
