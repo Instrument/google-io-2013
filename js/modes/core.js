@@ -160,6 +160,7 @@ ww.mode.Core.prototype.onResize = function(redraw) {
   if (redraw) {
     this.redraw();
   }
+
 };
 
 /**
@@ -571,6 +572,11 @@ ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
     this.paperCanvas_ = document.createElement('canvas');
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
+    $(this.paperCanvas_).css({
+      'position': 'absolute',
+      'left': 0,
+      'top': 0
+    });
     if (!doNotAdd) {
       $(document.body).prepend(this.paperCanvas_);
     }
@@ -582,4 +588,27 @@ ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
 
 ww.mode.Core.prototype.addTween = function(tween) {
   tween.start(this.timeElapsed_);
+};
+
+/**
+ * Function to return mouse or touch coordinates depending on what's available.
+ * @param {Object} e The event to get X and Y coordinates from.
+ */
+ww.mode.Core.prototype.getCoords = function(e) {
+  var coords = [
+    {
+      'x': 0,
+      'y': 0
+    }
+  ];
+
+  if (e.originalEvent.changedTouches) {
+    coords['x'] = e.originalEvent.changedTouches[0].pageX;
+    coords['y'] = e.originalEvent.changedTouches[0].pageY;
+  } else {
+    coords['x'] = e.pageX;
+    coords['y'] = e.pageY;
+  }
+
+  return coords;
 };

@@ -1,98 +1,4 @@
-var savedFunctions = {};
-function setUp() {
-  for (var key in mode.constructor.prototype) {
-    if (mode.constructor.prototype.hasOwnProperty(key)) {
-      savedFunctions[key] = mode.constructor.prototype[key];
-    }
-  }
-}
-
-function tearDown() {
-  for (var key in savedFunctions) {
-    if (savedFunctions.hasOwnProperty(key)) {
-      mode.constructor.prototype[key] = savedFunctions[key];
-    }
-  }
-}
-
-function testIdle() {
-  assertTrue('Should start out idle', mode.isIdle_);
-
-  mode.leaveIdle_();
-  assertFalse('Should move out of idle', mode.isIdle_);
-
-  mode.enterIdle_();
-  assertTrue('Should return to idle', mode.isIdle_);
-
-  mode.resetIdle_();
-  assertFalse('Should move out of idle', mode.isIdle_);
-}
-
-function testFullPattern() {
-  mode.patternMatcher_.reset();
-
-  var matchedModeName = false;
-
-  mode.constructor.prototype.goToMode_ = function(key) {
-    matchedModeName = key;
-  };
-
-  mode.addPatternCharacter('11011011');
-
-  assertEquals('Should request song mode', 'song', matchedModeName);
-  assertTrue('Added success class', mode.$pattern_.hasClass('success'));
-}
-
-function testPartialPattern() {
-  mode.patternMatcher_.reset();
-
-  var matchedModeName = false;
-
-  mode.constructor.prototype.goToMode_ = function(key) {
-    matchedModeName = key;
-  };
-
-  mode.addPatternCharacter('00');
-
-
-  assertEquals('Should not request any mode', false, matchedModeName);
-  assertFalse('No success class', mode.$pattern_.hasClass('success'));
-  assertFalse('No failure class', mode.$pattern_.hasClass('failure'));
-}
-
-function testBadPattern() {
-  mode.patternMatcher_.reset();
-  
-  var matchedModeName = false;
-
-  mode.constructor.prototype.goToMode_ = function(key) {
-    matchedModeName = key;
-  };
-
-  mode.addPatternCharacter('10000000');
-
-  assertEquals('Should not request any mode', false, matchedModeName);
-  assertTrue('Added success class', mode.$pattern_.hasClass('failure'));
-}
-
-function testGoToMode() {
-  var messageName = '';
-  var messageValue = '';
-
-  mode.constructor.prototype.sendMessage_ = function(key1, key2) {
-    messageName = key1;
-    messageValue = key2;
-  };
-
-  mode.goToMode_('value');
-
-  assertEquals('messageName should be goToMode', 'goToMode', messageName);
-  assertEquals('messageValue should be value', 'value', messageValue);
-}
-
-function testWwModeHomeModeActivateI() {
-  mode.patternMatcher_.reset();
-
+function testWwModeEightBitModeActivateI() {
   mode.onResize();
 
   var tempX = mode.paperI_['vectors'][0]['velocity'];
@@ -101,14 +7,9 @@ function testWwModeHomeModeActivateI() {
 
   assertNotEquals('paperI_ vectors should have changed', tempX,
     mode.paperI_['vectors'][0]['velocity']);
-
-  assertEquals('currentPattern_ should be 1', '1',
-    mode.patternMatcher_.currentPattern_);
 }
 
-function testWwModeHomeModeActivateO() {
-  mode.patternMatcher_.reset();
-
+function testWwModeEightBitModeActivateO() {
   mode.onResize();
 
   var tempX = mode.paperO_['vectors'][0]['velocity'];
@@ -117,12 +18,9 @@ function testWwModeHomeModeActivateO() {
 
   assertNotEquals('paperO_ vectors should have changed', tempX,
     mode.paperO_['vectors'][0]['velocity']);
-
-  assertEquals('currentPattern_ should be 0', '0',
-    mode.patternMatcher_.currentPattern_);
 }
 
-function testWwModeHomeModeDrawI_() {
+function testWwModeEightBitModeDrawI_() {
   mode.paperI_ = undefined;
 
   mode.onResize();
@@ -143,7 +41,7 @@ function testWwModeHomeModeDrawI_() {
     mode.paperI_['bounds']['width']);
 }
 
-function testWwModeHomeModeDrawO_() {
+function testWwModeEightBitModeDrawO_() {
   mode.paperO_ = undefined;
 
   mode.onResize();
@@ -165,7 +63,7 @@ function testWwModeHomeModeDrawO_() {
     mode.paperO_['bounds']['width']);
 }
 
-function testWwModeHomeModeDrawSlash_() {
+function testWwModeEightBitModeDrawSlash_() {
   mode.paperSlash_ = undefined;
 
   mode.onResize();
@@ -183,20 +81,17 @@ function testWwModeHomeModeDrawSlash_() {
     tempPosition, mode.paperSlash_['segments'][0]['point']['x']);
 }
 
-function testWwModeHomeModeInit() {
+function testWwModeEightBitModeInit() {
   mode.activateO();
 
   mode.oX_ = 10;
 
   mode.init();
 
-  assertEquals('the pattern should be reset', '',
-    mode.patternMatcher_.currentPattern_);
-
   assertEquals('lastClick_ should equal oX_', mode.oX_, mode.lastClick_['x']);
 }
 
-function testWwModeHomeModeOnResize() {
+function testWwModeEightBitModeOnResize() {
   mode.screenCenterX_ = 20;
 
   mode.onResize();
@@ -205,7 +100,7 @@ function testWwModeHomeModeOnResize() {
     mode.screenCenterX_);
 }
 
-function testWwModeHomeModePushPoints_() {
+function testWwModeEightBitModePushPoints_() {
   mode.init();
   mode.onResize();
 
@@ -224,7 +119,7 @@ function testWwModeHomeModePushPoints_() {
     mode.paperO_['vectors'][0]['velocity']);
 }
 
-function testWwModeHomeModeUpdateVectors_() {
+function testWwModeEightBitModeUpdateVectors_() {
   mode.init();
   mode.onResize();
 
@@ -243,7 +138,7 @@ function testWwModeHomeModeUpdateVectors_() {
     mode.paperO_['vectors'][0]['length']);
 }
 
-function testWwModeHomeModeUpdatePoints_() {
+function testWwModeEightBitModeUpdatePoints_() {
   mode.init();
   mode.onResize();
 
@@ -268,23 +163,37 @@ function testWwModeHomeModeUpdatePoints_() {
     mode.paperO_['segments'][0]['point']['x']);
 }
 
-function testWwModeHomeModeOnFrame() {
-  mode.isIdle_ = false;
+function testWwModeEightBitModeDrawPixels_() {
+  mode.paperCanvas_.height = 10
 
-  mode.timeElapsed_ = 10;
-  mode.wentIdleTime_ = 2;
-  mode.maxIdleTime_ = 5;
+  var pixelCount = mode.drawPixels_(mode.paperCanvas_);
 
+  assertNotEquals('drawPixels_ should return a value', undefined, pixelCount);
+}
+
+function testWwModeEightBitModeStepPhysics() {
   var tempX1 = mode.paperI_['segments'][0]['point']['x'];
   var tempX2 = mode.paperO_['segments'][0]['point']['x'];
 
-  mode.onFrame();
-
-  assertTrue('isIdle_ should now be true', mode.isIdle_);
+  mode.stepPhysics();
 
   assertNotEquals('paperI_ points should have updated', tempX1,
     mode.paperI_['segments'][0]['point']['x']);
 
   assertNotEquals('paperO_ points should have updated', tempX2,
     mode.paperO_['segments'][0]['point']['x']);
+}
+
+function testWwModeEightBitModeOnFrame() {
+  var redrawPixel = false;
+
+  mode.constructor.prototype.drawPixels_ = function() {
+    redrawPixel = true;
+  };
+
+  mode.paperCanvas_.height = 10;
+
+  mode.onFrame();
+
+  assertTrue('redrawPixel should now be true', redrawPixel);
 }

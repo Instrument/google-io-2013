@@ -9,9 +9,11 @@ TWOPI = TWOPI || Math.PI * 2;
 ww.mode.PinataMode = function() {
   goog.base(this, 'pinata', true, false, true);
 
-  this.preloadSound('whack.mp3');
-  this.preloadSound('whoosh-1.wav');
-  this.preloadSound('whoosh-2.wav');
+  if (this.wantsAudio_) {
+    this.preloadSound('whack.mp3');
+    this.preloadSound('whoosh-1.wav');
+    this.preloadSound('whoosh-2.wav');
+  }
 
   this.ballSpeed_ = 250;
 
@@ -96,13 +98,13 @@ ww.mode.PinataMode.prototype.didFocus = function() {
   this.center_['y'] = ~~(this.bounds_['top'] + (this.bounds_['height'] / 2));
 
   // particle representation of robot
-  this.robot_ = new Particle(5.0);
-  this.robot_.setRadius(this.bounds_['width']);
-  this.robot_.fixed = true;
-  this.robot_.moveTo(new Vector(this.center_['x'], this.center_['y']));
-  this.collision_.pool.push(this.robot_);
-  this.robot_.behaviours.push(this.collision_);
-  this.physicsWorld_.particles.push(this.robot_);
+  var robot = new Particle(5.0);
+  robot.setRadius(this.bounds_['width']);
+  robot.fixed = true;
+  robot.moveTo(new Vector(this.center_['x'], this.center_['y']));
+  this.collision_.pool.push(robot);
+  robot.behaviours.push(this.collision_);
+  this.physicsWorld_.particles.push(robot);
 
   this.prepopulate_(150);
 
@@ -214,10 +216,10 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
     ball['rotate'] = ~~Random(-360, 360) * (Math.PI / 180);
     ball['color'] = this.COLORS_[~~Random(0, this.NUM_COLORS)];
 
-    ball.moveTo(new Vector(ball['startX'], ball['startY']));
+    ball.moveTo(new Vector(0, 0));
 
     ball.vel = new Vector(Random(3, 6) * this.ballSpeed_ * dir,
-                          Random(-3, 0.5) * this.ballSpeed_);
+                          Random(-3, 1.5) * this.ballSpeed_);
 
     ball.behaviours.push(this.force_);
 
@@ -233,10 +235,11 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
  */
 ww.mode.PinataMode.prototype.activateBalls_ = function() {
   var ball,
-      pop = Math.min(this.deactive_, ~~Random(1, 3) + this.whackCount_);
+      pop = Math.min(this.deactive_, ~~Random(1, 3) + ~~(this.whackCount_ / 2));
 
   for (var i = this.current_; i <= this.current_ + pop; i++) {
     ball = this.physicsWorld_.particles[i];
+    ball.moveTo(new Vector(ball['startX'], ball['startY']));
     this.collision_.pool.push(ball);
     ball.behaviours.push(this.collision_);
     ball.fixed = false;
@@ -244,21 +247,25 @@ ww.mode.PinataMode.prototype.activateBalls_ = function() {
 
   this.deactive_ = this.deactive_ - pop;
   this.current_ = this.current_ + pop;
-  this.log('activated ' + pop + ', ' + this.deactive_ + ' remaining.');
 };
 
 
 /**
- * Hide and move all balls back to original start positions.
+ * Hide, resize and move all balls back to original start positions.
+ * Start positions updated to reflect new center.
  * @private
  */
 ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
   this.physicsWorld_.particles[0].moveTo(
       new Vector(this.center_['x'], this.center_['y']));
 
-  var ball;
+  var ball, dir;
   for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
+    dir = (i % 2 === 0) ? -1 : 1;
     ball = this.physicsWorld_.particles[i];
+    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2.5);
+    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir;
+    ball['startY'] = this.center_['y'] + ball.radius / 2;
     ball.moveTo(new Vector(ball['startX'], ball['startY']));
     ball.fixed = true;
   }
@@ -272,7 +279,9 @@ ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
 ww.mode.PinataMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
-  this.playSound('whack.mp3');
+  if (this.wantsAudio_) {
+    this.playSound('whack.mp3');
+  }
 
   this.animateI_();
 
@@ -303,10 +312,12 @@ ww.mode.PinataMode.prototype.activateI = function() {
 ww.mode.PinataMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
-  if (this.whackCount_ % 2 === 0) {
-    this.playSound('whoosh-1.wav');
-  } else {
-    this.playSound('whoosh-2.wav');
+  if (this.wantsAudio_) {
+    if (this.whackCount_ % 2 === 0) {
+      this.playSound('whoosh-1.wav');
+    } else {
+      this.playSound('whoosh-2.wav');
+    }
   }
 
   this.animateO_();

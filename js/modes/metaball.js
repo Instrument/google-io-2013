@@ -36,38 +36,6 @@ ww.mode.MetaBallMode = function() {
 goog.inherits(ww.mode.MetaBallMode, ww.mode.Core);
 
 /**
- * Play a sound by url after being processed by Tuna.
- * @private.
- * @param {String} filename Audio file name.
- * @param {Object} filter Audio filter name.
- */
-ww.mode.MetaBallMode.prototype.playProcessedAudio_ = function(filename,
-  filter) {
-
-  if (!this.wantsAudio_) { return; }
-
-  var url = '../sounds/' + this.name_ + '/' + filename;
-
-  if (ww.testMode) {
-    url = '../' + url;
-  }
-
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
-
-  var audioContext = this.audioContext_;
-
-  var self = this;
-
-  this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(filter.input);
-    filter.connect(audioContext.destination);
-    source.noteOn(0);
-  });
-};
-
-/**
  * Function to create and draw I.
  * @private
  */
@@ -136,6 +104,9 @@ ww.mode.MetaBallMode.prototype.getVector_ = function(radians, length) {
 
 /**
  * Function to calculate the connecting paths between balls.
+ * Ported from the paper.js Metaball example which was ported from the original
+ *  Metaball script by SATO Hiroyuki.
+ *  http://park12.wakwak.com/~shp/lc/et/en_aics_script.html
  * @param {Object} ball1 The first ball to compare.
  * @param {Object} ball2 The second ball to compare.
  * @param {Number} v The extremity of the curves generated.
@@ -264,6 +235,20 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
 };
 
 /**
+ * Function to size the '13' svg respective to the O size.
+ * @param {Object} el The dom element containing the '13' svg.
+ * @private
+ */
+ww.mode.MetaBallMode.prototype.draw13_ = function(el) {
+  el.css({
+    'width': this.oRad_ * 0.33333333,
+    'height': this.oRad_ * 0.25555556,
+    'left': this.oX_ + (this.oRad_ * 0.38888889),
+    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+  });
+};
+
+/**
  * Function to initialize the current mode.
  * Sets initial variables.
  */
@@ -331,30 +316,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
 };
 
 /**
- * Function to return mouse or touch coordinates depending on what's available.
- * @param {Object} e The event to get X and Y coordinates from.
- * @private
- */
-ww.mode.MetaBallMode.prototype.getCoords_ = function(e) {
-  var coords = [
-    {
-      'x': 0,
-      'y': 0
-    }
-  ];
-
-  if (e.originalEvent.changedTouches) {
-    coords['x'] = e.originalEvent.changedTouches[0].pageX;
-    coords['y'] = e.originalEvent.changedTouches[0].pageY;
-  } else {
-    coords['x'] = e.pageX;
-    coords['y'] = e.pageY;
-  }
-
-  return coords;
-};
-
-/**
  * Event is called after a mode focused.
  */
 ww.mode.MetaBallMode.prototype.didFocus = function() {
@@ -367,8 +328,6 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
 
-  this.paperCanvas_.width = this.width_;
-  this.paperCanvas_.height = this.height_;
   this.pctx_ = this.paperCanvas_.getContext('2d');
   
   this.gcanvas_ = document.createElement('canvas');
@@ -385,8 +344,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
   this.$canvas_.bind(downEvt + '.metaball', function(e) {
 
-    self.mouseX_ = self.getCoords_(e)['x'];
-    self.mouseY_ = self.getCoords_(e)['y'];
+    self.mouseX_ = self.getCoords(e)['x'];
+    self.mouseY_ = self.getCoords(e)['y'];
 
     var activeBall;
 
@@ -435,7 +394,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
             self.gainNodes_[self.sources_.length - 1].connect(
               self.audioContext_.destination);
 
-            self.sources_[self.sources_.length - 1].start(0);
+            self.sources_[self.sources_.length - 1].noteOn(0);
             self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
           }
         } else if (activeBall != self.world_.particles[0]) {
@@ -450,8 +409,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
     // Update mouse or touch coordinates on move.
     var moveEvt = Modernizr.touch ? 'touchmove' : 'mousemove';
     self.$canvas_.bind(moveEvt + '.metaball', function(e) {
-      self.mouseX_ = self.getCoords_(e)['x'];
-      self.mouseY_ = self.getCoords_(e)['y'];
+      self.mouseX_ = self.getCoords(e)['x'];
+      self.mouseY_ = self.getCoords(e)['y'];
 
       // If a ball has been activated keep it locked to mouse/touch coordinates.
       if (activeBall && activeBall['fixed'] === true) {
@@ -502,11 +461,6 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
     this.canvas_.height = this.height_;
   }
 
-  if (this.paperCanvas_) {
-    this.paperCanvas_.width = this.width_;
-    this.paperCanvas_.height = this.height_;
-  }  
-
   if (this.gcanvas_) {
     this.gcanvas_.width = this.width_;
     this.gcanvas_.height = this.height_;
@@ -539,6 +493,10 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
 
   // Set the size of the ball radial gradients.
   this.gradSize_ = this.oRad_ * 4;
+
+  if ($('.mode-wrapper')) {
+   this.draw13_($('.mode-wrapper')); 
+  }
 
   this.redraw();
 };

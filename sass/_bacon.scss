@@ -5,6 +5,7 @@
 #letter-i, #letter-o,
 #bacon-fat, #bacon-meat,
 #egg-cracked, #egg-whole,
-#egg-whites, #egg-yolk {
+#egg-whites, #egg-yolk,
+[id*=fat-] {
   @include transform-origin(50% 50%, false);
 }

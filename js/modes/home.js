@@ -194,7 +194,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
   // Create a new paper.js path for O based off the previous variables.
   this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
 
-  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 12,
+  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 6,
     this.oRad_);
 
   this.paperO_['vectors'] = [];
@@ -274,6 +274,20 @@ ww.mode.HomeMode.prototype.drawSlash_ = function() {
 
     this.paperSlash_['strokeWidth'] = Math.min(this.width_ * 0.01388889, 10);
   }
+};
+
+/**
+ * Function to size the '13' svg respective to the O size.
+ * @param {Object} el The dom element containing the '13' svg.
+ * @private
+ */
+ww.mode.HomeMode.prototype.draw13_ = function(el) {
+  el.css({
+    'width': this.oRad_ * 0.33333333,
+    'height': this.oRad_ * 0.25555556,
+    'left': this.oX_ + (this.oRad_ * 0.38888889),
+    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+  });
 };
 
 /**
@@ -363,12 +377,11 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
   this.screenCenterY_ = this.height_ / 2;
 
   // Set I's initial dimensions.
-  this.iWidth_ = Math.min(this.width_ * 0.205, 90);
+  this.iWidth_ = this.width_ * 0.205;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ -
-    Math.min(this.width_ * 0.15833333, 68);
+  this.iX_ = this.screenCenterX_ - this.iWidth_ - this.width_ * 0.15833333;
 
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
@@ -376,7 +389,7 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
     this.iY_ + this.iHeight_ / 2);
 
   // Set O's radius.
-  this.oRad_ = Math.min(this.width_ * 0.1944444444, 90);
+  this.oRad_ = this.width_ * 0.1944444444;
 
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
@@ -396,6 +409,10 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
    * Create the letter O.
    */
   this.drawO_();
+
+  if ($('.mode-wrapper')) {
+   this.draw13_($('.mode-wrapper')); 
+  }
 
   if (redraw) {
     this.redraw();
