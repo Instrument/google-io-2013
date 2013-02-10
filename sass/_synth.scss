@@ -7,13 +7,9 @@
   @include screen($break-medium) {
     padding: 2% 10%;
   }
-
-  #sine-graph {
-    z-index: -1;
-  }
 }
 
-#controls {
+/*#controls {
   display: table;
   position: absolute;
   text-align: center;
@@ -37,13 +33,14 @@
       width: 80%;
     }
   }
-}
+}*/
 
-#states {
+/*#states {
   position: absolute;
   top: 10%;
   left: 2%;
-}
+  display: none;
+}*/
 
 #waveforms {
   list-style: none;
@@ -52,8 +49,20 @@
   position: absolute;
   text-align: center;
   pointer-events: none;
-  
-  .on {
-    font-weight: bold;
+
+  li {
+    margin: 10% 0;
   }
+    li:first-child {
+      margin-top: 32%;
+    }
+    svg {
+      height: 12%;
+      width: 40%;
+    }
+    .on path, .on polyline {
+      stroke-width: 10;
+    }
+
+
 }

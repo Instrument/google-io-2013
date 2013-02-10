@@ -32,38 +32,28 @@ ww.mode.SynthMode.prototype.init = function() {
   this.analyser.fftSize = 512;
   this.analyser.smoothingTimeConstant = 0.85;
 
-  // this.filter = this.audioContext_.createBiquadFilter();
-  // this.filter.type = 0;  // lowpass
-  // this.filter.frequency.value = 440;
-
-  this.synth = $('#controls');
   this.waveforms = $('#waveforms');
-  this.effect = $('#effect');
-  this.power = $('#power');
-  this.params = $('.param');
 
-  // this.type = document.getElementById('oscillator-type');
   this.freq = document.getElementById('oscillator-frequency');
   this.detune = document.getElementById('oscillator-detune');
 
   this.isPlaying = false;
-  this.previousEffect = 'dry';
 
   this.buildEffects_();
   this.createSound_();
 
   this.count = 360 * (this.width_ % 360);
-  
+
   this.letterI = $('#letter-i');
   this.letterO = $('#letter-o');
-  
-  this.waveType = 0;
+
+  this.waveType = 1;
   this.lastFreq = 80;
   this.lastDetune = 650;
   this.lastHue = 0;
   this.lastXPercent = .5;
   this.lastYPercent = .5;
-  
+
   this.waveMap = ['sine', 'square', 'saw', 'triangle'];
 
 };
@@ -75,7 +65,7 @@ ww.mode.SynthMode.prototype.init = function() {
  */
 ww.mode.SynthMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
-  
+
   if (!this.isPlaying) {
     return;
   }
@@ -83,15 +73,15 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   this.count = this.count - (delta * 300);
   this.duration = this.duration + delta;
 
-  // Draw frequency path.
+  // Draw frequency paths.
   var data = new Uint8Array(this.analyser.frequencyBinCount);
   this.analyser.getByteFrequencyData(data);
 
   var newY;
   var adjustY;
   for (var i = 0, p = this.paths.length; i < p; i++) {
-    for (var j = 0, l = data.length; j < l; j++) {
-      newY = this.centerY - (data[j] * 1.25);
+    for (var j = 0, l = data.length / 2; j < l; j++) {
+      newY = this.centerY - (data[j] * .75);
       adjustY = newY === this.centerY ? 0 : i * 5;
       this.paths[i]['segments'][j]['point']['y'] = newY + adjustY;
     }
@@ -99,51 +89,37 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   }
 
 
-  // Draw wave.
-  // var detune = Math.abs(Math.abs(this.source.detune.value / 2400) - 2) + .5;
+  // Draw waves.
   var detune = Math.abs(Math.abs(this.lastDetune / 2400) - 2) + .5;
-  // var freq = this.source.frequency.value * .05; // * 0.00075;
   var freq = this.lastFreq * .05; // * 0.00075;
 
-  var min = 6
+  var min = 6;
   var amount = Math.floor(freq > min ? freq : min);
   var height = 100 * detune;
   var distance = this.width_ / amount;
   var xAdjust = 100 * this.lastXPercent;
   var yAdjust = 100 * this.lastYPercent;
-  // var rotate = 4 * this.lastXPercent * this.lastYPercent;
 
   for (var j = 0, p = this.wavePaths.length; j < p; j++) {
-  
     if (this.wavePaths[j]['segments'].length - 1 !== amount) {
       this.wavePaths[j]['removeSegments']();
       for (var i = 0; i <= amount; i++) {
-        var point = new paper['Point'](distance * i + j * xAdjust, this.centerY);
+        var point = new paper['Point'](
+                      distance * i + j * xAdjust, this.centerY
+                    );
         this.wavePaths[j].add(point);
       }
     }
-  
+
     for (var i = 0; i <= amount; i++) {
-      
       var segment = this.wavePaths[j]['segments'][i];
-      // Sine
       var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i);
       segment['point']['y'] = (sin * height + this.height_ / 2) + (j * yAdjust);
-
-      // Triangle
-      // var sin = Math.sin(this.duration);
-      // var ampMod = i % 2 ? height : height * -1;
-      // segment['point']['y'] = (ampMod + this.height_ / 2) + (j * yAdjust);
-      // segment['point']['x'] = (distance * i + j * xAdjust);
-            
     }
-
     this.wavePaths[j]['strokeColor']['hue'] = this.lastHue;
-    // this.wavePaths[j]['fullySelected'] = true;
-    // this.wavePaths[j]['rotate'](rotate);
     this.wavePaths[j]['smooth']();
   }
-    
+
 };
 
 
@@ -168,13 +144,32 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     this.canvas_.height = this.height_;
   }
 
-  if (this.path) {
-    var max = Math.max(this.width_, 256);
-    var x = Math.ceil(this.paperCanvas_.width / 256);
+  this.oOffset = $('#letter-o').offset();
+  this.oSize = $('#letter-o')[0]['getBoundingClientRect']()['width'];
 
-    for (var i = 0, l = this.path['segments'].length; i < l; i++) {
-      this.path['segments'][i]['point']['x'] = x * i;
-      this.path['segments'][i]['point']['y'] = this.centerY;
+  this.oRad = this.oSize / 2;
+  this.oLeft = this.oOffset.left + this.oRad;
+  this.oTop = this.oOffset.top + this.oRad;
+
+  if (this.circle) {
+    this.currentRad = this.circle['bounds']['width'] / 2;
+    this.circle['position']['x'] = this.oLeft;
+    this.circle['position']['y'] = this.oTop;
+    this.circle['scale'](this.oRad / this.currentRad);
+    this.circleClone['position']['x'] = this.oLeft;
+    this.circleClone['position']['y'] = this.oTop;
+    this.circleClone['scale'](this.oRad / this.currentRad);
+  }
+
+  if (this.paths) {
+    var max = Math.max(this.oRad * 2, 128);
+    var x = (this.oRad * 2) / 128;
+    for (var j = 0, p = this.paths.length; j < p; j++) {
+      for (var i = 0, l = this.paths[j]['segments'].length; i < l; i++) {
+        this.paths[j]['segments'][i]['point']['x'] =
+          x * i + this.oLeft - this.oRad;
+        this.paths[j]['segments'][i]['point']['y'] = this.centerY;
+      }
     }
   }
 
@@ -182,14 +177,6 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     this.redraw();
   }
 
-  // var boundingO = $('#letter-o')[0]['getBoundingClientRect']();
-  // this.synth.css({
-  //   'top': ~~boundingO['top'] + 'px',
-  //   'left': ~~boundingO['left'] + 'px',
-  //   'height': ~~boundingO['height'] + 'px',
-  //   'width': ~~boundingO['width'] + 'px'
-  // });
-  
   var boundingI = $('#letter-i')[0]['getBoundingClientRect']();
   this.waveforms.css({
     'top': ~~boundingI['top'] + 'px',
@@ -197,10 +184,7 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     'height': ~~boundingI['height'] + 'px',
     'width': ~~boundingI['width'] + 'px'
   });
-  
-  this.oOffset = $('#letter-o').offset();
-  this.oSize = $('#letter-o')[0]['getBoundingClientRect']()['width'];
-  
+
 };
 
 
@@ -225,75 +209,69 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.getPaperCanvas_();
     self.ctx = self.paperCanvas_.getContext('2d');
 
-    var max = Math.max(this.width_, 256);
-    var size = Math.ceil(self.paperCanvas_.width / 256);
-    
     self.wavePath = new paper['Path']();
     self.wavePath['strokeColor'] = 'red';
     self.wavePath['strokeWidth'] = 2;
 
     self.wavePaths = [];
     self.wavePaths.push(self.wavePath);
-    
+
     for (var i = 0; i < 3; i++) {
       var path = self.wavePath['clone']();
       path['strokeColor']['alpha'] = 0.3;
       self.wavePaths.push(path);
     }
-    
+
+    var max = Math.max(self.oRad * 2, 128);
+    var size = (self.oRad * 2) / 128;
+
+    self.circle = new paper['Path']['Circle'](
+                    new paper['Point'](self.oLeft, self.oTop), self.oRad
+                  );
+    self.circleClone = self.circle['clone']();
+    self.circleClone['fillColor'] = '#3777e3';
+    self.circleClone['opacity'] = .9;
+
     self.path = new paper['Path']();
-    self.path['strokeColor'] = new paper['RgbColor'](0, 0, 0, 0.1);
+    self.path['strokeColor'] = new paper['RgbColor'](255, 255, 255, 0.2);
     self.path['strokeWidth'] = 5;
-    
-    for (var i = 0; i <= max; i++) {
-      var point = new paper['Point'](size * i, self.centerY);
+
+    for (var i = 0; i <= 128; i++) {
+      var point = new paper['Point'](
+                    size * i + self.oLeft - self.oRad, self.centerY
+                  );
       self.path.add(point);
     }
-    
+
     self.paths = [];
     self.paths.push(self.path);
-    
+
     for (var i = 0; i < 3; i++) {
       var path = self.path['clone']();
       self.paths.push(path);
     }
-    
+
+    self.oscilloGroup = new paper['Group'](
+                          self.circle,
+                          self.paths[0],
+                          self.paths[1],
+                          self.paths[2],
+                          self.paths[3]
+                        );
+    self.oscilloGroup['clipped'] = true;
     self.duration = 0;
   }
-
-  var boundingO = $('#letter-o')[0]['getBoundingClientRect']();
-  self.synth.css({
-    'top': ~~boundingO['top'] + 'px',
-    'left': ~~boundingO['left'] + 'px',
-    'height': ~~boundingO['height'] + 'px',
-    'width': ~~boundingO['width'] + 'px'
-  });
 
   self.isPlaying = false;
   self.connectPower_(); // connect
 
-  self.power.bind(self.evtEnd, function() {
-    self.connectPower_();
-  });
-
-  self.params.bind('change.synth', function(e) {
-    e.preventDefault();
-    self.createSound_();
-  });
-
-  self.effect.bind('change.synth', function(e) {
-    e.preventDefault();
-    self.changeEffect_(this);
-  });
-  
-  
   self.letterI.bind(this.evtEnd, function() {
     self.changeWaveType();
   });
   self.letterO.bind(this.evtStart, function() {
     self.padTouchOn = true;
     self.lastFreq = self.calculateFrequency(event.pageX, event.pageY);
-  });  
+  });
   self.letterO.bind(this.evtEnd, function() {
     self.padTouchOn = false;
   });
@@ -302,10 +280,10 @@ ww.mode.SynthMode.prototype.didFocus = function() {
       self.changeFrequency(event);
     }
   });
-  
+
   self.oOffset = self.letterO.offset();
   self.oSize = self.letterO[0]['getBoundingClientRect']()['width'];
-  
+
 };
 
 
@@ -315,43 +293,8 @@ ww.mode.SynthMode.prototype.didFocus = function() {
 ww.mode.SynthMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  this.power.unbind(this.evtEnd);
-  this.params.unbind('change.synth');
-  this.effect.unbind('change.synth');
-
   this.isPlaying = true;
   this.connectPower_(); // disconnect
-};
-
-
-/**
- * @param {Object} elm Input element with desired effect.
- * @private
- */
-ww.mode.SynthMode.prototype.changeEffect_ = function(elm) {
-  if (!this.isPlaying) {
-    this.connectPower_();
-  }
-
-  if (this.previousEffect === 'dry') {
-    this.source.disconnect(this.audioContext_.destination);
-  } else {
-    this.effects[this.previousEffect].disconnect(
-      this.audioContext_.destination);
-  }
-
-  this.analyser.disconnect(this.audioContext_.destination);
-
-  if (elm.value === 'dry') {
-    this.source.connect(this.analyser);
-  } else {
-    this.source.connect(this.effects[elm.value]['input']);
-    this.effects[elm.value].connect(this.analyser);
-  }
-
-  this.analyser.connect(this.audioContext_.destination);
-
-  this.previousEffect = elm.value;
 };
 
 
@@ -360,14 +303,7 @@ ww.mode.SynthMode.prototype.changeEffect_ = function(elm) {
  */
 ww.mode.SynthMode.prototype.buildEffects_ = function() {
   this.effects = {};
-
-  this.effects['chorus'] = new this.tuna_.Chorus();
-  this.effects['tremolo'] = new this.tuna_.Tremolo();
   this.effects['delay'] = new this.tuna_.Delay();
-  this.effects['phaser'] = new this.tuna_.Phaser();
-  this.effects['wahwah'] = new this.tuna_.WahWah();
-  this.effects['filter'] = new this.tuna_.Filter();
-  this.effects['overdrive'] = new this.tuna_.Overdrive();
 };
 
 
@@ -375,9 +311,9 @@ ww.mode.SynthMode.prototype.buildEffects_ = function() {
  * @private
  */
 ww.mode.SynthMode.prototype.createSound_ = function() {
-  this.source.type = this.waveType; //this.type.value;
-  this.source.frequency.value = this.lastFreq; //this.freq.value;
-  this.source.detune.value = this.lastDetune; //this.detune.value;
+  this.source.type = this.waveType;
+  this.source.frequency.value = this.lastFreq;
+  this.source.detune.value = this.lastDetune;
 };
 
 
@@ -387,11 +323,9 @@ ww.mode.SynthMode.prototype.createSound_ = function() {
 ww.mode.SynthMode.prototype.connectPower_ = function() {
   if (!this.isPlaying) {
     this.playSound_();
-    this.power[0].value = 'Pause';
     this.isPlaying = true;
   } else {
     this.pauseSound_();
-    this.power[0].value = 'Play';
     this.isPlaying = false;
   }
 };
@@ -401,19 +335,8 @@ ww.mode.SynthMode.prototype.connectPower_ = function() {
  * @private
  */
 ww.mode.SynthMode.prototype.playSound_ = function() {
-  var effect = this.effect[0].value;
-
-  if (effect === 'dry') {
-    // this.source.connect(this.analyser);
-    
-    this.source.connect(this.effects['delay']['input']);
-    this.effects['delay'].connect(this.analyser);
-    
-  } else {
-    this.source.connect(this.effects[effect]['input']);
-    this.effects[effect].connect(this.analyser);
-  }
-
+  this.source.connect(this.effects['delay']['input']);
+  this.effects['delay'].connect(this.analyser);
   this.analyser.connect(this.audioContext_.destination);
   this.source.noteOn(0);
 };
@@ -427,6 +350,10 @@ ww.mode.SynthMode.prototype.pauseSound_ = function() {
 };
 
 
+/**
+ * Toggle wave type between square, saw, triangle and sine
+ * and set on class for icon.
+ */
 ww.mode.SynthMode.prototype.changeWaveType = function() {
   this.waveType++;
   this.waveType = this.waveType > 3 ? 0 : this.waveType;
@@ -437,18 +364,29 @@ ww.mode.SynthMode.prototype.changeWaveType = function() {
 
 };
 
+
+/**
+ * Get new frequency and recreate sound.
+ * @param {Object} event Page mouse event.
+ */
 ww.mode.SynthMode.prototype.changeFrequency = function(event) {
   this.calculateFrequency(event.pageX, event.pageY);
   this.createSound_();
 };
 
+
+/**
+ * Parse mouse position to calculate new frequency.
+ * @param {Integer} x page x position.
+ * @param {Integer} y page y position.
+ */
 ww.mode.SynthMode.prototype.calculateFrequency = function(x, y) {
 
   var xDiff = x - this.oOffset.left;
   var yDiff = y - this.oOffset.top;
   var xPercent = xDiff / this.oSize;
   var yPercent = yDiff / this.oSize;
-  
+
   this.lastFreq = 1000 - (1000 * yPercent);
   this.lastDetune = -4800 + (9600 * xPercent);
   this.lastHue = 60 - (60 * yPercent);

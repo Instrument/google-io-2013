@@ -14,20 +14,35 @@
 	</head>
 	<body>
     <div id="controls-container">
-      <canvas id="sine-graph"></canvas>
       <svg version="1.1" id="io" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
    width="100%" height="100%" viewBox="0 0 776 622.512" enable-background="new 0 0 776 622.512" xml:space="preserve">
         <rect style="opacity:0.9" id="letter-i" y="111.256" fill="#11A861" width="190" height="400"/>
-        <circle style="opacity:0.9" id="letter-o" fill="#3777E3" cx="564.5" cy="311.256" r="211.5"/>
+        <circle style="opacity:0.9" id="letter-o" fill="transparent" cx="564.5" cy="311.256" r="211.5"/>
         <line style="opacity:0.9" id="slash" fill="none" stroke="#E6E6E6" stroke-width="19.3658" stroke-miterlimit="10" x1="391.905" y1="2.896" x2="198.619" y2="619.617"/>
       </svg>
       <ul id="waveforms">
-        <li class="sine on">Sine</li>
-        <li class="square">Square</li>
-        <li class="saw">Saw</li>
-        <li class="triangle">Triangle</li>
+        <li class="square on">
+          <svg version="1.1" id="wave-square" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 288.97 145" enable-background="new 0 0 288.97 145" xml:space="preserve">
+            <polyline fill="none" stroke="#ffffff" stroke-width="4" stroke-miterlimit="10" points="0,144.5 144,144.5 144,0.5 288,0.5 "/>
+          </svg>
+        </li>
+        <li class="saw">
+          <svg version="1.1" id="wave-saw" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 288.97 145" enable-background="new 0 0 288.97 145" xml:space="preserve">
+            <polyline fill="none" stroke="#ffffff" stroke-width="4" stroke-miterlimit="10" points="0.224,72.809 144.224,0.809 144.224,144.809 288.224,72.809"/>
+          </svg>
+        </li>
+        <li class="triangle">
+          <svg version="1.1" id="wave-triangle" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 288.97 145" enable-background="new 0 0 288.97 145" xml:space="preserve">
+            <polyline fill="none" stroke="#ffffff" stroke-width="4" stroke-miterlimit="10" points="0.354,72.707 72.354,0.707 216.354,144.707 288.354,72.707"/>
+          </svg>
+        </li>
+        <li class="sine">
+          <svg version="1.1" id="wave-sine" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 288.97 145" enable-background="new 0 0 288.97 145" xml:space="preserve">
+            <path fill="none" stroke="#ffffff" stroke-width="4" stroke-miterlimit="10" d="M0.485,72.5c0,0,18-72,72-72s72,72,72,72s18,72,72,72s72-72,72-72"/>
+          </svg>
+        </li>
       </ul>
-      <div id="states">
+      <!-- <div id="states">
         <input id="power" type="button" value="Play">
         <select id="effect">
           <option value="dry">Dry</option>
@@ -39,14 +54,7 @@
           <option value="wahwah">WahWah</option>
           <option value="overdrive">Overdrive</option>
         </select>
-      </div>
-      <div id="controls">
-        <ul>
-          <li><input class="param" type="range" id="oscillator-type" min="0" max="3" step="1" value="0"></li>
-          <li><input class="param" type="range" id="oscillator-frequency" min="1" max="1000" step="1" value="80"></li>
-          <li><input class="param" type="range" id="oscillator-detune" min="-4800" max="4800" step="1" value="650"></li>
-        </ul>
-      </div>
+      </div> -->
     </div>
 	
     <script>
