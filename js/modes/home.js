@@ -298,8 +298,8 @@ ww.mode.HomeMode.prototype.draw13_ = function(el) {
 ww.mode.HomeMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.$date_ = $(this.containerElem_).find('#date');
-  this.$pattern_ = $(this.containerElem_).find('#pattern');
+  this.$date_ = this.find('#date');
+  this.$pattern_ = this.find('#pattern');
 
   this.patternMatcher_.reset();
 
@@ -324,15 +324,15 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var self = this;
 
   var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $(this.containerElem_).find('#menu').bind(evt2 + '.core', function() {
-    $(this.containerElem_).addClass('nav-visible');
+  this.find('#menu').bind(evt2 + '.core', function() {
+    $(self.containerElem_).addClass('nav-visible');
   });
 
-  $(this.containerElem_).find('#modal').bind(evt2 + '.core', function() {
-    $(this.containerElem_).removeClass('nav-visible');
+  this.find('#modal').bind(evt2 + '.core', function() {
+    $(self.containerElem_).removeClass('nav-visible');
   });
 
-  $(this.containerElem_).find('#dropdown').bind(evt2 + '.core', function(evt) {
+  this.find('#dropdown').bind(evt2 + '.core', function(evt) {
     evt.preventDefault();
     evt.stopPropagation();
   });
@@ -360,9 +360,9 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
   var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $(this.containerElem_).find('#menu').unbind(evt2 + '.core');
-  $(this.containerElem_).find('#modal').unbind(evt2 + '.core');
-  $(this.containerElem_).find('#dropdown').unbind(evt2 + '.core');
+  this.find('#menu').unbind(evt2 + '.core');
+  this.find('#modal').unbind(evt2 + '.core');
+  this.find('#dropdown').unbind(evt2 + '.core');
 };
 
 /**
@@ -410,8 +410,8 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  if ($(this.containerElem_).find('.mode-wrapper')) {
-   this.draw13_($(this.containerElem_).find('.mode-wrapper')); 
+  if (this.find('.mode-wrapper')) {
+   this.draw13_(this.find('.mode-wrapper'));
   }
 
   if (redraw) {
