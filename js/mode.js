@@ -77,18 +77,29 @@ ww.mode.register('rocket',    ww.mode.RocketMode,    69,  8); // 01000101
 ww.mode.register('donut',     ww.mode.DonutMode,     150, 8); // 10010110
 ww.mode.register('burger',    ww.mode.BurgerMode,    57,  8); // 00111001
 
-// On DocumentReady
-// $(function() {
-//   // Extract the name from the URL.
-//   var parts = window.location.href.split('/'),
-//       page = parts[parts.length - 1],
-//       scriptName = page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
+// On DocumentReady (direct access only)
+$(function() {
+  // Extract the name from the URL.
+  var parts = window.location.href.split('/'),
+      page = parts[parts.length - 1],
+      scriptName = page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
 
-//   // Look up the mode by name.
-//   var pair = ww.mode.findModeByName(scriptName);
+  // Look up the mode by name.
+  var pair = ww.mode.findModeByName(scriptName);
 
-//   // Initialize
-//   if (pair && pair.klass) {
-//     new pair.klass();
-//   }
-// });
+  // Initialize
+  if (pair && pair.klass) {
+    var wrapperElem = $('<div></div>').addClass('mode').addClass(scriptName + '-mode');
+    wrapperElem.css({ 'width': $(window).width(), 'height': $(window).width() });
+
+    $("body > *").wrapAll(wrapperElem);
+
+    window['currentMode'] = new pair.klass($('.mode')[0]);
+
+    var self = this;
+    $(window).resize(ww.util.throttle(function() {
+      $('.mode').css({ 'width': $(window).width(), 'height': $(window).width() });
+      window['currentMode'].onResize();
+    }, 50));
+  }
+});

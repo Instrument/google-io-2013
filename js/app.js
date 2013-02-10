@@ -1,4 +1,5 @@
 goog.provide('ww.app');
+goog.provide('ww.app.Core');
 goog.require('ww.raf');
 goog.require('ww.util');
 goog.require('ww.mode');
@@ -40,9 +41,9 @@ ww.app.Core = function() {
   }
 
   // Start event listeners.
-  setTimeout(function() {
+  // setTimeout(function() {
     self.start_();
-  }, 1000);
+  // }, 1000);
 };
 
 /**
@@ -255,10 +256,9 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   modeElem.style.width = this.width_ + 'px';
   modeElem.style.height = this.height_ + 'px';
   
-  $(modeElem).load('modes/' + mode.name + '.html .inner');
-  $(modeElem).appendTo(document.body);
+  this.fetchModeContent_(mode.name, function(html) {
+    $(modeElem).html(html).appendTo(document.body);
 
-  // setTimeout(function() {
     // Look up the mode by name.
     var pair = ww.mode.findModeByName(mode.name);
 
@@ -267,11 +267,40 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
       mode.instance = new pair.klass(modeElem);
     }
 
-    this.currentMode = mode;
+    self.currentMode = mode;
 
     // Store iframe element for later.
     mode.containerElem = modeElem;
-  // }, 1000);
+  });
+};
+
+ww.app.Core.prototype.fetchModeContent_ = function(name, onComplete) {
+  var url = 'modes/' + name + '.html?' + (+(new Date()));
+
+  $.ajax({
+    url: url,
+    type: "GET",
+    dataType: "html",
+
+    // Complete callback (responseText is used internally)
+    complete: function(jqXHR, status, responseText) {
+      // Store the response as specified by the jqXHR object
+      responseText = jqXHR.responseText;
+
+      // If successful, inject the HTML into all the matched elements
+      if ( jqXHR.isResolved() ) {
+        // #4825: Get the actual response in case
+        // a dataFilter is present in ajaxSettings
+        jqXHR.done(function( r ) {
+          responseText = r;
+        });
+
+        var result = responseText.split('<body>')[1];
+        result = responseText.split('</body>')[0];
+        onComplete(result);
+      }
+    }
+  });
 };
 
 /**
@@ -285,7 +314,8 @@ ww.app.Core.prototype.renderFrame_ = function(delta) {
   }
 };
 
-// On DocumentReady, start controller.
-$(function() {
-  window['app'] = new ww.app.Core();
-});
+window['ww'] = window['ww'] || {};
+window['ww']['app'] = window['ww']['app'] || {};
+window['ww']['app']['Core'] = ww.app.Core;
+
+goog.exportSymbol('ww.app.Core', ww.app.Core);

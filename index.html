@@ -26,5 +26,12 @@
       <!-- End Google Analytics -->
   </head>
   <body>
+
+    <script>
+      // On DocumentReady, start controller.
+      $(function() {
+        window['app'] = new ww.app.Core();
+      });
+    </script>
   </body>
 </html>

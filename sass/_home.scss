@@ -113,7 +113,7 @@
       background-repeat: no-repeat;
       background-position: 50% 50%;
       @include background-size(20px 17px); }
-    .nav-visible #menu {
+    &.nav-visible #menu {
       @include border-radius(2px);
       @include box-shadow(rgba(black, 0.15) 1px 1px 2px inset);
       background-color: #d1d1d1;
@@ -161,7 +161,7 @@
   left: 0;
   z-index: 2000;
   display: none; }
-  .nav-visible #modal {
+  &.nav-visible #modal {
     display: block; }
 
   #dropdown {
