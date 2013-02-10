@@ -5,10 +5,17 @@ body {
   padding: 0;
 }
 
+#io-wrapper {
+  position: absolute;
+  overflow: hidden;
+  z-index: 1;
+}
+
 iframe {
   border: 0;
   background: transparent;
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 5;
 }

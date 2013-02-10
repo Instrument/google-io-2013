@@ -38,6 +38,12 @@ ww.app.Core.prototype.onResize_ = function() {
   this.width_ = this.$window_.width();
   this.height_ = this.$window_.height();
 
+  // Update wrapper sizes
+  $('#io-wrapper').css({
+    'width': this.width_,
+    'height': this.height_
+  });
+
   // Update mode iframe sizes.
   $('iframe').attr('width', this.width_).attr('height', this.height_);
 };
@@ -219,7 +225,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   iFrameElem.src = 'modes/' + mode.name + '.html';
   iFrameElem.width = this.width_;
   iFrameElem.height = this.height_;
-  $(iFrameElem).appendTo(document.body);
+  $(iFrameElem).appendTo($('#io-wrapper'));
 
   this.currentIframe = iFrameElem;
 
