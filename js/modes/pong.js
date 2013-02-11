@@ -8,7 +8,7 @@ var TWOPI = Math.PI * 2;
  * @constructor
  */
 ww.mode.PongMode = function(containerElem, assetPrefix) {
-  goog.base(this, containerElem, assetPrefix, 'pong', true, false, true);
+  goog.base(this, containerElem, assetPrefix, 'pong', true, true, true);
   
   this.startBallSpeed_ = this.ballSpeed_ = 250;
   this.maxBallSpeed_ = 800;
@@ -23,7 +23,6 @@ ww.mode.PongMode = function(containerElem, assetPrefix) {
   this['rightWallOpacity_'] = 0;
   this['bottomWallOpacity_'] = 0;
 
-  goog.base(this, 'pong', true, true, true);
   this.preloadSound('1.wav');
   this.preloadSound('2.wav');
 };
