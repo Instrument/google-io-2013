@@ -22,6 +22,22 @@ body {
   @include user-select(none);
 }
 
+%dark-mode {
+  .code, .back {
+    background-color: #262626;
+    border: 2px solid #393939;
+  }
+
+  .back {
+    background-image: image-url('shared/close-dark.svg'); }
+
+  .i {
+    background-image: image-url('shared/i-dark.svg'); }
+
+  .o {
+    background-image: image-url('shared/o-dark.svg'); }
+}
+
 .code, .back {
   position: absolute;
   top: 2.5%;
@@ -31,10 +47,6 @@ body {
   z-index: 1000;
   background-color: #fff;
   border: 2px solid #f3f3f3;
-  .dark & {
-    background-color: #262626;
-    border: 2px solid #393939;
-  }
 }
 .code {
   padding: 3px 5px 0 10px;
@@ -50,8 +62,6 @@ body {
   background-position: 7px 7px;
   background-repeat: no-repeat; 
   background-image: image-url('shared/close-light.svg');
-  .dark & {
-    background-image: image-url('shared/close-dark.svg'); }
 }
 .i {
   width: 4px;
@@ -61,8 +71,6 @@ body {
   background-repeat: no-repeat;
   margin-right: 5px;
   background-image: image-url('shared/i-light.svg');
-  .dark & {
-    background-image: image-url('shared/i-dark.svg'); }
   .failure &, .success & {
     background-image: image-url('shared/i-active.svg'); }
 }
@@ -74,8 +82,6 @@ body {
   background-repeat: no-repeat;
   margin-right: 5px;
   background-image: image-url('shared/o-light.svg');
-  .dark & {
-    background-image: image-url('shared/o-dark.svg'); }
   .failure &, .success & {
     background-image: image-url('shared/o-active.svg'); }
 }
@@ -161,6 +167,8 @@ canvas {
 }
 
 .space-mode {
+  @extend %dark-mode;
+  background: #000;
   @import "space";
   @import "draw-modes";
 }
