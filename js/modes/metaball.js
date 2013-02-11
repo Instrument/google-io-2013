@@ -496,8 +496,8 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
   // Set the size of the ball radial gradients.
   this.gradSize_ = this.oRad_ * 4;
 
-  if ($('.mode-wrapper')) {
-   this.draw13_($('.mode-wrapper')); 
+  if ($('.year-mark')) {
+   this.draw13_($('.year-mark')); 
   }
 
   this.redraw();

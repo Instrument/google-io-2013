@@ -415,8 +415,8 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  if (this.find('.mode-wrapper')) {
-   this.draw13_(this.find('.mode-wrapper'));
+  if (this.find('.year-mark')) {
+   this.draw13_(this.find('.year-mark'));
   }
 
   if (redraw) {
