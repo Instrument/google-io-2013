@@ -22,7 +22,7 @@ ww.mode.PongMode = function(containerElem, assetPrefix) {
   this['topWallOpacity_'] = 0;
   this['rightWallOpacity_'] = 0;
   this['bottomWallOpacity_'] = 0;
-
+  
   this.preloadSound('1.wav');
   this.preloadSound('2.wav');
 };

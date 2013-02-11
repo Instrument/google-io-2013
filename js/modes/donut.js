@@ -8,10 +8,8 @@ goog.provide('ww.mode.DonutMode');
 ww.mode.DonutMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'donut', true, true, false);
 
-  if (this.wantsAudio_) {
-    this.preloadSound('bite-1.wav');
-    this.preloadSound('bite-2.wav');
-  }
+  this.preloadSound('bite-1.wav');
+  this.preloadSound('bite-2.wav');
 };
 goog.inherits(ww.mode.DonutMode, ww.mode.Core);
 
@@ -52,7 +50,7 @@ ww.mode.DonutMode.prototype.activateI = function() {
   if (this.biteIIndex_ < this.maxBitesI_) {
     this.bitesI_[this.biteIIndex_].style['opacity'] = 1;
     this.biteIIndex_++;
-    this.wantsAudio_ && this.playSound('bite-2.wav');
+    this.playSound('bite-2.wav');
   } else {
     var self = this;
     var reset = new TWEEN.Tween({ 'opacity': 0 });
@@ -85,7 +83,7 @@ ww.mode.DonutMode.prototype.activateO = function() {
   if (this.biteOIndex_ < this.maxBitesO_) {
     this.bitesO_[this.biteOIndex_].style['opacity'] = 1;
     this.biteOIndex_++;
-    this.wantsAudio_ && this.playSound('bite-1.wav');
+    this.playSound('bite-1.wav');
   } else {
     var self = this;
     var reset = new TWEEN.Tween({ 'opacity': 0 });
