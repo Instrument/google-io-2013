@@ -55,12 +55,12 @@ ww.mode.Core = function(containerElem, assetPrefix, name, wantsAudio, wantsDrawi
     var modeDetails = ww.mode.findModeByName(self.name_);
 
     if (modeDetails.pattern) {
-      self.$back = $('<div id="back"></div>').prependTo(self.containerElem_);
+      self.$back = $('<div class="back"></div>').prependTo(self.containerElem_);
 
       var modePattern = ww.util.pad(modeDetails.pattern.toString(2), modeDetails.len);
       var modeHTML = modePattern.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
 
-      $('<div id="code">' + modeHTML + '</div>').prependTo(self.containerElem_);
+      $('<div class="code">' + modeHTML + '</div>').prependTo(self.containerElem_);
     }
 
     // Autofocus
@@ -113,7 +113,7 @@ ww.mode.Core.prototype.showReload = function() {
   if (!this.$reloadModal_) {
     this.$reloadModal_ = $(this.containerElem_).find('#reload');
     if (!this.$reloadModal_.length) {
-      this.$reloadModal_ = $("<div id='reload'></div>").appendTo(this.containerElem_);
+      this.$reloadModal_ = $("<div class='reload'></div>").appendTo(this.containerElem_);
     }
 
     var evt = Modernizr.touch ? 'touchend' : 'mouseup';
