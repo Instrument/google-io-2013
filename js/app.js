@@ -296,7 +296,7 @@ ww.app.Core.prototype.fetchModeContent_ = function(name, onComplete) {
         });
 
         var result = responseText.split('<body>')[1];
-        result = responseText.split('</body>')[0];
+        result = result.split('</body>')[0];
         onComplete(result);
       }
     }

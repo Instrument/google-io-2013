@@ -4,9 +4,11 @@ goog.provide('ww.mode.HomeMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.HomeMode = function(containerElem) {
-  goog.base(this, containerElem, 'home', true, true);
+ww.mode.HomeMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'home', true, true);
 
   this.patternMatcher_ = new ww.PatternMatcher(ww.mode.modes);
 

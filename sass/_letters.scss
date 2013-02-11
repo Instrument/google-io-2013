@@ -1,5 +1,5 @@
-#letter-i,
-#letter-o {
+.letter-i,
+.letter-o {
   background-color: transparent;
   background-position: 50% 50%;
   background-repeat: no-repeat;
@@ -22,21 +22,21 @@
   }
 }
 
-#letter-i-container,
-#letter-o-container {
+.letter-i-container,
+.letter-o-container {
   bottom: 0;
   position: absolute;
   top: 0;
   // @include transform(translate3d(0, 0, 0));
 }
 
-#letter-i-container {
+.letter-i-container {
   left: 0;
   right: 65%;
   text-align: right;
 }
 
-#letter-o-container {
+.letter-o-container {
   left: 45%;
   right: 5%;
   text-align: left;

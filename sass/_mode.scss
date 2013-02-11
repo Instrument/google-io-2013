@@ -22,7 +22,7 @@ body {
   @include user-select(none);
 }
 
-#code, #back {
+.code, .back {
   position: absolute;
   top: 2.5%;
   border: 1px solid #393939;
@@ -36,13 +36,13 @@ body {
     border: 2px solid #393939;
   }
 }
-#code {
+.code {
   padding: 3px 5px 0 10px;
   line-height: 30px;
   left: 2%;
   pointer-events: none;
 }
-#back {
+.back {
   right: 2%;
   width: 34px;
   cursor: pointer;
@@ -103,11 +103,11 @@ body {
 //   min-height: 100%;
 // }
 
-body {
-  background-color: #f9f9f9;
-  margin: 0;
-  padding: 0;
-}
+// body {
+//   background-color: #f9f9f9;
+//   margin: 0;
+//   padding: 0;
+// }
 
 canvas {
   position: absolute;
@@ -115,7 +115,7 @@ canvas {
   left: 0;
 }
 
-#reload {
+.reload {
   background-color: rgba(255,255,255,0.8);
   background-image: image-url('shared/refresh.svg');
   background-position: 50% 50%;
