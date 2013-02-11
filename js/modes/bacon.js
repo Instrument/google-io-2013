@@ -7,8 +7,8 @@ goog.provide('ww.mode.BaconMode');
  * @param {Element} containerElem The containing element.
  * @param {String} assetPrefix The containing element.
  */
-ww.mode.BaconMode = function() {
-  goog.base(this, 'bacon', true, true, false);
+ww.mode.BaconMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'bacon', true, true, false);
 
   this.preloadSound('bacon-sizzle.m4a');
   this.preloadSound('egg-cracked.m4a');
@@ -45,7 +45,7 @@ ww.mode.BaconMode.prototype.activateI = function() {
 
   var self = this;
 
-  this.wantsAudio_ && this.playSound('bacon-sizzle.m4a');
+  this.playSound('bacon-sizzle.m4a');
 
   var stretchOut = new TWEEN.Tween({ 'scaleX': 1, 'scaleY': 1 });
   stretchOut.to({ 'scaleX': 1.75, 'scaleY': 1.2 }, 400);
@@ -78,13 +78,13 @@ ww.mode.BaconMode.prototype.activateO = function() {
   if (this.currentCrack < this.totalCracks) {
     this.cracks[this.currentCrack].style['opacity'] = 1;
     this.currentCrack++;
-    this.wantsAudio_ && this.playSound('egg-cracked.m4a');
+    this.playSound('egg-cracked.m4a');
   } else {
     if (this.stillHasShell) {
-      this.wantsAudio_ && this.playSound('cracked-open.m4a');
+      this.playSound('cracked-open.m4a');
       this.showCracked_();
     } else {
-      this.wantsAudio_ && this.playSound('eggs-sizzling.m4a');
+      this.playSound('eggs-sizzling.m4a');
       this.animateSpinEgg_();
     }
   }
@@ -144,13 +144,13 @@ ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   var pos = [~~Random(-75, 75), ~~Random(-75, 75)];
 
   var degs = self.whites_[0].style[self.prefix_].split('rotate(')[1];
-      degs = parseInt(degs) || 0;
+      degs = parseInt(degs, 10) || 0;
 
   var posX = self.yolk_[0].style[self.prefix_].split('translateX(')[1];
-      posX = parseInt(posX) || 0;
+      posX = parseInt(posX, 10) || 0;
 
   var posY = self.yolk_[0].style[self.prefix_].split('translateY(')[1];
-      posY = parseInt(posY) || 0;
+      posY = parseInt(posY, 10) || 0;
 
   var sizeX = self.whites_[0].style[self.prefix_].split('skewX(')[1];
       sizeX = ~~parseFloat(sizeX) || 0;
