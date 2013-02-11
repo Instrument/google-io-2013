@@ -159,6 +159,11 @@ canvas {
 }
 
 .simone-mode {
+  @extend %dark-mode;
+  background: #2c2c2c;
+  color: #fff;
+  font-size: 90%;
+  position: relative;
   @import "simone";
 }
 
@@ -183,6 +188,9 @@ canvas {
 }
 
 .ascii-mode {
+  @extend %dark-mode;
+  background: #000;
+  color: #fff;
   @import "ascii";
   @import "draw-modes";
 }

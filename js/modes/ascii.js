@@ -6,8 +6,8 @@ goog.provide('ww.mode.AsciiMode');
  * @param {Element} containerElem The containing element.
  * @param {String} assetPrefix The containing element.
  */
-ww.mode.AsciiMode = function() {
-  goog.base(this, 'ascii', true, true, true);
+ww.mode.AsciiMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'ascii', true, true, true);
 };
 goog.inherits(ww.mode.AsciiMode, ww.mode.Core);
 
