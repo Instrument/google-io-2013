@@ -5,15 +5,16 @@ goog.require('ww.raf');
 /**
  * @constructor
  * @param {Element} containerElem Element of the mode.
+ * @param {String} assetPrefix The containing element.
  * @param {String} name Name of the mode.
  * @param {Boolean} wantsAudio Whether this mode needs webAudio.
  * @param {Boolean} wantsDrawing Whether this mode needs to draw onFrame.
  * @param {Boolean} wantsPhysics Whether this mode needs physics.
  */
-ww.mode.Core = function(containerElem, name, wantsAudio, wantsDrawing, wantsPhysics) {
+ww.mode.Core = function(containerElem, assetPrefix, name, wantsAudio, wantsDrawing, wantsPhysics) {
   // Define transform prefix.
   this.prefix_ = Modernizr.prefixed('transform');
-
+  this.assetPrefix_ = assetPrefix || '';
   this.containerElem_ = containerElem;
 
   this.name_ = name;
@@ -41,8 +42,8 @@ ww.mode.Core = function(containerElem, name, wantsAudio, wantsDrawing, wantsPhys
   
   var self = this;
   setTimeout(function() {
-    self.$letterI_ = $(self.containerElem_).find('#letter-i');
-    self.$letterO_ = $(self.containerElem_).find('#letter-o');
+    self.$letterI_ = $(self.containerElem_).find('.letter-i');
+    self.$letterO_ = $(self.containerElem_).find('.letter-o');
 
     self.init();
 
@@ -484,7 +485,7 @@ ww.mode.Core.prototype.getAudioContext_ = function() {
 ww.mode.Core.prototype.preloadSound = function(filename) {
   if (!this.wantsAudio_) { return; }
 
-  var url = 'sounds/' + this.name_ + '/' + filename;
+  var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }
@@ -503,7 +504,7 @@ ww.mode.Core.prototype.preloadSound = function(filename) {
 ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
   if (!this.wantsAudio_) { return; }
 
-  var url = 'sounds/' + this.name_ + '/' + filename;
+  var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }

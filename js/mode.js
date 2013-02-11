@@ -90,15 +90,15 @@ $(function() {
   // Initialize
   if (pair && pair.klass) {
     var wrapperElem = $('<div></div>').addClass('mode').addClass(scriptName + '-mode');
-    wrapperElem.css({ 'width': $(window).width(), 'height': $(window).width() });
+    wrapperElem.css({ 'width': $(window).width(), 'height': $(window).height() });
 
     $("body > *").wrapAll(wrapperElem);
 
-    window['currentMode'] = new pair.klass($('.mode')[0]);
+    window['currentMode'] = new pair.klass($('.mode')[0], '../');
 
     var self = this;
     $(window).resize(ww.util.throttle(function() {
-      $('.mode').css({ 'width': $(window).width(), 'height': $(window).width() });
+      $('.mode').css({ 'width': $(window).width(), 'height': $(window).height() });
       window['currentMode'].onResize();
     }, 50));
   }
