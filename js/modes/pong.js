@@ -21,6 +21,8 @@ ww.mode.PongMode = function(containerElem, assetPrefix) {
   this.paddleWidth_ = 40;
   this.paddleHeight_ = 160;
 
+  this.paused_ = true;
+
   this['topWallOpacity_'] = 0;
   this['rightWallOpacity_'] = 0;
   this['bottomWallOpacity_'] = 0;
@@ -82,6 +84,8 @@ ww.mode.PongMode.prototype.startRound_ = function() {
   this.bonusEl_.style.opacity = 0;
   this.transformElem_(this.bonusEl_, 'translateX(50px)');
   // this.$lives_.text(this.roundNumber_);
+
+  this.paused_ = false;
 };
 
 
@@ -286,7 +290,12 @@ ww.mode.PongMode.prototype.gameOver_ = function() {
   this.trackEvent_('lost', this.score_);
   this.trackEvent_('game number', this.gamesPlayed_);
 
-  this.showReload();
+  this.paused_ = true;
+  var self = this;
+  this.showReload(function() {
+    self.paused_ = false;
+    self.resetGame_();
+  });
 };
 
 
@@ -386,6 +395,8 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
  * @param {Float} delta Time since last tick.
  */
 ww.mode.PongMode.prototype.stepPhysics = function(delta) {
+  if (this.paused_) { return; }
+
   goog.base(this, 'stepPhysics', delta);
 
   var currentPaddleY = this.paddleY_;

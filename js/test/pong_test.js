@@ -124,7 +124,7 @@ function testWwModePongModeGameOver_() {
   mode.gameOver_();
 
   assertNotEquals('the reload modal should have been created', undefined,
-    $('#reload'));
+    $('.reload'));
 }
 
 function testWwModePongModeSetScore_() {
