@@ -4,8 +4,8 @@ goog.provide('ww.mode.MetaBallMode');
 /**
  * @constructor
  */
-ww.mode.MetaBallMode = function() {
-  goog.base(this, 'metaball', true, true, true);
+ww.mode.MetaBallMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'metaball', true, true, true);
 
   if (this.wantsAudio_) {
     // Set up audio context and create three sources.

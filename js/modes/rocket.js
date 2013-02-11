@@ -5,18 +5,19 @@ goog.provide('ww.mode.RocketMode');
 /**
  * @constructor
  */
-ww.mode.RocketMode = function() {
-  goog.base(this, 'rocket', true, true, false);
+ww.mode.RocketMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'rocket', true, true, false);
 
-  this.preloadSound('rocket-launch.mp3');
+  if (this.wantsAudio_) {
+    this.preloadSound('rocket-launch.mp3');
+  }
 
-  this.moon_ = document.getElementById('moon-1');
+  this.moon_ = this.find('#moon-1')[0];
 
-  // mooon over used to make the rocket look like it's going behind the moon
-  this.moonOver_ = $('#letter-o').clone().attr('id', 'letter-o-over');
+  this.moonOver_ = this.find('.letter-o').clone().attr('class', 'letter-o-over');
   this.moonOver_.css('opacity', 0);
 
-  $('#letter-i').after(this.moonOver_);
+  this.find('.letter-i').after(this.moonOver_);
 
   this.moonOver_.find('#moon-1').attr('id', "moon-2");
   this.moonOver_.find('#face-1').attr('id', "face-2");
@@ -29,13 +30,21 @@ goog.inherits(ww.mode.RocketMode, ww.mode.Core);
 
 
 /**
+ * Bind mouse/touch events which focus is gained.
+ */
+ww.mode.RocketMode.prototype.didFocus = function() {
+  goog.base(this, 'didFocus');
+};
+
+
+/**
  * Method called when activating the I.
  * Launch the rocket and land.
  */
 ww.mode.RocketMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
-  this.playSound('rocket-launch.mp3');
+  this.wantsAudio_ && this.playSound('rocket-launch.mp3');
 
   var self = this,
       delay = 100,
