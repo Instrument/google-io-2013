@@ -3,6 +3,8 @@ goog.provide('ww.mode.AsciiMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.AsciiMode = function() {
   goog.base(this, 'ascii', true, true, true);

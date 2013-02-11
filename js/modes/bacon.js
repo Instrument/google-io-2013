@@ -4,6 +4,8 @@ goog.provide('ww.mode.BaconMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.BaconMode = function() {
   goog.base(this, 'bacon', true, true, false);

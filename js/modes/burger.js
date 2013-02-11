@@ -4,6 +4,8 @@ goog.provide('ww.mode.BurgerMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.BurgerMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'burger', true, true, false);

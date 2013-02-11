@@ -15,6 +15,9 @@ ww.mode.HomeMode = function(containerElem, assetPrefix) {
   this.wentIdleTime_ = 0;
   this.isIdle_ = true;
   this.maxIdleTime_ = 15000; // 15 seconds
+
+  this.preloadSound('i.mp3');
+  this.preloadSound('o.mp3');
 };
 goog.inherits(ww.mode.HomeMode, ww.mode.Core);
 

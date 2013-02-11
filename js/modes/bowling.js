@@ -4,6 +4,8 @@ goog.provide('ww.mode.BowlingMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.BowlingMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'bowling', true, true, false);
