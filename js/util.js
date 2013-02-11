@@ -201,8 +201,6 @@ ww.raf.onFrame_ = function(t) {
 
   if (ww.raf.isRunning_) {
     ww.raf.currentFrame_ = requestAnimationFrame(ww.raf.onFrame_);
-  } else {
-    console.log('stop frame');
   }
 };
 

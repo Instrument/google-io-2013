@@ -14,7 +14,7 @@ ww.mode.HomeMode = function(containerElem, assetPrefix) {
 
   this.wentIdleTime_ = 0;
   this.isIdle_ = true;
-  this.maxIdleTime_ = 15000; // 15 seconds
+  this.maxIdleTime_ = 12000; // 12 seconds
 
   this.preloadSound('i.mp3');
   this.preloadSound('o.mp3');
@@ -69,7 +69,7 @@ ww.mode.HomeMode.prototype.addPatternCharacter = function(character) {
 
     var patternHTML = currentPattern.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
     self.$pattern_.html(patternHTML);
-    self.$pattern_.css('marginLeft', -(self.$pattern_.width() / 2));
+    self.$pattern_.css('marginLeft', -((self.$pattern_.width() + 15) / 2));
 
     if (matched) {
       self.log('matched', matched);
@@ -415,8 +415,8 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  if (this.find('.mode-wrapper')) {
-   this.draw13_(this.find('.mode-wrapper'));
+  if (this.find('.year-mark')) {
+   this.draw13_(this.find('.year-mark'));
   }
 
   if (redraw) {
