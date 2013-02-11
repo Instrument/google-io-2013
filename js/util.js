@@ -183,6 +183,8 @@ ww.raf.onFrame_ = function(t) {
   var loopCurrentTime = t || ww.util.rightNow();
   var loopDelta = loopCurrentTime - ww.raf.lastTime_;
 
+  if (loopDelta <= 0) { return; }
+
   for (var subscriberKey in ww.raf.subscribers_) {
     if (ww.raf.subscribers_.hasOwnProperty(subscriberKey)) {
       var loopSubscriber = ww.raf.subscribers_[subscriberKey];
