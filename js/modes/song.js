@@ -4,6 +4,8 @@ goog.provide('ww.mode.SongMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.SongMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'song', true, true);

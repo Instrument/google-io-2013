@@ -3,6 +3,8 @@ goog.provide('ww.mode.MetaBallMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.MetaBallMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'metaball', true, true, true);

@@ -57,13 +57,11 @@ ww.mode.register('home',      ww.mode.HomeMode,      null);
 ww.mode.register('cat',       ww.mode.CatMode,       231, 8); // 11100111
 ww.mode.register('space',     ww.mode.SpaceMode,     42,  8); // 00101010
 ww.mode.register('pong',      ww.mode.PongMode,      129, 8); // 10000001
-// ww.mode.register('explode',   ww.mode.ExplodeMode,   5,   8); // 00000101
 ww.mode.register('pinata',    ww.mode.PinataMode,    15,  8); // 00001111
 ww.mode.register('bacon',     ww.mode.BaconMode,     144, 8); // 10010000
 ww.mode.register('simone',    ww.mode.SimoneMode,    211, 8); // 11010011
 ww.mode.register('eightbit',  ww.mode.EightBitMode,  83,  8); // 01010011
 ww.mode.register('metaball',  ww.mode.MetaBallMode,  170, 8); // 10101010
-// ww.mode.register('fireplace', ww.mode.FireplaceMode, 11, 8); // 00001011
 
 // Audio available?
 if (ww.util.getAudioContextConstructor()) {

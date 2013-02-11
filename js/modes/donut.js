@@ -4,6 +4,8 @@ goog.provide('ww.mode.DonutMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.DonutMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'donut', true, true, false);

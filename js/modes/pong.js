@@ -6,6 +6,8 @@ var TWOPI = Math.PI * 2;
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.PongMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'pong', true, true, true);

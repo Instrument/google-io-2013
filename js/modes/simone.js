@@ -4,6 +4,8 @@ goog.provide('ww.mode.SimoneMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.SimoneMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'simone', true, true);

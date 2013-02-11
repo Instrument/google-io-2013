@@ -1,9 +1,10 @@
 goog.require('ww.mode.Core');
-goog.require('ww.PatternMatcher');
 goog.provide('ww.mode.EightBitMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
 ww.mode.EightBitMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true);
