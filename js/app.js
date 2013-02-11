@@ -274,7 +274,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   modeElem.style.height = this.height_ + 'px';
   
   this.fetchModeContent_(mode.name, function(html) {
-    $(modeElem).html(html).appendTo(document.body);
+    $(modeElem).html(html).appendTo($('#wrapper'));
 
     // Look up the mode by name.
     var pair = ww.mode.findModeByName(mode.name);
