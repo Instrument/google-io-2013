@@ -413,7 +413,10 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
 
       if (!(i + 1 < self.maxParts_)) {
         animateBack.onComplete(function() {
-          self.showReload();
+          self.showReload(function() {
+            self.didUnfocus();
+            self.didFocus();
+          });
         });
       }
 
