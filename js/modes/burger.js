@@ -5,11 +5,13 @@ goog.provide('ww.mode.BurgerMode');
 /**
  * @constructor
  */
-ww.mode.BurgerMode = function() {
-  goog.base(this, 'burger', true, true, false);
+ww.mode.BurgerMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'burger', true, true, false);
 
-  this.preloadSound('bite-1.wav');
-  this.preloadSound('bite-2.wav');
+  if (this.wantsAudio_) {
+    this.preloadSound('bite-1.wav');
+    this.preloadSound('bite-2.wav');
+  }
 };
 goog.inherits(ww.mode.BurgerMode, ww.mode.Core);
 
@@ -50,7 +52,7 @@ ww.mode.BurgerMode.prototype.activateI = function() {
   if (this.biteIIndex_ < this.maxBitesI_) {
     this.bitesI_[this.biteIIndex_].style['opacity'] = 1;
     this.biteIIndex_++;
-    this.playSound('bite-2.wav');
+    this.wantsAudio_ && this.playSound('bite-2.wav');
   } else {
     var self = this;
     var reset = new TWEEN.Tween({ 'opacity': 0 });
@@ -83,7 +85,7 @@ ww.mode.BurgerMode.prototype.activateO = function() {
   if (this.biteOIndex_ < this.maxBitesO_) {
     this.bitesO_[this.biteOIndex_].style['opacity'] = 1;
     this.biteOIndex_++;
-    this.playSound('bite-1.wav');
+    this.wantsAudio_ && this.playSound('bite-1.wav');
   } else {
     var self = this;
     var reset = new TWEEN.Tween({ 'opacity': 0 });
