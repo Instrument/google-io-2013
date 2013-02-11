@@ -7,7 +7,7 @@
 }
 
 .rocket-mode {
-  .letter-i, #moon-1, #moon-2 {
+  .letter-i-wrapper, #moon-1, #moon-2 {
     @include transform-origin(50% 50%, false);
   }
 
