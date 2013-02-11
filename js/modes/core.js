@@ -104,25 +104,29 @@ ww.mode.Core.prototype.init = function() {
 
 /**
  * Block screen with modal reload button.
+ * @param {Function} onReload A callback.
  */
-ww.mode.Core.prototype.showReload = function() {
-  this.unfocus_();
+ww.mode.Core.prototype.showReload = function(onReload) {
+  // this.unfocus_();
 
   var self = this;
 
   if (!this.$reloadModal_) {
-    this.$reloadModal_ = $(this.containerElem_).find('#reload');
+    this.$reloadModal_ = $(this.containerElem_).find('.reload');
     if (!this.$reloadModal_.length) {
       this.$reloadModal_ = $("<div class='reload'></div>").appendTo(this.containerElem_);
     }
-
-    var evt = Modernizr.touch ? 'touchend' : 'mouseup';
-
-    this.$reloadModal_.bind(evt + '.reload', function() {
-      self.$reloadModal_.hide();
-      self.focus_();
-    });
   }
+
+  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
+
+  this.$reloadModal_.bind(evt + '.reload', function() {
+    self.$reloadModal_.hide();
+    // self.focus_();
+    if ('function' === typeof onReload) {
+      onReload();
+    }
+  });
 
   this.$reloadModal_.show();
 };
@@ -385,6 +389,11 @@ ww.mode.Core.prototype.didUnfocus = function() {
   
   if (this.$back) {
     this.$back.unbind(evt + '.' + this.name_);
+  }
+
+  if (this.$reloadModal_) {
+    this.$reloadModal_.hide();
+    this.$reloadModal_.unbind(evt + '.reload');
   }
 
   $(document).unbind('keyup.' + this.name_);
