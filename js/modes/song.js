@@ -5,8 +5,8 @@ goog.provide('ww.mode.SongMode');
 /**
  * @constructor
  */
-ww.mode.SongMode = function() {
-  goog.base(this, 'song', true, true);
+ww.mode.SongMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'song', true, true);
 
   // TODO: Maybe we need to do this on category change to save bandwidth
 

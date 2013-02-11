@@ -5,11 +5,13 @@ goog.provide('ww.mode.BowlingMode');
 /**
  * @constructor
  */
-ww.mode.BowlingMode = function() {
-  goog.base(this, 'bowling', true, true, false);
+ww.mode.BowlingMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'bowling', true, true, false);
 
-  this.preloadSound('strike.m4a');
-  this.preloadSound('whoosh-1.wav');
+  if (this.wantsAudio_) {
+    this.preloadSound('strike.m4a');
+    this.preloadSound('whoosh-1.wav');
+  }
 };
 goog.inherits(ww.mode.BowlingMode, ww.mode.Core);
 
@@ -19,7 +21,7 @@ goog.inherits(ww.mode.BowlingMode, ww.mode.Core);
  */
 ww.mode.BowlingMode.prototype.init = function() {
   goog.base(this, 'init');
-  this.ballWrapper_ = document.getElementById('letter-o-wrapper');
+  this.ballWrapper_ = this.find('.letter-o-wrapper')[0];
 };
 
 /**
@@ -41,7 +43,7 @@ ww.mode.BowlingMode.prototype.activateI = function() {
   var wiggleRight = new TWEEN.Tween({ 'rotate': -wiggle });
   wiggleRight.to({ 'rotate': wiggle }, 200);
   wiggleRight.onStart(function() {
-    self.playSound('whoosh-1.wav');
+    self.wantsAudio_ && self.playSound('whoosh-1.wav');
   });
   wiggleRight.delay(100);
   wiggleRight.onUpdate(function() {
@@ -67,7 +69,7 @@ ww.mode.BowlingMode.prototype.activateI = function() {
 ww.mode.BowlingMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
-  this.playSound('strike.m4a');
+  this.wantsAudio_ && this.playSound('strike.m4a');
 
   var self = this;
   var deg = ~~Random(400, 490);
