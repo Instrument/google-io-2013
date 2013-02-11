@@ -7,7 +7,9 @@ var TWOPI = Math.PI * 2;
 /**
  * @constructor
  */
-ww.mode.PongMode = function() {
+ww.mode.PongMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'pong', true, false, true);
+  
   this.startBallSpeed_ = this.ballSpeed_ = 250;
   this.maxBallSpeed_ = 800;
   this.startBallRadius_ = this.ballRadius_ = 30;
