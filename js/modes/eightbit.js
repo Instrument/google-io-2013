@@ -5,8 +5,8 @@ goog.provide('ww.mode.EightBitMode');
 /**
  * @constructor
  */
-ww.mode.EightBitMode = function() {
-  goog.base(this, 'eightbit', true, true, true);
+ww.mode.EightBitMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true);
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
 

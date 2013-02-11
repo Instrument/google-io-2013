@@ -5,8 +5,8 @@ goog.provide('ww.mode.SpaceMode');
 /**
  * @constructor
  */
-ww.mode.SpaceMode = function() {
-  goog.base(this, 'space', true, true, true);
+ww.mode.SpaceMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'space', true, true, true);
 
   if (this.wantsAudio_) {
     var context = this.getAudioContext_();
