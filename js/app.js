@@ -144,6 +144,19 @@ ww.app.Core.prototype.trackEvent_ = function(action, value) {
 };
 
 /**
+ * Get a CSS translation string.
+ * @private
+ * @param {Number} x X value.
+ */
+ww.app.Core.prototype.translateXString_ = function(x) {
+  if (Modernizr.csstransforms3d) {
+    return 'translate3d(' + x + 'px, 0, 0)';
+  } else {
+    return 'translate(' + x + 'px, 0)';
+  }
+};
+
+/**
  * Load a mode (iframe) and transition it in.
  * @private
  * @param {Object} mode Mode details.
@@ -154,6 +167,10 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   var onComplete,
       currentMode = this.currentMode,
       self = this;
+
+  if (currentMode && (currentMode.name == mode.name)) {
+    return;
+  }
 
   // If a mode is already focused, unfocus it (stop event handling/animation).
   if (currentMode) {
@@ -178,7 +195,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
       var startX = reverse ? -self.width_ : self.width_;
 
       // Mode new mode into start position.
-      mode.containerElem.style[self.transformKey_] = 'translateX(' + startX + 'px)';
+      mode.containerElem.style[self.transformKey_] = self.translateXString_(startX);
       mode.containerElem.style.visibility = 'visible';
 
       // After the DOM settles.
@@ -187,7 +204,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
         var t2 = new TWEEN.Tween({ 'translateX': startX });
         t2.to({ 'translateX': 0 }, 400);
         t2.onUpdate(function() {
-          mode.containerElem.style[self.transformKey_] = 'translateX(' + this['translateX'] + 'px)';
+          mode.containerElem.style[self.transformKey_] = self.translateXString_(this['translateX']);
         });
         t2.onComplete(function() {
           mode.containerElem.style.pointerEvents = 'auto';
@@ -200,7 +217,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
           var t = new TWEEN.Tween({ 'translateX': 0 });
           t.to({ 'translateX': endX }, 400);
           t.onUpdate(function() {
-            currentMode.containerElem.style[self.transformKey_] = 'translateX(' + this['translateX'] + 'px)';
+            currentMode.containerElem.style[self.transformKey_] = self.translateXString_(this['translateX']);
           });
           t.onComplete(function() {
             currentMode.containerElem.style.visibility = 'hidden';
