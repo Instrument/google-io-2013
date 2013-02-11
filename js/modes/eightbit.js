@@ -306,8 +306,8 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  if ($('.mode-wrapper')) {
-   this.draw13_($('.mode-wrapper')); 
+  if ($('.year-mark')) {
+   this.draw13_($('.year-mark')); 
   }
 
   if (redraw) {
