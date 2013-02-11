@@ -54,14 +54,14 @@
     margin: 10% 0;
   }
     li:first-child {
-      margin-top: 32%;
+      margin-top: 24%;
     }
     svg {
-      height: 12%;
-      width: 40%;
+      height: 15%;
+      width: 50%;
     }
-    .on path, .on polyline {
-      stroke-width: 10;
+    .on path, .on polyline, .on line {
+      stroke: #ffffff;
     }
 
 
