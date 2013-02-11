@@ -215,6 +215,7 @@ ww.mode.Core.prototype.redraw = function() {
 ww.mode.Core.prototype.onFrame = function(delta) {
   // Render paper if we're using it
   if (this.paperCanvas_) {
+    paper = this.paperScope_;
     paper['view']['draw']();
   }
 };
@@ -318,33 +319,35 @@ ww.mode.Core.prototype.didFocus = function() {
 
   var evt = Modernizr.touch ? 'touchend' : 'mouseup';
 
-  this.$letterI_.bind(evt + '.core', function() {
+  this.$letterI_.bind(evt + '.' + this.name_, function() {
     self.activateI();
   });
 
-  this.$letterO_.bind(evt + '.core', function() {
+  this.$letterO_.bind(evt + '.' + this.name_, function() {
     self.activateO();
   });
 
   if (this.$back) {
-    this.$back.bind(evt + '.core', function() {
+    this.$back.bind(evt + '.' + this.name_, function() {
       self.goBack();
     });
   }
 
-  // $(document).bind('keypress.core', function(e) {
-  //   if ((e.keyCode === 105) || (e.keyCode === 49)) {
-  //     self.activateI();
-  //   } else if ((e.keyCode === 111) || (e.keyCode === 48)) {
-  //     self.activateO();
-  //   } else {
-  //     return;
-  //   }
+  $(document).bind('keyup.' + this.name_, function(e) {
+    if ((e.keyCode === 105) || (e.keyCode === 49) || (e.keyCode === 73)) {
+      self.activateI();
+    } else if ((e.keyCode === 111) || (e.keyCode === 48) || (e.keyCode === 79)) {
+      self.activateO();
+    } else if (e.keyCode === 27) {
+      self.goBack();
+    } else {
+      return;
+    }
 
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   return false;
-  // });
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
 };
 
 /**
@@ -377,14 +380,14 @@ ww.mode.Core.prototype.willUnfocus = function() {
 ww.mode.Core.prototype.didUnfocus = function() {
   var evt = Modernizr.touch ? 'touchend' : 'mouseup';
 
-  this.$letterI_.unbind(evt + '.core');
-  this.$letterO_.unbind(evt + '.core');
+  this.$letterI_.unbind(evt + '.' + this.name_);
+  this.$letterO_.unbind(evt + '.' + this.name_);
   
   if (this.$back) {
-    this.$back.unbind(evt + '.core');
+    this.$back.unbind(evt + '.' + this.name_);
   }
 
-  // $(document).unbind('keypress.core');
+  $(document).unbind('keyup.' + this.name_);
 };
 
 /**
@@ -571,7 +574,11 @@ ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
     if (!doNotAdd) {
       $(this.containerElem_).prepend(this.paperCanvas_);
     }
+
+    paper = new paper['PaperScope']();
     paper['setup'](this.paperCanvas_);
+
+    this.paperScope_ = paper;
   }
 
   return this.paperCanvas_;
