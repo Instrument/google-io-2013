@@ -8,9 +8,7 @@ goog.provide('ww.mode.RocketMode');
 ww.mode.RocketMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'rocket', true, true, false);
 
-  if (this.wantsAudio_) {
-    this.preloadSound('rocket-launch.mp3');
-  }
+  this.preloadSound('rocket-launch.mp3');
 
   this.moon_ = this.find('#moon-1')[0];
 
@@ -44,7 +42,7 @@ ww.mode.RocketMode.prototype.didFocus = function() {
 ww.mode.RocketMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
-  this.wantsAudio_ && this.playSound('rocket-launch.mp3');
+  this.playSound('rocket-launch.mp3');
 
   var self = this,
       delay = 100,
