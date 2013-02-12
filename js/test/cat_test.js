@@ -40,8 +40,8 @@ function testWwModeCatModeActivateI() {
   };
 
   assertTrue('Number of tweens added should be 0', tweens.length === 0);
-console.log(mode.$letterI_);
-  mode.$letterI_.trigger('click');
+
+  mode.$letterI_.trigger('mouseup');
   assertTrue('Number of tweens should be greater than 0. Got (' + tweens.length + ')', tweens.length > 0);
 }
 
