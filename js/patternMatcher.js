@@ -40,7 +40,7 @@ ww.PatternMatcher.prototype.setupPatternMatchers_ = function(knownPatterns) {
       for (var i = 0; i < mode.binaryPattern.length; i++) {
         this.matchers_.push({
           key: key,
-          matcher: new RegExp("^" + mode.binaryPattern.slice(0, i + 1)),
+          matcher: new RegExp('^' + mode.binaryPattern.slice(0, i + 1)),
           isPartial: ((i + 1) != mode.binaryPattern.length)
         });
       }
@@ -82,7 +82,9 @@ ww.PatternMatcher.prototype.runMatchers_ = function() {
   for (var i = 0; i < this.matchers_.length; i++) {
     var matcher = this.matchers_[i];
     var len = matcher.matcher.toString().length - 3;
-    if ((len === this.currentPattern_.length) && matcher.matcher.test(this.currentPattern_)) {
+    if ((len === this.currentPattern_.length) &&
+      matcher.matcher.test(this.currentPattern_)) {
+
       matches.push({
         matcher: matcher,
         len: len,

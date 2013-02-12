@@ -109,7 +109,6 @@ ww.util.throttle = function(func, wait) {
 
 /**
  * Get the prefixed audio constructor.
- * @private
  * @return {Function} The constructor.
  */
 ww.util.getAudioContextConstructor = function() {
