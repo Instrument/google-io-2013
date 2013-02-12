@@ -245,9 +245,9 @@ ww.mode.Core.prototype.ready_ = function() {
   //   window['currentMode'] = this;
   // }
 
-  // if (window['onModeReady']) {
-  //   window['onModeReady'](this);
-  // }
+  if (window['onModeReady']) {
+    window['onModeReady'](this);
+  }
 
   this.log('Is ready');
 

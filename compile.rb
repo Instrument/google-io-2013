@@ -95,12 +95,12 @@ def build_js_test
 #     END
 #   end
 
-  test_mode2 = File.read("js/app.test.js")
-  good_shit2 = test_mode2.split("var ww =")[1]
+  # test_mode2 = File.read("js/app.test.js")
+  # good_shit2 = test_mode2.split("var ww =")[1]
 
-  File.open("js/app.test.js", "w") do |f|
-    f.write "var ww =#{good_shit2}"
-  end
+  # File.open("js/app.test.js", "w") do |f|
+  #   f.write "var ww =#{good_shit2}"
+  # end
 
   `jscoverage js js-instrumented --no-instrument="vendor" --no-instrument="test"`
 end
