@@ -75,36 +75,39 @@ ww.mode.register('rocket', ww.mode.RocketMode, 69, 8); // 01000101
 ww.mode.register('donut', ww.mode.DonutMode, 150, 8); // 10010110
 ww.mode.register('burger', ww.mode.BurgerMode, 57, 8); // 00111001
 
-// On DocumentReady (direct access only)
-$(function() {
-  // Extract the name from the URL.
-  var parts = window.location.href.split('/'),
-      page = parts[parts.length - 1],
-      scriptName =
-        page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
+var parts = window.location.href.split('/'),
+    page = parts[parts.length - 1];
 
-  // Look up the mode by name.
-  var pair = ww.mode.findModeByName(scriptName);
+if (DEBUG_MODE && page.indexOf('modes') >= 0) {
+  // On DocumentReady (direct access only)
+  $(function() {
+    // Extract the name from the URL.
+    var scriptName =
+          page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
 
-  // Initialize
-  if (pair && pair.klass) {
-    var w = $(window).width();
-    var h = $(window).height();
-    if (h < 1) { h = w; }
+    // Look up the mode by name.
+    var pair = ww.mode.findModeByName(scriptName);
 
-    var wrapperElem =
-      $('<div></div>').addClass('mode').addClass(scriptName + '-mode');
-    wrapperElem.css({ 'width': w, 'height': h });
+    // Initialize
+    if (pair && pair.klass) {
+      var w = $(window).width();
+      var h = $(window).height();
+      if (h < 1) { h = w; }
 
-    $('body > *').wrapAll(wrapperElem);
+      var wrapperElem =
+        $('<div></div>').addClass('mode').addClass(scriptName + '-mode');
+      wrapperElem.css({ 'width': w, 'height': h });
 
-    window['currentMode'] = new pair.klass($('.mode')[0], '../');
+      $('body > *').wrapAll(wrapperElem);
 
-    var self = this;
-    $(window).resize(ww.util.throttle(function() {
-      $('.mode').css({ 'width': $(window).width(),
-        'height': $(window).height() });
-      window['currentMode'].onResize();
-    }, 50));
-  }
-});
+      window['currentMode'] = new pair.klass($('.mode')[0], '../');
+
+      var self = this;
+      $(window).resize(ww.util.throttle(function() {
+        $('.mode').css({ 'width': $(window).width(),
+          'height': $(window).height() });
+        window['currentMode'].onResize();
+      }, 50));
+    }
+  });
+}
