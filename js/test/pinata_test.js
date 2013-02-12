@@ -65,7 +65,6 @@ function testWwModePinataModeOnResize() {
 
 function testWwModePinataModeAnimateI_() {
   var tweens = [];
-
   mode.constructor.prototype.addTween = function(tween) {
     tweens.push(tween);
   };
@@ -77,8 +76,6 @@ function testWwModePinataModeAnimateI_() {
 }
 
 function testWwModePinataModeActivateI() {
-  var letterI = $('#letter-i');
-
   mode.whackCount_ = 0;
   mode.maxWhacks_ = 10;
 
@@ -101,19 +98,18 @@ function testWwModePinataModeActivateI() {
   assertEquals('playedSound should not have been called yet', 0, playedSound);
   assertEquals('activated should not have been called yet', 0, activated);
 
-  letterI.trigger('mouseup');
+  mode.$letterI_.trigger('mouseup');
   assertEquals('animated should been called once', 1, animated);
   assertEquals('playedSound should been called once', 1, playedSound);
   assertEquals('activated should been called once', 1, activated);
 
-  letterI.trigger('mouseup');
+  mode.$letterI_.trigger('mouseup');
   assertEquals('animated should been called twice', 2, animated);
   assertEquals('playedSound should been called twice', 2, playedSound);
 }
 
 function testWwModePinataModeAnimateO_() {
   var tweens = [];
-
   mode.constructor.prototype.addTween = function(tween) {
     tweens.push(tween);
   };
@@ -125,8 +121,6 @@ function testWwModePinataModeAnimateO_() {
 }
 
 function testWwModePinataModeActivateO() {
-  var letterO = $('#letter-o');
-
   var activateO = 0;
   mode.constructor.prototype.activateO = function() {
     activateO++;
@@ -148,20 +142,18 @@ function testWwModePinataModeActivateO() {
   assertEquals('animated should not have been called yet', 0, animated);
   assertEquals('playedSound should not have been called yet', 0, playedSound);
 
-  letterO.trigger('mouseup');
+  mode.$letterO_.trigger('mouseup');
   assertEquals('activateO should been called once', 1, activateO);
   assertEquals('animated should been called once', 1, animated);
   assertEquals('playedSound should been called once', 1, playedSound);
 
-  letterO.trigger('mouseup');
+  mode.$letterO_.trigger('mouseup');
   assertEquals('activateO should been called twice', 2, activateO);
   assertEquals('animated should been called twice', 2, animated);
   assertEquals('playedSound should been called twice', 2, playedSound);
 }
 
 function testWwModePinataModeActivateO() {
-  var letterO = $('#letter-o');
-
   mode.whackCount_ = 0;
 
   var playedSound = 0;
@@ -171,16 +163,15 @@ function testWwModePinataModeActivateO() {
 
   assertEquals('playedSound should not have been called yet', 0, playedSound);
 
-  letterO.trigger('mouseup');
+  mode.$letterO_.trigger('mouseup');
   assertEquals('playedSound should been called once', 1, playedSound);
 
-  letterO.trigger('mouseup');
+  mode.$letterO_.trigger('mouseup');
   assertEquals('playedSound should been called twice', 2, playedSound);
 }
 
 function testWwModePinataModeAnimatePartsIn_() {
   var tweens = [];
-
   mode.constructor.prototype.addTween = function(tween) {
     tweens.push(tween);
   };
@@ -193,7 +184,6 @@ function testWwModePinataModeAnimatePartsIn_() {
 
 function testWwModePinataModeAnimatePartsOut_() {
   var tweens = [];
-
   mode.constructor.prototype.addTween = function(tween) {
     tweens.push(tween);
   };
