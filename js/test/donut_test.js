@@ -21,6 +21,7 @@ function testWwModeDonutModeActivateI() {
   mode.focus_();
 
   var playSound = 0;
+  var tweens = [];
 
   mode.biteIIndex_ = 0;
   mode.maxBitesI_ = 1;
@@ -65,6 +66,7 @@ function testWwModeDonutModeActivateO() {
   mode.focus_();
 
   var playSound = 0;
+  var tweens = [];
 
   mode.biteOIndex_ = 0;
   mode.maxBitesO_ = 1;

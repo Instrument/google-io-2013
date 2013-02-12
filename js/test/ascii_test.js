@@ -140,16 +140,20 @@ function testWwModeAsciiModeUpdateVectors_() {
   mode.init();
   mode.onResize();
 
+  mode.oRad_ = 10;
+
   mode.paperI_['vectors'][0]['length'] = 0;
 
   mode.updateVectors_(mode.paperI_);
 
   assertNotEquals('paperI_ should now have a new length', 0,
-    mode.paperI_['vectors'][0]['velocity']);
+    mode.paperI_['vectors'][0]['length']);
+
 
   mode.paperO_['vectors'][0]['length'] = 0;
 
   mode.updateVectors_(mode.paperO_);
+
 
   assertNotEquals('paperO_ should now have a new length', 0,
     mode.paperO_['vectors'][0]['length']);
@@ -181,6 +185,7 @@ function testWwModeAsciiModeUpdatePoints_() {
 }
 
 function testWwModeAsciiModeStepPhysics() {
+  mode.oRad_ = 10;
   var tempX1 = mode.paperI_['segments'][0]['point']['x'];
   var tempX2 = mode.paperO_['segments'][0]['point']['x'];
 
@@ -197,7 +202,7 @@ function testWwModeAsciiModeOnFrame() {
   var redrawPixel = false;
 
   mode.constructor.prototype.asciifyCanvas_ = function() {
-    redrawPixel = true;
+    console.log('test test');
   };
 
   mode.onFrame();
