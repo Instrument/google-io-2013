@@ -29,14 +29,15 @@
       }
 
       &#score {
-        padding: 0 10px 0 15px;
+        padding: 0 15px 0 15px;
+        @include border-radius(15px);
       }
 
-      &#lives {
-        border-left: 1px solid #5e5e5e;
-        @include border-radius(0 15px 15px 0);
-        padding: 0 15px 0 10px;
-      }
+      // &#lives {
+      //   border-left: 1px solid #5e5e5e;
+      //   @include border-radius(0 15px 15px 0);
+      //   padding: 0 15px 0 10px;
+      // }
     }
   }
 }

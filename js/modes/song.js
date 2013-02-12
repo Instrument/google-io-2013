@@ -4,9 +4,11 @@ goog.provide('ww.mode.SongMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.SongMode = function() {
-  goog.base(this, 'song', true, true);
+ww.mode.SongMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'song', true, true);
 
   // TODO: Maybe we need to do this on category change to save bandwidth
 

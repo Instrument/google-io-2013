@@ -1,10 +1,10 @@
 goog.provide('ww.app');
 goog.provide('ww.app.Core');
+goog.require('ww.mode');
 goog.require('ww.raf');
 goog.require('ww.util');
-goog.require('ww.mode');
 
-/** @define {boolean} */
+/** @define {boolean} Engage debug mode or not. */
 var DEBUG_MODE = false;
 
 /**
@@ -33,7 +33,8 @@ ww.app.Core = function() {
   if (Modernizr.touch) {
     document.body.style[Modernizr.prefixed('userSelect')] = 'none';
     document.body.style[Modernizr.prefixed('userDrag')] = 'none';
-    document.body.style[Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
+    document.body.style[
+      Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
 
     this.$window_.bind('touchmove.core', function(e) {
       e.preventDefault();
@@ -93,6 +94,9 @@ ww.app.Core.prototype.start_ = function() {
   this.loadModeByName_('home', false);
 };
 
+/**
+ * @param {String} data Data message to post.
+ */
 ww.app.Core.prototype.postMessage = function(data) {
   this.log_('Got message: ' + data['name'], data);
 
@@ -112,16 +116,18 @@ ww.app.Core.prototype.postMessage = function(data) {
  * @param {Boolean} transition Whether the mode will animate in.
  * @param {Boolean} reverse Whether the animation should be reversed.
  */
-ww.app.Core.prototype.loadModeByName_ = function(modeName, transition, reverse) {
+ww.app.Core.prototype.loadModeByName_ = function(
+                                          modeName, transition, reverse) {
   this.loadedModes_ = this.loadedModes_ || {};
-  this.loadedModes_[modeName] = this.loadedModes_[modeName] || { name: modeName };
+  this.loadedModes_[modeName] = this.loadedModes_[modeName] ||
+                                { name: modeName };
   this.loadMode_(this.loadedModes_[modeName], transition, reverse);
 };
 
 /**
  * Internal log method.
  * @private
- * @param {String} msg Log message;
+ * @param {String} msg Log message.
  */
 ww.app.Core.prototype.log_ = function(msg) {
   if (DEBUG_MODE && console && console.log) {
@@ -144,6 +150,20 @@ ww.app.Core.prototype.trackEvent_ = function(action, value) {
 };
 
 /**
+ * Get a CSS translation string.
+ * @private
+ * @param {Number} x X value.
+ * @return {String} Translated string value.
+ */
+ww.app.Core.prototype.translateXString_ = function(x) {
+  if (Modernizr.csstransforms3d) {
+    return 'translate3d(' + x + 'px, 0, 0)';
+  } else {
+    return 'translate(' + x + 'px, 0)';
+  }
+};
+
+/**
  * Load a mode (iframe) and transition it in.
  * @private
  * @param {Object} mode Mode details.
@@ -155,6 +175,10 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
       currentMode = this.currentMode,
       self = this;
 
+  if (currentMode && (currentMode.name == mode.name)) {
+    return;
+  }
+
   // If a mode is already focused, unfocus it (stop event handling/animation).
   if (currentMode) {
     currentMode.instance.postMessage({
@@ -164,7 +188,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
 
     currentMode.containerElem.style.pointerEvents = 'none';
   }
-  
+
   if (transition) {
     // Transition onload handler
     onComplete = function() {
@@ -173,12 +197,13 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
         'name': 'focus',
         'data': null
       });
-      
+
       // Transition start position.
       var startX = reverse ? -self.width_ : self.width_;
 
       // Mode new mode into start position.
-      mode.containerElem.style[self.transformKey_] = 'translateX(' + startX + 'px)';
+      mode.containerElem.style[self.transformKey_] =
+        self.translateXString_(startX);
       mode.containerElem.style.visibility = 'visible';
 
       // After the DOM settles.
@@ -187,7 +212,8 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
         var t2 = new TWEEN.Tween({ 'translateX': startX });
         t2.to({ 'translateX': 0 }, 400);
         t2.onUpdate(function() {
-          mode.containerElem.style[self.transformKey_] = 'translateX(' + this['translateX'] + 'px)';
+          mode.containerElem.style[self.transformKey_] =
+            self.translateXString_(this['translateX']);
         });
         t2.onComplete(function() {
           mode.containerElem.style.pointerEvents = 'auto';
@@ -200,7 +226,8 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
           var t = new TWEEN.Tween({ 'translateX': 0 });
           t.to({ 'translateX': endX }, 400);
           t.onUpdate(function() {
-            currentMode.containerElem.style[self.transformKey_] = 'translateX(' + this['translateX'] + 'px)';
+            currentMode.containerElem.style[self.transformKey_] =
+              self.translateXString_(this['translateX']);
           });
           t.onComplete(function() {
             currentMode.containerElem.style.visibility = 'hidden';
@@ -255,9 +282,9 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   // modeElem.src = 'modes/' + mode.name + '.html';
   modeElem.style.width = this.width_ + 'px';
   modeElem.style.height = this.height_ + 'px';
-  
+
   this.fetchModeContent_(mode.name, function(html) {
-    $(modeElem).html(html).appendTo(document.body);
+    $(modeElem).html(html).appendTo($('#wrapper'));
 
     // Look up the mode by name.
     var pair = ww.mode.findModeByName(mode.name);
@@ -274,13 +301,18 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   });
 };
 
+/**
+ * @private
+ * @param {String} name Name of mode to fetch.
+ * @param {Function} onComplete On complete callback function.
+ */
 ww.app.Core.prototype.fetchModeContent_ = function(name, onComplete) {
   var url = 'modes/' + name + '.html?' + (+(new Date()));
 
   $.ajax({
     url: url,
-    type: "GET",
-    dataType: "html",
+    type: 'GET',
+    dataType: 'html',
 
     // Complete callback (responseText is used internally)
     complete: function(jqXHR, status, responseText) {
@@ -288,10 +320,10 @@ ww.app.Core.prototype.fetchModeContent_ = function(name, onComplete) {
       responseText = jqXHR.responseText;
 
       // If successful, inject the HTML into all the matched elements
-      if ( jqXHR.isResolved() ) {
+      if (jqXHR.isResolved()) {
         // #4825: Get the actual response in case
         // a dataFilter is present in ajaxSettings
-        jqXHR.done(function( r ) {
+        jqXHR.done(function(r) {
           responseText = r;
         });
 

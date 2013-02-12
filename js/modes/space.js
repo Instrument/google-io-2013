@@ -4,9 +4,11 @@ goog.provide('ww.mode.SpaceMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.SpaceMode = function() {
-  goog.base(this, 'space', true, true, true);
+ww.mode.SpaceMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'space', true, true, true);
 
   if (this.wantsAudio_) {
     var context = this.getAudioContext_();
@@ -37,6 +39,7 @@ goog.inherits(ww.mode.SpaceMode, ww.mode.Core);
 /**
  * Play a sound by url.
  * @param {String} filename Audio file name.
+ * @param {Object} filter Filter to be applied.
  * @param {Function} onPlay Callback on play.
  * @param {Boolean} loop To loop the audio, or to not loop the audio.
  */
@@ -45,7 +48,7 @@ ww.mode.SpaceMode.prototype.playSound = function(filename,
 
   if (!this.wantsAudio_) { return; }
 
-  var url = '../sounds/' + this.name_ + '/' + filename;
+  var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }
@@ -443,27 +446,28 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
   var self = this;
 
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
-  $(document).bind(evt + '.space', function(e) {
+  $(this.containerElem_).bind(evt + '.space', function(e) {
     self.mouseX_ = self.getCoords(e)['x'];
     self.mouseY_ = self.getCoords(e)['y'];
   });
 
-  var tool = new paper['Tool']();
-
-  tool['onMouseUp'] = function(event) {
-    self.lastClick = event['point'];
-    if (self.paperO_['hitTest'](event['point'])) {
+  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  $(this.containerElem_).bind(evt2 + '.space', function(e) {
+    var coords = self.getCoords(e);
+    var p = new paper['Point'](coords['x'], coords['y']);
+    self.lastClick = p;
+    if (self.paperO_['hitTest'](p)) {
       if (self.hasFocus) {
         self.activateO();
       }
     }
 
-    if (self.paperI_['hitTest'](event['point'])) {
+    if (self.paperI_['hitTest'](p)) {
       if (self.hasFocus) {
         self.activateI();
       }
     }
-  };
+  });
 };
 
 /**
@@ -473,7 +477,10 @@ ww.mode.SpaceMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
-  $(document).unbind(evt + '.space');
+  $(this.containerElem_).unbind(evt + '.space');
+
+  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  $(this.containerElem_).unbind(evt2 + '.space');
 };
 
 /**
@@ -538,8 +545,8 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  if ($('.mode-wrapper')) {
-   this.draw13_($('.mode-wrapper')); 
+  if ($('.year-mark')) {
+   this.draw13_($('.year-mark'));
   }
 
   this.redraw();

@@ -4,9 +4,11 @@ goog.provide('ww.mode.SimoneMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.SimoneMode = function() {
-  goog.base(this, 'simone', true, true);
+ww.mode.SimoneMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'simone', true, true);
 };
 goog.inherits(ww.mode.SimoneMode, ww.mode.Core);
 
@@ -448,7 +450,7 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
               if (self.wantsAudio_) {
                 self.source['disconnect']();
               }
-              
+
               if (self.plays === 1 || self.plays > 1 && self.stepIndex === 0) {
                 self.levels.addClass('started');
               }

@@ -4,9 +4,11 @@ goog.provide('ww.mode.DonutMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.DonutMode = function() {
-  goog.base(this, 'donut', true, true, false);
+ww.mode.DonutMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'donut', true, true, false);
 
   this.preloadSound('bite-1.wav');
   this.preloadSound('bite-2.wav');

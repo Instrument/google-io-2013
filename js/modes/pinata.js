@@ -11,11 +11,9 @@ TWOPI = TWOPI || Math.PI * 2;
 ww.mode.PinataMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'pinata', true, false, true);
 
-  if (this.wantsAudio_) {
-    this.preloadSound('whack.mp3');
-    this.preloadSound('whoosh-1.wav');
-    this.preloadSound('whoosh-2.wav');
-  }
+  this.preloadSound('whack.mp3');
+  this.preloadSound('whoosh-1.wav');
+  this.preloadSound('whoosh-2.wav');
 
   this.ballSpeed_ = 250;
 
@@ -281,9 +279,7 @@ ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
 ww.mode.PinataMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
-  if (this.wantsAudio_) {
-    this.playSound('whack.mp3');
-  }
+  this.playSound('whack.mp3');
 
   this.animateI_();
 
@@ -391,10 +387,10 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
 
     (function(part, i) {
       var toY = part.style[self.prefix_].split('translateY(')[1];
-          toY = parseInt(toY) || 0;
+          toY = parseInt(toY, 10) || 0;
 
       var toX = part.style[self.prefix_].split('translateX(')[1];
-          toX = parseInt(toX) || 0;
+          toX = parseInt(toX, 10) || 0;
 
       var animateBack = new TWEEN.Tween({
         'translateY': toY,
@@ -417,7 +413,10 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
 
       if (!(i + 1 < self.maxParts_)) {
         animateBack.onComplete(function() {
-          self.showReload();
+          self.showReload(function() {
+            self.didUnfocus();
+            self.didFocus();
+          });
         });
       }
 

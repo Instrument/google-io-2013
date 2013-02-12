@@ -4,9 +4,11 @@ goog.provide('ww.mode.SynthMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.SynthMode = function() {
-  goog.base(this, 'synth', true, true, false);
+ww.mode.SynthMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'synth', true, true, false);
 };
 goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 
@@ -114,7 +116,8 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
     for (var i = 0; i <= amount; i++) {
       var segment = this.wavePaths[j]['segments'][i];
       var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i);
-      segment['point']['y'] = (sin * height + this.height_ / 2) + (j * yAdjust);
+      segment['point']['y'] = (sin * height + this.height_ / 2) +
+                              ((j - 1.5) * yAdjust);
     }
     this.wavePaths[j]['strokeColor']['hue'] = this.lastHue;
     this.wavePaths[j]['smooth']();
@@ -151,7 +154,11 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
   this.oLeft = this.oOffset.left + this.oRad;
   this.oTop = this.oOffset.top + this.oRad;
 
-  if (this.circle) {
+  if (this.circle && this.tracker) {
+
+    this.circleX = this.circle['position']['x'];
+    this.circleY = this.circle['position']['y'];
+
     this.currentRad = this.circle['bounds']['width'] / 2;
     this.circle['position']['x'] = this.oLeft;
     this.circle['position']['y'] = this.oTop;
@@ -159,6 +166,12 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     this.circleClone['position']['x'] = this.oLeft;
     this.circleClone['position']['y'] = this.oTop;
     this.circleClone['scale'](this.oRad / this.currentRad);
+
+    this.currentRad = this.tracker['bounds']['width'] / 2;
+    this.tracker['position']['x'] = this.oLeft;
+    this.tracker['position']['y'] = this.oTop;
+    this.tracker['scale']((this.oRad * .08) / this.currentRad);
+
   }
 
   if (this.paths) {
@@ -232,6 +245,15 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.circleClone['fillColor'] = '#3777e3';
     self.circleClone['opacity'] = .9;
 
+    self.tracker = new paper['Path']['Circle'](
+                    new paper['Point'](self.oLeft, self.oTop), self.oRad * .08
+                    );
+    self.tracker['fillColor'] = '#ffffff';
+    self.tracker['strokeColor'] = '#ffffff';
+    self.tracker['strokeColor']['alpha'] = .3;
+    self.tracker['strokeWidth'] = self.oRad * .05;
+    self.tracker['opacity'] = .7;
+
     self.path = new paper['Path']();
     self.path['strokeColor'] = new paper['RgbColor'](255, 255, 255, 0.2);
     self.path['strokeWidth'] = 5;
@@ -256,7 +278,8 @@ ww.mode.SynthMode.prototype.didFocus = function() {
                           self.paths[0],
                           self.paths[1],
                           self.paths[2],
-                          self.paths[3]
+                          self.paths[3],
+                          self.tracker
                         );
     self.oscilloGroup['clipped'] = true;
     self.duration = 0;
@@ -273,11 +296,14 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.lastFreq = self.calculateFrequency(event.pageX, event.pageY);
   });
   self.letterO.bind(this.evtEnd, function() {
+    self.changeFrequency(event);
+    self.moveTracker(event);
     self.padTouchOn = false;
   });
   self.letterO.bind(Modernizr.touch ? 'touchmove' : 'mousemove', function() {
     if (self.padTouchOn) {
       self.changeFrequency(event);
+      self.moveTracker(event);
     }
   });
 
@@ -372,6 +398,16 @@ ww.mode.SynthMode.prototype.changeWaveType = function() {
 ww.mode.SynthMode.prototype.changeFrequency = function(event) {
   this.calculateFrequency(event.pageX, event.pageY);
   this.createSound_();
+};
+
+
+/**
+ * Position tracker based on pointer event.
+ * @param {Object} event Page mouse event.
+ */
+ww.mode.SynthMode.prototype.moveTracker = function(event) {
+  this.tracker['position']['x'] = event.pageX;
+  this.tracker['position']['y'] = event.pageY;
 };
 
 

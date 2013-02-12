@@ -1,23 +1,23 @@
 .mode-wrapper {
   @extend %absolute-full;
 
-  #letter-o {
+  .letter-o {
     @include transform-origin(50% 50%, false);
   }
 }
 
 .rocket-mode {
-  #letter-i, #moon-1, #moon-2 {
+  .letter-i-wrapper, #moon-1, #moon-2 {
     @include transform-origin(50% 50%, false);
   }
 
-  #letter-o-over {
+  .letter-o-over {
     pointer-events: none;
   }
 }
 
 .bowling-mode {
-  #letter-i, #letter-o-wrapper {
+  .letter-i, .letter-o-wrapper {
     @include transform-origin(50% 50%, false);
   }
 }

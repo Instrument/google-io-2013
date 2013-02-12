@@ -4,28 +4,43 @@ goog.provide('ww.mode.RocketMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.RocketMode = function() {
-  goog.base(this, 'rocket', true, true, false);
+ww.mode.RocketMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'rocket', true, true, false);
 
   this.preloadSound('rocket-launch.mp3');
 
-  this.moon_ = document.getElementById('moon-1');
+  this.moon_ = this.find('#moon-1')[0];
+  var i = this.find('.letter-i');
+  var o = this.find('.letter-o');
+  this.moonCenter_ = o.attr('cx') + ', ' + o.attr('cy');
+  this.rocketCenter_ = i.attr('cx') + ', ' + i.attr('cy');
+  this.rocket_ = this.find('.letter-i-wrapper');
 
-  // mooon over used to make the rocket look like it's going behind the moon
-  this.moonOver_ = $('#letter-o').clone().attr('id', 'letter-o-over');
+  this.moonOver_ = this.find('.letter-o').clone();
+  this.moonOver_.attr('class', 'letter-o-over');
   this.moonOver_.css('opacity', 0);
 
-  $('#letter-i').after(this.moonOver_);
+  this.find('.letter-i').after(this.moonOver_);
 
-  this.moonOver_.find('#moon-1').attr('id', "moon-2");
-  this.moonOver_.find('#face-1').attr('id', "face-2");
+  this.moonOver_.find('#moon-1').attr('id', 'moon-2');
+  this.moonOver_.find('#face-1').attr('id', 'face-2');
   this.moonOver_ = this.moonOver_[0];
 
   this.faces_ = $('[id*=face-]');
   this.moons_ = $('[id*=moon-]');
 };
 goog.inherits(ww.mode.RocketMode, ww.mode.Core);
+
+
+/**
+ * Bind mouse/touch events which focus is gained.
+ */
+ww.mode.RocketMode.prototype.didFocus = function() {
+  goog.base(this, 'didFocus');
+};
 
 
 /**
@@ -41,19 +56,16 @@ ww.mode.RocketMode.prototype.activateI = function() {
       delay = 100,
       duration = 400,
       moonBounds = this.$letterO_[0].getBoundingClientRect(),
-      rocketBounds = self.$letterI_[0].getBoundingClientRect(),
+      rocketBounds = this.$letterI_[0].getBoundingClientRect(),
       distance = ~~(moonBounds['right'] - rocketBounds['left'] +
-                    + moonBounds['width'] / 2),
-      transform, prevTransform;
+                    rocketBounds['width'] / 2),
+      transform = '', prevTransform = '';
 
   var rotateIn = new TWEEN.Tween({ 'rotate': 0 });
   rotateIn.to({ 'rotate': 90 }, delay);
   rotateIn.onUpdate(function() {
-    transform = 'rotate(' + this['rotate'] + 'deg) ';
-    self.transformElem_(self.$letterI_[0], transform);
-  });
-  rotateIn.onComplete(function() {
-    prevTransform = transform;
+    self.$letterI_.attr('transform', 'rotate(' + this['rotate'] +
+                        ', ' + self.rocketCenter_ + ')');
   });
 
   var orbitOver = new TWEEN.Tween({ 'translateY': 0, 'scale': 1 });
@@ -62,12 +74,12 @@ ww.mode.RocketMode.prototype.activateI = function() {
   orbitOver.onUpdate(function() {
     transform = prevTransform + 'scale(' + this['scale'] + ') ' +
                 'translateY(-' + this['translateY'] + 'px) ';
-    self.transformElem_(self.$letterI_[0], transform);
+    self.transformElem_(self.rocket_[0], transform);
   });
   orbitOver.onComplete(function() {
     transform = transform + 'scaleY(-1) ';
     prevTransform = transform;
-    self.transformElem_(self.$letterI_[0], transform);
+    self.transformElem_(self.rocket_[0], transform);
   });
 
   delay += duration;
@@ -81,7 +93,7 @@ ww.mode.RocketMode.prototype.activateI = function() {
   orbitBack.onUpdate(function() {
     transform = prevTransform + 'translateY(-' + this['translateY'] + 'px) ' +
                 'scale(' + this['scale'] + ') ';
-    self.transformElem_(self.$letterI_[0], transform);
+    self.transformElem_(self.rocket_[0], transform);
   });
   orbitBack.onComplete(function() {
     prevTransform = transform;
@@ -90,16 +102,16 @@ ww.mode.RocketMode.prototype.activateI = function() {
 
   delay += duration;
 
-  var rotateBack = new TWEEN.Tween({ 'rotate': 0 });
-  rotateBack.to({ 'rotate': -90 }, 100);
+  var rotateBack = new TWEEN.Tween({ 'rotate': 90 });
+  rotateBack.to({ 'rotate': 0 }, 100);
   rotateBack.onStart(function() {
     prevTransform = prevTransform + ' scaleY(-1) ';
-    self.transformElem_(self.$letterI_[0], prevTransform);
+    self.transformElem_(self.rocket_[0], prevTransform);
   });
   rotateBack.delay(delay);
   rotateBack.onUpdate(function() {
-    transform = prevTransform + 'rotate(' + this['rotate'] + 'deg) ';
-    self.transformElem_(self.$letterI_[0], transform);
+    self.$letterI_.attr('transform', 'rotate(' + this['rotate'] + ', ' +
+                        self.rocketCenter_ + ')');
   });
 
   this.addTween(rotateIn);
@@ -126,10 +138,11 @@ ww.mode.RocketMode.prototype.activateO = function() {
   var rotateAround = new TWEEN.Tween({ 'rotate': deg });
   rotateAround.to({ 'rotate': deg + 360 * 2 }, duration);
   rotateAround.onUpdate(function() {
-    self.moons_.css(self.prefix_, 'rotate(' + this['rotate'] + 'deg)');
+    self.moons_.attr('transform', 'rotate(' +
+                      this['rotate'] + ', ' + self.moonCenter_ + ')');
   });
   rotateAround.onComplete(function() {
-    self.moons_.css(self.prefix_, 'rotate(0deg)');
+    self.moons_.attr('transform', 'rotate(0, ' + self.moonCenter_ + ')');
   });
 
   var fadeIn = new TWEEN.Tween({ 'opacity': opacity });

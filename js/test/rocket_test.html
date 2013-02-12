@@ -4,23 +4,23 @@
     <title>IO</title>
     <meta content="initial-scale=1.0, minimum-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=no" name="viewport">
     <script src="../vendor/modernizr-latest.js"></script>
-    <link rel="stylesheet" href="../../css/mode.css">
+    <link rel="stylesheet" href="../../css/app.css">
     <script src="../vendor/jquery-1.6.2.js"></script>
     <script src="../vendor/Tween.js"></script>
     <script src="../vendor/paper.js"></script>
     <script src="../vendor/physics.js"></script>
     <script src="../vendor/tuna.js"></script>
-    <script src="../mode.test.js"></script>
+    <script src="../app.test.js"></script>
   </head>
   <body>
     <div class="mode-wrapper">
       <svg version="1.1" id="rocket-and-moon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
    y="0px" width="100%" height="100%" viewBox="0 0 367.86 301.16" enable-background="new 0 0 367.86 301.16"
    xml:space="preserve">
-        <rect id="slash" x="145.777" y="31.325" transform="matrix(0.9542 0.2993 -0.2993 0.9542 52.8907 -37.673)" fill="#E0E0E0" width="7.342" height="245.055"/>
-        <path id="num-1" fill="#C2C2C2" d="M306.396,63.79h-2.224V49.485c0-1.189,0.036-2.314,0.109-3.377
+        <rect class="slash" x="145.777" y="31.325" transform="matrix(0.9542 0.2993 -0.2993 0.9542 52.8907 -37.673)" fill="#E0E0E0" width="7.342" height="245.055"/>
+        <path class="num-1" fill="#C2C2C2" d="M306.396,63.79h-2.224V49.485c0-1.189,0.036-2.314,0.109-3.377
           c-0.191,0.192-0.407,0.394-0.645,0.604c-0.238,0.211-1.328,1.103-3.268,2.677l-1.209-1.564l5.313-4.105h1.922V63.79z"/>
-        <path id="num-3" fill="#C2C2C2" d="M326.465,48.442c0,1.281-0.359,2.329-1.077,3.144c-0.719,0.814-1.736,1.359-3.054,1.634v0.109
+        <path class="num-3" fill="#C2C2C2" d="M326.465,48.442c0,1.281-0.359,2.329-1.077,3.144c-0.719,0.814-1.736,1.359-3.054,1.634v0.109
           c1.609,0.202,2.805,0.714,3.582,1.538c0.777,0.823,1.167,1.903,1.167,3.239c0,1.913-0.663,3.384-1.99,4.414
           c-1.327,1.029-3.212,1.544-5.656,1.544c-1.062,0-2.034-0.08-2.917-0.24s-1.741-0.441-2.574-0.844v-2.169
           c0.869,0.43,1.797,0.757,2.78,0.981c0.983,0.224,1.915,0.336,2.794,0.336c3.468,0,5.202-1.359,5.202-4.077
@@ -28,7 +28,7 @@
           c0-0.979-0.336-1.747-1.008-2.306c-0.674-0.559-1.586-0.838-2.739-0.838c-0.878,0-1.707,0.119-2.485,0.357
           c-0.777,0.238-1.665,0.677-2.662,1.317l-1.153-1.537c0.823-0.649,1.772-1.16,2.849-1.53c1.075-0.371,2.207-0.557,3.397-0.557
           c1.949,0,3.464,0.446,4.544,1.339S326.465,46.887,326.465,48.442z"/>
-        <g id="letter-o">
+        <g class="letter-o" cx="254.122" cy="154.146">
           <g id="moon-1">
             <linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="297.7603" y1="218.5098" x2="206.6701" y2="88.6922">
               <stop  offset="0" style="stop-color:#E0E0E0"/>
@@ -213,54 +213,58 @@
           </g>
         </g>
 
-        <g id="letter-i">
-          <path fill="none" stroke="#2364D7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-            M61.445,235.295c0-5.188,5.424-9.393,12.113-9.393s12.624,4.205,12.624,9.393"/>
-          <path fill="#4387FD" stroke="#2364D7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-              M98.154,159.352c17.566,0,31.633,32.814,31.633,74.639l-31.391-11.305"/>
-          <path fill="#4387FD" stroke="#2364D7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-              M48.878,159.352c-17.564,0-31.633,32.814-31.633,74.639l31.392-11.305"/>
-          <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="116.3569" y1="215.7617" x2="27.0268" y2="88.4524">
-            <stop  offset="0" style="stop-color:#3078F0"/>
-            <stop  offset="1" style="stop-color:#4387FD"/>
-          </linearGradient>
-          <path fill="url(#SVGID_1_)" stroke="#2364D7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-            M73.558,226.83c-11.461,0-22.191,3.391-22.191,3.391s-19.708-88.171-5.58-132.478c14.127-44.307,27.771-38.525,27.771-38.525
-            s13.646-5.781,27.772,38.525c14.127,44.307-5.58,132.478-5.58,132.478S85.019,226.83,73.558,226.83z"/>
-          <path fill="#2364D7" d="M73.537,77.463c8.197,0,16.626,2.74,22.549,7.31C84.386,56.3,73.537,59.634,73.537,59.634
-            S62.688,56.3,50.987,84.771C56.91,80.202,65.338,77.463,73.537,77.463z"/>
-          <circle fill="#2364D7" cx="73.737" cy="115.747" r="12.963"/>
-          <circle fill="#FFFFFF" cx="73.737" cy="115.747" r="9.098"/>
-          <polygon fill="#2364D7" stroke="#2364D7" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
-            72.89,69.58 73.48,16.278 74.07,69.58  "/>
-          <path fill="#2364D7" d="M73.448,216.25c-8.918,0-17.056,1.434-23.263,3.797c1.165,5.66,1.975,9.012,1.975,9.012
-            s10.36-3.027,21.426-3.027c11.063,0,21.425,3.027,21.425,3.027s0.8-3.312,1.954-8.916C90.729,217.723,82.488,216.25,73.448,216.25z
-            "/>
-          <circle fill="none" stroke="#2364D7" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="73.737" cy="115.747" r="15.333"/>
-          <path fill="none" stroke="#FFD24D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-          M72.99,253.26"/>
-          <path fill="#2364D7" stroke="#2364D7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
-          M62.147,67.167c0-5.674,5.192-10.272,11.598-10.272c6.405,0,11.598,4.599,11.598,10.272"/>
-          <polyline fill="#FFFFFF" stroke="#2364D7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
-          72.642,163.08 73.642,211.08 71.642,211.08 72.642,163.08   "/>
+        <g class="letter-i" cx="73.48" cy="154.146">
+          <g class="letter-i-wrapper">
+            <path fill="none" stroke="#2364D7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+              M61.445,235.295c0-5.188,5.424-9.393,12.113-9.393s12.624,4.205,12.624,9.393"/>
+            <path fill="#4387FD" stroke="#2364D7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                M98.154,159.352c17.566,0,31.633,32.814,31.633,74.639l-31.391-11.305"/>
+            <path fill="#4387FD" stroke="#2364D7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+                M48.878,159.352c-17.564,0-31.633,32.814-31.633,74.639l31.392-11.305"/>
+            <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="116.3569" y1="215.7617" x2="27.0268" y2="88.4524">
+              <stop  offset="0" style="stop-color:#3078F0"/>
+              <stop  offset="1" style="stop-color:#4387FD"/>
+            </linearGradient>
+            <path fill="url(#SVGID_1_)" stroke="#2364D7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+              M73.558,226.83c-11.461,0-22.191,3.391-22.191,3.391s-19.708-88.171-5.58-132.478c14.127-44.307,27.771-38.525,27.771-38.525
+              s13.646-5.781,27.772,38.525c14.127,44.307-5.58,132.478-5.58,132.478S85.019,226.83,73.558,226.83z"/>
+            <path fill="#2364D7" d="M73.537,77.463c8.197,0,16.626,2.74,22.549,7.31C84.386,56.3,73.537,59.634,73.537,59.634
+              S62.688,56.3,50.987,84.771C56.91,80.202,65.338,77.463,73.537,77.463z"/>
+            <circle fill="#2364D7" cx="73.737" cy="115.747" r="12.963"/>
+            <circle fill="#FFFFFF" cx="73.737" cy="115.747" r="9.098"/>
+            <polygon fill="#2364D7" stroke="#2364D7" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+              72.89,69.58 73.48,16.278 74.07,69.58  "/>
+            <path fill="#2364D7" d="M73.448,216.25c-8.918,0-17.056,1.434-23.263,3.797c1.165,5.66,1.975,9.012,1.975,9.012
+              s10.36-3.027,21.426-3.027c11.063,0,21.425,3.027,21.425,3.027s0.8-3.312,1.954-8.916C90.729,217.723,82.488,216.25,73.448,216.25z
+              "/>
+            <circle fill="none" stroke="#2364D7" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" cx="73.737" cy="115.747" r="15.333"/>
+            <path fill="none" stroke="#FFD24D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M72.99,253.26"/>
+            <path fill="#2364D7" stroke="#2364D7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+            M62.147,67.167c0-5.674,5.192-10.272,11.598-10.272c6.405,0,11.598,4.599,11.598,10.272"/>
+            <polyline fill="#FFFFFF" stroke="#2364D7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+            72.642,163.08 73.642,211.08 71.642,211.08 72.642,163.08   "/>
 
-          <g id="fire">
-            <line id="fire-1" fill="none" stroke="#F4B400" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="72.93" y1="231.08" x2="72.93" y2="266.08"/>
-            <line id="fire-2" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="83.917" y1="238.533" x2="90.146" y2="269.332"/>
-            <line id="fire-3" fill="none" stroke="#FFD24D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="79.333" y1="234.25" x2="80.426" y2="261.434"/>
-            <line id="fire-4" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="88.596" y1="240.506" x2="91.472" y2="251.533"/>
-            <line id="fire-5" fill="none" stroke="#F4B400" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="63.561" y1="238.533" x2="56.429" y2="272.332"/>
-            <line id="fire-6" fill="none" stroke="#FFD24D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="68.146" y1="234.25" x2="67.054" y2="261.434"/>
-            <line id="fire-7" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="58.883" y1="240.506" x2="56.005" y2="252.533"/>
-            <line id="fire-8" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="69.544" y1="262.434" x2="69.005" y2="271.355"/>
-            <line id="fire-9" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="64.249" y1="249.65" x2="62.228" y2="273.877"/>
-            <line id="fire-10" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="76.807" y1="261.434" x2="77.346" y2="268.355"/>
-            <line id="fire-11" fill="none" stroke="#F4B400" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="83.005" y1="249.65" x2="85.027" y2="273.877"/>
-            <line id="fire-12" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="72.93" y1="271.08" x2="72.93" y2="278.08"/>
+            <g id="fire">
+              <line id="fire-1" fill="none" stroke="#F4B400" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="72.93" y1="231.08" x2="72.93" y2="266.08"/>
+              <line id="fire-2" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="83.917" y1="238.533" x2="90.146" y2="269.332"/>
+              <line id="fire-3" fill="none" stroke="#FFD24D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="79.333" y1="234.25" x2="80.426" y2="261.434"/>
+              <line id="fire-4" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="88.596" y1="240.506" x2="91.472" y2="251.533"/>
+              <line id="fire-5" fill="none" stroke="#F4B400" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="63.561" y1="238.533" x2="56.429" y2="272.332"/>
+              <line id="fire-6" fill="none" stroke="#FFD24D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="68.146" y1="234.25" x2="67.054" y2="261.434"/>
+              <line id="fire-7" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="58.883" y1="240.506" x2="56.005" y2="252.533"/>
+              <line id="fire-8" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="69.544" y1="262.434" x2="69.005" y2="271.355"/>
+              <line id="fire-9" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="64.249" y1="249.65" x2="62.228" y2="273.877"/>
+              <line id="fire-10" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="76.807" y1="261.434" x2="77.346" y2="268.355"/>
+              <line id="fire-11" fill="none" stroke="#F4B400" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="83.005" y1="249.65" x2="85.027" y2="273.877"/>
+              <line id="fire-12" fill="none" stroke="#FFD24D" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="72.93" y1="271.08" x2="72.93" y2="278.08"/>
+            </g>
+            <path opacity="0.3" fill="#4387FD" d="M81.398,116.438c-4.713,2.656-10.388,2.969-15.322,0.918
+              c0.302,1.416,0.998,2.766,2.099,3.867c3.032,3.031,7.95,3.031,10.983,0C80.494,119.888,81.24,118.185,81.398,116.438z"/>
           </g>
-          <path opacity="0.3" fill="#4387FD" d="M81.398,116.438c-4.713,2.656-10.388,2.969-15.322,0.918
-            c0.302,1.416,0.998,2.766,2.099,3.867c3.032,3.031,7.95,3.031,10.983,0C80.494,119.888,81.24,118.185,81.398,116.438z"/>
         </g>
+        <path id="center" opacity="0" fill="#D6D6D6" d="M254.122,154.146"/>
+        <path id="rocket-center" opacity="0" fill="#D6D6D6" d="M73.48,154.146"/>
       </svg>
     </div>
   
