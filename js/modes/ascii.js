@@ -93,7 +93,7 @@ ww.mode.AsciiMode.prototype.fillI_ = function() {
   var gradientColor = new paper['GradientColor'](gradient, from, to);
 
   this.paperI_['fillColor'] = gradientColor;
-}
+};
 
 /**
  * Function to create and draw O.
@@ -147,7 +147,7 @@ ww.mode.AsciiMode.prototype.fillO_ = function() {
   var gradientColor = new paper['GradientColor'](gradient, from, to);
 
   this.paperO_['fillColor'] = gradientColor;
-}
+};
 
 /**
  * Function to create and draw Slash.
@@ -260,6 +260,9 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
   });
 };
 
+/**
+ * Event is called after a mode is unfocused.
+ */
 ww.mode.AsciiMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
@@ -312,7 +315,7 @@ ww.mode.AsciiMode.prototype.onResize = function(redraw) {
   this.drawO_();
 
   if ($('.mode-wrapper')) {
-   this.draw13_($('.mode-wrapper')); 
+   this.draw13_($('.mode-wrapper'));
   }
 
   if (redraw) {
@@ -347,7 +350,7 @@ ww.mode.AsciiMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
     point['velocity'] += speed;
     point['velocity'] = Math.min(5, point['velocity']);
   }
-}
+};
 
 /**
  * Updates point vectors based on their length and velocity values.
@@ -368,7 +371,7 @@ ww.mode.AsciiMode.prototype.updateVectors_ = function(path) {
 
     point['length'] = Math.max(0, point['length'] + point['velocity']);
   }
-}
+};
 
 /**
  * Updates point coordinates based on their vectors.
@@ -388,7 +391,7 @@ ww.mode.AsciiMode.prototype.updatePoints_ = function(path) {
       this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter_);
     }
   }
-}
+};
 
 /**
  * On each physics tick, update vectors.
@@ -404,7 +407,7 @@ ww.mode.AsciiMode.prototype.stepPhysics = function(delta) {
   this.updatePoints_(this.paperI_);
 
   this.updateVectors_(this.paperO_);
-  this.updatePoints_(this.paperO_); 
+  this.updatePoints_(this.paperO_);
 };
 
 /**
@@ -425,13 +428,14 @@ ww.mode.AsciiMode.prototype.onFrame = function(delta) {
  * MIT License [http://www.nihilogic.dk/licenses/mit-license.txt]
  */
 
-var aDefaultCharList = (" .[]{}@!=-$%^&();:',golei2013").split("");
+var aDefaultCharList = (' .[]{}@!=-$%^&();:\',golei2013').split('');
 // var aDefaultCharList = (" .,:;i1tfLCG08@").split("");
 
 /**
  * Convert img element to ascii.
  * @private
  * @param {Element} sourceCanvas Source image canvas.
+ * @return {String} strChars The string of characters to output.
  */
 ww.mode.AsciiMode.prototype.asciifyCanvas_ = function(sourceCanvas) {
   var oAscii = document.getElementById('ascii-canvas');
@@ -448,13 +452,13 @@ ww.mode.AsciiMode.prototype.asciifyCanvas_ = function(sourceCanvas) {
 
   oCtx.clearRect(0, 0, sourceCanvas.width + 1, sourceCanvas.height + 1);
 
-  var strChars = "";
-  var strChars2 = "";
-  var strChars3 = "";
+  var strChars = '';
+  var strChars2 = '';
+  var strChars3 = '';
 
   for (var y = 0; y < iHeight; y += 16) {
     for (var x = 0; x < iWidth; x += 8) {
-      var iOffset = (y*iWidth + x) * 4;
+      var iOffset = (y * iWidth + x) * 4;
 
       var iRed = sourceCanvasData[iOffset];
       var iGreen = sourceCanvasData[iOffset + 1];
@@ -465,20 +469,20 @@ ww.mode.AsciiMode.prototype.asciifyCanvas_ = function(sourceCanvas) {
       if (iAlpha === 0) {
         iCharIdx = 0;
       } else {
-        var fBrightness = (0.3*iRed + 0.59*iGreen + 0.11*iBlue) / 255;
-        iCharIdx = (aCharList.length-1) - Math.round(fBrightness *
-          (aCharList.length-1));
+        var fBrightness = (0.3 * iRed + 0.59 * iGreen + 0.11 * iBlue) / 255;
+        iCharIdx = (aCharList.length - 1) - Math.round(fBrightness *
+          (aCharList.length - 1));
       }
 
       var strThisChar = aCharList[iCharIdx];
 
-      if (strThisChar == " ") {
-        strThisChar = "&nbsp;";
+      if (strThisChar == ' ') {
+        strThisChar = '&nbsp;';
       }
 
-      strChars  += strThisChar;
+      strChars += strThisChar;
     }
-    strChars += "\n";
+    strChars += '\n';
   }
 
   oAscii.innerHTML = strChars;
