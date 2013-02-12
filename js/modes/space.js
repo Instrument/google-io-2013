@@ -280,7 +280,7 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
   if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ +
-      (this.width_ * 0.02777778),
+      (this.ratioParent_ * 0.02777778),
       this.screenCenterY_ - (this.iHeight_ / 2) -
         (this.iHeight_ * 0.09722222));
 
@@ -295,7 +295,8 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
   } else {
-    this.slashStart_['x'] = this.screenCenterX_ + (this.width_ * 0.02777778);
+    this.slashStart_['x'] = this.screenCenterX_ +
+      (this.ratioParent_ * 0.02777778);
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       (this.iHeight_ * 0.09722222);
 
@@ -502,6 +503,8 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
+  this.ratioParent_ = Math.min(this.width_, this.height_);
+
   if (((deltaWidth > 50) || (deltaHeight > 50)) && this.world_) {
     for (var i = 0; i < this.world_.particles.length; i++) {
       this.tempFloat_ = ww.util.floatComplexGaussianRandom();
@@ -515,16 +518,17 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   }
 
   // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * 0.175;
+  this.iWidth_ = this.ratioParent_ * 0.175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ - (this.width_ * 0.15833333);
+  this.iX_ = this.screenCenterX_ - this.iWidth_ -
+    (this.ratioParent_ * 0.15833333);
 
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
   // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
+  this.oRad_ = this.ratioParent_ * 0.1944444444;
 
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
@@ -657,7 +661,8 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
   cos, mod1, mod2, mod3, mod4) {
 
     var result;
-    var adjustForScreenSize = 2400 / this.width_;
+    var adjustForScreenSize = Math.max(this.width_, this.height_) /
+      this.ratioParent_;
 
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *
