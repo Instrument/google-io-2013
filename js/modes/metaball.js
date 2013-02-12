@@ -624,7 +624,8 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   this.pctx_.globalCompositeOperation = 'source-atop';
 
   // Set the blend mode for the gradients to lighter to make it look cool.
-  this.gctx_.globalCompositeOperation = 'lighter';
+  // this.gctx_.globalCompositeOperation = 'lighter';
+  // this.gctx_.globalAlpha = 0.75;
 
   // Draw the ball canvas onto the gradient canvas to complete the mask.
   if (0 < this.gcanvas_.height) {
