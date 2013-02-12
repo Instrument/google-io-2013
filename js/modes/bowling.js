@@ -21,7 +21,10 @@ goog.inherits(ww.mode.BowlingMode, ww.mode.Core);
  */
 ww.mode.BowlingMode.prototype.init = function() {
   goog.base(this, 'init');
-  this.ballWrapper_ = this.find('.letter-o-wrapper')[0];
+  this.ballWrapper_ = this.find('.letter-o-wrapper');
+  this.centerX_ = this.$letterO_.attr('cx');
+  this.centerY_ = this.$letterO_.attr('cy');
+  this.ballCenter_ = [this.centerX_, this.centerY_];
 };
 
 /**
@@ -75,9 +78,10 @@ ww.mode.BowlingMode.prototype.activateO = function() {
   var deg = ~~Random(400, 490);
 
   var animateSpin = new TWEEN.Tween({ 'rotate': 0 });
-  animateSpin.to({ 'rotate': 360 * 10 }, 3000);
+  animateSpin.to({ 'rotate': 360 * 10 }, 1500);
   animateSpin.onUpdate(function() {
-    self.transformElem_(self.ballWrapper_, 'rotate(' + this['rotate'] + 'deg)');
+    self.$letterO_.attr('transform', 'rotate(' + (this['rotate'] % 360) + ', ' +
+                            self.centerX_ + ', ' + self.centerY_ + ')');
   });
 
   var animateMove = new TWEEN.Tween({ 'translateX': 0 });
@@ -85,7 +89,8 @@ ww.mode.BowlingMode.prototype.activateO = function() {
   animateMove.delay(1000);
   animateMove.easing(TWEEN.Easing.Exponential.In);
   animateMove.onUpdate(function() {
-    self.transformElem_(self.$letterO_[0],
+    self.centerX_ = self.centerX_ - this['translateX'];
+    self.transformElem_(self.ballWrapper_[0],
                           'translateX(-' + this['translateX'] + '%)');
   });
 
@@ -103,14 +108,16 @@ ww.mode.BowlingMode.prototype.activateO = function() {
   reset.to({ 'opacity': 1 }, 500);
   reset.delay(3500);
   reset.onStart(function() {
-    self.transformElem_(self.ballWrapper_, 'rotate(0deg)');
-    self.transformElem_(self.$letterO_[0], 'translate(0px, 0px)');
+    self.$letterO_.attr('transform', 'rotate(0, ' + self.ballCenter_[0] + ', ' +
+                        self.ballCenter_[1] + ')');
+    self.centerX_ = self.ballCenter_[0];
+    self.transformElem_(self.ballWrapper_[0], 'translate(0px, 0px)');
     self.transformElem_(self.$letterI_[0], 'scale(1) rotate(0deg)');
   });
   reset.onUpdate(function() {
-    self.ballWrapper_.style['opacity'] = this['opacity'];
-    self.$letterI_[0].style['opacity'] = this['opacity'];
     self.$letterO_[0].style['opacity'] = this['opacity'];
+    self.$letterI_[0].style['opacity'] = this['opacity'];
+    self.ballWrapper_[0].style['opacity'] = this['opacity'];
   });
 
   this.addTween(animateSpin);
