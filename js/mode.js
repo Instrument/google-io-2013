@@ -88,10 +88,13 @@ $(function() {
 
   // Initialize
   if (pair && pair.klass) {
+    var w = $(window).width();
+    var h = $(window).height();
+    if (h < 1) { h = w; }
+
     var wrapperElem =
       $('<div></div>').addClass('mode').addClass(scriptName + '-mode');
-    wrapperElem.css({ 'width': $(window).width(),
-      'height': $(window).height() });
+    wrapperElem.css({ 'width': w, 'height': h });
 
     $('body > *').wrapAll(wrapperElem);
 
