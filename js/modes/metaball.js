@@ -202,11 +202,12 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
 
   this.connections_ = new paper['Group']();
   var path;
+  var breakPoint =
+    Math.round(Math.max(this.screenCenterX_, this.screenCenterY_) * .7);
 
   for (var i = 0; i < paths.length; i++) {
     for (var ii = i + 1; ii < paths.length; ii++) {
-      path = this.metaball_(paths[i], paths[ii], .45, 2.4,
-        Math.max(this.screenCenterX_, this.screenCenterY_) * .7);
+      path = this.metaball_(paths[i], paths[ii], .45, 2.4, breakPoint);
       if (path) {
         this.connections_['appendTop'](path);
       }
@@ -281,14 +282,6 @@ ww.mode.MetaBallMode.prototype.init = function() {
       this.oPaths_[i]['remove']();
     }
   }
-
-  /*if (paper['projects'][0]['layers'][0]['children']) {
-    var childLen = paper['projects'][0]['layers'][0]['children'].length;
-
-    for (var i = 0; i < childLen; i++) {
-      paper['projects'][0]['layers'][0]['children'][i]['remove']();
-    }
-  }*/
 
   if (this.connections_) {
     this.connections_['remove']();
