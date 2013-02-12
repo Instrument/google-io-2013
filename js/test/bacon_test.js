@@ -46,21 +46,6 @@ function testWwModeBaconModeActivateI() {
 }
 
 function testWwModeBaconModeActivateO() {
-  var activatedO = 0;
-  mode.constructor.prototype.activateO = function() {
-    activatedO++;
-  };
-
-  assertEquals('activateO should not have been called yet', activatedO, 0);
-
-  mode.$letterO_.trigger('mouseup');
-  assertEquals('activateO should been called once', activatedO, 1);
-
-  mode.$letterO_.trigger('mouseup');
-  assertEquals('activateO should been called twice', activatedO, 2);
-}
-
-function testWwModeBaconModeActivateO() {
   var playedAudio = 0;
   var fileName = '';
   mode.constructor.prototype.playSound = function(audioFile) {
@@ -126,7 +111,7 @@ function testWwModeBaconModeShowCracked_() {
   assertTrue('Number of tweens added should be 0', tweens.length === 0);
 
   mode.showCracked_();
-  assertEquals('Number of tweens should not be 0', 0, tweens.length);
+  assertNotEquals('Number of tweens should not be 0', 0, tweens.length);
 }
 
 function testWwModeBaconModeAnimateSpinEgg_() {
@@ -138,5 +123,20 @@ function testWwModeBaconModeAnimateSpinEgg_() {
   assertTrue('Number of tweens added should be 0', tweens.length === 0);
 
   mode.animateSpinEgg_();
-  assertEquals('Number of tweens should not be 0', 0, tweens.length);
+  assertNotEquals('Number of tweens should not be 0', 0, tweens.length);
+}
+
+function testWwModeBaconModeActivateO() {
+  var activatedO = 0;
+  mode.constructor.prototype.activateO = function() {
+    activatedO++;
+  };
+
+  assertEquals('activateO should not have been called yet', activatedO, 0);
+
+  mode.$letterO_.trigger('mouseup');
+  assertEquals('activateO should been called once', activatedO, 1);
+
+  mode.$letterO_.trigger('mouseup');
+  assertEquals('activateO should been called twice', activatedO, 2);
 }

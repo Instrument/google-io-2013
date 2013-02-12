@@ -12,20 +12,36 @@ function testWwModePinataModeActivateBalls_() {
 
 function testWwModePinataModeMoveAllCandyBack_() {
   var particle = mode.physicsWorld_.particles[1]; // get a particle that's not the pinata (0)
-  var startX = particle['startX'];
-  var startY = particle['startY'];
+  var startX = Math.abs(particle['startX']);
+  var startY = Math.abs(particle['startY']);
 
   // move particle to some other location
   particle.moveTo(new Vector(0 - startX, 0 - startY));
 
   mode.moveAllCandyBack_();
 
-  var endX = particle.pos.x;
-  var endY = particle.pos.y;
+  var endX = Math.abs(particle.pos.x);
+  var endY = Math.abs(particle.pos.y);
 
   assertEquals('X should be reset to startX', startX, endX);
   assertEquals('Y should be reset to startY', startY, endY);
 }
+
+function testWwModePinataModeStepPhysics() {
+  mode.focus_();
+  
+  var particle = mode.physicsWorld_.particles[1];
+      particle.fixed = false;
+console.log(particle);
+  var particleSize = particle.radius * 6;
+
+  // // move ball out of bounds
+  particle.moveTo(new Vector(-mode.width_ - particleSize, -mode.height_ - particleSize));
+
+  mode.stepPhysics(1000);
+  assertTrue('Particle should be fixed if out of bounds.', mode.physicsWorld_.particles[1].fixed);
+}
+
 
 function testWwModePinataModeDidFocus() {
   mode.unfocus_();
@@ -40,6 +56,7 @@ function testWwModePinataModeDidFocus() {
 
   assertTrue('Some particles should be prepopulated', prepopCount > 0);
 }
+
 
 function testWwModePinataModeOnResize() {
   var canvas = document.createElement('canvas');
