@@ -110,6 +110,10 @@ ww.mode.Core.prototype.init = function() {
   if (this.wantsPhysics_) {
     this.resetPhysicsWorld_();
   }
+
+  if (this.paperCanvas_) {
+    paper = this.paperScope_;
+  }
 };
 
 /**
@@ -308,6 +312,10 @@ ww.mode.Core.prototype.trackEvent_ = function(action, value) {
  */
 ww.mode.Core.prototype.focus_ = function() {
   if (this.hasFocus) { return; }
+
+  if (this.paperCanvas_) {
+    paper = this.paperScope_;
+  }
 
   // Re-init
   if (this.hasInited_) {
