@@ -75,14 +75,13 @@ ww.mode.register('rocket', ww.mode.RocketMode, 69, 8); // 01000101
 ww.mode.register('donut', ww.mode.DonutMode, 150, 8); // 10010110
 ww.mode.register('burger', ww.mode.BurgerMode, 57, 8); // 00111001
 
-var parts = window.location.href.split('/'),
-    page = parts[parts.length - 1];
-
-if (DEBUG_MODE && page.indexOf('modes') >= 0) {
+if (DEBUG_MODE && window.location.href.indexOf('modes') >= 0) {
   // On DocumentReady (direct access only)
   $(function() {
     // Extract the name from the URL.
-    var scriptName =
+    var parts = window.location.href.split('/'),
+        page = parts[parts.length - 1],
+        scriptName =
           page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
 
     // Look up the mode by name.
