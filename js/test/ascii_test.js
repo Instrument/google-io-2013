@@ -202,7 +202,7 @@ function testWwModeAsciiModeOnFrame() {
   var redrawPixel = false;
 
   mode.constructor.prototype.asciifyCanvas_ = function() {
-    console.log('test test');
+    redrawPixel = true;
   };
 
   mode.onFrame();
