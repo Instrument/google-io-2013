@@ -157,7 +157,7 @@ ww.mode.AsciiMode.prototype.drawSlash_ = function() {
   if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ +
-      (this.width_ * 0.02777778),
+      (this.ratioParent_ * 0.02777778),
       this.screenCenterY_ - (this.iHeight_ / 2) -
         (this.iHeight_ * 0.09722222));
 
@@ -167,12 +167,13 @@ ww.mode.AsciiMode.prototype.drawSlash_ = function() {
 
     // Create a new paper.js path for the slash based on screen dimensions.
     this.paperSlash_ = new paper['Path']();
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
+    this.paperSlash_['strokeWidth'] = this.ratioParent_ * 0.01388889;
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
   } else {
-    this.slashStart_['x'] = this.screenCenterX_ + (this.width_ * 0.02777778);
+    this.slashStart_['x'] = this.screenCenterX_ +
+      (this.ratioParent_ * 0.02777778);
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       (this.iHeight_ * 0.09722222);
 
@@ -183,7 +184,7 @@ ww.mode.AsciiMode.prototype.drawSlash_ = function() {
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
 
-    this.paperSlash_['strokeWidth'] = this.width_ * 0.01388889;
+    this.paperSlash_['strokeWidth'] = this.ratioParent_ * 0.01388889;
   }
 };
 
@@ -280,12 +281,15 @@ ww.mode.AsciiMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
+  this.ratioParent_ = Math.min(this.width_, this.height_);
+
   // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * 0.205;
+  this.iWidth_ = this.ratioParent_ * 0.205;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ - (this.width_ * 0.15833333);
+  this.iX_ = this.screenCenterX_ - this.iWidth_ - this.ratioParent_ *
+    0.15833333;
 
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
@@ -293,7 +297,7 @@ ww.mode.AsciiMode.prototype.onResize = function(redraw) {
     this.iY_ + this.iHeight_ / 2);
 
   // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
+  this.oRad_ = this.ratioParent_ * 0.1944444444;
 
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;

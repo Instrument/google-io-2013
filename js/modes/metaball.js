@@ -43,11 +43,12 @@ goog.inherits(ww.mode.MetaBallMode, ww.mode.Core);
  */
 ww.mode.MetaBallMode.prototype.drawI_ = function() {
     // Set I's initial dimensions.
-  this.iWidth_ = this.width_ * 0.175;
+  this.iWidth_ = this.ratioParent_ * 0.175;
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ - (this.width_ * 0.15833333);
+  this.iX_ = this.screenCenterX_ - this.iWidth_ -
+    (this.ratioParent_ * 0.15833333);
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
   this.ctx_.beginPath();
@@ -203,8 +204,8 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
 
   for (var i = 0; i < paths.length; i++) {
     for (var ii = i + 1; ii < paths.length; ii++) {
-      path = this.metaball_(paths[i], paths[ii], .4, 2.4,
-        this.screenCenterX_ * .9);
+      path = this.metaball_(paths[i], paths[ii], .45, 2.4,
+        Math.max(this.screenCenterX_, this.screenCenterY_) * .7);
       if (path) {
         this.connections_['appendTop'](path);
       }
@@ -218,7 +219,7 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
  */
 ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
   // Determine the slash's start and end coordinates based on I and O sizes.
-  this.slashStartX_ = this.screenCenterX_ + (this.width_ * 0.02777778);
+  this.slashStartX_ = this.screenCenterX_ + (this.ratioParent_* 0.02777778);
   this.slashStartY_ = this.screenCenterY_ - (this.iHeight_ / 2) -
     (this.iHeight_ * 0.09722222);
 
@@ -226,7 +227,7 @@ ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
   this.slashEndY_ = this.screenCenterY_ + (this.iHeight_ / 2) +
     (this.iHeight_ * 0.09722222);
 
-  this.ctx_.lineWidth = this.width_ * 0.01388889;
+  this.ctx_.lineWidth = this.ratioParent_ * 0.01388889;
 
   this.ctx_.beginPath();
 
@@ -270,7 +271,7 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.ballCount_ = this.world_.particles.length;
 
   // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
+  this.oRad_ = this.ratioParent_ * 0.1944444444;
   this.world_.particles[0].radius = this.oRad_;
 
   // If paper objects already exist, remove them.
@@ -468,12 +469,14 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
     this.gcanvas_.height = this.height_;
   }
 
+  this.ratioParent_ = Math.min(this.width_, this.height_);
+
   // Recalculate the center of the screen based on the new window size.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
   // Set O's radius.
-  this.oRad_ = this.width_ * 0.1944444444;
+  this.oRad_ = this.ratioParent_ * 0.1944444444;
 
   if (this.oPaths_[0]) {
     this.oPaths_[0]['scale'](this.oRad_ * 2 /
