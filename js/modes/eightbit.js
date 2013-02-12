@@ -93,7 +93,7 @@ ww.mode.EightBitMode.prototype.fillI_ = function() {
   var gradientColor = new paper['GradientColor'](gradient, from, to);
 
   this.paperI_['fillColor'] = gradientColor;
-}
+};
 
 /**
  * Function to create and draw O.
@@ -147,7 +147,7 @@ ww.mode.EightBitMode.prototype.fillO_ = function() {
   var gradientColor = new paper['GradientColor'](gradient, from, to);
 
   this.paperO_['fillColor'] = gradientColor;
-}
+};
 
 /**
  * Function to create and draw Slash.
@@ -172,7 +172,8 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function() {
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
   } else {
-    this.slashStart_['x'] = this.screenCenterX_ + (this.ratioParent_ * 0.02777778);
+    this.slashStart_['x'] = this.screenCenterX_ +
+      (this.ratioParent_ * 0.02777778);
     this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
       (this.iHeight_ * 0.09722222);
 
@@ -255,6 +256,9 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   };
 };
 
+/**
+ * Event is called after a mode is unfocused.
+ */
 ww.mode.EightBitMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
@@ -279,8 +283,8 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   this.iHeight_ = this.iWidth_ * 2.12698413;
 
   // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ - this.ratioParent_
-    * 0.15833333;
+  this.iX_ = this.screenCenterX_ - this.iWidth_ - this.ratioParent_ *
+    0.15833333;
 
   this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
 
@@ -310,7 +314,7 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   this.drawO_();
 
   if ($('.year-mark')) {
-   this.draw13_($('.year-mark')); 
+   this.draw13_($('.year-mark'));
   }
 
   if (redraw) {
@@ -345,7 +349,7 @@ ww.mode.EightBitMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
     point['velocity'] += speed;
     point['velocity'] = Math.min(5, point['velocity']);
   }
-}
+};
 
 /**
  * Updates point vectors based on their length and velocity values.
@@ -366,7 +370,7 @@ ww.mode.EightBitMode.prototype.updateVectors_ = function(path) {
 
     point['length'] = Math.max(0, point['length'] + point['velocity']);
   }
-}
+};
 
 /**
  * Updates point coordinates based on their vectors.
@@ -386,10 +390,12 @@ ww.mode.EightBitMode.prototype.updatePoints_ = function(path) {
       this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter_);
     }
   }
-}
+};
 
 /**
  * Draws pixels over the paper canvas.
+ * @param {Object} sourceCanvas The canvas to sample data from.
+ * @return {Number} pixelData.data.length The length of the pixelData array.
  * @private
  */
 ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
@@ -424,7 +430,7 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
   }
 
   return pixelData.data.length;
-}
+};
 
 /**
  * On each physics tick, update vectors.
@@ -440,7 +446,7 @@ ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
   this.updatePoints_(this.paperI_);
 
   this.updateVectors_(this.paperO_);
-  this.updatePoints_(this.paperO_);  
+  this.updatePoints_(this.paperO_);
 };
 
 /**

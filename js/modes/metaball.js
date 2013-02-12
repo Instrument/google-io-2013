@@ -114,7 +114,8 @@ ww.mode.MetaBallMode.prototype.getVector_ = function(radians, length) {
  * @param {Object} ball2 The second ball to compare.
  * @param {Number} v The extremity of the curves generated.
  * @param {Number} handleLenRate I have no idea what this does.
- * @return {Number} maxDistance The distance at which ball connections break.
+ * @param {Number} maxDistance The distance at which ball connections break.
+ * @return {Object} path The path created between each ball.
  * @private
  */
 ww.mode.MetaBallMode.prototype.metaball_ = function(ball1,
@@ -219,7 +220,7 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
  */
 ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
   // Determine the slash's start and end coordinates based on I and O sizes.
-  this.slashStartX_ = this.screenCenterX_ + (this.ratioParent_* 0.02777778);
+  this.slashStartX_ = this.screenCenterX_ + (this.ratioParent_ * 0.02777778);
   this.slashStartY_ = this.screenCenterY_ - (this.iHeight_ / 2) -
     (this.iHeight_ * 0.09722222);
 
@@ -282,7 +283,9 @@ ww.mode.MetaBallMode.prototype.init = function() {
   }
 
   if (paper['projects'][0]['layers'][0]['children']) {
-    for (var i = 0; i < paper['projects'][0]['layers'][0]['children'].length; i++) {
+    var childLen = paper['projects'][0]['layers'][0]['children'].length;
+
+    for (var i = 0; i < childLen; i++) {
       paper['projects'][0]['layers'][0]['children'][i]['remove']();
     }
   }
@@ -332,7 +335,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.ctx_ = this.canvas_.getContext('2d');
 
   this.pctx_ = this.paperCanvas_.getContext('2d');
-  
+
   this.gcanvas_ = document.createElement('canvas');
   this.gcanvas_.width = this.width_;
   this.gcanvas_.height = this.height_;
@@ -357,7 +360,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
       if (self.world_.particles[i]['fixed']) {
         self.world_.particles[i]['fixed'] = false;
       }
-      
+
       if (Math.abs(self.mouseX_ - self.world_.particles[i].pos.x) <
         self.world_.particles[i].radius &&
         Math.abs(self.mouseY_ - self.world_.particles[i].pos.y) <
@@ -500,7 +503,7 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
   this.gradSize_ = this.oRad_ * 4;
 
   if ($('.year-mark')) {
-   this.draw13_($('.year-mark')); 
+   this.draw13_($('.year-mark'));
   }
 
   this.redraw();

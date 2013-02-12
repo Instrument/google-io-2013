@@ -52,6 +52,10 @@ ww.mode.HomeMode.prototype.leaveIdle_ = function() {
   this.$pattern_.fadeIn(300);
 };
 
+/**
+ * Add a character to the current pattern.
+ * @param {String} character The character to add to the current pattern.
+ */
 ww.mode.HomeMode.prototype.addPatternCharacter = function(character) {
   if (this.$pattern_.hasClass('success')) {
     this.$pattern_.removeClass('success');
@@ -64,10 +68,13 @@ ww.mode.HomeMode.prototype.addPatternCharacter = function(character) {
   }
 
   var self = this;
-  this.patternMatcher_.addCharacter(character, function(currentPattern, matched) {
+  this.patternMatcher_.addCharacter(character,
+    function(currentPattern, matched) {
+
     self.log('current pattern: ' + currentPattern);
 
-    var patternHTML = currentPattern.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
+    var patternHTML = currentPattern.replace(/1/g,
+      '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
     self.$pattern_.html(patternHTML);
     self.$pattern_.css('marginLeft', -((self.$pattern_.width() + 15) / 2));
 
@@ -361,6 +368,9 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   };
 };
 
+/**
+ * Event is called after a mode is unfocused.
+ */
 ww.mode.HomeMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
