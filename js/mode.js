@@ -80,15 +80,18 @@ $(function() {
   // Extract the name from the URL.
   var parts = window.location.href.split('/'),
       page = parts[parts.length - 1],
-      scriptName = page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
+      scriptName = 
+        page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
 
   // Look up the mode by name.
   var pair = ww.mode.findModeByName(scriptName);
 
   // Initialize
   if (pair && pair.klass) {
-    var wrapperElem = $('<div></div>').addClass('mode').addClass(scriptName + '-mode');
-    wrapperElem.css({ 'width': $(window).width(), 'height': $(window).height() });
+    var wrapperElem =
+      $('<div></div>').addClass('mode').addClass(scriptName + '-mode');
+    wrapperElem.css({ 'width': $(window).width(),
+      'height': $(window).height() });
 
     $("body > *").wrapAll(wrapperElem);
 
@@ -96,7 +99,8 @@ $(function() {
 
     var self = this;
     $(window).resize(ww.util.throttle(function() {
-      $('.mode').css({ 'width': $(window).width(), 'height': $(window).height() });
+      $('.mode').css({ 'width': $(window).width(),
+        'height': $(window).height() });
       window['currentMode'].onResize();
     }, 50));
   }

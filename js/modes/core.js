@@ -1,6 +1,6 @@
 goog.provide('ww.mode.Core');
-goog.require('ww.util');
 goog.require('ww.raf');
+goog.require('ww.util');
 
 /**
  * @constructor
@@ -11,7 +11,9 @@ goog.require('ww.raf');
  * @param {Boolean} wantsDrawing Whether this mode needs to draw onFrame.
  * @param {Boolean} wantsPhysics Whether this mode needs physics.
  */
-ww.mode.Core = function(containerElem, assetPrefix, name, wantsAudio, wantsDrawing, wantsPhysics) {
+ww.mode.Core = function(containerElem,
+  assetPrefix, name, wantsAudio, wantsDrawing, wantsPhysics) {
+
   // Define transform prefix.
   this.prefix_ = Modernizr.prefixed('transform');
   this.assetPrefix_ = assetPrefix || '';
@@ -39,7 +41,7 @@ ww.mode.Core = function(containerElem, assetPrefix, name, wantsAudio, wantsDrawi
   this.$window_ = $(window);
   this.width_ = 0;
   this.height_ = 0;
-  
+
   var self = this;
   setTimeout(function() {
     self.$letterI_ = $(self.containerElem_).find('.letter-i');
@@ -57,10 +59,13 @@ ww.mode.Core = function(containerElem, assetPrefix, name, wantsAudio, wantsDrawi
     if (modeDetails.pattern) {
       self.$back = $('<div class="back"></div>').prependTo(self.containerElem_);
 
-      var modePattern = ww.util.pad(modeDetails.pattern.toString(2), modeDetails.len);
-      var modeHTML = modePattern.replace(/1/g, '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
+      var modePattern = ww.util.pad(modeDetails.pattern.toString(2),
+        modeDetails.len);
+      var modeHTML = modePattern.replace(/1/g,
+        '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
 
-      $('<div class="code">' + modeHTML + '</div>').prependTo(self.containerElem_);
+      $('<div class="code">' + modeHTML +
+        '</div>').prependTo(self.containerElem_);
     }
 
     // Autofocus
@@ -71,6 +76,11 @@ ww.mode.Core = function(containerElem, assetPrefix, name, wantsAudio, wantsDrawi
   }, 10);
 };
 
+/**
+ * Find a dom element.
+ * @param {String} query The query to use to find a dom element.
+ * @return {Object} $(this.containerElem_).find(query) The dom element.
+ */
 ww.mode.Core.prototype.find = function(query) {
   return $(this.containerElem_).find(query);
 };
@@ -114,7 +124,8 @@ ww.mode.Core.prototype.showReload = function(onReload) {
   if (!this.$reloadModal_) {
     this.$reloadModal_ = $(this.containerElem_).find('.reload');
     if (!this.$reloadModal_.length) {
-      this.$reloadModal_ = $("<div class='reload'></div>").appendTo(this.containerElem_);
+      this.$reloadModal_ =
+        $("<div class='reload'></div>").appendTo(this.containerElem_);
     }
   }
 
@@ -178,6 +189,7 @@ ww.mode.Core.prototype.stopRendering = function() {
 /**
  * Render a single frame. Call the mode's draw method,
  * then schedule the next frame if we need it.
+ * @param {Number} delta Ms since last draw.
  */
 ww.mode.Core.prototype.renderFrame = function(delta) {
   this.timeElapsed_ += delta;
@@ -243,6 +255,10 @@ ww.mode.Core.prototype.ready_ = function() {
   this.sendMessage_(this.name_ + '.ready');
 };
 
+/**
+ * Log the current mode status. Focus and unfocus when necessary.
+ * @param {Object} data The data to check for focus.
+ */
 ww.mode.Core.prototype.postMessage = function(data) {
   this.log('Got message: ' + data['name'], data);
 
@@ -288,6 +304,7 @@ ww.mode.Core.prototype.trackEvent_ = function(action, value) {
 
 /**
  * Focus this mode (start rendering).
+ * @private
  */
 ww.mode.Core.prototype.focus_ = function() {
   if (this.hasFocus) { return; }
@@ -338,9 +355,9 @@ ww.mode.Core.prototype.didFocus = function() {
   }
 
   $(document).bind('keyup.' + this.name_, function(e) {
-    if ((e.keyCode === 105) || (e.keyCode === 49) || (e.keyCode === 73)) {
+    if (e.keyCode === 105 || e.keyCode === 49 || e.keyCode === 73) {
       self.activateI();
-    } else if ((e.keyCode === 111) || (e.keyCode === 48) || (e.keyCode === 79)) {
+    } else if (e.keyCode === 111 || e.keyCode === 48 || e.keyCode === 79) {
       self.activateO();
     } else if (e.keyCode === 27) {
       self.goBack();
@@ -356,6 +373,7 @@ ww.mode.Core.prototype.didFocus = function() {
 
 /**
  * Unfocus this mode (stop rendering).
+ * @private
  */
 ww.mode.Core.prototype.unfocus_ = function() {
   if (!this.hasFocus) { return; }
@@ -386,7 +404,7 @@ ww.mode.Core.prototype.didUnfocus = function() {
 
   this.$letterI_.unbind(evt + '.' + this.name_);
   this.$letterO_.unbind(evt + '.' + this.name_);
-  
+
   if (this.$back) {
     this.$back.unbind(evt + '.' + this.name_);
   }
@@ -407,7 +425,7 @@ ww.mode.Core.prototype.didUnfocus = function() {
  */
 ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
   this.soundBuffersFromURL_ = this.soundBuffersFromURL_ || {};
-  gotSound = gotSound || function(){};
+  gotSound = gotSound || function() {};
 
   if (this.soundBuffersFromURL_[url]) {
     gotSound(this.soundBuffersFromURL_[url]);
@@ -573,13 +591,14 @@ ww.mode.Core.prototype.transformElem_ = function(elem, value) {
  * Get a canvas for use with paperjs.
  * @param {boolean} doNotAdd Adds a canvas element if left as false.
  * @return {Element} The canvas element.
+ * @private
  */
 ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
   if (!this.paperCanvas_) {
     this.paperCanvas_ = document.createElement('canvas');
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
-    
+
     if (!doNotAdd) {
       $(this.containerElem_).prepend(this.paperCanvas_);
     }
@@ -593,6 +612,10 @@ ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
   return this.paperCanvas_;
 };
 
+/**
+ * Adds and runs a tween.
+ * @param {Object} tween The tween to add and run.
+ */
 ww.mode.Core.prototype.addTween = function(tween) {
   tween.start(this.timeElapsed_);
 };
@@ -600,6 +623,7 @@ ww.mode.Core.prototype.addTween = function(tween) {
 /**
  * Function to return mouse or touch coordinates depending on what's available.
  * @param {Object} e The event to get X and Y coordinates from.
+ * @return {Object} coords The X and Y coordinates of the click or touch.
  */
 ww.mode.Core.prototype.getCoords = function(e) {
   var coords = [
