@@ -3,16 +3,7 @@ function testWwModeSynthModeDidFocus() {
   mode.focus_();
 
   var bindCount = 0;
-  var elements = [];
-
-  for (var i = 0; i < mode.params.length; i++) {
-    var param = mode.params[i];
-    elements.push($(param));
-  }
-
-  elements.push(mode.power);
-  elements.push(mode.effect);
-
+  var elements = [mode.letterI, mode.letterO];
   var elem, bindData;
   for (var i = 0, l = elements.length; i < l; i++) {
     var bindDataCount = 0;
@@ -32,16 +23,7 @@ function testWwModeSynthModeDidUnFocus() {
   mode.unfocus_();
 
   var bindCount = 0;
-  var elements = [];
-
-  for (var i = 0; i < mode.params.length; i++) {
-    var param = mode.params[i];
-    elements.push($(param));
-  }
-
-  elements.push(mode.power);
-  elements.push(mode.effect);
-
+  var elements = [mode.letterI, mode.letterO];
   var elem, bindData;
   for (var i = 0, l = elements.length; i < l; i++) {
     var bindDataCount = 0;

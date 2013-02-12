@@ -319,6 +319,11 @@ ww.mode.SynthMode.prototype.didFocus = function() {
 ww.mode.SynthMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
+  this.letterI.unbind(this.evtEnd);
+  this.letterO.unbind(this.evtStart);
+  this.letterO.unbind(this.evtEnd);
+  this.letterO.unbind(Modernizr.touch ? 'touchmove' : 'mousemove');
+
   this.isPlaying = true;
   this.connectPower_(); // disconnect
 };
@@ -363,7 +368,7 @@ ww.mode.SynthMode.prototype.connectPower_ = function() {
 ww.mode.SynthMode.prototype.playSound_ = function() {
   this.source.connect(this.effects['delay']['input']);
   this.effects['delay'].connect(this.analyser);
-  this.analyser.connect(this.audioContext_.destination);
+  // this.analyser.connect(this.audioContext_.destination);
   this.source.noteOn(0);
 };
 
