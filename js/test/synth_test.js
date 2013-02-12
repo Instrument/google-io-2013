@@ -16,6 +16,7 @@ function testWwModeSynthModeDidFocus() {
 
     assertTrue('Bind count for element should be greater than 0.', bindDataCount > 0);
   }
+
 }
 
 function testWwModeSynthModeDidUnFocus() {
@@ -38,41 +39,57 @@ function testWwModeSynthModeDidUnFocus() {
   }
 }
 
-// connect power if change effect and not playing
-function testWwModeSynthModeChangeEffect_() {
-  mode.isPlaying = false;
 
-  mode.source = {
-    'connect': function(analyser) {}
-  };
+// Change waveform.
+function testWwModeSynthModeChangeWaveType() {
 
-  var connect = 0;
+  var waveType = mode.waveType;
+  mode.changeWaveType();
+  var newWaveType = mode.waveType;
+  console.log('changewavetype', waveType, newWaveType);
+  assertTrue('waveType should be changed.', waveType !== newWaveType);
   
-  var elem = {
-    'value': 'dry'
-  };
 
-  mode.constructor.prototype.connectPower_ = function() {
-    connect++;
-  };
-
-  assertTrue('Connect should be 0 initially', 0, connect);
-
-  mode.changeEffect_(elem);
-
-  assertTrue('Connected power', connect > 0);
 }
 
-// change effect to dry
-function testWwModeSynthModeChangeEffect_() {
-  var elem = {
-    'value': 'dry'
-  };
-}
-
-// change effect to not dry
-function testWwModeSynthModeChangeEffect_() {
-  var elem = {
-    'value': 'wet'
-  };
-}
+// 
+// 
+// 
+// // connect power if change effect and not playing
+// function testWwModeSynthModeChangeEffect_() {
+//   mode.isPlaying = false;
+// 
+//   mode.source = {
+//     'connect': function(analyser) {}
+//   };
+// 
+//   var connect = 0;
+//   
+//   var elem = {
+//     'value': 'dry'
+//   };
+// 
+//   mode.constructor.prototype.connectPower_ = function() {
+//     connect++;
+//   };
+// 
+//   assertTrue('Connect should be 0 initially', 0, connect);
+// 
+//   mode.changeEffect_(elem);
+// 
+//   assertTrue('Connected power', connect > 0);
+// }
+// 
+// // change effect to dry
+// function testWwModeSynthModeChangeEffect_() {
+//   var elem = {
+//     'value': 'dry'
+//   };
+// }
+// 
+// // change effect to not dry
+// function testWwModeSynthModeChangeEffect_() {
+//   var elem = {
+//     'value': 'wet'
+//   };
+// }
