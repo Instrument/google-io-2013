@@ -46,8 +46,8 @@ ww.mode.SynthMode.prototype.init = function() {
 
   this.count = 360 * (this.width_ % 360);
 
-  this.letterI = $('#letter-i');
-  this.letterO = $('#letter-o');
+  this.letterI = $('#synth-letter-i');
+  this.letterO = $('#synth-letter-o');
 
   this.waveType = 1;
   this.lastFreq = 80;
@@ -147,8 +147,8 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     this.canvas_.height = this.height_;
   }
 
-  this.oOffset = $('#letter-o').offset();
-  this.oSize = $('#letter-o')[0]['getBoundingClientRect']()['width'];
+  this.oOffset = this.letterO.offset();
+  this.oSize = this.letterO[0]['getBoundingClientRect']()['width'];
 
   this.oRad = this.oSize / 2;
   this.oLeft = this.oOffset.left + this.oRad;
@@ -190,7 +190,7 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     this.redraw();
   }
 
-  var boundingI = $('#letter-i')[0]['getBoundingClientRect']();
+  var boundingI = this.letterI[0]['getBoundingClientRect']();
   this.waveforms.css({
     'top': ~~boundingI['top'] + 'px',
     'left': ~~boundingI['left'] + 'px',
