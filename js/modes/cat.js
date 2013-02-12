@@ -1,17 +1,17 @@
 goog.require('ww.mode.Core');
 goog.provide('ww.mode.CatMode');
 
-
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.CatMode = function() {
-  goog.base(this, 'cat', true, true);
+ww.mode.CatMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'cat', true, true);
   this.preloadSound('cat-1.mp3');
   this.preloadSound('cat-2.mp3');
 };
 goog.inherits(ww.mode.CatMode, ww.mode.Core);
-
 
 /**
  * Plays a sound and stretches the letter i when activated.

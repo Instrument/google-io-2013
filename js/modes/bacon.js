@@ -4,9 +4,11 @@ goog.provide('ww.mode.BaconMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.BaconMode = function() {
-  goog.base(this, 'bacon', true, true, false);
+ww.mode.BaconMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'bacon', true, true, false);
 
   this.preloadSound('bacon-sizzle.m4a');
   this.preloadSound('egg-cracked.m4a');
@@ -21,17 +23,18 @@ goog.inherits(ww.mode.BaconMode, ww.mode.Core);
  */
 ww.mode.BaconMode.prototype.init = function() {
   goog.base(this, 'init');
-  this.stripes = $('[id*=fat-]');
+  this.stripes_ = $('[id*=fat-]');
 
   this.stillHasShell = true;
-  this.eggWhole = $('#egg-whole')[0];
-  this.cracks = $('[id*=crack-]');
-  this.currentCrack = 0;
-  this.totalCracks = this.cracks.length;
+  this.eggWhole_ = $('#egg-whole')[0];
+  this.cracks_ = $('[id*=crack-]');
+  this.currentCrack_ = 0;
+  this.totalCracks_ = this.cracks_.length;
 
   this.yolk_ = $('#egg-yolk');
   this.whites_ = $('#egg-whites');
-  this.eggOpened = $('#egg-cracked')[0];
+  this.eggOpened_ = $('#egg-cracked');
+  this.center_ = this.eggOpened_.attr('cx') + ', ' + this.eggOpened_.attr('cy');
 };
 
 
@@ -43,13 +46,13 @@ ww.mode.BaconMode.prototype.activateI = function() {
 
   var self = this;
 
-  this.wantsAudio_ && this.playSound('bacon-sizzle.m4a');
+  this.playSound('bacon-sizzle.m4a');
 
   var stretchOut = new TWEEN.Tween({ 'scaleX': 1, 'scaleY': 1 });
   stretchOut.to({ 'scaleX': 1.75, 'scaleY': 1.2 }, 400);
   stretchOut.easing(TWEEN.Easing.Elastic.In);
   stretchOut.onUpdate(function() {
-    self.stripes.css(self.prefix_, 'scale(' + this['scaleX'] + ', 1)');
+    self.stripes_.css(self.prefix_, 'scale(' + this['scaleX'] + ', 1)');
     self.transformElem_(self.$letterI_[0], 'scale(1, ' + this['scaleY'] + ')');
   });
 
@@ -58,7 +61,7 @@ ww.mode.BaconMode.prototype.activateI = function() {
   stretchBack.easing(TWEEN.Easing.Elastic.Out);
   stretchBack.delay(400);
   stretchBack.onUpdate(function() {
-    self.stripes.css(self.prefix_, 'scale(' + this['scaleX'] + ', 1)');
+    self.stripes_.css(self.prefix_, 'scale(' + this['scaleX'] + ', 1)');
     self.transformElem_(self.$letterI_[0], 'scale(1, ' + this['scaleY'] + ')');
   });
 
@@ -73,16 +76,16 @@ ww.mode.BaconMode.prototype.activateI = function() {
 ww.mode.BaconMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
-  if (this.currentCrack < this.totalCracks) {
-    this.cracks[this.currentCrack].style['opacity'] = 1;
-    this.currentCrack++;
-    this.wantsAudio_ && this.playSound('egg-cracked.m4a');
+  if (this.currentCrack_ < this.totalCracks_) {
+    this.cracks_[this.currentCrack_].style['opacity'] = 1;
+    this.currentCrack_++;
+    this.playSound('egg-cracked.m4a');
   } else {
     if (this.stillHasShell) {
-      this.wantsAudio_ && this.playSound('cracked-open.m4a');
+      this.playSound('cracked-open.m4a');
       this.showCracked_();
     } else {
-      this.wantsAudio_ && this.playSound('eggs-sizzling.m4a');
+      this.playSound('eggs-sizzling.m4a');
       this.animateSpinEgg_();
     }
   }
@@ -106,27 +109,28 @@ ww.mode.BaconMode.prototype.showCracked_ = function() {
   }, 200);
 
   squishShell.onUpdate(function() {
-    self.eggWhole.style['opacity'] = this['opacity'];
-    self.transformElem_(self.eggWhole, 'scale(' + this['scale'] + ')');
+    self.eggWhole_.style['opacity'] = this['opacity'];
+    self.transformElem_(self.eggWhole_, 'scale(' + this['scale'] + ')');
   });
 
   var showWhites = new TWEEN.Tween({ 'scale': 2 });
   showWhites.to({ 'scale': 1 }, 200);
 
   showWhites.onStart(function() {
-    self.eggOpened.style['opacity'] = 1;
+    self.eggOpened_.css('opacity', 1);
   });
 
   showWhites.onUpdate(function() {
-    self.transformElem_(self.eggOpened, 'scale(' + this['scale'] + ')');
+    self.transformElem_(self.eggOpened_[0], 'scale(' + this['scale'] + ')');
   });
 
   showWhites.onComplete(function() {
     self.stillHasShell = false;
     self.animateSpinEgg_();
+    self.transformElem_(self.eggOpened_[0], '');
   });
 
-  this.eggOpened.style['opacity'] = 0;
+  this.eggOpened_.css('opacity', 0);
   this.addTween(squishShell);
   this.addTween(showWhites);
 };
@@ -141,14 +145,14 @@ ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   var shift = -1 * ~~(Math.random() * (270 - 20) + 20);
   var pos = [~~Random(-75, 75), ~~Random(-75, 75)];
 
-  var degs = self.whites_[0].style[self.prefix_].split('rotate(')[1];
-      degs = parseInt(degs) || 0;
+  var degs = self.eggOpened_.attr('transform') || '';
+      degs = parseInt(degs.split('rotate(')[1], 10) || 0;
 
   var posX = self.yolk_[0].style[self.prefix_].split('translateX(')[1];
-      posX = parseInt(posX) || 0;
+      posX = parseInt(posX, 10) || 0;
 
   var posY = self.yolk_[0].style[self.prefix_].split('translateY(')[1];
-      posY = parseInt(posY) || 0;
+      posY = parseInt(posY, 10) || 0;
 
   var sizeX = self.whites_[0].style[self.prefix_].split('skewX(')[1];
       sizeX = ~~parseFloat(sizeX) || 0;
@@ -156,7 +160,7 @@ ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   var sizeY = self.whites_[0].style[self.prefix_].split('skewY(')[1];
       sizeY = ~~parseFloat(sizeY) || 0;
 
-  var sizing = [~~Random(-10, 10), ~~Random(-10, 10)];
+  var sizing = [~~Random(-20, 20), ~~Random(-20, 20)];
 
   var spinEgg = new TWEEN.Tween({
     'translateX': posX,
@@ -177,15 +181,11 @@ ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   spinEgg.easing(TWEEN.Easing.Elastic.In);
 
   spinEgg.onUpdate(function() {
-    var translate = 'translateX(' + this['translateX'] + 'px) ' +
-                    'translateY(' + this['translateY'] + 'px) ' +
-                    'rotate(' + (-1 * this['rotate']) + 'deg) ';
-
-    var whites = 'rotate(' + this['rotate'] + 'deg) ' +
-                 'skewX(' + this['skewX'] + 'deg) ' +
+    var whites = 'skewX(' + this['skewX'] + 'deg) ' +
                  'skewY(' + this['skewY'] + 'deg)';
     self.transformElem_(self.whites_[0], whites);
-    // self.transformElem_(self.yolk_[0], translate);
+    self.eggOpened_.attr('transform', 'rotate(' + this['rotate'] + ', ' +
+                          self.center_ + ')');
   });
 
   self.addTween(spinEgg);

@@ -1,6 +1,8 @@
 goog.provide('ww.app');
+goog.provide('ww.app.Core');
 goog.require('ww.raf');
 goog.require('ww.util');
+goog.require('ww.mode');
 
 /** @define {boolean} */
 var DEBUG_MODE = false;
@@ -26,8 +28,22 @@ ww.app.Core = function() {
   }, 50));
   this.onResize_();
 
+  // Catch top-level touch events and cancel them to avoid
+  // mobile browser scroll.
+  if (Modernizr.touch) {
+    document.body.style[Modernizr.prefixed('userSelect')] = 'none';
+    document.body.style[Modernizr.prefixed('userDrag')] = 'none';
+    document.body.style[Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
+
+    this.$window_.bind('touchmove.core', function(e) {
+      e.preventDefault();
+    });
+  }
+
   // Start event listeners.
-  this.start_();
+  // setTimeout(function() {
+    self.start_();
+  // }, 1000);
 };
 
 /**
@@ -45,7 +61,22 @@ ww.app.Core.prototype.onResize_ = function() {
   });
 
   // Update mode iframe sizes.
-  $('iframe').attr('width', this.width_).attr('height', this.height_);
+  if (this.loadedModes_) {
+    for (var key in this.loadedModes_) {
+      if (this.loadedModes_.hasOwnProperty(key)) {
+        var mode = this.loadedModes_[key];
+
+        if (mode.containerElem) {
+          mode.containerElem.style.width = this.width_ + 'px';
+          mode.containerElem.style.height = this.height_ + 'px';
+        }
+
+        if (mode.instance) {
+          mode.instance.onResize();
+        }
+      }
+    }
+  }
 };
 
 /**
@@ -58,22 +89,20 @@ ww.app.Core.prototype.start_ = function() {
   // Callback to run when a mode says it is ready.
   this.onReady_ = function() {};
 
-  // Listen to message events.
-  this.$window_.bind('message', function(evt) {
-    var data = evt.originalEvent.data;
-    self.log_('Got message: ' + data['name'], data);
-
-    if (data['name'].match(/.ready/)) {
-      self.onReady_(data);
-    } else if (data['name'] === 'goToMode') {
-      self.loadModeByName_(data['data'], true);
-    } else if (data['name'] === 'goToHome') {
-      self.loadModeByName_('home', true, true);
-    }
-  });
-
   // Load home mode.
   this.loadModeByName_('home', false);
+};
+
+ww.app.Core.prototype.postMessage = function(data) {
+  this.log_('Got message: ' + data['name'], data);
+
+  if (data['name'].match(/.ready/)) {
+    this.onReady_(data);
+  } else if (data['name'] === 'goToMode') {
+    this.loadModeByName_(data['data'], true);
+  } else if (data['name'] === 'goToHome') {
+    this.loadModeByName_('home', true, true);
+  }
 };
 
 /**
@@ -115,6 +144,19 @@ ww.app.Core.prototype.trackEvent_ = function(action, value) {
 };
 
 /**
+ * Get a CSS translation string.
+ * @private
+ * @param {Number} x X value.
+ */
+ww.app.Core.prototype.translateXString_ = function(x) {
+  if (Modernizr.csstransforms3d) {
+    return 'translate3d(' + x + 'px, 0, 0)';
+  } else {
+    return 'translate(' + x + 'px, 0)';
+  }
+};
+
+/**
  * Load a mode (iframe) and transition it in.
  * @private
  * @param {Object} mode Mode details.
@@ -123,34 +165,38 @@ ww.app.Core.prototype.trackEvent_ = function(action, value) {
  */
 ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   var onComplete,
-      currentFrame = this.currentIframe,
+      currentMode = this.currentMode,
       self = this;
 
+  if (currentMode && (currentMode.name == mode.name)) {
+    return;
+  }
+
   // If a mode is already focused, unfocus it (stop event handling/animation).
-  if (currentFrame) {
-    currentFrame.contentWindow.postMessage({
+  if (currentMode) {
+    currentMode.instance.postMessage({
       'name': 'unfocus',
       'data': null
-    }, '*');
+    });
 
-    currentFrame.style.pointerEvents = 'none';
+    currentMode.containerElem.style.pointerEvents = 'none';
   }
   
   if (transition) {
     // Transition onload handler
     onComplete = function() {
       // Tell the mode to start listening to events and animating.
-      mode.iframe.contentWindow.postMessage({
+      mode.instance.postMessage({
         'name': 'focus',
         'data': null
-      }, '*');
+      });
       
       // Transition start position.
       var startX = reverse ? -self.width_ : self.width_;
 
       // Mode new mode into start position.
-      mode.iframe.style[self.transformKey_] = 'translateX(' + startX + 'px)';
-      mode.iframe.style.visibility = 'visible';
+      mode.containerElem.style[self.transformKey_] = self.translateXString_(startX);
+      mode.containerElem.style.visibility = 'visible';
 
       // After the DOM settles.
       setTimeout(function() {
@@ -158,23 +204,23 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
         var t2 = new TWEEN.Tween({ 'translateX': startX });
         t2.to({ 'translateX': 0 }, 400);
         t2.onUpdate(function() {
-          mode.iframe.style[self.transformKey_] = 'translateX(' + this['translateX'] + 'px)';
+          mode.containerElem.style[self.transformKey_] = self.translateXString_(this['translateX']);
         });
         t2.onComplete(function() {
-          currentFrame.style.pointerEvents = 'auto';
+          mode.containerElem.style.pointerEvents = 'auto';
         });
         t2.start();
 
         // Animate old mode out.
-        if (currentFrame) {
+        if (currentMode) {
           var endX = -startX;
           var t = new TWEEN.Tween({ 'translateX': 0 });
           t.to({ 'translateX': endX }, 400);
           t.onUpdate(function() {
-            currentFrame.style[self.transformKey_] = 'translateX(' + this['translateX'] + 'px)';
+            currentMode.containerElem.style[self.transformKey_] = self.translateXString_(this['translateX']);
           });
           t.onComplete(function() {
-            currentFrame.style.visibility = 'hidden';
+            currentMode.containerElem.style.visibility = 'hidden';
           });
           t.start();
         }
@@ -187,20 +233,20 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
     // Non-transition onload handler
     onComplete = function() {
       // Tell the mode to start listening to events and animating.
-      mode.iframe.contentWindow.postMessage({
+      mode.instance.postMessage({
         'name': 'focus',
         'data': null
-      }, '*');
+      });
 
       // Hide and disable events.
-      mode.iframe.style.visibility = 'visible';
-      mode.iframe.style.pointerEvents = 'auto';
+      mode.containerElem.style.visibility = 'visible';
+      mode.containerElem.style.pointerEvents = 'auto';
     };
   }
 
   // If the mode is already loaded, use that iframe.
-  if (mode.iframe) {
-    this.currentIframe = mode.iframe;
+  if (mode.instance) {
+    this.currentMode = mode;
     if ('function' === typeof onComplete) {
       onComplete();
     }
@@ -219,18 +265,59 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   };
 
   // Create the element and add it to the DOM.
-  var iFrameElem = document.createElement('iframe');
-  iFrameElem.style.visibility = 'hidden';
-  iFrameElem.style.pointerEvents = 'none';
-  iFrameElem.src = 'modes/' + mode.name + '.html';
-  iFrameElem.width = this.width_;
-  iFrameElem.height = this.height_;
-  $(iFrameElem).appendTo($('#io-wrapper'));
+  var modeElem = document.createElement('div');
+  modeElem.className = 'mode ' + mode.name + '-mode';
+  modeElem.style.visibility = 'hidden';
+  modeElem.style.pointerEvents = 'none';
+  // modeElem.src = 'modes/' + mode.name + '.html';
+  modeElem.style.width = this.width_ + 'px';
+  modeElem.style.height = this.height_ + 'px';
+  
+  this.fetchModeContent_(mode.name, function(html) {
+    $(modeElem).html(html).appendTo($('#wrapper'));
 
-  this.currentIframe = iFrameElem;
+    // Look up the mode by name.
+    var pair = ww.mode.findModeByName(mode.name);
 
-  // Store iframe element for later.
-  mode.iframe = iFrameElem;
+    // Initialize
+    if (pair && pair.klass) {
+      mode.instance = new pair.klass(modeElem);
+    }
+
+    self.currentMode = mode;
+
+    // Store iframe element for later.
+    mode.containerElem = modeElem;
+  });
+};
+
+ww.app.Core.prototype.fetchModeContent_ = function(name, onComplete) {
+  var url = 'modes/' + name + '.html?' + (+(new Date()));
+
+  $.ajax({
+    url: url,
+    type: "GET",
+    dataType: "html",
+
+    // Complete callback (responseText is used internally)
+    complete: function(jqXHR, status, responseText) {
+      // Store the response as specified by the jqXHR object
+      responseText = jqXHR.responseText;
+
+      // If successful, inject the HTML into all the matched elements
+      if ( jqXHR.isResolved() ) {
+        // #4825: Get the actual response in case
+        // a dataFilter is present in ajaxSettings
+        jqXHR.done(function( r ) {
+          responseText = r;
+        });
+
+        var result = responseText.split('<body>')[1];
+        result = result.split('</body>')[0];
+        onComplete(result);
+      }
+    }
+  });
 };
 
 /**
@@ -244,7 +331,8 @@ ww.app.Core.prototype.renderFrame_ = function(delta) {
   }
 };
 
-// On DocumentReady, start controller.
-$(function() {
-  new ww.app.Core();
-});
+window['ww'] = window['ww'] || {};
+window['ww']['app'] = window['ww']['app'] || {};
+window['ww']['app']['Core'] = ww.app.Core;
+
+goog.exportSymbol('ww.app.Core', ww.app.Core);

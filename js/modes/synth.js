@@ -4,9 +4,11 @@ goog.provide('ww.mode.SynthMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.SynthMode = function() {
-  goog.base(this, 'synth', true, true, false);
+ww.mode.SynthMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'synth', true, true, false);
 };
 goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 

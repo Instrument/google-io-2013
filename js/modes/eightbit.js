@@ -1,12 +1,13 @@
 goog.require('ww.mode.Core');
-goog.require('ww.PatternMatcher');
 goog.provide('ww.mode.EightBitMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.EightBitMode = function() {
-  goog.base(this, 'eightbit', true, true, true);
+ww.mode.EightBitMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true);
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
 
@@ -305,8 +306,8 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  if ($('.mode-wrapper')) {
-   this.draw13_($('.mode-wrapper')); 
+  if ($('.year-mark')) {
+   this.draw13_($('.year-mark')); 
   }
 
   if (redraw) {

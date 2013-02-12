@@ -6,8 +6,12 @@ var TWOPI = Math.PI * 2;
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.PongMode = function() {
+ww.mode.PongMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'pong', true, true, true);
+  
   this.startBallSpeed_ = this.ballSpeed_ = 250;
   this.maxBallSpeed_ = 800;
   this.startBallRadius_ = this.ballRadius_ = 30;
@@ -17,11 +21,12 @@ ww.mode.PongMode = function() {
   this.paddleWidth_ = 40;
   this.paddleHeight_ = 160;
 
+  this.paused_ = true;
+
   this['topWallOpacity_'] = 0;
   this['rightWallOpacity_'] = 0;
   this['bottomWallOpacity_'] = 0;
-
-  goog.base(this, 'pong', true, true, true);
+  
   this.preloadSound('1.wav');
   this.preloadSound('2.wav');
 };
@@ -71,14 +76,16 @@ ww.mode.PongMode.prototype.init = function() {
  * @private
  */
 ww.mode.PongMode.prototype.startRound_ = function() {
-  this.roundNumber_ = 2;
+  // this.roundNumber_ = 2;
   this.gamesPlayed_ = this.gamesPlayed_ || 0;
   this.gamesPlayed_++;
   this.setScore_(0);
 
   this.bonusEl_.style.opacity = 0;
   this.transformElem_(this.bonusEl_, 'translateX(50px)');
-  this.$lives_.text(this.roundNumber_);
+  // this.$lives_.text(this.roundNumber_);
+
+  this.paused_ = false;
 };
 
 
@@ -93,12 +100,12 @@ ww.mode.PongMode.prototype.resetGame_ = function() {
 
   this.ballRadius_ = this.startBallRadius_;
   this.ballSpeed_ = this.startBallSpeed_;
-  this.startXBall_ = this.screenCenterX + (this.width_ / 4);
+  this.startXBall_ = this.screenCenterX - (this.width_ / 4);
 
   this.ball_.setRadius(this.ballRadius_);
   this.ball_.pos.x = this.startXBall_;
   this.ball_.pos.y = this.ballRadius_;
-  this.ball_.vel.x = -this.ballSpeed_;
+  this.ball_.vel.x = this.ballSpeed_;
   this.ball_.vel.y = this.ballSpeed_;
 };
 
@@ -127,7 +134,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
   this.bonusEl_ = document.getElementById('bonus');
-  this.$lives_ = $('#lives');
+  // this.$lives_ = $('#lives');
   this.$score_ = $('#score');
 
   this.$canvas_ = $('#pong-canvas');
@@ -283,7 +290,12 @@ ww.mode.PongMode.prototype.gameOver_ = function() {
   this.trackEvent_('lost', this.score_);
   this.trackEvent_('game number', this.gamesPlayed_);
 
-  this.showReload();
+  this.paused_ = true;
+  var self = this;
+  this.showReload(function() {
+    self.paused_ = false;
+    self.resetGame_();
+  });
 };
 
 
@@ -309,14 +321,14 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
    * Window boundary collision detection.
    */
   if (this.ball_.pos.x <= this.ball_.radius) {
-    this.roundNumber_--;
-    this.$lives_.text(Math.max(this.roundNumber_, 0));
+    // this.roundNumber_--;
+    // this.$lives_.text(Math.max(this.roundNumber_, 0));
 
-    if (this.roundNumber_ < 0) {
+    // if (this.startXBall_ < 0) {
       this.gameOver_();
-    } else {
-      this.resetGame_();
-    }
+    // } else {
+      // this.resetGame_();
+    // }
   }
 
   var self;
@@ -383,6 +395,8 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
  * @param {Float} delta Time since last tick.
  */
 ww.mode.PongMode.prototype.stepPhysics = function(delta) {
+  if (this.paused_) { return; }
+
   goog.base(this, 'stepPhysics', delta);
 
   var currentPaddleY = this.paddleY_;

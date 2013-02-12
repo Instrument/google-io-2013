@@ -20,9 +20,6 @@ goog.require('ww.mode.RocketMode');
 goog.require('ww.mode.DonutMode');
 goog.require('ww.mode.BurgerMode');
 
-/** @define {boolean} */
-var DEBUG_MODE = false;
-
 /**
  * Global list of registered modes.
  * @type {Object}
@@ -60,13 +57,11 @@ ww.mode.register('home',      ww.mode.HomeMode,      null);
 ww.mode.register('cat',       ww.mode.CatMode,       231, 8); // 11100111
 ww.mode.register('space',     ww.mode.SpaceMode,     42,  8); // 00101010
 ww.mode.register('pong',      ww.mode.PongMode,      129, 8); // 10000001
-// ww.mode.register('explode',   ww.mode.ExplodeMode,   5,   8); // 00000101
 ww.mode.register('pinata',    ww.mode.PinataMode,    15,  8); // 00001111
 ww.mode.register('bacon',     ww.mode.BaconMode,     144, 8); // 10010000
 ww.mode.register('simone',    ww.mode.SimoneMode,    211, 8); // 11010011
 ww.mode.register('eightbit',  ww.mode.EightBitMode,  83,  8); // 01010011
 ww.mode.register('metaball',  ww.mode.MetaBallMode,  170, 8); // 10101010
-// ww.mode.register('fireplace', ww.mode.FireplaceMode, 11, 8); // 00001011
 
 // Audio available?
 if (ww.util.getAudioContextConstructor()) {
@@ -80,18 +75,33 @@ ww.mode.register('rocket',    ww.mode.RocketMode,    69,  8); // 01000101
 ww.mode.register('donut',     ww.mode.DonutMode,     150, 8); // 10010110
 ww.mode.register('burger',    ww.mode.BurgerMode,    57,  8); // 00111001
 
-// On DocumentReady
+// On DocumentReady (direct access only)
 $(function() {
   // Extract the name from the URL.
   var parts = window.location.href.split('/'),
       page = parts[parts.length - 1],
-      scriptName = page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
+      scriptName = 
+        page.replace('_test.html', '.html').replace(/\.html(.*)/, '');
 
   // Look up the mode by name.
   var pair = ww.mode.findModeByName(scriptName);
 
   // Initialize
   if (pair && pair.klass) {
-    new pair.klass();
+    var wrapperElem =
+      $('<div></div>').addClass('mode').addClass(scriptName + '-mode');
+    wrapperElem.css({ 'width': $(window).width(),
+      'height': $(window).height() });
+
+    $("body > *").wrapAll(wrapperElem);
+
+    window['currentMode'] = new pair.klass($('.mode')[0], '../');
+
+    var self = this;
+    $(window).resize(ww.util.throttle(function() {
+      $('.mode').css({ 'width': $(window).width(),
+        'height': $(window).height() });
+      window['currentMode'].onResize();
+    }, 50));
   }
 });

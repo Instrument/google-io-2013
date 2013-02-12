@@ -1,8 +1,8 @@
-#letter-i {
+.letter-i {
   @include transform-origin(center bottom, false);
 }
 
-#letter-o, #cracked, [id*=part-] {
+.letter-o, #cracked, [id*=part-] {
   @include transform-origin(50% 50%, false);
 }
 

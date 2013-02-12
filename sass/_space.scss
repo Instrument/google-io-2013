@@ -1,13 +1,7 @@
-body {
-  background: #000;
-}
-
-#space-canvas {
-  position: absolute;
-  z-index: 1;
-}
-
-#canvas-0 {
-  position: absolute;
+canvas {
   z-index: 2;
+}
+
+canvas#space-canvas {
+  z-index: 1 !important;
 }

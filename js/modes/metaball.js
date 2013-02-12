@@ -3,9 +3,11 @@ goog.provide('ww.mode.MetaBallMode');
 
 /**
  * @constructor
+ * @param {Element} containerElem The containing element.
+ * @param {String} assetPrefix The containing element.
  */
-ww.mode.MetaBallMode = function() {
-  goog.base(this, 'metaball', true, true, true);
+ww.mode.MetaBallMode = function(containerElem, assetPrefix) {
+  goog.base(this, containerElem, assetPrefix, 'metaball', true, true, true);
 
   if (this.wantsAudio_) {
     // Set up audio context and create three sources.
@@ -494,8 +496,8 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
   // Set the size of the ball radial gradients.
   this.gradSize_ = this.oRad_ * 4;
 
-  if ($('.mode-wrapper')) {
-   this.draw13_($('.mode-wrapper')); 
+  if ($('.year-mark')) {
+   this.draw13_($('.year-mark')); 
   }
 
   this.redraw();
@@ -622,7 +624,8 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   this.pctx_.globalCompositeOperation = 'source-atop';
 
   // Set the blend mode for the gradients to lighter to make it look cool.
-  this.gctx_.globalCompositeOperation = 'lighter';
+  // this.gctx_.globalCompositeOperation = 'lighter';
+  // this.gctx_.globalAlpha = 0.75;
 
   // Draw the ball canvas onto the gradient canvas to complete the mask.
   if (0 < this.gcanvas_.height) {

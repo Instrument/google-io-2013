@@ -175,6 +175,13 @@ ww.raf.isRunning_ = false;
 ww.raf.lastTime_ = 0;
 
 /**
+ * Current frame for canceling.
+ * @private
+ * @type {Number}
+ */
+ww.raf.currentFrame_ = null;
+
+/**
  * On-frame loop.
  * @private
  * @param {Number} t timer.
@@ -193,7 +200,7 @@ ww.raf.onFrame_ = function(t) {
   ww.raf.lastTime_ = loopCurrentTime;
 
   if (ww.raf.isRunning_) {
-    requestAnimationFrame(ww.raf.onFrame_);
+    ww.raf.currentFrame_ = requestAnimationFrame(ww.raf.onFrame_);
   }
 };
 
@@ -214,11 +221,13 @@ ww.raf.updateStatus_ = function() {
     if (!ww.raf.isRunning_) {
       ww.raf.isRunning_ = true;
       ww.raf.lastTime_ = ww.util.rightNow();
-      ww.raf.onFrame_();
+      requestAnimationFrame(ww.raf.onFrame_);
     }
   } else {
-    if (ww.raf.isRunning_) {
-      ww.raf.isRunning_ = false;
+    ww.raf.isRunning_ = false;
+    if (ww.raf.currentFrame_) {
+      cancelAnimationFrame(ww.raf.currentFrame_);
+      ww.raf.currentFrame_ = null;
     }
   }
 };
