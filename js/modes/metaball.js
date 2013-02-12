@@ -282,12 +282,16 @@ ww.mode.MetaBallMode.prototype.init = function() {
     }
   }
 
-  if (paper['projects'][0]['layers'][0]['children']) {
+  /*if (paper['projects'][0]['layers'][0]['children']) {
     var childLen = paper['projects'][0]['layers'][0]['children'].length;
 
     for (var i = 0; i < childLen; i++) {
       paper['projects'][0]['layers'][0]['children'][i]['remove']();
     }
+  }*/
+
+  if (this.connections_) {
+    this.connections_['remove']();
   }
 
   this.oPaths_ = [];
