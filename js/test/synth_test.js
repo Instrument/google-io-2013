@@ -116,3 +116,30 @@ function testWwModeSynthModeMoveTracker() {
   assertTrue('Moved tracker Y position.', mode.tracker['position']['y'] === 100);
 
 }
+
+
+function testWwModeSynthModeOnResize() {
+
+  var pathsExist = 0;
+  mode.path = new paper['Path']();
+
+  for (var i = 0; i <= 10; i++) {
+    var point = new paper['Point'](i, 0);
+    mode.path.add(point);
+  }
+
+  mode.paths = [];
+  mode.paths.push(mode.path);
+
+  for (var i = 0; i < 3; i++) {
+    var path = mode.path['clone']();
+    mode.paths.push(path);
+  }
+
+  if(mode.paths) {
+    pathsExist++;
+  }
+
+  assertTrue('Paths condition met.', pathsExist > 0);
+
+}
