@@ -446,14 +446,14 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   var self = this;
 
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
-  $(this.containerElem_).bind(evt + '.space', function(e) {
+  var evt = this.getPointerEventNames_('move', this.name_);
+  $(this.containerElem_).bind(evt, function(e) {
     self.mouseX_ = self.getCoords(e)['x'];
     self.mouseY_ = self.getCoords(e)['y'];
   });
 
-  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  $(this.containerElem_).bind(evt2 + '.space', function(e) {
+  var evt2 = this.getPointerEventNames_('up', this.name_);
+  $(this.containerElem_).bind(evt2, function(e) {
     var coords = self.getCoords(e);
     var p = new paper['Point'](coords['x'], coords['y']);
     self.lastClick = p;
@@ -491,10 +491,10 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 ww.mode.SpaceMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
+  var evt = this.getPointerEventNames_('move', this.name_);
   $(this.containerElem_).unbind(evt + '.space');
 
-  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  var evt2 = this.getPointerEventNames_('up', this.name_);
   $(this.containerElem_).unbind(evt2 + '.space');
 };
 

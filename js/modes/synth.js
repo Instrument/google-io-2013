@@ -295,7 +295,9 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.moveTracker(event);
     self.padTouchOn = false;
   });
-  self.letterO.bind(Modernizr.touch ? 'touchmove' : 'mousemove', function() {
+  
+  var evt = this.getPointerEventNames_('move', this.name_);
+  self.letterO.bind(evt, function() {
     if (self.padTouchOn) {
       self.changeFrequency(event);
       self.moveTracker(event);
@@ -317,7 +319,9 @@ ww.mode.SynthMode.prototype.didUnfocus = function() {
   this.letterI.unbind(this.evtEnd);
   this.letterO.unbind(this.evtStart);
   this.letterO.unbind(this.evtEnd);
-  this.letterO.unbind(Modernizr.touch ? 'touchmove' : 'mousemove');
+
+  var evt = this.getPointerEventNames_('move', this.name_);
+  this.letterO.unbind(evt);
 
   this.isPlaying = true;
   this.connectPower_(); // disconnect

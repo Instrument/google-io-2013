@@ -345,8 +345,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   var self = this;
 
   // Multiple bound events upon click or touch.
-  var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
-  this.$canvas_.bind(downEvt + '.metaball', function(e) {
+  var downEvt = this.getPointerEventNames_('down', this.name_);
+  this.$canvas_.bind(downEvt, function(e) {
 
     self.mouseX_ = self.getCoords(e)['x'];
     self.mouseY_ = self.getCoords(e)['y'];
@@ -411,8 +411,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
     }
 
     // Update mouse or touch coordinates on move.
-    var moveEvt = Modernizr.touch ? 'touchmove' : 'mousemove';
-    self.$canvas_.bind(moveEvt + '.metaball', function(e) {
+    var moveEvt = self.getPointerEventNames_('move', self.name_);
+    self.$canvas_.bind(moveEvt, function(e) {
       self.mouseX_ = self.getCoords(e)['x'];
       self.mouseY_ = self.getCoords(e)['y'];
 
@@ -424,13 +424,13 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
     });
 
     // On mouseup or touchend, let go of all our events and unlock any balls.
-    var upEvt = Modernizr.touch ? 'touchend' : 'mouseup';
-    self.$canvas_.bind(upEvt + '.metaball', function(e) {
+    var upEvt = self.getPointerEventNames_('up', self.name_);
+    self.$canvas_.bind(upEvt, function(e) {
       if (activeBall) {
         activeBall['fixed'] = false;
       }
-      self.$canvas_.unbind(upEvt + '.metaball');
-      self.$canvas_.unbind(moveEvt + '.metaball');
+      self.$canvas_.unbind(upEvt);
+      self.$canvas_.unbind(moveEvt);
     });
 
     e.preventDefault();
@@ -444,8 +444,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 ww.mode.MetaBallMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var downEvt = Modernizr.touch ? 'touchstart' : 'mousedown';
-  this.$canvas_.unbind(downEvt + '.metaball');
+  var downEvt = this.getPointerEventNames_('down', this.name_);
+  this.$canvas_.unbind(downEvt);
 
   for (var i = 0; i < this.sources_.length; i++) {
     this.sources_[i].disconnect();
