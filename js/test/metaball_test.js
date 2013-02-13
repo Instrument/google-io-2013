@@ -56,9 +56,10 @@ function testWwModeMetaBallModeGetVector_() {
 }
 
 function testWwModeMetaBallModeMetaball_() {
-  mode.oPaths_.push(new paper['Path']['Circle'](mode.oCenter_, 100));
+  var ballCenter = new paper['Point'](mode.screenCenterX_, mode.screenCenterY_);
+  mode.oPaths_.push(new paper['Path']['Circle'](ballCenter, 100));
 
-  var path = mode.metaball_(mode.oPaths_[0], mode.oPaths_[1], .45, 2.4, 100);
+  var path = mode.metaball_(mode.oPaths_[0], mode.oPaths_[1], .45, 2.4, 500);
 
   assertNotEquals('path should have been created', undefined, path);
 }
