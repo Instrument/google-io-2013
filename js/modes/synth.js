@@ -368,7 +368,7 @@ ww.mode.SynthMode.prototype.connectPower_ = function() {
 ww.mode.SynthMode.prototype.playSound_ = function() {
   this.source.connect(this.effects['delay']['input']);
   this.effects['delay'].connect(this.analyser);
-  // this.analyser.connect(this.audioContext_.destination);
+  this.analyser.connect(this.audioContext_.destination);
   this.source.noteOn(0);
 };
 
