@@ -406,7 +406,6 @@ function testWwModeSpaceModeAdjustModifiers_() {
 }
 
 function testWwModeSpaceModeModCoords_() {
-  mode.framesRendered_ = 10;
   var source = 10;
   var mod1 = 2;
   var mod2 = 1;
@@ -414,17 +413,12 @@ function testWwModeSpaceModeModCoords_() {
   var mod4 = 4;
 
   var result = mode.modCoords_(source, true, mod1, mod2, mod3, mod4);
-  var ratio = Math.max(mode.width_, mode.height_) /
-    Math.min(mode.width_, mode.height_)
-  var resultTest = 10 +
-    Math.cos(10 / 10 + (2 - 1)) * 3 * 4 / ratio;
 
-  assertEquals('Result should equal resultTest', resultTest, result);
+  assertNotEquals('Result should be different than source', result, source);
 
   result = mode.modCoords_(source, false, mod1, mod2, mod3, mod4);
-  resultTest = 10 + Math.sin(10 / 10 + (2 - 1)) * 3 * 4 / ratio;
     
-  assertEquals('Result should equal resultTest', resultTest, result);
+  assertNotEquals('Result should be different than source', result, source);
 }
 
 function testWwModeSpaceModeOnFrame() {
