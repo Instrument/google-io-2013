@@ -145,6 +145,7 @@ ww.mode.SongMode.prototype.didUnfocus = function() {
   this.source && this.source['disconnect'](0);
 
   this.activeDrum = null;
+  this.drumBadge.text('');
   this.drumIndex = -1;
   this.drumEl.removeClass('active');
 
