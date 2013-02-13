@@ -8,6 +8,10 @@
   right: 0;
 }
 
+#red, #blue, #yellow, #green {
+  cursor: pointer;
+}
+
 #simone {
   @extend %absolute-full;
   padding: 5%;
