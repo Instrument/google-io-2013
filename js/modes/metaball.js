@@ -180,6 +180,7 @@ ww.mode.MetaBallMode.prototype.metaball_ = function(ball1,
   radius2 *= d2;
 
   var path = new paper['Path']([p1a, p2a, p2b, p1b]);
+
   path['style'] = ball1['style'];
   path['closed'] = true;
   var segments = path['segments'];

@@ -24,16 +24,13 @@ function testWwModePongModeInit() {
 }
 
 function testWwModePongModeStartRound_() {
-  mode.roundNumber_ = 5;
   mode.gamesPlayed_ = 1;
   mode.setScore_(10);
 
   mode.startRound_();
 
-  assertEquals('roundNumber_ should be set to 2', 2, mode.roundNumber_);
-
   assertEquals('gamesPlayed_ should increment by 1', 2,
-    mode.roundNumber_);
+    mode.gamesPlayed_);
 
   assertEquals('score_ should be set to 0', 0, mode.score_);
 }
@@ -69,7 +66,7 @@ function testWwModePongModeResetGame_() {
     mode.ballRadius_);
 
   assertEquals('ball velocity x should be reset', mode.ball_.vel.x,
-    -mode.ballSpeed_);
+    mode.ballSpeed_);
 
   assertEquals('ball velocity y should be reset', mode.ball_.vel.y,
     mode.ballSpeed_);
@@ -133,9 +130,41 @@ function testWwModePongModeSetScore_() {
   assertEquals('the score should be set to 10', 10, mode.score_);
 }
 
-/*function testWwModePongModeReflectBall_() {
+function testWwModePongModeReflectBall_() {
+  var gameEnded = false;
+  var tweens = [];
+
+  mode.constructor.prototype.gameOver_ = function() {
+    gameEnded = true;
+  };
+
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
   mode.resetGame_();
   mode.startRound_();
 
   mode.ball_.pos.x = 0;
-}*/
+
+  mode.reflectBall_();
+
+  assertTrue('game should have ended', gameEnded);
+
+  mode.resetGame_();
+  mode.startRound_();
+
+  mode.ball_.vel.x = 1;
+  mode.ball_.pos.x = mode.width_ * 2;
+
+  mode.reflectBall_();
+
+  assertEquals('ball x velocity should be reversed', -1, mode.ball_.vel.x);
+  assertEquals('tweens should have incrememted by 1', 1, tweens.length);
+
+  tweens = [];
+  mode.resetGame_();
+  mode.startRound_();
+
+  mode.ball_.vel.y = 1;
+}

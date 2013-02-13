@@ -232,6 +232,7 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
   this.$canvas_ = $('#ascii-canvas');
+  this.$canvas_.css({'z-index': 3});
   this.canvas_ = this.$canvas_[0];
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
@@ -318,8 +319,9 @@ ww.mode.AsciiMode.prototype.onResize = function(redraw) {
    */
   this.drawO_();
 
-  if ($('.mode-wrapper')) {
-   this.draw13_($('.mode-wrapper'));
+  if ($('.year-mark')) {
+    $('.year-mark').css({'z-index': 4});
+    this.draw13_($('.year-mark'));
   }
 
   if (redraw) {
