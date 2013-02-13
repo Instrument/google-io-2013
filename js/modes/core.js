@@ -91,11 +91,12 @@ ww.mode.Core.prototype.find = function(query) {
  */
 ww.mode.Core.prototype.log = function(msg) {
   if (DEBUG_MODE && ('undefined' !== typeof console) && ('undefined' !== typeof console.log)) {
+    var log = Function.prototype.bind.call(console.log, console);
     var args = Array.prototype.slice.call(arguments);
     if (typeof args[0] === 'string') {
-      args[0] = this.name_ + ': ' + args[0];
+      args[0] = 'App: ' + args[0];
     }
-    console.log.apply(console, args);
+    log.apply(console, args);
   }
 };
 
