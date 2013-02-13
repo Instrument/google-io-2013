@@ -469,6 +469,20 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
       }
     }
   });
+
+  var tool = new paper['Tool']();
+
+  tool['onMouseMove'] = function(event) {
+    if (self.paperO_['hitTest'](event['point']) ||
+      self.paperI_['hitTest'](event['point'])) {
+      
+      if (self.hasFocus) {
+        document.body.style.cursor = 'pointer';
+      }
+    } else {
+      document.body.style.cursor = 'default';
+    }
+  };
 };
 
 /**
@@ -662,7 +676,7 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
 
     var result;
     var adjustForScreenSize = Math.max(this.width_, this.height_) /
-      this.ratioParent_;
+      (this.ratioParent_ / 2);
 
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *

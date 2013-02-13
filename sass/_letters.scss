@@ -5,6 +5,7 @@
   background-repeat: no-repeat;
   @include background-size(100% auto);
   @include box-sizing(border-box);
+  cursor: pointer;
   display: inline-block;
   height: 100%;
   width: 40%;

@@ -260,6 +260,25 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
       }
     }
   });
+
+  var evt2 = 'mousemove';
+
+  this.$canvas_.bind(evt2 + '.ascii', function(e) {
+    var lastPos = new paper['Point'](self.getCoords(e)['x'],
+      self.getCoords(e)['y']);
+
+    if (lastPos['getDistance'](self.paperO_['position']) < self.oRad_ ||
+      Math.abs(lastPos['x'] - self.paperI_['position']['x']) <
+      self.iWidth_ / 2 && Math.abs(lastPos['y'] -
+      self.paperI_['position']['y']) <
+      self.iHeight_ / 2) {
+      if (self.hasFocus) {
+        document.getElementById('ascii-canvas').style.cursor = 'pointer';
+      }
+    } else {
+      document.getElementById('ascii-canvas').style.cursor = 'default';
+    }
+  });
 };
 
 /**

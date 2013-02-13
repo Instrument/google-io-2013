@@ -23,13 +23,8 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   TWEEN.removeAll();
 
-  if (Modernizr.touch) {
-    this.evtStart = 'touchstart.simon';
-    this.evtEnd = 'touchend.simon';
-  } else {
-    this.evtStart = 'mousedown.simon';
-    this.evtEnd = 'mouseup.simon';
-  }
+  this.evtStart = this.getPointerEventNames_('down', 'simone');
+  this.evtEnd = this.getPointerEventNames_('up', 'simone');
 
   this.topLeft = $('#red');        // 0 in sequence
   this.topRight = $('#green');     // 1 in sequence

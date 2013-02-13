@@ -130,6 +130,7 @@ function testWwModePongModeSetScore_() {
   assertEquals('the score should be set to 10', 10, mode.score_);
 }
 
+// Test hitting walls.
 function testWwModePongModeReflectBall_() {
   var gameEnded = false;
   var tweens = [];
@@ -167,4 +168,49 @@ function testWwModePongModeReflectBall_() {
   mode.startRound_();
 
   mode.ball_.vel.y = 1;
+  mode.ball_.pos.y = mode.height_ * 2;
+
+  mode.reflectBall_();
+
+  assertEquals('ball y velocity should be reversed', -1, mode.ball_.vel.y);
+  assertEquals('tweens should have incrememted by 1', 1, tweens.length);
+
+  tweens = [];
+  mode.resetGame_();
+  mode.startRound_();
+
+  mode.ball_.vel.y = -1;
+  mode.ball_.pos.y = -mode.height_;
+
+  mode.reflectBall_();
+
+  assertEquals('ball y velocity should be reversed', 1, mode.ball_.vel.y);
+  assertEquals('tweens should have incrememted by 1', 1, tweens.length);
+}
+
+// Test hitting the paddle.
+function testWwModePongModeReflectBall_() {
+  var paddleHit = false;
+
+  mode.constructor.prototype.hitPaddle_ = function(tween) {
+    paddleHit = true;
+  };
+
+  mode.resetGame_();
+  mode.startRound_();
+
+  mode.paddleX_ = 10;
+  mode.paddleY_ = 30;
+  mode.paddleWidth = 10;
+  mode.paddleHeight = 20;
+
+  mode.ball_.radius = 10;
+
+  mode.ball_.vel.x = -1;
+  mode.ball_.pos.x = 30;
+  mode.ball_.pos.y = 30;
+
+  mode.reflectBall_();
+
+  assertTrue('paddle should have been hit', paddleHit);
 }

@@ -1,4 +1,5 @@
-function testWwModeSimoneModeStartCheck_() {
+
+function testWwModeSimoneModeStartCheckNotPlaying_() {
   mode.isPlaying = false;
   mode.isAnimating = false;
 
@@ -15,9 +16,10 @@ function testWwModeSimoneModeStartCheck_() {
   assertTrue('No tweens should have been added if not playing and not animating', tweens.length === 0);
 }
 
-function testWwModeSimoneModeStartCheck_() {
+function testWwModeSimoneModeStartCheckPlaying_() {
   mode.isPlaying = true;
   mode.isAnimating = false;
+  mode.wantsAudio_ = true;
 
   var segment = $('#red');
   var tweens = [];
@@ -29,7 +31,156 @@ function testWwModeSimoneModeStartCheck_() {
   assertTrue('Tweens should be empty before trigger.', tweens.length === 0);
 
   segment.trigger('mousedown');
-  assertTrue('One tween should have been added if playing and not animating', tweens.length === 1);
+  assertTrue('Tweens should have been added if playing and not animating', tweens.length > 0);
+}
+
+function testWwModeSimoneModeGenerateSequence_() {
+  var startSize = mode.sequence.length,
+      endSize = startSize;
+
+  mode.generateSequence_();
+  endSize = mode.sequence.length;
+
+  assertTrue('Sequence size be larger than starting size.', endSize > startSize);
+}
+
+function testWwModeSimoneModeShuffleSequence_() {
+  var before = mode.sequence.toString(),
+      after = before;
+
+  mode.shuffleSequence_();
+
+  after = mode.sequence.toString();
+
+  assertFalse('Sequence should be equal to the original after shuffle.', before === after);
+}
+
+// test if current step and guess match
+function testWwModeSimoneModeCheckSequence1_() {
+  mode.focus_();
+
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+
+  var guess = 0;
+
+  mode.stepIndex = 0;
+  mode.lastStep = 1;
+  mode.sequence[mode.stepIndex] = guess;
+
+  mode.checkSequence_(guess);
+
+  assertEquals('stepIndex should be increased by 1 after a correct guess', 1, mode.stepIndex);
+}
+
+// test if current step and guess do not match
+function testWwModeSimoneModeCheckSequence2_() {
+  mode.focus_();
+
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+
+  var guess = 0;
+
+  mode.stepIndex = 0;
+  mode.lastStep = 1;
+  mode.sequence[mode.stepIndex] = guess + 1; // wrong
+
+  mode.checkSequence_(guess);
+
+  assertFalse('Wrong guess. Should not be playing', mode.isPlaying);
+}
+
+// test if number of steps increases after getting two out of two steps correct
+function testWwModeSimoneModeCheckSequence3_() {
+  mode.focus_();
+  
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+
+  var firstGuess = 0,
+      secondGuess = 1;
+
+  mode.sequence = [firstGuess, secondGuess, 2, 3]; // two dummy values
+  mode.total = mode.sequence.length;
+
+  mode.stepIndex = 0;
+  mode.lastStep = 1;
+
+  mode.checkSequence_(firstGuess);
+
+  assertEquals('stepIndex should be increased by 1 after a correct guess', 1, mode.stepIndex);
+
+  mode.isAnimating = false;
+  mode.checkSequence_(secondGuess);
+
+  assertTrue('lastStep should be increased by 1 after correct stepping', mode.lastStep === 2);
+}
+
+// test if 4 more numbers get added to the sequence if last step is
+// equal to the total possible steps to make
+function testWwModeSimoneModeCheckSequence4_() {
+  mode.focus_();
+  
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+
+  var firstGuess = 0,
+      secondGuess = 1;
+
+  mode.sequence = [firstGuess, secondGuess]; // needs to grow
+  mode.total = mode.sequence.length;
+
+  var oldTotal = mode.total;
+
+  mode.stepIndex = 0;
+  mode.lastStep = 1;
+
+  mode.checkSequence_(firstGuess);
+
+  assertEquals('stepIndex should be increased by 1 after a correct guess', 1, mode.stepIndex);
+
+  mode.isAnimating = false;
+  mode.checkSequence_(secondGuess);
+
+  assertTrue('lastStep should be increased by 1 after correct stepping', mode.lastStep === 2);
+
+  assertTrue('total possible steps in sequence should be increased by 4', mode.total === (oldTotal + 4));
+}
+
+function testWwModeSimoneModeBeginGame_() {
+  mode.focus_();
+  
+  mode.isPlaying = false;
+  var plays = mode.plays;
+
+  mode.beginGame_();
+
+  assertTrue('Plays should be increased by one', plays + 1 === mode.plays);
+  assertTrue('Should be playing.', mode.isPlaying);
+}
+
+function testWwModeSimoneModeDisplayNext_() {
+  mode.isPlaying = true;
+  mode.isAnimating = false;
+  mode.lastStep = 2;
+  mode.sequence = [0, 1, 0, 3, 1, 0]; // ensure dummy sequence
+
+  // if 2 is the last step index in zero based indexing
+  // expecting three steps then. each step has 2 tweens.
+  var expected = mode.lastStep * 3;
+                                  
+  var tweens = [];
+
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  assertTrue('Tweens should be empty before.', tweens.length === 0);
+
+  mode.displayNext_();
+
+  assertEquals('A certain number of tweens should have been added.', tweens.length, expected);
 }
 
 function testWwModeSimoneModeDidFocus() {
@@ -163,143 +314,4 @@ function testWwModeSimoneModeDidUnfocus() {
 
     assertTrue('There should be no bind data left.', bindDataCount === 0);
   }
-}
-
-function testWwModeSimoneModeGenerateSequence_() {
-  var startSize = mode.sequence.length,
-      endSize = startSize;
-
-  mode.generateSequence_();
-  endSize = mode.sequence.length;
-
-  assertTrue('Sequence size be larger than starting size.', endSize > startSize);
-}
-
-function testWwModeSimoneModeShuffleSequence_() {
-  var before = mode.sequence.toString(),
-      after = before;
-
-  mode.shuffleSequence_();
-
-  after = mode.sequence.toString();
-
-  assertFalse('Sequence should be equal to the original after shuffle.', before === after);
-}
-
-// test if current step and guess match
-function testWwModeSimoneModeCheckSequence_() {
-  mode.isPlaying = true;
-  mode.isAnimating = false;
-
-  var guess = 0;
-
-  mode.stepIndex = 0;
-  mode.lastStep = 1;
-  mode.sequence[mode.stepIndex] = guess;
-
-  mode.checkSequence_(guess);
-
-  assertTrue('stepIndex should be increased by 1 after a correct guess', mode.stepIndex === 1);
-}
-
-// test if current step and guess do not match
-function testWwModeSimoneModeCheckSequence_() {
-  mode.isPlaying = true;
-  mode.isAnimating = false;
-
-  var guess = 0;
-
-  mode.stepIndex = 0;
-  mode.lastStep = 1;
-  mode.sequence[mode.stepIndex] = guess + 1; // wrong
-
-  mode.checkSequence_(guess);
-
-  assertFalse('Wrong guess. Should not be playing', mode.isPlaying);
-}
-
-// test if number of steps increases after getting two out of two steps correct
-function testWwModeSimoneModeCheckSequence_() {
-  mode.isPlaying = true;
-  mode.isAnimating = false;
-
-  var firstGuess = 0,
-      secondGuess = 1;
-
-  mode.sequence = [firstGuess, secondGuess, 2, 3]; // two dummy values
-  mode.total = mode.sequence.length;
-
-  mode.stepIndex = 0;
-  mode.lastStep = 1;
-
-  mode.checkSequence_(firstGuess);
-
-  assertTrue('stepIndex should be increased by 1 after a correct guess', mode.stepIndex === 1);
-
-  mode.isAnimating = false;
-  mode.checkSequence_(secondGuess);
-
-  assertTrue('lastStep should be increased by 1 after correct stepping', mode.lastStep === 2);
-}
-
-// test if 4 more numbers get added to the sequence if last step is
-// equal to the total possible steps to make
-function testWwModeSimoneModeCheckSequence_() {
-  mode.isPlaying = true;
-  mode.isAnimating = false;
-
-  var firstGuess = 0,
-      secondGuess = 1;
-
-  mode.sequence = [firstGuess, secondGuess]; // needs to grow
-  mode.total = mode.sequence.length;
-
-  var oldTotal = mode.total;
-
-  mode.stepIndex = 0;
-  mode.lastStep = 1;
-
-  mode.checkSequence_(firstGuess);
-
-  assertTrue('stepIndex should be increased by 1 after a correct guess', mode.stepIndex === 1);
-
-  mode.isAnimating = false;
-  mode.checkSequence_(secondGuess);
-
-  assertTrue('lastStep should be increased by 1 after correct stepping', mode.lastStep === 2);
-
-  assertTrue('total possible steps in sequence should be increased by 4', mode.total === (oldTotal + 4));
-}
-
-function testWwModeSimoneModeBeginGame_() {
-  mode.isPlaying = false;
-  var plays = mode.plays;
-
-  mode.beginGame_();
-
-  assertTrue('Plays should be increased by one', plays + 1 === mode.plays);
-  assertTrue('Should be playing.', mode.isPlaying);
-}
-
-function testWwModeSimoneModeDisplayNext_() {
-  mode.isPlaying = true;
-  mode.isAnimating = false;
-  mode.lastStep = 2;
-  mode.sequence = [0, 1, 0, 3, 1, 0]; // ensure dummy sequence
-
-  // if 2 is the last step index in zero based indexing
-  // expecting three steps then. each step has 2 tweens.
-  var expected = mode.lastStep * 3;
-                                  
-  var tweens = [];
-
-  mode.constructor.prototype.addTween = function(tween) {
-    tweens.push(tween);
-  };
-
-  assertTrue('Tweens should be empty before.', tweens.length === 0);
-
-  mode.displayNext_();
-
-  assertEquals('A certain number of tweens should have been added.', tweens.length, expected);
 }
