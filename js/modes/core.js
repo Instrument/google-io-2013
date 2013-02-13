@@ -117,6 +117,56 @@ ww.mode.Core.prototype.init = function() {
 };
 
 /**
+ * Point events for binding.
+ * @private
+ * @param {String} evt Type of event.
+ * @param {String} name Namespace of event.
+ * @return {String} The resulting events.
+ */
+ww.mode.Core.prototype.getPointerEventNames_ = function(evt, name) {
+  var evts = [],
+      touchEvt,
+      mouseEvt,
+      msEvent;
+
+  if (evt === 'up') {
+    touchEvt = 'touchend';
+    mouseEvt = 'mouseup';
+    msEvent = 'MSPointerUp';
+  } else if (evt === 'move') {
+    touchEvt = 'touchmove';
+    mouseEvt = 'mousemove';
+    msEvent = 'MSPointerMove';
+  } else if (evt === 'down') {
+    touchEvt = 'touchstart';
+    mouseEvt = 'mousedown';
+    msEvent = 'MSPointerDown';
+  }
+
+  var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
+
+  if (iOS) {
+    if (Modernizr.touch) {
+      evts.push(touchEvt + '.' + name);
+    } else {
+      evts.push(mouseEvt + '.' + name);
+    }
+  } else {
+    if (Modernizr.touch) {
+      evts.push(touchEvt + '.' + name);
+    }
+
+    evts.push(mouseEvt + '.' + name);
+  }
+
+  if (window.navigator.msPointerEnabled) {
+    evts = [msEvent];
+  }
+
+  return evts.join(' ');
+};
+
+/**
  * Block screen with modal reload button.
  * @param {Function} onReload A callback.
  */
@@ -133,9 +183,8 @@ ww.mode.Core.prototype.showReload = function(onReload) {
     }
   }
 
-  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
-
-  this.$reloadModal_.bind(evt + '.reload', function() {
+  var upEvt = this.getPointerEventNames_('up', 'reload');
+  this.$reloadModal_.bind(upEvt, function() {
     self.$reloadModal_.hide();
     // self.focus_();
     if ('function' === typeof onReload) {
@@ -346,18 +395,18 @@ ww.mode.Core.prototype.willFocus = function() {
 ww.mode.Core.prototype.didFocus = function() {
   var self = this;
 
-  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
+  var upEvt = this.getPointerEventNames_('up', this.name_);
 
-  this.$letterI_.bind(evt + '.' + this.name_, function() {
+  this.$letterI_.bind(upEvt, function() {
     self.activateI();
   });
 
-  this.$letterO_.bind(evt + '.' + this.name_, function() {
+  this.$letterO_.bind(upEvt, function() {
     self.activateO();
   });
 
   if (this.$back) {
-    this.$back.bind(evt + '.' + this.name_, function() {
+    this.$back.bind(upEvt, function() {
       self.goBack();
     });
   }
@@ -408,18 +457,17 @@ ww.mode.Core.prototype.willUnfocus = function() {
  * Event is called after a mode unfocused.
  */
 ww.mode.Core.prototype.didUnfocus = function() {
-  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
-
-  this.$letterI_.unbind(evt + '.' + this.name_);
-  this.$letterO_.unbind(evt + '.' + this.name_);
+  var upEvt = this.getPointerEventNames_('up', this.name_);
+  this.$letterI_.unbind(upEvt);
+  this.$letterO_.unbind(upEvt);
 
   if (this.$back) {
-    this.$back.unbind(evt + '.' + this.name_);
+    this.$back.unbind(upEvt);
   }
 
   if (this.$reloadModal_) {
     this.$reloadModal_.hide();
-    this.$reloadModal_.unbind(evt + '.reload');
+    this.$reloadModal_.unbind(this.getPointerEventNames_('up', 'reload'));
   }
 
   $(document).unbind('keyup.' + this.name_);
