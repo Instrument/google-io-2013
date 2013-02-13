@@ -90,7 +90,7 @@ ww.mode.Core.prototype.find = function(query) {
  * @param {String} msg The message to log.
  */
 ww.mode.Core.prototype.log = function(msg) {
-  if (DEBUG_MODE && console && console.log) {
+  if (DEBUG_MODE && ('undefined' !== typeof console) && ('undefined' !== typeof console.log)) {
     var args = Array.prototype.slice.call(arguments);
     if (typeof args[0] === 'string') {
       args[0] = this.name_ + ': ' + args[0];
