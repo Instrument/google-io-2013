@@ -52,13 +52,8 @@ goog.inherits(ww.mode.SongMode, ww.mode.Core);
 ww.mode.SongMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  if (Modernizr.touch) {
-    this.evtStart = 'touchstart.song';
-    this.evtEnd = 'touchend.song';
-  } else {
-    this.evtStart = 'mousedown.song';
-    this.evtEnd = 'mouseup.song';
-  }
+  this.evtStart = this.getPointerEventNames_('down', 'song');
+  this.evtEnd = this.getPointerEventNames_('up', 'song');
 
   // setup instruments and animation elements
   this.instruments = $('.instrument');

@@ -19,13 +19,8 @@ goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 ww.mode.SynthMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  if (Modernizr.touch) {
-    this.evtStart = 'touchstart.synth';
-    this.evtEnd = 'touchend.synth';
-  } else {
-    this.evtStart = 'mousedown.synth';
-    this.evtEnd = 'mouseup.synth';
-  }
+  this.evtStart = this.getPointerEventNames_('down', 'synth');
+  this.evtEnd = this.getPointerEventNames_('up', 'synth');
 
   this.getAudioContext_();
   this.source = this.audioContext_.createOscillator();
