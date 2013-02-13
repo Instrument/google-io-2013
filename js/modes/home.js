@@ -335,16 +335,16 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  this.find('#menu').bind(evt2 + '.core', function() {
+  var evt = this.getPointerEventNames_('up', this.name_);
+  this.find('#menu').bind(evt, function() {
     $(self.containerElem_).addClass('nav-visible');
   });
 
-  this.find('#modal').bind(evt2 + '.core', function() {
+  this.find('#modal').bind(evt, function() {
     $(self.containerElem_).removeClass('nav-visible');
   });
 
-  this.find('#dropdown').bind(evt2 + '.core', function(evt) {
+  this.find('#dropdown').bind(evt, function(evt) {
     evt.preventDefault();
     evt.stopPropagation();
   });
@@ -385,10 +385,10 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 ww.mode.HomeMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-  this.find('#menu').unbind(evt2 + '.core');
-  this.find('#modal').unbind(evt2 + '.core');
-  this.find('#dropdown').unbind(evt2 + '.core');
+  var evt = this.getPointerEventNames_('up', this.name_);
+  this.find('#menu').unbind(evt);
+  this.find('#modal').unbind(evt);
+  this.find('#dropdown').unbind(evt);
 };
 
 /**

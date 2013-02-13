@@ -163,6 +163,7 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function() {
   this.slashEndY_ = this.screenCenterY_ + (this.iHeight_ / 2) +
     (this.iHeight_ * 0.09722222);
 
+  this.ctx_.strokeStyle = '#e5e5e5';
   this.ctx_.lineWidth = this.ratioParent_ * 0.01388889;
 
   this.ctx_.beginPath();
