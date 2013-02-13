@@ -351,7 +351,6 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   var tool = new paper['Tool']();
 
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   tool['onMouseUp'] = function(event) {
     self.lastClick_ = event['point'];
     if (self.paperO_['hitTest'](event['point'])) {
@@ -364,6 +363,18 @@ ww.mode.HomeMode.prototype.didFocus = function() {
       if (self.hasFocus) {
         self.activateI();
       }
+    }
+  };
+
+  tool['onMouseMove'] = function(event) {
+    if (self.paperO_['hitTest'](event['point']) ||
+      self.paperI_['hitTest'](event['point'])) {
+      
+      if (self.hasFocus) {
+        document.body.style.cursor = 'pointer';
+      }
+    } else {
+      document.body.style.cursor = 'default';
     }
   };
 };

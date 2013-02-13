@@ -469,6 +469,20 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
       }
     }
   });
+
+  var tool = new paper['Tool']();
+
+  tool['onMouseMove'] = function(event) {
+    if (self.paperO_['hitTest'](event['point']) ||
+      self.paperI_['hitTest'](event['point'])) {
+      
+      if (self.hasFocus) {
+        document.body.style.cursor = 'pointer';
+      }
+    } else {
+      document.body.style.cursor = 'default';
+    }
+  };
 };
 
 /**

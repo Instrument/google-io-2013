@@ -154,38 +154,23 @@ ww.mode.EightBitMode.prototype.fillO_ = function() {
  * @private
  */
 ww.mode.EightBitMode.prototype.drawSlash_ = function() {
-  if (!this.paperSlash_) {
-    // Determine the slash's start and end coordinates based on I and O sizes.
-    this.slashStart_ = new paper['Point'](this.screenCenterX_ +
-      (this.ratioParent_ * 0.02777778),
-      this.screenCenterY_ - (this.iHeight_ / 2) -
-        (this.iHeight_ * 0.09722222));
+  // Determine the slash's start and end coordinates based on I and O sizes.
+  this.slashStartX_ = this.screenCenterX_ + (this.ratioParent_ * 0.02777778);
+  this.slashStartY_ = this.screenCenterY_ - (this.iHeight_ / 2) -
+    (this.iHeight_ * 0.09722222);
 
-    this.slashEnd_ = new paper['Point'](this.iX_ + this.iWidth_,
-      this.screenCenterY_ + (this.iHeight_ / 2) +
-      (this.iHeight_ * 0.09722222));
+  this.slashEndX_ = this.iX_ + this.iWidth_;
+  this.slashEndY_ = this.screenCenterY_ + (this.iHeight_ / 2) +
+    (this.iHeight_ * 0.09722222);
 
-    // Create a new paper.js path for the slash based on screen dimensions.
-    this.paperSlash_ = new paper['Path']();
-    this.paperSlash_['strokeWidth'] = this.ratioParent_ * 0.01388889;
-    this.paperSlash_['strokeColor'] = '#ebebeb';
+  this.ctx_.lineWidth = this.ratioParent_ * 0.01388889;
 
-    this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
-  } else {
-    this.slashStart_['x'] = this.screenCenterX_ +
-      (this.ratioParent_ * 0.02777778);
-    this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
-      (this.iHeight_ * 0.09722222);
+  this.ctx_.beginPath();
 
-    this.slashEnd_['x'] = this.iX_ + this.iWidth_;
-    this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
-      (this.iHeight_ * 0.09722222);
+  this.ctx_.moveTo(this.slashStartX_, this.slashStartY_);
+  this.ctx_.lineTo(this.slashEndX_, this.slashEndY_);
 
-    this.paperSlash_['segments'][0]['point'] = this.slashStart_;
-    this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
-
-    this.paperSlash_['strokeWidth'] = this.ratioParent_ * 0.01388889;
-  }
+  this.ctx_.stroke();
 };
 
 /**
@@ -219,7 +204,10 @@ ww.mode.EightBitMode.prototype.init = function() {
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
-
+if (this.canvas_) {
+    this.canvas_.width = this.width_;
+    this.canvas_.height = this.height_;
+  }
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX_, this.oY_);
@@ -231,27 +219,64 @@ ww.mode.EightBitMode.prototype.init = function() {
 ww.mode.EightBitMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
+  this.canvas_ = document.createElement('canvas');
+  this.canvas_.width = this.width_;
+  this.canvas_.height = this.height_;
+  this.ctx_ = this.canvas_.getContext('2d');
+  this.ctx_.strokeStyle = '#e5e5e5';
+
   var self = this;
+
+  var oSize;
+  var iSizeX;
+  var iSizeY;
+  var distX;
+  var distY;
 
   var tool = new paper['Tool']();
 
   var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   tool['onMouseUp'] = function(event) {
     self.lastClick_ = event['point'];
-    var size = Math.round(self.width_ * 0.0625) + self.oRad_;
+    oSize = Math.round(self.width_ * 0.03125) + self.oRad_;
+    iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth_ / 2;
+    iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight_ / 2;
 
-    if (self.paperO_['hitTest'](event['point']) ||
-      self.paperO_['position']['getDistance'](self.lastClick_) < size) {
+    distX = Math.abs(self.paperI_['position']['x'] - self.lastClick_['x']);
+    distY = Math.abs(self.paperI_['position']['y'] - self.lastClick_['y']);
+
+    if (self.paperO_['position']['getDistance'](self.lastClick_) < oSize) {
       if (self.hasFocus) {
         self.activateO();
       }
     }
 
-    if (self.paperI_['hitTest'](event['point']) ||
-      self.paperI_['position']['getDistance'](self.lastClick_) < size) {
+    if (distX < iSizeX && distY < iSizeY) {
       if (self.hasFocus) {
         self.activateI();
       }
+    }
+  };
+
+  tool['onMouseMove'] = function(event) {
+    var lastPos = event['point'];
+    oSize = Math.round(self.width_ * 0.03125) + self.oRad_;
+    iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth_ / 2;
+    iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight_ / 2;
+
+    distX = Math.abs(self.paperI_['position']['x'] - lastPos['x']);
+    distY = Math.abs(self.paperI_['position']['y'] - lastPos['y']);
+
+    if (self.paperO_['position']['getDistance'](lastPos) < oSize) {
+      if (self.hasFocus) {
+        document.body.style.cursor = 'pointer';
+      }
+    } else if (distX < iSizeX && distY < iSizeY) {
+      if (self.hasFocus) {
+        document.body.style.cursor = 'pointer';
+      }
+    } else {
+      document.body.style.cursor = 'default';
     }
   };
 };
@@ -271,6 +296,11 @@ ww.mode.EightBitMode.prototype.didUnfocus = function() {
  */
 ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
+
+  if (this.canvas_) {
+    this.canvas_.width = this.width_;
+    this.canvas_.height = this.height_;
+  }
 
   // Recalculate the center of the screen based on the new window size.
   this.screenCenterX_ = this.width_ / 2;
@@ -297,11 +327,6 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   // Set O's coordinates.
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
-
-  /**
-   * Create the slash.
-   */
-  this.drawSlash_();
 
   /**
    * Create the letter I.
@@ -425,7 +450,7 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
       var color = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
 
       pctx.fillStyle = color;
-      pctx.fillRect(x, y, size, size);
+      pctx.fillRect(x - size / 2, y - size / 2, size, size);
     }
   }
 
@@ -457,4 +482,5 @@ ww.mode.EightBitMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
   this.drawPixels_(this.paperCanvas_);
+  this.drawSlash_();
 };
