@@ -236,7 +236,6 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
 
   var tool = new paper['Tool']();
 
-  var evt = Modernizr.touch ? 'touchmove' : 'mousemove';
   tool['onMouseUp'] = function(event) {
     self.lastClick_ = event['point'];
     oSize = Math.round(self.width_ * 0.03125) + self.oRad_;
@@ -285,11 +284,9 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
 /**
  * Event is called after a mode is unfocused.
  */
-ww.mode.EightBitMode.prototype.didUnfocus = function() {
-  goog.base(this, 'didUnfocus');
-
-  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
-};
+// ww.mode.EightBitMode.prototype.didUnfocus = function() {
+//   goog.base(this, 'didUnfocus');
+// };
 
 /**
  * Handles a browser window resize.

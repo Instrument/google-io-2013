@@ -239,8 +239,8 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var evt = Modernizr.touch ? 'touchend' : 'mouseup';
-  this.$canvas_.bind(evt + '.ascii', function(e) {
+  var evt = this.getPointerEventNames_('up', this.name_);
+  this.$canvas_.bind(evt, function(e) {
     self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
 
@@ -261,9 +261,8 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
     }
   });
 
-  var evt2 = 'mousemove';
-
-  this.$canvas_.bind(evt2 + '.ascii', function(e) {
+  var evt2 = this.getPointerEventNames_('move', this.name_);
+  this.$canvas_.bind(evt2, function(e) {
     var lastPos = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
 
@@ -287,7 +286,11 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
 ww.mode.AsciiMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt2 = Modernizr.touch ? 'touchend' : 'mouseup';
+  var evt = this.getPointerEventNames_('up', this.name_);
+  this.$canvas_.unbind(evt);
+
+  var evt2 = this.getPointerEventNames_('move', this.name_);
+  this.$canvas_.unbind(evt2);
 };
 
 /**
