@@ -44,52 +44,75 @@ function testWwModeSynthModeDidUnFocus() {
 function testWwModeSynthModeChangeWaveType() {
 
   var waveType = mode.waveType;
+  var createdSound = 0;
+  mode.constructor.prototype.createSound_ = function() {
+    createdSound++;
+  };
+  
   mode.changeWaveType();
   var newWaveType = mode.waveType;
-  console.log('changewavetype', waveType, newWaveType);
   assertTrue('waveType should be changed.', waveType !== newWaveType);
+  assertTrue('Sound was created.', createdSound !== 0);
   
 
 }
 
-// 
-// 
-// 
-// // connect power if change effect and not playing
-// function testWwModeSynthModeChangeEffect_() {
-//   mode.isPlaying = false;
-// 
-//   mode.source = {
-//     'connect': function(analyser) {}
-//   };
-// 
-//   var connect = 0;
-//   
-//   var elem = {
-//     'value': 'dry'
-//   };
-// 
-//   mode.constructor.prototype.connectPower_ = function() {
-//     connect++;
-//   };
-// 
-//   assertTrue('Connect should be 0 initially', 0, connect);
-// 
-//   mode.changeEffect_(elem);
-// 
-//   assertTrue('Connected power', connect > 0);
-// }
-// 
-// // change effect to dry
-// function testWwModeSynthModeChangeEffect_() {
-//   var elem = {
-//     'value': 'dry'
-//   };
-// }
-// 
-// // change effect to not dry
-// function testWwModeSynthModeChangeEffect_() {
-//   var elem = {
-//     'value': 'wet'
-//   };
-// }
+
+
+function testWwModeSynthModeCalculateFrequency() {
+
+  mode.oOffset.left = 10;
+  mode.oOffset.top = 10;
+  mode.oSize = 400;
+
+  var originalLastFreq = mode.lastFreq;
+  var originalLastDetune = mode.lastDetune;
+  var originalLastHue = mode.lastHue;
+  var originalLastYPercent = mode.lastYPercent;
+  var originalLastXPercent = mode.lastXPercent;
+  
+  mode.calculateFrequency(200, 200);
+    
+  assertTrue('Changed lastFreq.', originalLastFreq !== mode.lastFreq);
+  assertTrue('Changed lastDetune.', originalLastFreq !== mode.lastDetune);
+  assertTrue('Changed lastHue.', originalLastFreq !== mode.lastHue);
+  assertTrue('Changed lastYPercent.', originalLastFreq !== mode.lastYPercent);
+  assertTrue('Changed lastXPercent.', originalLastFreq !== mode.lastXPercent);
+
+}
+
+function testWwModeSynthModeChangeFrequency() {
+
+  var frequencyCalculated = 0;
+  var createdSound = 0;
+  var mockEvent = {
+    pageX: 0,
+    pageY: 0
+  }
+  mode.constructor.prototype.calculateFrequency = function() {
+    frequencyCalculated++;
+  };
+  mode.constructor.prototype.createSound_ = function() {
+    createdSound++;
+  };
+  mode.changeFrequency(mockEvent);
+  
+  assertTrue('Frequency was calculated.', frequencyCalculated !== 0);
+  assertTrue('Sound was created.', createdSound !== 0);
+
+}
+
+
+function testWwModeSynthModeMoveTracker() {
+  mode.tracker = new paper['Path']['Circle'](
+                  new paper['Point'](10,10), 10 * .08
+                  );
+  var mockEvent = {
+    'pageX': 100,
+    'pageY': 100
+  }
+  mode.moveTracker(mockEvent);
+  assertTrue('Moved tracker X position.', mode.tracker['position']['x'] === 100);
+  assertTrue('Moved tracker Y position.', mode.tracker['position']['y'] === 100);
+
+}
