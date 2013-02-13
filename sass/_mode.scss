@@ -170,6 +170,12 @@ canvas {
 
 .song-mode {
   @import "song";
+  color: #959595;
+  font-size: 110%;
+
+  @include iphone() {
+    font-size: 90%;
+  }
 }
 
 .space-mode {

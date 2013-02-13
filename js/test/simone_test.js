@@ -14,10 +14,6 @@ function testWwModeSimoneModeStartCheckNotPlaying_() {
 
   segment.trigger('mousedown');
   assertTrue('No tweens should have been added if not playing and not animating', tweens.length === 0);
-
-  mode.isPlaying = true;
-  assertTrue('Tweens should have been added if not playing and not animating', tweens.length === 0);
-
 }
 
 function testWwModeSimoneModeStartCheckPlaying_() {
