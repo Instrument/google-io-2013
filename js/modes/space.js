@@ -662,7 +662,7 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
 
     var result;
     var adjustForScreenSize = Math.max(this.width_, this.height_) /
-      this.ratioParent_;
+      (this.ratioParent_ / 2);
 
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *
