@@ -378,7 +378,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 ww.mode.HomeMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = this.getPointerEventNames_('up', this.name_);
+  var evt = this.getPointerEventNames_('down', this.name_);
   this.find('#menu').unbind(evt);
   this.find('#modal').unbind(evt);
   this.find('#dropdown').unbind(evt);

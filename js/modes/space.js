@@ -500,7 +500,7 @@ ww.mode.SpaceMode.prototype.didUnfocus = function() {
   var evt = this.getPointerEventNames_('move', this.name_);
   $(this.containerElem_).unbind(evt + '.space');
 
-  var evt2 = this.getPointerEventNames_('up', this.name_);
+  var evt2 = this.getPointerEventNames_('down', this.name_);
   $(this.containerElem_).unbind(evt2 + '.space');
 };
 

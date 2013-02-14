@@ -297,7 +297,7 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
 ww.mode.AsciiMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = this.getPointerEventNames_('up', this.name_);
+  var evt = this.getPointerEventNames_('down', this.name_);
   this.$canvas_.unbind(evt);
 
   var evt2 = this.getPointerEventNames_('move', this.name_);
