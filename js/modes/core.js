@@ -122,6 +122,43 @@ ww.mode.Core.prototype.init = function() {
 };
 
 /**
+ * Vind an event.
+ * @private
+ * @param {String} elem Element to bind.
+ * @param {String} evt Type of event.
+ * @param {Function} onEvent Callback.
+ * @return {String} The resulting events.
+ */
+ww.mode.Core.prototype.bindEvent_ = function(elem, evt, onEvent) {
+  var $elem = $(elem);
+  var evtName = this.getPointerEventNames_(evt, this.name_);
+
+  if (window.navigator.msPointerEnabled) {
+    $elem[0].addEventListener(evtName, onEvent);
+  } else {
+    $elem.bind(evtName, onEvent);
+  }
+};
+
+/**
+ * Unbind an event.
+ * @private
+ * @param {String} elem Element to unbind.
+ * @param {String} evt Type of event.
+ * @return {String} The resulting events.
+ */
+ww.mode.Core.prototype.unbindEvent_ = function(elem, evt) {
+  var $elem = $(elem);
+  var evtName = this.getPointerEventNames_(evt, this.name_);
+
+  if (window.navigator.msPointerEnabled) {
+    $elem[0].removeEventListener(evtName);
+  } else {
+    $elem.unbind(evtName);
+  }
+};
+
+/**
  * Point events for binding.
  * @private
  * @param {String} evt Type of event.
@@ -148,29 +185,28 @@ ww.mode.Core.prototype.getPointerEventNames_ = function(evt, name) {
     msEvent = 'MSPointerDown';
   }
 
-  var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
-  var android = navigator.userAgent.match(/Android/) ? true : false;
+  // var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
+  // var android = navigator.userAgent.match(/Android/) ? true : false;
 
-  if (iOS || android) {
+  if (window.navigator.msPointerEnabled) {
+    evts = [msEvent];
+  } else {
     if (Modernizr.touch) {
       evts.push(touchEvt + '.' + name);
     } else {
       evts.push(mouseEvt + '.' + name);
     }
-  } else {
+  }/* else {
     if (Modernizr.touch) {
       evts.push(touchEvt + '.' + name);
     }
 
     evts.push(mouseEvt + '.' + name);
-  }
-
-  if (window.navigator.msPointerEnabled) {
-    evts = [msEvent];
-  }
+  }*/
 
   return evts.join(' ');
 };
+
 
 /**
  * Block screen with modal reload button.
@@ -760,3 +796,47 @@ ww.mode.Core.prototype.getCoords = function(e) {
 
   return coords;
 };
+
+ww.mode.Core.prototype.setPaperShapeData = function() {
+  var ratioParent = Math.max(this.width_, this.height_);
+
+  var screenCenterX = this.width_ / 2;
+  var screenCenterY = this.height_ / 2;
+
+  // Set I's initial dimensions.
+  this.iWidth = ratioParent * 0.07361963;
+  this.iHeight = this.iWidth * 2.13541667;
+
+  // Set coordinates for I's upper left corner.
+  this.iX = screenCenterX - (ratioParent * 0.14417178);
+  this.iY = screenCenterY - (ratioParent * 0.06134969);
+
+  this.iCenter = new paper['Point'](this.iX + this.iWidth / 2,
+    this.iY + this.iHeight / 2);
+
+  // Set O's radius.
+  this.oRad = ratioParent * 0.08282209;
+
+  // Set O's coordinates.
+  this.oX = screenCenterX + this.oRad - (ratioParent * 0.00996933);
+  this.oY = screenCenterY + (ratioParent * 0.02300613);
+
+  this.oCenter = new paper['Point'](this.oX, this.oY);
+
+  // Set Slash's coordinates.
+  this.slashStartX = screenCenterX + (ratioParent * 0.00383436);
+  this.slashStartY = screenCenterY - (ratioParent * 0.09662577);
+  this.slashEndX = screenCenterX - (ratioParent * 0.06518405);
+  this.slashEndY = screenCenterY + (ratioParent * 0.1303681);
+
+  this.slashWidth = ratioParent * 0.00766871;
+
+  if (this.find('.year-mark')) {
+    this.find('.year-mark').css({
+      'width': ratioParent * 0.02837423,
+      'height': ratioParent * 0.02118704,
+      'left': screenCenterX + (ratioParent * 0.1303681),
+      'top': screenCenterY - (ratioParent * 0.09125767)
+    });
+  }
+}

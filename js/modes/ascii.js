@@ -42,8 +42,8 @@ ww.mode.AsciiMode.prototype.activateO = function() {
 ww.mode.AsciiMode.prototype.drawI_ = function() {
   if (!this.paperI_) {
     // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.iX_, this.iY_);
-    var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
+    var iTopLeft = new paper['Point'](this.iX, this.iY);
+    var iSize = new paper['Size'](this.iWidth, this.iHeight);
     var letterI = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](letterI);
 
@@ -53,7 +53,7 @@ ww.mode.AsciiMode.prototype.drawI_ = function() {
 
     for (var i = 0; i < this.paperI_['segments'].length; i++) {
       var point = this.paperI_['segments'][i]['point']['clone']();
-      point = point['subtract'](this.iCenter_);
+      point = point['subtract'](this.iCenter);
 
       point['velocity'] = 0;
       point['acceleration'] = Math.random() * 5 + 10;
@@ -63,11 +63,11 @@ ww.mode.AsciiMode.prototype.drawI_ = function() {
     }
   } else {
     // Change the position based on new screen size values.
-    this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
-      y: this.iY_ + this.iHeight_ / 2};
+    this.paperI_['position'] = {x: this.iX + this.iWidth / 2,
+      y: this.iY + this.iHeight / 2};
 
     // Change the scale based on new screen size values.
-    this.paperI_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
+    this.paperI_['scale'](this.iWidth / this.paperI_['bounds']['width']);
   }
 };
 
@@ -85,11 +85,11 @@ ww.mode.AsciiMode.prototype.fillI_ = function() {
 
   // Left side of the I is the origin of the gradient.
   var from = this.paperI_['position']['clone']();
-  from['x'] -= this.iWidth_ / 2;
+  from['x'] -= this.iWidth / 2;
 
   // Right side of the I is the end point of the gradient.
   var to = this.paperI_['position']['clone']();
-  to['x'] += this.iWidth_ / 2;
+  to['x'] += this.iWidth / 2;
 
   // Create the gradient color:
   var gradientColor = new paper['GradientColor'](gradient, from, to);
@@ -106,16 +106,14 @@ ww.mode.AsciiMode.prototype.drawO_ = function() {
     this.paperO_['remove']();
   }
   // Create a new paper.js path for O based off the previous variables.
-  this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
-
-  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 6,
-    this.oRad_);
+  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter, 6,
+    this.oRad);
 
   this.paperO_['vectors'] = [];
 
   for (var i = 0; i < this.paperO_['segments'].length; i++) {
     var point = this.paperO_['segments'][i]['point']['clone']();
-    point = point['subtract'](this.oCenter_);
+    point = point['subtract'](this.oCenter);
 
     point['velocity'] = 0;
     point['acceleration'] = Math.random() * 5 + 10;
@@ -139,11 +137,11 @@ ww.mode.AsciiMode.prototype.fillO_ = function() {
 
   // Left side of the O is the origin of the gradient.
   var from = this.paperO_['position']['clone']();
-  from['x'] -= this.oRad_;
+  from['x'] -= this.oRad;
 
   // Right side of the O is the end point of the gradient.
   var to = this.paperO_['position']['clone']();
-  to['x'] += this.oRad_;
+  to['x'] += this.oRad;
 
   // Create the gradient color:
   var gradientColor = new paper['GradientColor'](gradient, from, to);
@@ -160,12 +158,12 @@ ww.mode.AsciiMode.prototype.drawSlash_ = function() {
     // Determine the slash's start and end coordinates based on I and O sizes.
     this.slashStart_ = new paper['Point'](this.screenCenterX_ +
       (this.ratioParent_ * 0.02777778),
-      this.screenCenterY_ - (this.iHeight_ / 2) -
-        (this.iHeight_ * 0.09722222));
+      this.screenCenterY_ - (this.iHeight / 2) -
+        (this.iHeight * 0.09722222));
 
-    this.slashEnd_ = new paper['Point'](this.iX_ + this.iWidth_,
-      this.screenCenterY_ + (this.iHeight_ / 2) +
-      (this.iHeight_ * 0.09722222));
+    this.slashEnd_ = new paper['Point'](this.iX + this.iWidth,
+      this.screenCenterY_ + (this.iHeight / 2) +
+      (this.iHeight * 0.09722222));
 
     // Create a new paper.js path for the slash based on screen dimensions.
     this.paperSlash_ = new paper['Path']();
@@ -176,12 +174,12 @@ ww.mode.AsciiMode.prototype.drawSlash_ = function() {
   } else {
     this.slashStart_['x'] = this.screenCenterX_ +
       (this.ratioParent_ * 0.02777778);
-    this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
-      (this.iHeight_ * 0.09722222);
+    this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight / 2) -
+      (this.iHeight * 0.09722222);
 
-    this.slashEnd_['x'] = this.iX_ + this.iWidth_;
-    this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
-      (this.iHeight_ * 0.09722222);
+    this.slashEnd_['x'] = this.iX + this.iWidth;
+    this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight / 2) +
+      (this.iHeight * 0.09722222);
 
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
@@ -197,10 +195,10 @@ ww.mode.AsciiMode.prototype.drawSlash_ = function() {
  */
 ww.mode.AsciiMode.prototype.draw13_ = function(el) {
   el.css({
-    'width': this.oRad_ * 0.33333333,
-    'height': this.oRad_ * 0.25555556,
-    'left': this.oX_ + (this.oRad_ * 0.38888889),
-    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
+    'width': this.oRad * 0.33333333,
+    'height': this.oRad * 0.25555556,
+    'left': this.oX + (this.oRad * 0.38888889),
+    'top': this.oY - this.oRad - (this.oRad * 0.37777778)
   });
 };
 
@@ -224,7 +222,7 @@ ww.mode.AsciiMode.prototype.init = function() {
 
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
-    new paper['Point'](this.oX_, this.oY_);
+    new paper['Point'](this.oX, this.oY);
 
   if (0 < this.paperCanvas_.height) {
     // Draw Slash.
@@ -257,16 +255,16 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
     self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
 
-    if (self.lastClick_['getDistance'](self.paperO_['position']) < self.oRad_) {
+    if (self.lastClick_['getDistance'](self.paperO_['position']) < self.oRad) {
       if (self.hasFocus) {
         self.activateO();
       }
     }
 
     if (Math.abs(self.lastClick_['x'] - self.paperI_['position']['x']) <
-      self.iWidth_ / 2 && Math.abs(self.lastClick_['y'] -
+      self.iWidth / 2 && Math.abs(self.lastClick_['y'] -
       self.paperI_['position']['y']) <
-      self.iHeight_ / 2) {
+      self.iHeight / 2) {
 
       if (self.hasFocus) {
         self.activateI();
@@ -279,11 +277,11 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
     var lastPos = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
 
-    if (lastPos['getDistance'](self.paperO_['position']) < self.oRad_ ||
+    if (lastPos['getDistance'](self.paperO_['position']) < self.oRad ||
       Math.abs(lastPos['x'] - self.paperI_['position']['x']) <
-      self.iWidth_ / 2 && Math.abs(lastPos['y'] -
+      self.iWidth / 2 && Math.abs(lastPos['y'] -
       self.paperI_['position']['y']) <
-      self.iHeight_ / 2) {
+      self.iHeight / 2) {
       if (self.hasFocus) {
         document.getElementById('ascii-canvas').style.cursor = 'pointer';
       }
@@ -299,7 +297,7 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
 ww.mode.AsciiMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = this.getPointerEventNames_('up', this.name_);
+  var evt = this.getPointerEventNames_('down', this.name_);
   this.$canvas_.unbind(evt);
 
   var evt2 = this.getPointerEventNames_('move', this.name_);
@@ -317,41 +315,7 @@ ww.mode.AsciiMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
-  this.ratioParent_ = Math.min(this.width_, this.height_);
-
-  // Set I's initial dimensions.
-  this.iWidth_ = this.ratioParent_ * 0.205;
-  this.iHeight_ = this.iWidth_ * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ - this.ratioParent_ *
-    0.15833333;
-
-  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
-
-  this.iCenter_ = new paper['Point'](this.iX_ + this.iWidth_ / 2,
-    this.iY_ + this.iHeight_ / 2);
-
-  // Set O's radius.
-  this.oRad_ = this.ratioParent_ * 0.1944444444;
-
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
-
-  // Draw Slash.
-  this.drawSlash_();
-
-  // Draw I.
-  this.drawI_();
-
-  // Draw O.
-  this.drawO_();
-
-  if ($('.year-mark')) {
-    $('.year-mark').css({'z-index': 4});
-    this.draw13_($('.year-mark'));
-  }
+  this.setPaperShapeData();
 
   if (redraw) {
     this.redraw();
@@ -372,13 +336,13 @@ ww.mode.AsciiMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
     var distance;
 
     if (path === this.paperO_) {
-      vector = point['add'](this.oCenter_);
+      vector = point['add'](this.oCenter);
       vector = vector['subtract'](clickPoint);
-      distance = Math.max(0, this.oRad_ - vector['length']);
+      distance = Math.max(0, this.oRad - vector['length']);
     } else {
-      vector = point['add'](this.iCenter_);
+      vector = point['add'](this.iCenter);
       vector = vector['subtract'](clickPoint);
-      distance = Math.max(0, this.iWidth_ - vector['length']);
+      distance = Math.max(0, this.iWidth - vector['length']);
     }
 
     point['length'] += distance;
@@ -395,13 +359,15 @@ ww.mode.AsciiMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
 ww.mode.AsciiMode.prototype.updateVectors_ = function(path) {
   for (var i = 0; i < path['segments'].length; i++) {
     var point = path['vectors'][i];
+    var tempPoint = new paper['Point'](this.iX, this.iY);
 
     if (path === this.paperO_) {
-      point['velocity'] = ((this.oRad_ - point['length']) /
+      point['velocity'] = ((this.oRad - point['length']) /
         point['acceleration'] + point['velocity']) / point['bounce'];
     } else {
-      point['velocity'] = ((this.iWidth_ - point['length']) /
-        point['acceleration'] + point['velocity']) / point['bounce'];
+      point['velocity'] = ((tempPoint['getDistance'](this.iCenter) -
+        point['length']) / point['acceleration'] + point['velocity']) /
+        point['bounce'];
     }
 
     point['length'] = Math.max(0, point['length'] + point['velocity']);
@@ -420,10 +386,10 @@ ww.mode.AsciiMode.prototype.updatePoints_ = function(path) {
     var newPoint = point['clone']();
 
     if (path === this.paperO_) {
-      this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter_);
+      this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter);
       this.paperO_['smooth']();
     } else {
-      this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter_);
+      this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter);
     }
   }
 };

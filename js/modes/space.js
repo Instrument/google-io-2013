@@ -51,7 +51,7 @@ ww.mode.SpaceMode.prototype.playSound = function(filename,
 
   if (!this.wantsAudio_) { return; }
 
-  var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
+  var url = this.assetPrefiX + 'sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }
@@ -122,15 +122,15 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     this.iPaths_ = [];
 
     // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.iX_, this.iY_);
-    var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
+    var iTopLeft = new paper['Point'](this.iX, this.iY);
+    var iSize = new paper['Size'](this.iWidth, this.iHeight);
     var letterI = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](letterI);
     this.paperI_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
 
     this.iGroup_ = new paper['Group']();
 
-    for (var i = 0; i < this.iWidth_ / 6; i++) {
+    for (var i = 0; i < this.iWidth / 6; i++) {
       this.iPaths_.push(new paper['Path']());
 
       pathX = iTopLeft['x'] + i * 6;
@@ -138,15 +138,15 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
 
       pathStart = new paper['Point'](pathX, pathY);
 
-      pathY = iTopLeft['y'] + this.iHeight_;
+      pathY = iTopLeft['y'] + this.iHeight;
 
       pathEnd = new paper['Point'](pathX, pathY);
 
       pathMidOne = new paper['Point'](pathX, this.screenCenterY_ -
-        (this.iHeight_ / 4));
+        (this.iHeight / 4));
 
       pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ +
-        (this.iHeight_ / 4));
+        (this.iHeight / 4));
 
       this.iPaths_[i]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
 
@@ -167,14 +167,14 @@ ww.mode.SpaceMode.prototype.drawI_ = function() {
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, false);
 
     // Change the position based on new screen size values.
-    this.iGroup_['position'] = {x: this.iX_ + this.iWidth_ / 2,
-      y: this.iY_ + this.iHeight_ / 2};
-    this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
-      y: this.iY_ + this.iHeight_ / 2};
+    this.iGroup_['position'] = {x: this.iX + this.iWidth / 2,
+      y: this.iY + this.iHeight / 2};
+    this.paperI_['position'] = {x: this.iX + this.iWidth / 2,
+      y: this.iY + this.iHeight / 2};
 
     // Change the scale based on new screen size values.
-    this.iGroup_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
-    this.paperI_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
+    this.iGroup_['scale'](this.iWidth / this.paperI_['bounds']['width']);
+    this.paperI_['scale'](this.iWidth / this.paperI_['bounds']['width']);
 
     // Store the coordinates for I's path points based on the new window size.
     this.copyXY_(this.iPaths_, this.iPathsX_, this.iPathsY_, true);
@@ -201,8 +201,7 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
     this.oPaths_ = [];
 
     // Create a new paper.js path for O based off the previous variables.
-    var oCenter = new paper['Point'](this.oX_, this.oY_);
-    this.paperO_ = new paper['Path']['Circle'](oCenter, this.oRad_);
+    this.paperO_ = new paper['Path']['Circle'](this.oCenter, this.oRad);
     this.paperO_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
 
     this.oGroup_ = new paper['Group']();
@@ -218,18 +217,18 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
     for (var i = 0; i < lines; i++) {
       this.oPaths_.push(new paper['Path']());
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos((i * increment) *
+      pathX = this.oCenter['x'] + this.oRad * Math.cos((i * increment) *
         (Math.PI / 180));
 
-      pathY = oCenter['y'] + this.oRad_ * Math.sin((i * increment) *
+      pathY = this.oCenter['y'] + this.oRad * Math.sin((i * increment) *
         (Math.PI / 180));
 
       pathStart = new paper['Point'](pathX, pathY);
 
-      pathX = oCenter['x'] + this.oRad_ * Math.cos(((-i * increment)) *
+      pathX = this.oCenter['x'] + this.oRad * Math.cos(((-i * increment)) *
         (Math.PI / 180));
 
-      pathY = oCenter['y'] + this.oRad_ * Math.sin(((-i * increment)) *
+      pathY = this.oCenter['y'] + this.oRad * Math.sin(((-i * increment)) *
         (Math.PI / 180));
 
       pathEnd = new paper['Point'](pathX, pathY);
@@ -262,12 +261,12 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
     this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, false);
 
     // Change the position based on new screen size values.
-    this.oGroup_['position'] = {x: this.oX_, y: this.oY_};
-    this.paperO_['position'] = {x: this.oX_, y: this.oY_};
+    this.oGroup_['position'] = {x: this.oX, y: this.oY};
+    this.paperO_['position'] = {x: this.oX, y: this.oY};
 
     // Change the scale based on new screen size values.
-    this.oGroup_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
-    this.paperO_['scale'](this.oRad_ * 2 / this.paperO_['bounds']['height']);
+    this.oGroup_['scale'](this.oRad * 2 / this.paperO_['bounds']['height']);
+    this.paperO_['scale'](this.oRad * 2 / this.paperO_['bounds']['height']);
 
     // Store the coordinates for O's path points based on the new window size.
     this.copyXY_(this.oPaths_, this.oPathsX_, this.oPathsY_, true);
@@ -281,14 +280,9 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 ww.mode.SpaceMode.prototype.drawSlash_ = function() {
   if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
-    this.slashStart_ = new paper['Point'](this.screenCenterX_ +
-      (this.ratioParent_ * 0.02777778),
-      this.screenCenterY_ - (this.iHeight_ / 2) -
-        (this.iHeight_ * 0.09722222));
+    this.slashStart_ = new paper['Point'](this.slashStartX, this.slashStartY);
 
-    this.slashEnd_ = new paper['Point'](this.iX_ + this.iWidth_,
-      this.screenCenterY_ + (this.iHeight_ / 2) +
-      (this.iHeight_ * 0.09722222));
+    this.slashEnd_ = new paper['Point'](this.slashEndX, this.slashEndY);
 
     // Create a new paper.js path for the slash based on screen dimensions.
     this.paperSlash_ = new paper['Path']();
@@ -297,32 +291,15 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
   } else {
-    this.slashStart_['x'] = this.screenCenterX_ +
-      (this.ratioParent_ * 0.02777778);
-    this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight_ / 2) -
-      (this.iHeight_ * 0.09722222);
+    this.slashStart_['x'] = this.slashStartX;
+    this.slashStart_['y'] = this.slashStartY;
 
-    this.slashEnd_['x'] = this.iX_ + this.iWidth_;
-    this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight_ / 2) +
-      (this.iHeight_ * 0.09722222);
+    this.slashEnd_['x'] = this.slashEndX;
+    this.slashEnd_['y'] = this.slashEndY;
 
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
   }
-};
-
-/**
- * Function to size the '13' svg respective to the O size.
- * @param {Object} el The dom element containing the '13' svg.
- * @private
- */
-ww.mode.SpaceMode.prototype.draw13_ = function(el) {
-  el.css({
-    'width': this.oRad_ * 0.33333333,
-    'height': this.oRad_ * 0.25555556,
-    'left': this.oX_ + (this.oRad_ * 0.38888889),
-    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
-  });
 };
 
 /**
@@ -500,7 +477,7 @@ ww.mode.SpaceMode.prototype.didUnfocus = function() {
   var evt = this.getPointerEventNames_('move', this.name_);
   $(this.containerElem_).unbind(evt + '.space');
 
-  var evt2 = this.getPointerEventNames_('up', this.name_);
+  var evt2 = this.getPointerEventNames_('down', this.name_);
   $(this.containerElem_).unbind(evt2 + '.space');
 };
 
@@ -523,7 +500,7 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
-  this.ratioParent_ = Math.min(this.width_, this.height_);
+  this.setPaperShapeData();
 
   if (((deltaWidth > 50) || (deltaHeight > 50)) && this.world_) {
     for (var i = 0; i < this.world_.particles.length; i++) {
@@ -537,23 +514,6 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
     }
   }
 
-  // Set I's initial dimensions.
-  this.iWidth_ = this.ratioParent_ * 0.175;
-  this.iHeight_ = this.iWidth_ * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ -
-    (this.ratioParent_ * 0.15833333);
-
-  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
-
-  // Set O's radius.
-  this.oRad_ = this.ratioParent_ * 0.1944444444;
-
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
-
   // Draw Slash.
   this.drawSlash_();
 
@@ -562,10 +522,6 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
 
   // Draw O.
   this.drawO_();
-
-  if ($('.year-mark')) {
-   this.draw13_($('.year-mark'));
-  }
 
   this.redraw();
 };
