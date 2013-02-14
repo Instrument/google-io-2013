@@ -23,7 +23,6 @@ goog.inherits(ww.mode.BaconMode, ww.mode.Core);
  */
 ww.mode.BaconMode.prototype.init = function() {
   goog.base(this, 'init');
-  this.stripes_ = $('[id*=fat-]');
 
   this.stillHasShell = true;
   this.eggWhole_ = $('#egg-whole')[0];
@@ -35,6 +34,7 @@ ww.mode.BaconMode.prototype.init = function() {
   this.whites_ = $('#egg-whites');
   this.eggOpened_ = $('#egg-cracked');
   this.center_ = this.eggOpened_.attr('cx') + ', ' + this.eggOpened_.attr('cy');
+  this.centerFats_ = this.$letterI_.attr('cx') + ', ' + this.$letterI_.attr('cy');
 };
 
 
@@ -48,21 +48,19 @@ ww.mode.BaconMode.prototype.activateI = function() {
 
   this.playSound('bacon-sizzle.m4a');
 
-  var stretchOut = new TWEEN.Tween({ 'scaleX': 1, 'scaleY': 1 });
-  stretchOut.to({ 'scaleX': 1.75, 'scaleY': 1.2 }, 400);
+  var stretchOut = new TWEEN.Tween({ 'scaleY': 1 });
+  stretchOut.to({ 'scaleY': 1.25 }, 700);
   stretchOut.easing(TWEEN.Easing.Elastic.In);
   stretchOut.onUpdate(function() {
-    self.stripes_.css(self.prefix_, 'scale(' + this['scaleX'] + ', 1)');
-    self.transformElem_(self.$letterI_[0], 'scale(1, ' + this['scaleY'] + ')');
+    self.$letterI_.attr('transform', 'scale(1, ' + this['scaleY'] + ')');
   });
 
-  var stretchBack = new TWEEN.Tween({ 'scaleX': 1.75, 'scaleY': 1.2 });
-  stretchBack.to({ 'scaleX': 1, 'scaleY': 1 }, 600);
+  var stretchBack = new TWEEN.Tween({ 'scaleY': 1.25 });
+  stretchBack.to({ 'scaleY': 1 }, 700);
   stretchBack.easing(TWEEN.Easing.Elastic.Out);
-  stretchBack.delay(400);
+  stretchBack.delay(700);
   stretchBack.onUpdate(function() {
-    self.stripes_.css(self.prefix_, 'scale(' + this['scaleX'] + ', 1)');
-    self.transformElem_(self.$letterI_[0], 'scale(1, ' + this['scaleY'] + ')');
+    self.$letterI_.attr('transform', 'scale(1, ' + this['scaleY'] + ')');
   });
 
   this.addTween(stretchOut);
