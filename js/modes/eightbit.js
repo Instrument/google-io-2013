@@ -205,13 +205,24 @@ ww.mode.EightBitMode.prototype.init = function() {
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
-if (this.canvas_) {
+  if (this.canvas_) {
     this.canvas_.width = this.width_;
     this.canvas_.height = this.height_;
   }
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX_, this.oY_);
+  
+  if (0 < this.paperCanvas_.height) {
+    // Draw Slash.
+    this.drawSlash_();
+
+    // Draw I.
+    this.drawI_();
+
+    // Draw O.
+    this.drawO_();
+  }
 };
 
 /**

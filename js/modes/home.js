@@ -327,19 +327,13 @@ ww.mode.HomeMode.prototype.init = function() {
     new paper['Point'](this.oX_, this.oY_);
 
   if (0 < this.paperCanvas_.height) {
-    /**
-     * Create the slash.
-     */
+    // Draw Slash.
     this.drawSlash_();
 
-    /**
-     * Create the letter I.
-     */
+    // Draw I.
     this.drawI_();
 
-    /**
-     * Create the letter O.
-     */
+    // Draw O.
     this.drawO_();
   }
 };
@@ -441,19 +435,13 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
 
-  /**
-   * Create the slash.
-   */
+  // Draw Slash.
   this.drawSlash_();
 
-  /**
-   * Create the letter I.
-   */
+  // Draw I.
   this.drawI_();
 
-  /**
-   * Create the letter O.
-   */
+  // Draw O.
   this.drawO_();
 
   if (this.find('.year-mark')) {

@@ -317,6 +317,8 @@ ww.mode.MetaBallMode.prototype.init = function() {
    */
   this.mouseX_ = [];
   this.mouseY_ = [];
+
+  paper['view']['setViewSize'](this.width_, this.height_);
 };
 
 /**
