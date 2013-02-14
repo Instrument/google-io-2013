@@ -395,11 +395,6 @@ ww.mode.SpaceMode.prototype.init = function() {
   // Float that increments on each activation of I to affect animation further.
   this.iMultiplier_ = 1;
 
-  // If I and O already exist, draw them again to reset their path points.
-  if (this.paperI_) {
-    this.drawI_();
-  }
-
   /**
    * Set the letter O's modify variables.
    */
@@ -415,9 +410,18 @@ ww.mode.SpaceMode.prototype.init = function() {
   // Float that increments on each activation of O to affect animation further.
   this.oMultiplier_ = 1;
 
-  if (this.paperO_) {
+  if (0 < this.paperCanvas_.height) {
+    // Draw Slash.
+    this.drawSlash_();
+
+    // Draw I.
+    this.drawI_();
+
+    // Draw O.
     this.drawO_();
   }
+
+  paper['view']['setViewSize'](this.width_, this.height_);
 };
 
 /**
@@ -548,19 +552,13 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
   this.oX_ = this.screenCenterX_ + this.oRad_;
   this.oY_ = this.screenCenterY_;
 
-  /**
-   * Create the slash.
-   */
+  // Draw Slash.
   this.drawSlash_();
 
-  /**
-   * Create the letter I.
-   */
+  // Draw I.
   this.drawI_();
 
-  /**
-   * Create the letter O.
-   */
+  // Draw O.
   this.drawO_();
 
   if ($('.year-mark')) {
