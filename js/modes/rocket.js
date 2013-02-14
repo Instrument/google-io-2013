@@ -57,8 +57,8 @@ ww.mode.RocketMode.prototype.activateI = function() {
       duration = 400,
       moonBounds = this.$letterO_[0].getBoundingClientRect(),
       rocketBounds = this.$letterI_[0].getBoundingClientRect(),
-      distance = ~~(moonBounds['right'] - rocketBounds['left'] +
-                    rocketBounds['width'] / 2),
+      distance = ~~(moonBounds['right'] + (moonBounds['width'] * 1.5) +
+                    rocketBounds['width'] + rocketBounds['height']),
       transform = '', prevTransform = '';
 
   var rotateIn = new TWEEN.Tween({ 'rotate': 0 });
