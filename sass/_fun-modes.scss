@@ -4,12 +4,6 @@
   .letter-o {
     @include transform-origin(50% 50%, false);
   }
-
-  svg {
-    display: block;
-    margin: 0 auto;
-    max-width: 980px;
-  }
 }
 
 .rocket-mode {
