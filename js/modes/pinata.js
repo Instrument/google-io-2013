@@ -32,6 +32,8 @@ ww.mode.PinataMode.prototype.init = function() {
   var world = this.getPhysicsWorld_(new Verlet());
   this.collision_ = new Collision();
   this.force_ = new ConstantForce(new Vector(0, 1000));
+  this.originO_ = this.$letterO_.attr('cx') + ', ' + this.$letterO_.attr('cy');
+  this.originI_ = this.$letterI_.attr('cx') + ', ' + this.$letterI_.attr('cy');
 };
 
 
@@ -447,10 +449,9 @@ ww.mode.PinataMode.prototype.animateI_ = function() {
   }, stickDuration);
 
   whackOver.onUpdate(function() {
-    self.transformElem_(self.$letterI_[0],
-      'rotate(' + this['rotate'] + 'deg) ' +
-      'translateX(' + this['translateX'] + 'px) ' +
-      'translateY(' + this['translateY'] + 'px)');
+    self.$letterI_.attr('transform',
+      'rotate(' + this['rotate'] + ', ' + self.originI_ + ') ' +
+      'translate(' + this['translateX'] + ', ' + this['translateY'] + ')');
   });
 
   var whackBack = new TWEEN.Tween({
@@ -467,10 +468,9 @@ ww.mode.PinataMode.prototype.animateI_ = function() {
   whackBack.delay(stickDuration);
 
   whackBack.onUpdate(function() {
-    self.transformElem_(self.$letterI_[0],
-      'rotate(' + this['rotate'] + 'deg) ' +
-      'translateX(' + this['translateX'] + 'px) ' +
-      'translateY(' + this['translateY'] + 'px)');
+    self.$letterI_.attr('transform',
+      'rotate(' + this['rotate'] + ', ' + self.originI_ + ') ' +
+      'translate(' + this['translateX'] + ', ' + this['translateY'] + ')');
   });
 
   self.addTween(whackOver);
@@ -488,24 +488,30 @@ ww.mode.PinataMode.prototype.animateO_ = function() {
   var deg = ~~Random(10, 45);
   var dir = (this.whackCount_ % 2 === 0) ? -1 : 1;
 
-  var wiggleOne = new TWEEN.Tween({ 'deg': 0 });
-  wiggleOne.to({ 'deg': dir * deg }, pinataDuration);
+  var wiggleOne = new TWEEN.Tween({ 'rotate': 0 });
+  wiggleOne.to({ 'rotate': dir * deg }, pinataDuration);
   wiggleOne.onUpdate(function() {
-    self.transformElem_(self.$letterO_[0], 'rotate(' + this['deg'] + 'deg)');
+    self.$letterO_.attr('transform',
+      'rotate(' + this['rotate'] + ', ' + self.originO_ + ')');
+    // self.transformElem_(self.$letterO_[0], 'rotate(' + this['rotate'] + 'deg)');
   });
 
-  var wiggleTwo = new TWEEN.Tween({ 'deg': dir * deg });
-  wiggleTwo.to({ 'deg': -1 * dir * deg }, pinataDuration);
+  var wiggleTwo = new TWEEN.Tween({ 'rotate': dir * deg });
+  wiggleTwo.to({ 'rotate': -1 * dir * deg }, pinataDuration);
   wiggleTwo.delay(pinataDuration);
   wiggleTwo.onUpdate(function() {
-    self.transformElem_(self.$letterO_[0], 'rotate(' + this['deg'] + 'deg)');
+    self.$letterO_.attr('transform',
+      'rotate(' + this['rotate'] + ', ' + self.originO_ + ')');
+    // self.transformElem_(self.$letterO_[0], 'rotate(' + this['rotate'] + 'deg)');
   });
 
-  var wiggleBack = new TWEEN.Tween({ 'deg': -1 * dir * deg });
-  wiggleBack.to({ 'deg': 0 }, pinataDuration);
+  var wiggleBack = new TWEEN.Tween({ 'rotate': -1 * dir * deg });
+  wiggleBack.to({ 'rotate': 0 }, pinataDuration);
   wiggleBack.delay(pinataDuration * 2);
   wiggleBack.onUpdate(function() {
-    self.transformElem_(self.$letterO_[0], 'rotate(' + this['deg'] + 'deg)');
+    self.$letterO_.attr('transform',
+      'rotate(' + this['rotate'] + ', ' + self.originO_ + ')');
+    // self.transformElem_(self.$letterO_[0], 'rotate(' + this['rotate'] + 'deg)');
   });
 
   self.addTween(wiggleOne);

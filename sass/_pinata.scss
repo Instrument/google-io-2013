@@ -1,11 +1,3 @@
-.letter-i {
-  @include transform-origin(center bottom, false);
-}
-
-.letter-o, #cracked, [id*=part-] {
-  @include transform-origin(50% 50%, false);
-}
-
 #cracked {
   @include transform(translate3d(0,0,0));
 }
