@@ -149,8 +149,9 @@ ww.mode.Core.prototype.getPointerEventNames_ = function(evt, name) {
   }
 
   var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
+  var android = navigator.userAgent.match(/Android/) ? true : false;
 
-  if (iOS) {
+  if (iOS || android) {
     if (Modernizr.touch) {
       evts.push(touchEvt + '.' + name);
     } else {
