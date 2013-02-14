@@ -325,6 +325,23 @@ ww.mode.HomeMode.prototype.init = function() {
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX_, this.oY_);
+
+  if (0 < this.paperCanvas_.height) {
+    /**
+     * Create the slash.
+     */
+    this.drawSlash_();
+
+    /**
+     * Create the letter I.
+     */
+    this.drawI_();
+
+    /**
+     * Create the letter O.
+     */
+    this.drawO_();
+  }
 };
 
 /**
