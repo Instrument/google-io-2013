@@ -43,8 +43,8 @@ ww.mode.EightBitMode.prototype.activateO = function() {
 ww.mode.EightBitMode.prototype.drawI_ = function() {
   if (!this.paperI_) {
     // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.iX_, this.iY_);
-    var iSize = new paper['Size'](this.iWidth_, this.iHeight_);
+    var iTopLeft = new paper['Point'](this.iX, this.iY);
+    var iSize = new paper['Size'](this.iWidth, this.iHeight);
     var letterI = new paper['Rectangle'](iTopLeft, iSize);
     this.paperI_ = new paper['Path']['Rectangle'](letterI);
 
@@ -54,7 +54,7 @@ ww.mode.EightBitMode.prototype.drawI_ = function() {
 
     for (var i = 0; i < this.paperI_['segments'].length; i++) {
       var point = this.paperI_['segments'][i]['point']['clone']();
-      point = point['subtract'](this.iCenter_);
+      point = point['subtract'](this.iCenter);
 
       point['velocity'] = 0;
       point['acceleration'] = Math.random() * 5 + 10;
@@ -64,11 +64,10 @@ ww.mode.EightBitMode.prototype.drawI_ = function() {
     }
   } else {
     // Change the position based on new screen size values.
-    this.paperI_['position'] = {x: this.iX_ + this.iWidth_ / 2,
-      y: this.iY_ + this.iHeight_ / 2};
+    this.paperI_['position'] = this.iCenter;
 
     // Change the scale based on new screen size values.
-    this.paperI_['scale'](this.iWidth_ / this.paperI_['bounds']['width']);
+    this.paperI_['scale'](this.iWidth / this.paperI_['bounds']['width']);
   }
 };
 
@@ -86,11 +85,11 @@ ww.mode.EightBitMode.prototype.fillI_ = function() {
 
   // Left side of the I is the origin of the gradient.
   var from = this.paperI_['position']['clone']();
-  from['x'] -= this.iWidth_ / 2;
+  from['x'] -= this.iWidth / 2;
 
   // Right side of the I is the end point of the gradient.
   var to = this.paperI_['position']['clone']();
-  to['x'] += this.iWidth_ / 2;
+  to['x'] += this.iWidth / 2;
 
   // Create the gradient color:
   var gradientColor = new paper['GradientColor'](gradient, from, to);
@@ -107,16 +106,14 @@ ww.mode.EightBitMode.prototype.drawO_ = function() {
     this.paperO_['remove']();
   }
   // Create a new paper.js path for O based off the previous variables.
-  this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
-
-  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter_, 6,
-    this.oRad_);
+  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter, 6,
+    this.oRad);
 
   this.paperO_['vectors'] = [];
 
   for (var i = 0; i < this.paperO_['segments'].length; i++) {
     var point = this.paperO_['segments'][i]['point']['clone']();
-    point = point['subtract'](this.oCenter_);
+    point = point['subtract'](this.oCenter);
 
     point['velocity'] = 0;
     point['acceleration'] = Math.random() * 5 + 10;
@@ -140,11 +137,11 @@ ww.mode.EightBitMode.prototype.fillO_ = function() {
 
   // Left side of the O is the origin of the gradient.
   var from = this.paperO_['position']['clone']();
-  from['x'] -= this.oRad_;
+  from['x'] -= this.oRad;
 
   // Right side of the O is the end point of the gradient.
   var to = this.paperO_['position']['clone']();
-  to['x'] += this.oRad_;
+  to['x'] += this.oRad;
 
   // Create the gradient color:
   var gradientColor = new paper['GradientColor'](gradient, from, to);
@@ -159,12 +156,12 @@ ww.mode.EightBitMode.prototype.fillO_ = function() {
 ww.mode.EightBitMode.prototype.drawSlash_ = function() {
   // Determine the slash's start and end coordinates based on I and O sizes.
   this.slashStartX_ = this.screenCenterX_ + (this.ratioParent_ * 0.02777778);
-  this.slashStartY_ = this.screenCenterY_ - (this.iHeight_ / 2) -
-    (this.iHeight_ * 0.09722222);
+  this.slashStartY_ = this.screenCenterY_ - (this.iHeight / 2) -
+    (this.iHeight * 0.09722222);
 
-  this.slashEndX_ = this.iX_ + this.iWidth_;
-  this.slashEndY_ = this.screenCenterY_ + (this.iHeight_ / 2) +
-    (this.iHeight_ * 0.09722222);
+  this.slashEndX_ = this.iX + this.iWidth;
+  this.slashEndY_ = this.screenCenterY_ + (this.iHeight / 2) +
+    (this.iHeight * 0.09722222);
 
   this.ctx_.strokeStyle = '#e5e5e5';
   this.ctx_.lineWidth = this.ratioParent_ * 0.01388889;
@@ -175,20 +172,6 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function() {
   this.ctx_.lineTo(this.slashEndX_, this.slashEndY_);
 
   this.ctx_.stroke();
-};
-
-/**
- * Function to size the '13' svg respective to the O size.
- * @param {Object} el The dom element containing the '13' svg.
- * @private
- */
-ww.mode.EightBitMode.prototype.draw13_ = function(el) {
-  el.css({
-    'width': this.oRad_ * 0.33333333,
-    'height': this.oRad_ * 0.25555556,
-    'left': this.oX_ + (this.oRad_ * 0.38888889),
-    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
-  });
 };
 
 /**
@@ -208,13 +191,15 @@ ww.mode.EightBitMode.prototype.init = function() {
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
+
   if (this.canvas_) {
     this.canvas_.width = this.width_;
     this.canvas_.height = this.height_;
   }
+
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
-    new paper['Point'](this.oX_, this.oY_);
+    new paper['Point'](this.oX, this.oY);
   
   if (0 < this.paperCanvas_.height) {
     // Draw I.
@@ -250,9 +235,9 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   $(this.paperCanvas_).bind(evt, function(event) {
     self.lastClick_ = new paper['Point'](self.getCoords(event)['x'],
       self.getCoords(event)['y']);
-    oSize = Math.round(self.width_ * 0.03125) + self.oRad_;
-    iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth_ / 2;
-    iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight_ / 2;
+    oSize = Math.round(self.width_ * 0.03125) + self.oRad;
+    iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth / 2;
+    iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight / 2;
 
     distX = Math.abs(self.paperI_['position']['x'] - self.lastClick_['x']);
     distY = Math.abs(self.paperI_['position']['y'] - self.lastClick_['y']);
@@ -277,9 +262,9 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   $(this.paperCanvas_).bind(evt2, function(event) {
     lastPos = {'x': self.getCoords(event)['x'],
       'y': self.getCoords(event)['y']};
-    oSize = Math.round(self.width_ * 0.03125) + self.oRad_;
-    iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth_ / 2;
-    iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight_ / 2;
+    oSize = Math.round(self.width_ * 0.03125) + self.oRad;
+    iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth / 2;
+    iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight / 2;
 
     distX = Math.abs(self.paperI_['position']['x'] - lastPos['x']);
     distY = Math.abs(self.paperI_['position']['y'] - lastPos['y']);
@@ -321,41 +306,13 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   this.screenCenterX_ = this.width_ / 2;
   this.screenCenterY_ = this.height_ / 2;
 
-  this.ratioParent_ = Math.min(this.width_, this.height_);
+  this.setPaperShapeData();
 
-  // Set I's initial dimensions.
-  this.iWidth_ = this.ratioParent_ * 0.205;
-  this.iHeight_ = this.iWidth_ * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ - this.ratioParent_ *
-    0.15833333;
-
-  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
-
-  this.iCenter_ = new paper['Point'](this.iX_ + this.iWidth_ / 2,
-    this.iY_ + this.iHeight_ / 2);
-
-  // Set O's radius.
-  this.oRad_ = this.ratioParent_ * 0.1944444444;
-
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
-
-  /**
-   * Create the letter I.
-   */
+  // Draw I.
   this.drawI_();
 
-  /**
-   * Create the letter O.
-   */
+  // Draw O.
   this.drawO_();
-
-  if ($('.year-mark')) {
-   this.draw13_($('.year-mark'));
-  }
 
   if (redraw) {
     this.redraw();
@@ -376,13 +333,13 @@ ww.mode.EightBitMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
     var distance;
 
     if (path === this.paperO_) {
-      vector = point['add'](this.oCenter_);
+      vector = point['add'](this.oCenter);
       vector = vector['subtract'](clickPoint);
-      distance = Math.max(0, this.oRad_ - vector['length']);
+      distance = Math.max(0, this.oRad - vector['length']);
     } else {
-      vector = point['add'](this.iCenter_);
+      vector = point['add'](this.iCenter);
       vector = vector['subtract'](clickPoint);
-      distance = Math.max(0, this.iWidth_ - vector['length']);
+      distance = Math.max(0, this.iWidth - vector['length']);
     }
 
     point['length'] += distance;
@@ -399,13 +356,15 @@ ww.mode.EightBitMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
 ww.mode.EightBitMode.prototype.updateVectors_ = function(path) {
   for (var i = 0; i < path['segments'].length; i++) {
     var point = path['vectors'][i];
+    var tempPoint = new paper['Point'](this.iX, this.iY);
 
     if (path === this.paperO_) {
-      point['velocity'] = ((this.oRad_ - point['length']) /
+      point['velocity'] = ((this.oRad - point['length']) /
         point['acceleration'] + point['velocity']) / point['bounce'];
     } else {
-      point['velocity'] = ((this.iWidth_ - point['length']) /
-        point['acceleration'] + point['velocity']) / point['bounce'];
+      point['velocity'] = ((tempPoint['getDistance'](this.iCenter) -
+        point['length']) / point['acceleration'] + point['velocity']) /
+        point['bounce'];
     }
 
     point['length'] = Math.max(0, point['length'] + point['velocity']);
@@ -424,10 +383,10 @@ ww.mode.EightBitMode.prototype.updatePoints_ = function(path) {
     var newPoint = point['clone']();
 
     if (path === this.paperO_) {
-      this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter_);
+      this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter);
       this.paperO_['smooth']();
     } else {
-      this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter_);
+      this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter);
     }
   }
 };
@@ -487,6 +446,9 @@ ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
 
   this.updateVectors_(this.paperO_);
   this.updatePoints_(this.paperO_);
+
+  this.paperI_['scale'](.75);
+  this.paperO_['scale'](.75);
 };
 
 /**
