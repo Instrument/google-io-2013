@@ -8,12 +8,10 @@ goog.provide('ww.mode.BurgerMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.BurgerMode = function(containerElem, assetPrefix) {
-  goog.base(this, containerElem, assetPrefix, 'burger', true, true, false);
+   this.preloadSound('bite-1.wav');
+  this.preloadSound('bite-2.wav');
 
-  if (this.wantsAudio_) {
-    this.preloadSound('bite-1.wav');
-    this.preloadSound('bite-2.wav');
-  }
+  goog.base(this, containerElem, assetPrefix, 'burger', true, true, false);
 };
 goog.inherits(ww.mode.BurgerMode, ww.mode.Core);
 

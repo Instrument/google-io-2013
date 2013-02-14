@@ -36,7 +36,7 @@ ww.app.Core = function() {
     document.body.style[
       Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
 
-    this.$window_.bind('touchmove.core', function(e) {
+    this.$window_.bind('touchmove.app', function(e) {
       e.preventDefault();
     });
   }

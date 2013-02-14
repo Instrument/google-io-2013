@@ -9,31 +9,27 @@ goog.provide('ww.mode.MetaBallMode');
 ww.mode.MetaBallMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'metaball', true, true, true);
 
-  if (this.wantsAudio_) {
-    // Set up audio context and create three sources.
-    this.getAudioContext_();
-
-    this.notes_ = [
-      {
-        // ball 1
-        'frequency': 0,
-        'detune': 0,
-        'type': 0
-      },
-      {
-        // ball 2
-        'frequency': 0,
-        'detune': 0,
-        'type': 0
-      },
-      {
-        // ball 3
-        'frequency': 0,
-        'detune': 0,
-        'type': 0
-      }
-    ];
-  }
+  // Set up audio context and create three sources.
+  this.notes_ = [
+    {
+      // ball 1
+      'frequency': 0,
+      'detune': 0,
+      'type': 0
+    },
+    {
+      // ball 2
+      'frequency': 0,
+      'detune': 0,
+      'type': 0
+    },
+    {
+      // ball 3
+      'frequency': 0,
+      'detune': 0,
+      'type': 0
+    }
+  ];
 };
 goog.inherits(ww.mode.MetaBallMode, ww.mode.Core);
 
@@ -392,13 +388,15 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
           self.ballCount_ = self.world_.particles.length;
 
           if (self.wantsAudio_) {
-            self.sources_.push(self.audioContext_.createOscillator());
-            self.gainNodes_.push(self.audioContext_.createGainNode());
+            var aCtx = self.getAudioContext_();
+
+            self.sources_.push(aCtx.createOscillator());
+            self.gainNodes_.push(aCtx.createGainNode());
 
             self.sources_[self.sources_.length - 1].connect(
               self.gainNodes_[self.sources_.length - 1]);
             self.gainNodes_[self.sources_.length - 1].connect(
-              self.audioContext_.destination);
+              aCtx.destination);
 
             self.sources_[self.sources_.length - 1].noteOn(0);
             self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
@@ -449,9 +447,11 @@ ww.mode.MetaBallMode.prototype.didUnfocus = function() {
   var downEvt = this.getPointerEventNames_('down', this.name_);
   this.$canvas_.unbind(downEvt);
 
-  for (var i = 0; i < this.sources_.length; i++) {
-    this.sources_[i].disconnect();
-    this.gainNodes_[i].disconnect();
+  if (this.wantsAudio_) {
+    for (var i = 0; i < this.sources_.length; i++) {
+      this.sources_[i].disconnect();
+      this.gainNodes_[i].disconnect();
+    }
   }
 };
 
@@ -562,15 +562,13 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
       this.world_.particles[i].pos.y = this.world_.particles[i].radius + 1;
     }
 
-    if (this.wantsAudio_) {
-      // Set the audio properties for each note based on ball positions.
-      if (this.world_.particles[i] != this.world_.particles[0]) {
-        this.notes_[i - 1]['frequency'] = this.world_.particles[0].pos.x -
-          this.world_.particles[i].pos.x;
+    // Set the audio properties for each note based on ball positions.
+    if (this.world_.particles[i] != this.world_.particles[0]) {
+      this.notes_[i - 1]['frequency'] = this.world_.particles[0].pos.x -
+        this.world_.particles[i].pos.x;
 
-        this.notes_[i - 1]['detune'] = this.world_.particles[0].pos.y -
-          this.world_.particles[i].pos.y;
-      }
+      this.notes_[i - 1]['detune'] = this.world_.particles[0].pos.y -
+        this.world_.particles[i].pos.y;
     }
   }
 

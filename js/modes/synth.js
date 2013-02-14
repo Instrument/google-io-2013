@@ -22,10 +22,10 @@ ww.mode.SynthMode.prototype.init = function() {
   this.evtStart = this.getPointerEventNames_('down', 'synth');
   this.evtEnd = this.getPointerEventNames_('up', 'synth');
 
-  this.getAudioContext_();
-  this.source = this.audioContext_.createOscillator();
-  this.tuna_ = new Tuna(this.audioContext_);
-  this.analyser = this.audioContext_.createAnalyser();
+  var aCtx = this.getAudioContext_();
+  this.source = aCtx.createOscillator();
+  this.tuna_ = new Tuna(aCtx);
+  this.analyser = aCtx.createAnalyser();
   this.analyser.fftSize = 512;
   this.analyser.smoothingTimeConstant = 0.85;
 
@@ -365,9 +365,10 @@ ww.mode.SynthMode.prototype.connectPower_ = function() {
  * @private
  */
 ww.mode.SynthMode.prototype.playSound_ = function() {
+  var aCtx = this.getAudioContext_();
   this.source.connect(this.effects['delay']['input']);
   this.effects['delay'].connect(this.analyser);
-  this.analyser.connect(this.audioContext_.destination);
+  this.analyser.connect(aCtx.destination);
   this.source.noteOn(0);
 };
 

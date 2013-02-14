@@ -8,12 +8,12 @@ goog.provide('ww.mode.BaconMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.BaconMode = function(containerElem, assetPrefix) {
-  goog.base(this, containerElem, assetPrefix, 'bacon', true, true, false);
-
   this.preloadSound('bacon-sizzle.m4a');
   this.preloadSound('egg-cracked.m4a');
   this.preloadSound('cracked-open.m4a');
   this.preloadSound('eggs-sizzling.m4a');
+
+  goog.base(this, containerElem, assetPrefix, 'bacon', true, true, false);
 };
 goog.inherits(ww.mode.BaconMode, ww.mode.Core);
 

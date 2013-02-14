@@ -9,11 +9,11 @@ TWOPI = TWOPI || Math.PI * 2;
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.PinataMode = function(containerElem, assetPrefix) {
-  goog.base(this, containerElem, assetPrefix, 'pinata', true, false, true);
-
   this.preloadSound('whack.mp3');
   this.preloadSound('whoosh-1.wav');
   this.preloadSound('whoosh-2.wav');
+
+  goog.base(this, containerElem, assetPrefix, 'pinata', true, false, true);
 
   this.ballSpeed_ = 250;
 

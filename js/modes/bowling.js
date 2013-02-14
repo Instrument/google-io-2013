@@ -8,10 +8,10 @@ goog.provide('ww.mode.BowlingMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.BowlingMode = function(containerElem, assetPrefix) {
-  goog.base(this, containerElem, assetPrefix, 'bowling', true, true, false);
-
   this.preloadSound('strike.m4a');
   this.preloadSound('whoosh-1.wav');
+
+  goog.base(this, containerElem, assetPrefix, 'bowling', true, true, false);
 };
 goog.inherits(ww.mode.BowlingMode, ww.mode.Core);
 

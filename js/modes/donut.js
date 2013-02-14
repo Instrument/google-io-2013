@@ -8,10 +8,10 @@ goog.provide('ww.mode.DonutMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.DonutMode = function(containerElem, assetPrefix) {
-  goog.base(this, containerElem, assetPrefix, 'donut', true, true, false);
-
   this.preloadSound('bite-1.wav');
   this.preloadSound('bite-2.wav');
+
+  goog.base(this, containerElem, assetPrefix, 'donut', true, true, false);
 };
 goog.inherits(ww.mode.DonutMode, ww.mode.Core);
 

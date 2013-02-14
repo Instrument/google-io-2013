@@ -84,9 +84,9 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   // Set up audio
   if (this.wantsAudio_) {
-    this.getAudioContext_();
-    this.source = this.audioContext_.createOscillator();
-    this.analyser = this.audioContext_.createAnalyser();
+    var aCtx = this.getAudioContext_();
+    this.source = aCtx.createOscillator();
+    this.analyser = aCtx.createAnalyser();
     this.analyser.fftSize = 512;
     this.analyser.smoothingTimeConstant = 0.85;
 

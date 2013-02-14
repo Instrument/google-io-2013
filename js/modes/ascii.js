@@ -7,6 +7,8 @@ goog.provide('ww.mode.AsciiMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.AsciiMode = function(containerElem, assetPrefix) {
+  this.preloadSound('boing.wav');
+
   goog.base(this, containerElem, assetPrefix, 'ascii', true, true, true);
 };
 goog.inherits(ww.mode.AsciiMode, ww.mode.Core);
@@ -250,7 +252,7 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var evt = this.getPointerEventNames_('up', this.name_);
+  var evt = this.getPointerEventNames_('down', this.name_);
   this.$canvas_.bind(evt, function(e) {
     self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);

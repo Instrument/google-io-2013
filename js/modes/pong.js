@@ -10,6 +10,9 @@ var TWOPI = Math.PI * 2;
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.PongMode = function(containerElem, assetPrefix) {
+  this.preloadSound('1.wav');
+  this.preloadSound('2.wav');
+
   goog.base(this, containerElem, assetPrefix, 'pong', true, true, true);
 
   this.startBallSpeed_ = this.ballSpeed_ = 250;
@@ -26,9 +29,6 @@ ww.mode.PongMode = function(containerElem, assetPrefix) {
   this['topWallOpacity_'] = 0;
   this['rightWallOpacity_'] = 0;
   this['bottomWallOpacity_'] = 0;
-
-  this.preloadSound('1.wav');
-  this.preloadSound('2.wav');
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
 
