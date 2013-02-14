@@ -217,9 +217,6 @@ ww.mode.EightBitMode.prototype.init = function() {
     new paper['Point'](this.oX_, this.oY_);
   
   if (0 < this.paperCanvas_.height) {
-    // Draw Slash.
-    this.drawSlash_();
-
     // Draw I.
     this.drawI_();
 
@@ -238,7 +235,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   this.canvas_.width = this.width_;
   this.canvas_.height = this.height_;
   this.ctx_ = this.canvas_.getContext('2d');
-  this.ctx_.strokeStyle = '#e5e5e5';
+  // this.ctx_.strokeStyle = '#e5e5e5';
 
   var self = this;
 
@@ -248,10 +245,11 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   var distX;
   var distY;
 
-  var tool = new paper['Tool']();
+  var evt = this.getPointerEventNames_('down', this.name_);
 
-  tool['onMouseUp'] = function(event) {
-    self.lastClick_ = event['point'];
+  $(this.paperCanvas_).bind(evt, function(event) {
+    self.lastClick_ = new paper['Point'](self.getCoords(event)['x'],
+      self.getCoords(event)['y']);
     oSize = Math.round(self.width_ * 0.03125) + self.oRad_;
     iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth_ / 2;
     iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight_ / 2;
@@ -270,10 +268,15 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
         self.activateI();
       }
     }
-  };
+  });
 
-  tool['onMouseMove'] = function(event) {
-    var lastPos = event['point'];
+  var evt2 = this.getPointerEventNames_('move', this.name_);
+
+  var lastPos = new paper['Point'](0, 0);
+
+  $(this.paperCanvas_).bind(evt2, function(event) {
+    lastPos = {'x': self.getCoords(event)['x'],
+      'y': self.getCoords(event)['y']};
     oSize = Math.round(self.width_ * 0.03125) + self.oRad_;
     iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth_ / 2;
     iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight_ / 2;
@@ -292,7 +295,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
     } else {
       document.body.style.cursor = 'default';
     }
-  };
+  });
 };
 
 /**
@@ -494,5 +497,5 @@ ww.mode.EightBitMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
   this.drawPixels_(this.paperCanvas_);
-  this.drawSlash_();
+  // this.drawSlash_();
 };

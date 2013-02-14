@@ -360,34 +360,41 @@ ww.mode.HomeMode.prototype.didFocus = function() {
     evt.stopPropagation();
   });
 
-  var tool = new paper['Tool']();
+  var evt2 = this.getPointerEventNames_('down', this.name_);
 
-  tool['onMouseUp'] = function(event) {
-    self.lastClick_ = event['point'];
-    if (self.paperO_['hitTest'](event['point'])) {
+  $(this.paperCanvas_).bind(evt2, function(event) {
+    self.lastClick_ = new paper['Point'](self.getCoords(event)['x'],
+      self.getCoords(event)['y']);
+    if (self.paperO_['hitTest'](self.lastClick_)) {
       if (self.hasFocus) {
         self.activateO();
       }
     }
 
-    if (self.paperI_['hitTest'](event['point'])) {
+    if (self.paperI_['hitTest'](self.lastClick_)) {
       if (self.hasFocus) {
         self.activateI();
       }
     }
-  };
+  });
 
-  tool['onMouseMove'] = function(event) {
-    if (self.paperO_['hitTest'](event['point']) ||
-      self.paperI_['hitTest'](event['point'])) {
-      
+  var evt3 = this.getPointerEventNames_('move', this.name_);
+
+  var lastPos = new paper['Point'](0, 0);
+
+  $(this.paperCanvas_).bind(evt3, function(event) {
+    lastPos = {'x': self.getCoords(event)['x'],
+      'y': self.getCoords(event)['y']};
+    if (self.paperO_['hitTest'](lastPos) ||
+      self.paperI_['hitTest'](lastPos)) {
+
       if (self.hasFocus) {
         document.body.style.cursor = 'pointer';
       }
     } else {
       document.body.style.cursor = 'default';
     }
-  };
+  });
 };
 
 /**

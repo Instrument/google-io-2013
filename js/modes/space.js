@@ -452,13 +452,27 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   var self = this;
 
+  var lastPos = new paper['Point'](0, 0);
+
   var evt = this.getPointerEventNames_('move', this.name_);
   $(this.containerElem_).bind(evt, function(e) {
     self.mouseX_ = self.getCoords(e)['x'];
     self.mouseY_ = self.getCoords(e)['y'];
+
+    lastPos = {'x': self.mouseX_, 'y': self.mouseY_};
+
+    if (self.paperO_['hitTest'](lastPos) ||
+      self.paperI_['hitTest'](lastPos)) {
+      
+      if (self.hasFocus) {
+        document.body.style.cursor = 'pointer';
+      }
+    } else {
+      document.body.style.cursor = 'default';
+    }
   });
 
-  var evt2 = this.getPointerEventNames_('up', this.name_);
+  var evt2 = this.getPointerEventNames_('down', this.name_);
   $(this.containerElem_).bind(evt2, function(e) {
     var coords = self.getCoords(e);
     var p = new paper['Point'](coords['x'], coords['y']);
@@ -475,20 +489,6 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
       }
     }
   });
-
-  var tool = new paper['Tool']();
-
-  tool['onMouseMove'] = function(event) {
-    if (self.paperO_['hitTest'](event['point']) ||
-      self.paperI_['hitTest'](event['point'])) {
-      
-      if (self.hasFocus) {
-        document.body.style.cursor = 'pointer';
-      }
-    } else {
-      document.body.style.cursor = 'default';
-    }
-  };
 };
 
 /**
