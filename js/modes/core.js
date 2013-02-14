@@ -72,7 +72,9 @@ ww.mode.Core = function(containerElem,
     self.focus_();
 
     // Mark this mode as ready.
+    self.log('Starting preload');
     self.loadSounds_(function() {
+      self.log('Preload complete');
       self.ready_();
     });
   }, 10);
@@ -294,8 +296,8 @@ ww.mode.Core.prototype.onFrame = function(delta) {
 
 /**
  * Load the sounds, trigger ready when complete.
- * @param {Function} onComplete After sounds are loaded.
  * @private
+ * @param {Function} onComplete After sounds are loaded.
  */
 ww.mode.Core.prototype.loadSounds_ = function(onComplete) {
   if (!this.wantsAudio_) {
@@ -313,6 +315,11 @@ ww.mode.Core.prototype.loadSounds_ = function(onComplete) {
     }
   }
 
+  if (needingLoad <= 0) {
+    onComplete();
+    return;
+  }
+
   for (filename in this.unloadedSounds_) {
     if (this.unloadedSounds_.hasOwnProperty(filename)) {
       (function(filename) {
@@ -328,7 +335,6 @@ ww.mode.Core.prototype.loadSounds_ = function(onComplete) {
           delete self.unloadedSounds_[url];
 
           if (needingLoad === 0) {
-            self.log('Preload complete');
             onComplete();
           }
         });
@@ -619,7 +625,8 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
 ww.mode.Core.prototype.getAudioContext_ = function() {
   if (!this.audioContext_) {
     var aCtx = ww.util.getAudioContextConstructor();
-    this.audioContext_ = new aCtx();
+    ww.mode.Core.audioContext = ww.mode.Core.audioContext || new aCtx();
+    this.audioContext_ = ww.mode.Core.audioContext;
   }
 
   return this.audioContext_;
