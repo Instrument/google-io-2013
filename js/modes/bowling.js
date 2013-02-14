@@ -78,7 +78,7 @@ ww.mode.BowlingMode.prototype.activateO = function() {
   var deg = ~~Random(400, 490);
 
   var animateSpin = new TWEEN.Tween({ 'rotate': 0 });
-  animateSpin.to({ 'rotate': 360 * 10 }, 1500);
+  animateSpin.to({ 'rotate': 360 * 5 }, 1500);
   animateSpin.onUpdate(function() {
     self.$letterO_.attr('transform', 'rotate(' + (this['rotate'] % 360) + ', ' +
                             self.centerX_ + ', ' + self.centerY_ + ')');
