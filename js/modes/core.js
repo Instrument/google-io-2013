@@ -122,6 +122,43 @@ ww.mode.Core.prototype.init = function() {
 };
 
 /**
+ * Vind an event.
+ * @private
+ * @param {String} elem Element to bind.
+ * @param {String} evt Type of event.
+ * @param {Function} onEvent Callback.
+ * @return {String} The resulting events.
+ */
+ww.mode.Core.prototype.bindEvent_ = function(elem, evt, onEvent) {
+  var $elem = $(elem);
+  var evtName = this.getPointerEventNames_(evt, this.name_);
+
+  if (window.navigator.msPointerEnabled) {
+    $elem[0].addEventListener(evtName, onEvent);
+  } else {
+    $elem.bind(evtName, onEvent);
+  }
+};
+
+/**
+ * Unbind an event.
+ * @private
+ * @param {String} elem Element to unbind.
+ * @param {String} evt Type of event.
+ * @return {String} The resulting events.
+ */
+ww.mode.Core.prototype.unbindEvent_ = function(elem, evt) {
+  var $elem = $(elem);
+  var evtName = this.getPointerEventNames_(evt, this.name_);
+
+  if (window.navigator.msPointerEnabled) {
+    $elem[0].removeEventListener(evtName);
+  } else {
+    $elem.unbind(evtName);
+  }
+};
+
+/**
  * Point events for binding.
  * @private
  * @param {String} evt Type of event.
@@ -148,29 +185,28 @@ ww.mode.Core.prototype.getPointerEventNames_ = function(evt, name) {
     msEvent = 'MSPointerDown';
   }
 
-  var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
-  var android = navigator.userAgent.match(/Android/) ? true : false;
+  // var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
+  // var android = navigator.userAgent.match(/Android/) ? true : false;
 
-  if (iOS || android) {
+  if (window.navigator.msPointerEnabled) {
+    evts = [msEvent];
+  } else {
     if (Modernizr.touch) {
       evts.push(touchEvt + '.' + name);
     } else {
       evts.push(mouseEvt + '.' + name);
     }
-  } else {
+  }/* else {
     if (Modernizr.touch) {
       evts.push(touchEvt + '.' + name);
     }
 
     evts.push(mouseEvt + '.' + name);
-  }
-
-  if (window.navigator.msPointerEnabled) {
-    evts = [msEvent];
-  }
+  }*/
 
   return evts.join(' ');
 };
+
 
 /**
  * Block screen with modal reload button.

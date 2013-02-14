@@ -321,23 +321,20 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   var self = this;
 
-  var evt = this.getPointerEventNames_('up', this.name_);
-  this.find('#menu').bind(evt, function() {
+  this.bindEvent_(this.find('#menu'), 'up', function() {
     $(self.containerElem_).addClass('nav-visible');
   });
 
-  this.find('#modal').bind(evt, function() {
+  this.bindEvent_(this.find('#modal'), 'up', function() {
     $(self.containerElem_).removeClass('nav-visible');
   });
 
-  this.find('#dropdown').bind(evt, function(evt) {
+  this.bindEvent_(this.find('#dropdown'), 'up', function(evt) {
     evt.preventDefault();
     evt.stopPropagation();
   });
 
-  var evt2 = this.getPointerEventNames_('down', this.name_);
-
-  $(this.paperCanvas_).bind(evt2, function(event) {
+  this.bindEvent_($(this.paperCanvas_), 'down', function(event) {
     self.lastClick_ = new paper['Point'](self.getCoords(event)['x'],
       self.getCoords(event)['y']);
     if (self.paperO_['hitTest'](self.lastClick_)) {
@@ -353,11 +350,9 @@ ww.mode.HomeMode.prototype.didFocus = function() {
     }
   });
 
-  var evt3 = this.getPointerEventNames_('move', this.name_);
-
   var lastPos = new paper['Point'](0, 0);
 
-  $(this.paperCanvas_).bind(evt3, function(event) {
+  this.bindEvent_($(this.paperCanvas_), 'move', function(event) {
     lastPos = {'x': self.getCoords(event)['x'],
       'y': self.getCoords(event)['y']};
     if (self.paperO_['hitTest'](lastPos) ||
@@ -378,10 +373,12 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 ww.mode.HomeMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = this.getPointerEventNames_('down', this.name_);
-  this.find('#menu').unbind(evt);
-  this.find('#modal').unbind(evt);
-  this.find('#dropdown').unbind(evt);
+  this.unbindEvent_(this.find('#menu'), 'up');
+  this.unbindEvent_(this.find('#modal'), 'up');
+  this.unbindEvent_(this.find('#dropdown'), 'up');
+
+  this.unbindEvent_($(this.paperCanvas_), 'down');
+  this.unbindEvent_($(this.paperCanvas_), 'move');
 };
 
 /**
