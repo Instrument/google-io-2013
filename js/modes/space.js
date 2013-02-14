@@ -8,6 +8,9 @@ goog.provide('ww.mode.SpaceMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.SpaceMode = function(containerElem, assetPrefix) {
+  this.preloadSound('i.mp3');
+  this.preloadSound('o.mp3');
+
   goog.base(this, containerElem, assetPrefix, 'space', true, true, true);
 
   if (this.wantsAudio_) {
@@ -59,21 +62,20 @@ ww.mode.SpaceMode.prototype.playSound = function(filename,
 
   var self = this;
 
-  this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext.createBufferSource();
-    var gain = audioContext.createGainNode();
-    gain.gain.value = 0.1;
-    source.buffer = buffer;
-    source.loop = loop || false;
-    source.connect(gain);
-    gain.connect(self.delay_.input);
-    self.delay_.connect(audioContext.destination);
-    source.noteOn(0);
+  var buffer = this.getLoadedSoundBufferFromURL_(url);
+  var source = audioContext.createBufferSource();
+  var gain = audioContext.createGainNode();
+  gain.gain.value = 0.1;
+  source.buffer = buffer;
+  source.loop = loop || false;
+  source.connect(gain);
+  gain.connect(self.delay_.input);
+  self.delay_.connect(audioContext.destination);
+  source.noteOn(0);
 
-    if ('function' === typeof onPlay) {
-      onPlay(source);
-    }
-  });
+  if ('function' === typeof onPlay) {
+    onPlay(source);
+  }
 };
 
 /**

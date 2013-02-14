@@ -8,6 +8,9 @@ goog.provide('ww.mode.HomeMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.HomeMode = function(containerElem, assetPrefix) {
+  this.preloadSound('i.mp3');
+  this.preloadSound('o.mp3');
+
   goog.base(this, containerElem, assetPrefix, 'home', true, true);
 
   this.patternMatcher_ = new ww.PatternMatcher(ww.mode.modes);
@@ -15,9 +18,6 @@ ww.mode.HomeMode = function(containerElem, assetPrefix) {
   this.wentIdleTime_ = 0;
   this.isIdle_ = true;
   this.maxIdleTime_ = 12000; // 12 seconds
-
-  this.preloadSound('i.mp3');
-  this.preloadSound('o.mp3');
 };
 goog.inherits(ww.mode.HomeMode, ww.mode.Core);
 

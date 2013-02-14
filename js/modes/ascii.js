@@ -7,6 +7,8 @@ goog.provide('ww.mode.AsciiMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.AsciiMode = function(containerElem, assetPrefix) {
+  this.preloadSound('boing.wav');
+
   goog.base(this, containerElem, assetPrefix, 'ascii', true, true, true);
 };
 goog.inherits(ww.mode.AsciiMode, ww.mode.Core);

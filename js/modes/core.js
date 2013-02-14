@@ -72,7 +72,9 @@ ww.mode.Core = function(containerElem,
     self.focus_();
 
     // Mark this mode as ready.
-    self.ready_();
+    self.loadSounds_(function() {
+      self.ready_();
+    });
   }, 10);
 };
 
@@ -94,7 +96,7 @@ ww.mode.Core.prototype.log = function(msg) {
     var log = Function.prototype.bind.call(console.log, console);
     var args = Array.prototype.slice.call(arguments);
     if (typeof args[0] === 'string') {
-      args[0] = 'App: ' + args[0];
+      args[0] = this.name_ + ': ' + args[0];
     }
     log.apply(console, args);
   }
@@ -291,6 +293,51 @@ ww.mode.Core.prototype.onFrame = function(delta) {
 };
 
 /**
+ * Load the sounds, trigger ready when complete.
+ * @param {Function} onComplete After sounds are loaded.
+ * @private
+ */
+ww.mode.Core.prototype.loadSounds_ = function(onComplete) {
+  if (!this.wantsAudio_) {
+    onComplete();
+    return;
+  }
+
+  var self = this;
+  var needingLoad = 0;
+  var filename;
+
+  for (filename in this.unloadedSounds_) {
+    if (this.unloadedSounds_.hasOwnProperty(filename)) {
+      needingLoad++;
+    }
+  }
+
+  for (filename in this.unloadedSounds_) {
+    if (this.unloadedSounds_.hasOwnProperty(filename)) {
+      (function(filename) {
+        var url = self.assetPrefix_ + 'sounds/' + self.name_ + '/' + filename;
+        if (ww.testMode) {
+          url = '../' + url;
+        }
+
+        self.log('Requested sound "' + url + '"');
+
+        self.fetchSoundBufferFromURL_(url, function() {
+          needingLoad--;
+          delete self.unloadedSounds_[url];
+
+          if (needingLoad === 0) {
+            self.log('Preload complete');
+            onComplete();
+          }
+        });
+      })(filename);
+    }
+  }
+};
+
+/**
  * Tell parent frame that this mode is ready.
  * @private
  */
@@ -475,12 +522,25 @@ ww.mode.Core.prototype.didUnfocus = function() {
 };
 
 /**
+ * Get a preloaded sound buffer (binary audio file).
+ * @private
+ * @param {String} url Audio file URL.
+ */
+ww.mode.Core.prototype.getLoadedSoundBufferFromURL_ = function(url) {
+  this.soundBuffersFromURL_ = this.soundBuffersFromURL_ || {};
+
+  if (this.soundBuffersFromURL_[url]) {
+    return this.soundBuffersFromURL_[url];
+  }
+};
+
+/**
  * Load a sound buffer (binary audio file).
  * @private
  * @param {String} url Audio file URL.
  * @param {Function} gotSound On-load callback.
  */
-ww.mode.Core.prototype.getSoundBufferFromURL_ = function(url, gotSound) {
+ww.mode.Core.prototype.fetchSoundBufferFromURL_ = function(url, gotSound) {
   this.soundBuffersFromURL_ = this.soundBuffersFromURL_ || {};
   gotSound = gotSound || function() {};
 
@@ -570,16 +630,8 @@ ww.mode.Core.prototype.getAudioContext_ = function() {
  * @param {String} filename Audio file name.
  */
 ww.mode.Core.prototype.preloadSound = function(filename) {
-  if (!this.wantsAudio_) { return; }
-
-  var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
-  if (ww.testMode) {
-    url = '../' + url;
-  }
-
-  this.log('Requested sound "' + filename + '" from "' + url + '"');
-
-  this.getSoundBufferFromURL_(url);
+  this.unloadedSounds_ = this.unloadedSounds_ || {};
+  this.unloadedSounds_[filename] = true;
 };
 
 /**
@@ -600,20 +652,20 @@ ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
 
   var audioContext = this.getAudioContext_();
 
-  this.getSoundBufferFromURL_(url, function(buffer) {
-    var source = audioContext.createBufferSource();
-    var gain = audioContext.createGainNode();
-    gain.gain.value = 0.1;
-    source.buffer = buffer;
-    source.loop = loop || false;
-    source.connect(gain);
-    gain.connect(audioContext.destination);
-    source.noteOn(0);
+  var buffer = this.getLoadedSoundBufferFromURL_(url);
 
-    if ('function' === typeof onPlay) {
-      onPlay(source);
-    }
-  });
+  var source = audioContext.createBufferSource();
+  var gain = audioContext.createGainNode();
+  gain.gain.value = 0.1;
+  source.buffer = buffer;
+  source.loop = loop || false;
+  source.connect(gain);
+  gain.connect(audioContext.destination);
+  source.noteOn(0);
+
+  if ('function' === typeof onPlay) {
+    onPlay(source);
+  }
 };
 
 /**

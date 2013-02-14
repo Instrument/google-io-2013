@@ -7,6 +7,9 @@ goog.provide('ww.mode.EightBitMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.EightBitMode = function(containerElem, assetPrefix) {
+  this.preloadSound('i.wav');
+  this.preloadSound('o.wav');
+
   goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true);
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);

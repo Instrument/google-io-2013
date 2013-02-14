@@ -8,10 +8,7 @@ goog.provide('ww.mode.SongMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.SongMode = function(containerElem, assetPrefix) {
-  goog.base(this, containerElem, assetPrefix, 'song', true, true);
-
   // TODO: Maybe we need to do this on category change to save bandwidth
-
   this.preloadSound('brass-note-1.m4a');
   this.preloadSound('brass-note-2.m4a');
   this.preloadSound('brass-note-3.m4a');
@@ -42,6 +39,9 @@ ww.mode.SongMode = function(containerElem, assetPrefix) {
   this.preloadSound('beats-jazzy.m4a');
   this.preloadSound('beats-lounge.m4a');
   this.preloadSound('beats-motown.m4a');
+
+  goog.base(this, containerElem, assetPrefix, 'song', true, true);
+
 };
 goog.inherits(ww.mode.SongMode, ww.mode.Core);
 

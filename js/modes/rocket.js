@@ -8,9 +8,9 @@ goog.provide('ww.mode.RocketMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.RocketMode = function(containerElem, assetPrefix) {
-  goog.base(this, containerElem, assetPrefix, 'rocket', true, true, false);
-
   this.preloadSound('rocket-launch.mp3');
+
+  goog.base(this, containerElem, assetPrefix, 'rocket', true, true, false);
 
   this.moon_ = this.find('#moon-1')[0];
   var i = this.find('.letter-i');
