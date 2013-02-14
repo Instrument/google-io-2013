@@ -8,19 +8,7 @@
   cursor: pointer;
   display: inline-block;
   height: 100%;
-  width: 40%;
-
-  @include screen($break-large) {
-    width: 65%;
-  }
-
-  @include screen($break-small) {
-    width: 80%;
-  }
-
-  @include screen($break-smallest) {
-    width: 100%;
-  }
+  width: 100%;
 }
 
 .letter-i-container,
@@ -47,6 +35,6 @@
   text-align: left;
 
   @include landscape() {
-    right: 25%; 
+    right: 20%;
   }
 }
