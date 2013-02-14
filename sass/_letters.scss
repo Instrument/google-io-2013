@@ -28,17 +28,25 @@
   bottom: 0;
   position: absolute;
   top: 0;
-  // @include transform(translate3d(0, 0, 0));
+  @include transition(all 190ms ease-out);
 }
 
 .letter-i-container {
   left: 0;
-  right: 65%;
+  right: 60%;
   text-align: right;
+
+  @include landscape() {
+    left: 15%; 
+  }
 }
 
 .letter-o-container {
-  left: 45%;
+  left: 50%;
   right: 5%;
   text-align: left;
+
+  @include landscape() {
+    right: 25%; 
+  }
 }
