@@ -56,7 +56,7 @@ ww.app.Core.prototype.onResize_ = function() {
   this.height_ = this.$window_.height();
 
   // Update wrapper sizes
-  $('#io-wrapper').css({
+  $('#wrapper').css({
     'width': this.width_,
     'height': this.height_
   });
