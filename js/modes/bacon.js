@@ -30,7 +30,6 @@ ww.mode.BaconMode.prototype.init = function() {
   this.currentCrack_ = 0;
   this.totalCracks_ = this.cracks_.length;
 
-  this.yolk_ = $('#egg-yolk');
   this.whites_ = $('#egg-whites');
   this.eggOpened_ = $('#egg-cracked');
   this.center_ = this.eggOpened_.attr('cx') + ', ' + this.eggOpened_.attr('cy');
@@ -146,12 +145,6 @@ ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   var degs = self.eggOpened_.attr('transform') || '';
       degs = parseInt(degs.split('rotate(')[1], 10) || 0;
 
-  var posX = self.yolk_[0].style[self.prefix_].split('translateX(')[1];
-      posX = parseInt(posX, 10) || 0;
-
-  var posY = self.yolk_[0].style[self.prefix_].split('translateY(')[1];
-      posY = parseInt(posY, 10) || 0;
-
   var sizeX = self.whites_[0].style[self.prefix_].split('skewX(')[1];
       sizeX = ~~parseFloat(sizeX) || 0;
 
@@ -161,16 +154,12 @@ ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   var sizing = [~~Random(-20, 20), ~~Random(-20, 20)];
 
   var spinEgg = new TWEEN.Tween({
-    'translateX': posX,
-    'translateY': posY,
     'skewX': sizeX,
     'skewY': sizeY,
     'rotate': degs
   });
 
   spinEgg.to({
-    'translateX': pos[0],
-    'translateY': pos[1],
     'skewX': sizing[0],
     'skewY': sizing[1],
     'rotate': (degs + shift / 2) / window.devicePixelRatio
