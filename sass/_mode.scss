@@ -20,6 +20,7 @@ body {
   background: #f9f9f9;
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   @include user-select(none);
+  -ms-touch-action: none;
 }
 
 %dark-mode {

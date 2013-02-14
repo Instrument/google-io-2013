@@ -41,6 +41,11 @@ ww.app.Core = function() {
     });
   }
 
+  // This should be worked in somehow to prevent text selection in IE on touch.
+  /*this.$window_.addEventListener('selectstart', function(e) {
+    e.preventDefault();
+  }, false);*/
+
   // Start event listeners.
   // setTimeout(function() {
     self.start_();
