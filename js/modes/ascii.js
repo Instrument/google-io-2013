@@ -156,35 +156,27 @@ ww.mode.AsciiMode.prototype.fillO_ = function() {
 ww.mode.AsciiMode.prototype.drawSlash_ = function() {
   if (!this.paperSlash_) {
     // Determine the slash's start and end coordinates based on I and O sizes.
-    this.slashStart_ = new paper['Point'](this.screenCenterX_ +
-      (this.ratioParent_ * 0.02777778),
-      this.screenCenterY_ - (this.iHeight / 2) -
-        (this.iHeight * 0.09722222));
+    this.slashStart_ = new paper['Point'](this.slashStartX, this.slashStartY);
 
-    this.slashEnd_ = new paper['Point'](this.iX + this.iWidth,
-      this.screenCenterY_ + (this.iHeight / 2) +
-      (this.iHeight * 0.09722222));
+    this.slashEnd_ = new paper['Point'](this.slashEndX, this.slashEndY);
 
     // Create a new paper.js path for the slash based on screen dimensions.
     this.paperSlash_ = new paper['Path']();
-    this.paperSlash_['strokeWidth'] = this.ratioParent_ * 0.01388889;
+    this.paperSlash_['strokeWidth'] = this.slashWidth;
     this.paperSlash_['strokeColor'] = '#ebebeb';
 
     this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
   } else {
-    this.slashStart_['x'] = this.screenCenterX_ +
-      (this.ratioParent_ * 0.02777778);
-    this.slashStart_['y'] = this.screenCenterY_ - (this.iHeight / 2) -
-      (this.iHeight * 0.09722222);
+    this.slashStart_['x'] = this.slashStartX;
+    this.slashStart_['y'] = this.slashStartY;
 
-    this.slashEnd_['x'] = this.iX + this.iWidth;
-    this.slashEnd_['y'] = this.screenCenterY_ + (this.iHeight / 2) +
-      (this.iHeight * 0.09722222);
+    this.slashEnd_['x'] = this.slashEndX;
+    this.slashEnd_['y'] = this.slashEndY;
 
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
 
-    this.paperSlash_['strokeWidth'] = this.ratioParent_ * 0.01388889;
+    this.paperSlash_['strokeWidth'] = this.slashWidth;
   }
 };
 
@@ -316,6 +308,15 @@ ww.mode.AsciiMode.prototype.onResize = function(redraw) {
   this.screenCenterY_ = this.height_ / 2;
 
   this.setPaperShapeData();
+
+  // Draw Slash.
+  this.drawSlash_();
+
+  // Draw I.
+  this.drawI_();
+
+  // Draw O.
+  this.drawO_();
 
   if (redraw) {
     this.redraw();
