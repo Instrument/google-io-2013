@@ -838,36 +838,36 @@ ww.mode.Core.prototype.getCoords = function(e) {
 };
 
 ww.mode.Core.prototype.setPaperShapeData = function() {
-  var ratioParent = Math.max(this.width_, this.height_);
+  var ratioParent = Math.min(this.width_, this.height_);
 
   var screenCenterX = this.width_ / 2;
   var screenCenterY = this.height_ / 2;
 
   // Set I's initial dimensions.
-  this.iWidth = ratioParent * 0.07361963;
-  this.iHeight = this.iWidth * 2.13541667;
+  this.iWidth = Math.min(ratioParent * 0.17777778, 96);
+  this.iHeight = Math.min(this.iWidth * 2.140625, 205);
 
   // Set coordinates for I's upper left corner.
-  this.iX = screenCenterX - (ratioParent * 0.14417178);
-  this.iY = screenCenterY - (ratioParent * 0.06134969);
+  this.iX = screenCenterX - Math.min(ratioParent * 0.33611111, 188);
+  this.iY = screenCenterY - (this.iHeight / 2);
 
   this.iCenter = new paper['Point'](this.iX + this.iWidth / 2,
     this.iY + this.iHeight / 2);
 
   // Set O's radius.
-  this.oRad = ratioParent * 0.08282209;
+  this.oRad = Math.min(ratioParent * 0.2, 216);
 
   // Set O's coordinates.
-  this.oX = screenCenterX + this.oRad - (ratioParent * 0.00996933);
-  this.oY = screenCenterY + (ratioParent * 0.02300613);
+  this.oX = screenCenterX + this.oRad - Math.min(ratioParent * 0.01388889, 13);
+  this.oY = screenCenterY;
 
   this.oCenter = new paper['Point'](this.oX, this.oY);
 
   // Set Slash's coordinates.
-  this.slashStartX = screenCenterX + (ratioParent * 0.00383436);
-  this.slashStartY = screenCenterY - (ratioParent * 0.09662577);
-  this.slashEndX = screenCenterX - (ratioParent * 0.06518405);
-  this.slashEndY = screenCenterY + (ratioParent * 0.1303681);
+  this.slashStartX = screenCenterX + Math.min(ratioParent * 0.01944444, 7);
+  this.slashStartY = screenCenterY - Math.min(ratioParent * 0.25, 148);
+  this.slashEndX = screenCenterX - Math.min(ratioParent * 0.14444444, 85);
+  this.slashEndY = screenCenterY + Math.min(ratioParent * 0.25, 148);
 
   this.slashWidth = ratioParent * 0.00766871;
 
