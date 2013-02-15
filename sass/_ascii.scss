@@ -15,6 +15,7 @@
   overflow: hidden;
   color: #00CC00;
   cursor: default;
+  @include user-select(none);
 }
 
 // #ascii-canvas {
