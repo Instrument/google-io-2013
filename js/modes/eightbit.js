@@ -210,12 +210,6 @@ ww.mode.EightBitMode.prototype.init = function() {
 ww.mode.EightBitMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
-  this.canvas_ = document.createElement('canvas');
-  this.canvas_.width = this.width_;
-  this.canvas_.height = this.height_;
-  this.ctx_ = this.canvas_.getContext('2d');
-  // this.ctx_.strokeStyle = '#e5e5e5';
-
   var self = this;
 
   var oSize;
