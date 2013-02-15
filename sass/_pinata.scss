@@ -9,4 +9,10 @@
 #pinata-canvas {
   pointer-events: none;
   position: absolute;
+
+  // target ie9 and ie10
+  // moves the canvas behind elements since pointer-event are not supported
+  @media screen and (min-width:0\0) {
+    z-index: -1;
+  }
 }
