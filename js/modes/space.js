@@ -235,10 +235,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
       pathLength = pathEnd['getDistance'](pathStart);
 
-      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ +
+      pathMidOne = new paper['Point'](pathX, this.oY +
         (pathLength / 4));
 
-      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ -
+      pathMidTwo = new paper['Point'](pathX, this.oY -
         (pathLength / 4));
 
       this.oPaths_[i]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
