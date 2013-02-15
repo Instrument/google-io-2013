@@ -1,5 +1,9 @@
 require "./compile"
 
+task :lint do
+  lint_js
+end
+
 task :compile do
   build_js
   build_css
