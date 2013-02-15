@@ -154,24 +154,18 @@ ww.mode.EightBitMode.prototype.fillO_ = function() {
  * @private
  */
 ww.mode.EightBitMode.prototype.drawSlash_ = function() {
+  var pctx = this.paperCanvas_.getContext('2d');
+
   // Determine the slash's start and end coordinates based on I and O sizes.
-  this.slashStartX_ = this.screenCenterX_ + (this.ratioParent_ * 0.02777778);
-  this.slashStartY_ = this.screenCenterY_ - (this.iHeight / 2) -
-    (this.iHeight * 0.09722222);
+  pctx.strokeStyle = '#e5e5e5';
+  pctx.lineWidth = this.slashWidth;
 
-  this.slashEndX_ = this.iX + this.iWidth;
-  this.slashEndY_ = this.screenCenterY_ + (this.iHeight / 2) +
-    (this.iHeight * 0.09722222);
+  pctx.beginPath();
 
-  this.ctx_.strokeStyle = '#e5e5e5';
-  this.ctx_.lineWidth = this.ratioParent_ * 0.01388889;
+  pctx.moveTo(this.slashStartX, this.slashStartY);
+  pctx.lineTo(this.slashEndX, this.slashEndY);
 
-  this.ctx_.beginPath();
-
-  this.ctx_.moveTo(this.slashStartX_, this.slashStartY_);
-  this.ctx_.lineTo(this.slashEndX_, this.slashEndY_);
-
-  this.ctx_.stroke();
+  pctx.stroke();
 };
 
 /**
@@ -409,6 +403,8 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
   pctx.clearRect(0, 0, sourceCanvas.width + 1,
     sourceCanvas.height + 1);
 
+  this.drawSlash_();
+
   var size = Math.round(this.width_ * 0.0625);
   var increment = Math.round(size * 80) / 4;
 
@@ -459,5 +455,4 @@ ww.mode.EightBitMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
   this.drawPixels_(this.paperCanvas_);
-  // this.drawSlash_();
 };
