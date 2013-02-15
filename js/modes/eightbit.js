@@ -9,6 +9,7 @@ goog.provide('ww.mode.EightBitMode');
 ww.mode.EightBitMode = function(containerElem, assetPrefix) {
   this.preloadSound('i.wav');
   this.preloadSound('o.wav');
+  this.preloadSound('error.wav');
 
   goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true);
 };
@@ -302,6 +303,10 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   // Draw O.
   this.drawO_();
 
+  if (this.height_ * 6 < this.width_) {
+    this.playSound('error.wav');
+  }
+
   if (redraw) {
     this.redraw();
   }
@@ -400,6 +405,9 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
   this.drawSlash_();
 
   var size = Math.round(this.width_ * 0.0625);
+  if (this.height_ * 6 < this.width_) {
+    size /= 8;
+  }
   var increment = Math.round(size * 80) / 4;
 
   for (i = 0; i < pixelData.data.length; i += increment) {
