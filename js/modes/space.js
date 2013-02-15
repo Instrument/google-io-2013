@@ -51,7 +51,7 @@ ww.mode.SpaceMode.prototype.playSound = function(filename,
 
   if (!this.wantsAudio_) { return; }
 
-  var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
+  var url = this.assetPrefiX + 'sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }
@@ -235,10 +235,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
       pathLength = pathEnd['getDistance'](pathStart);
 
-      pathMidOne = new paper['Point'](pathX, this.oY +
+      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ +
         (pathLength / 4));
 
-      pathMidTwo = new paper['Point'](pathX, this.oY -
+      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ -
         (pathLength / 4));
 
       this.oPaths_[i]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
@@ -300,20 +300,6 @@ ww.mode.SpaceMode.prototype.drawSlash_ = function() {
     this.paperSlash_['segments'][0]['point'] = this.slashStart_;
     this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
   }
-};
-
-/**
- * Function to size the '13' svg respective to the O size.
- * @param {Object} el The dom element containing the '13' svg.
- * @private
- */
-ww.mode.SpaceMode.prototype.draw13_ = function(el) {
-  el.css({
-    'width': this.oRad * 0.33333333,
-    'height': this.oRad * 0.25555556,
-    'left': this.oX + (this.oRad * 0.38888889),
-    'top': this.oY - this.oRad - (this.oRad * 0.37777778)
-  });
 };
 
 /**
@@ -646,7 +632,7 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
 
     var result;
     var adjustForScreenSize = Math.max(this.width_, this.height_) /
-      Math.min(this.width_, this.height_ / 2);
+      (this.ratioParent_ / 2);
 
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *

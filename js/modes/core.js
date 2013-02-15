@@ -820,7 +820,7 @@ ww.mode.Core.prototype.setPaperShapeData = function() {
 
   // Set O's coordinates.
   this.oX = screenCenterX + this.oRad - (ratioParent * 0.00996933);
-  this.oY = screenCenterY + (ratioParent * 0.01763804);
+  this.oY = screenCenterY + (ratioParent * 0.02300613);
 
   this.oCenter = new paper['Point'](this.oX, this.oY);
 
