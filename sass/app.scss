@@ -1,4 +1,5 @@
 @import "compass";
+@import "compass/css3/user-interface";
 
 body {
   margin: 0;
@@ -13,6 +14,10 @@ body {
   top: 0;
   left: 0;
   z-index: 5;
+  .bounds {
+    position: absolute;
+    @include user-select(none);
+  }
 }
 
 #wrapper {

@@ -44,8 +44,9 @@ ww.mode.Core = function(containerElem,
 
   var self = this;
   setTimeout(function() {
-    self.$letterI_ = $(self.containerElem_).find('.letter-i');
-    self.$letterO_ = $(self.containerElem_).find('.letter-o');
+    self.$bounds = self.find('.bounds');
+    self.$letterI_ = self.find('.letter-i');
+    self.$letterO_ = self.find('.letter-o');
 
     self.init();
 
@@ -247,6 +248,8 @@ ww.mode.Core.prototype.onResize = function(redraw) {
   this.height_ = $(this.containerElem_).height();
   this.log('Resize ' + this.width_ + 'x' + this.height_);
 
+  this.updateBounds();
+
   if (this.paperCanvas_) {
     this.paperCanvas_.width = this.width_;
     this.paperCanvas_.height = this.height_;
@@ -256,7 +259,43 @@ ww.mode.Core.prototype.onResize = function(redraw) {
   if (redraw) {
     this.redraw();
   }
+};
 
+/**
+ * Figure out content bounds.
+ */
+ww.mode.Core.prototype.updateBounds = function() {
+  var maxContentWidth = 500; // Ratio 4x3
+  var maxContentHeight = maxContentWidth * (3/4); // Ratio 4x3
+  var horizontalBuffer = 50;
+  var verticalBuffer = 75;
+  
+  if (this.width_ > this.height_) {
+    var relativeHeight = (this.height_ - (verticalBuffer * 2));
+    var desiredHeight = Math.min(maxContentHeight, relativeHeight);
+
+    this.boundsHeight_ = desiredHeight;
+    this.boundsWidth_ = this.boundsHeight_ * (4/3);
+  } else {
+    var relativeWidth = (this.width_ - (horizontalBuffer * 2));
+    var desiredWidth = Math.min(maxContentWidth, relativeWidth);
+
+    this.boundsWidth_ = desiredWidth;
+    this.boundsHeight_ = this.boundsWidth_ * (3/4);
+  }
+
+  this.boundsCenterX_ = Math.floor(this.width_ / 2);
+  this.boundsCenterY_ = Math.floor(this.height_ / 2);
+
+  this.boundsX_ = this.boundsCenterX_ - Math.floor(this.boundsWidth_ / 2);
+  this.boundsY_ = this.boundsCenterY_ - Math.floor(this.boundsHeight_ / 2);
+
+  this.$bounds.css({
+    'left': this.boundsX_,
+    'top': this.boundsY_,
+    'width': this.boundsWidth_,
+    'height': this.boundsHeight_
+  });
 };
 
 /**
@@ -840,4 +879,4 @@ ww.mode.Core.prototype.setPaperShapeData = function() {
       'top': screenCenterY - (ratioParent * 0.09125767)
     });
   }
-}
+};
