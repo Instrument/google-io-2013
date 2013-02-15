@@ -235,10 +235,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
       pathLength = pathEnd['getDistance'](pathStart);
 
-      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ +
+      pathMidOne = new paper['Point'](pathX, this.oY +
         (pathLength / 4));
 
-      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ -
+      pathMidTwo = new paper['Point'](pathX, this.oY -
         (pathLength / 4));
 
       this.oPaths_[i]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
@@ -632,7 +632,7 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
 
     var result;
     var adjustForScreenSize = Math.max(this.width_, this.height_) /
-      (this.ratioParent_ / 2);
+      (Math.min(this.width_, this.height_) / 2);
 
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *

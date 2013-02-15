@@ -839,45 +839,41 @@ ww.mode.Core.prototype.getCoords = function(e) {
 };
 
 ww.mode.Core.prototype.setPaperShapeData = function() {
-  var ratioParent = Math.min(this.width_, this.height_);
-
-  var screenCenterX = this.width_ / 2;
-  var screenCenterY = this.height_ / 2;
-
   // Set I's initial dimensions.
-  this.iWidth = Math.min(ratioParent * 0.17777778, 96);
-  this.iHeight = Math.min(this.iWidth * 2.140625, 205);
+  this.iWidth = this.boundsWidth_ * 0.24;
+  this.iHeight = this.boundsWidth_ * 0.5125;
 
   // Set coordinates for I's upper left corner.
-  this.iX = screenCenterX - Math.min(ratioParent * 0.33611111, 188);
-  this.iY = screenCenterY - (this.iHeight / 2);
+  this.iX = this.boundsX_;
+  this.iY = this.boundsY_ + (this.boundsWidth_ * 0.1125);
 
   this.iCenter = new paper['Point'](this.iX + this.iWidth / 2,
     this.iY + this.iHeight / 2);
 
   // Set O's radius.
-  this.oRad = Math.min(ratioParent * 0.2, 216);
+  this.oRad = this.boundsWidth_ * 0.27;
 
   // Set O's coordinates.
-  this.oX = screenCenterX + this.oRad - Math.min(ratioParent * 0.01388889, 13);
-  this.oY = screenCenterY;
+  this.oX = this.boundsX_ +
+    (this.boundsWidth_ - this.oRad - (this.boundsWidth_ * 0.0425));
+  this.oY = this.boundsY_ + (this.boundsWidth_ * 0.37);
 
   this.oCenter = new paper['Point'](this.oX, this.oY);
 
   // Set Slash's coordinates.
-  this.slashStartX = screenCenterX + Math.min(ratioParent * 0.01944444, 7);
-  this.slashStartY = screenCenterY - Math.min(ratioParent * 0.25, 148);
-  this.slashEndX = screenCenterX - Math.min(ratioParent * 0.14444444, 85);
-  this.slashEndY = screenCenterY + Math.min(ratioParent * 0.25, 148);
+  this.slashStartX = this.boundsX_ + (this.boundsWidth_ * 0.47);
+  this.slashStartY = this.boundsY_;
+  this.slashEndX = this.boundsX_ + (this.boundsWidth_ * 0.26);
+  this.slashEndY = this.boundsY_ + this.boundsHeight_;
 
-  this.slashWidth = ratioParent * 0.00766871;
+  this.slashWidth = this.boundsWidth_ * 0.025;
 
   if (this.find('.year-mark')) {
     this.find('.year-mark').css({
-      'width': ratioParent * 0.02837423,
-      'height': ratioParent * 0.02118704,
-      'left': screenCenterX + (ratioParent * 0.1303681),
-      'top': screenCenterY - (ratioParent * 0.09125767)
+      'width': this.boundsWidth_ * 0.0925,
+      'height': this.boundsWidth_ * 0.07,
+      'left': this.boundsX_ + this.boundsWidth_ - (this.boundsWidth_ * 0.0925),
+      'top': this.boundsY_ + (this.boundsWidth_ * 0.0175)
     });
   }
 };
