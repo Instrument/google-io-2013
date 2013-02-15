@@ -99,7 +99,6 @@ ww.mode.BowlingMode.prototype.activateO = function() {
                             'translateX(-' + this['translateX'] + '%)');
     });
 
-    var pinX =
     var animatePin = new TWEEN.Tween({ 'rotate': 0, 'scale': 1, 'x': 0 });
     animatePin.to({ 'rotate': -deg, 'scale': 0.65, 'x': -175 }, 300);
     animatePin.delay(1500);
