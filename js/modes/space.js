@@ -5,13 +5,13 @@ goog.provide('ww.mode.SpaceMode');
 /**
  * @constructor
  * @param {Element} containerElem The containing element.
- * @param {String} assetPrefix The containing element.
+ * @param {String} assetPrefix_ The containing element.
  */
-ww.mode.SpaceMode = function(containerElem, assetPrefix) {
+ww.mode.SpaceMode = function(containerElem, assetPrefix_) {
   this.preloadSound('i.mp3');
   this.preloadSound('o.mp3');
 
-  goog.base(this, containerElem, assetPrefix, 'space', true, true, true);
+  goog.base(this, containerElem, assetPrefix_, 'space', true, true, true);
 
   if (this.wantsAudio_) {
     var context = this.getAudioContext_();
@@ -51,7 +51,7 @@ ww.mode.SpaceMode.prototype.playSound = function(filename,
 
   if (!this.wantsAudio_) { return; }
 
-  var url = this.assetPrefiX + 'sounds/' + this.name_ + '/' + filename;
+  var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
   if (ww.testMode) {
     url = '../' + url;
   }
@@ -235,10 +235,10 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 
       pathLength = pathEnd['getDistance'](pathStart);
 
-      pathMidOne = new paper['Point'](pathX, this.screenCenterY_ +
+      pathMidOne = new paper['Point'](pathX, this.oY +
         (pathLength / 4));
 
-      pathMidTwo = new paper['Point'](pathX, this.screenCenterY_ -
+      pathMidTwo = new paper['Point'](pathX, this.oY -
         (pathLength / 4));
 
       this.oPaths_[i]['add'](pathStart, pathMidOne, pathMidTwo, pathEnd);
@@ -632,7 +632,7 @@ ww.mode.SpaceMode.prototype.modCoords_ = function(source,
 
     var result;
     var adjustForScreenSize = Math.max(this.width_, this.height_) /
-      (this.ratioParent_ / 2);
+      (Math.min(this.width_, this.height_) / 2);
 
     if (cos) {
       result = source + Math.cos(this.framesRendered_ / 10 + (mod1 - mod2)) *

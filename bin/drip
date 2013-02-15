@@ -1,0 +1,371 @@
+#!/usr/bin/env bash
+
+function http_get { # Adapted from http://github.com/technomancy/leiningen
+    local url="$1" path="$2"
+
+    if [[ -z $http_get ]]; then
+        if type -p curl >/dev/null 2>&1; then
+            http_get='curl -fL# -o'
+        else
+            http_get='wget -O'
+        fi
+    fi
+    mkdir -p "$(dirname $path)"
+    echo "Downloading $url..." >&2
+    $http_get "$path.pending" "$url" || return 1
+    mv -- "$path.pending" "$path"
+}
+
+function bootstrap {
+    drip_root=$DRIP_HOME/$DRIP_VERSION
+    drip_src=$drip_root/src
+    mkdir -p "$drip_root"
+
+    script="$0"
+
+    # Adapted from http://github.com/technomancy/leiningen
+    # resolve symlinks to the script itself portably
+    while [[ -h $script ]] ; do
+        local ls=$(ls -ld -- "$script")
+        local link=$(expr -- "$ls" : '.*-> \(.*\)$')
+        if expr -- "$link" : '/.*' > /dev/null; then
+            script=$link
+        else
+            script=$(dirname "$script"$)/$link
+        fi
+    done
+
+    local bin_dir=$(dirname $script)
+    drip_dir=$bin_dir/..
+    if [[ -r $drip_dir/src/org/flatland/drip/Main.java ]]; then
+        # Checkout or package
+        if [[ -d $drip_dir/.git ]]; then
+            drip_install=checkout
+        else
+            drip_install=package
+        fi
+
+        drip_jar=$drip_dir/drip.jar
+        (cd -- "$drip_dir" && make -s) || exit 1
+        drip_proxy=$bin_dir/drip_proxy
+        drip_daemon=$bin_dir/drip_daemon
+    else
+        # Standalone
+        drip_dir=
+        drip_install=standalone
+        drip_jar=$(mvn_get 'drip' 'org/flatland' "$DRIP_VERSION" "$DRIP_JAR_URL")
+
+        drip_proxy=$(compile 'drip_proxy')
+        drip_daemon=$(compile 'drip_daemon')
+        [[ -e $drip_proxy && -e $drip_daemon ]] || exit 1
+    fi
+}
+
+function compile {
+    local base=$1
+    local src_file
+    local bin_file="$drip_root/$base"
+
+    if [[ -z $drip_dir ]]; then
+        mkdir -p "$drip_src"
+        src_file=$drip_src/$base.c
+        [[ -e $src_file ]] || http_get "$DRIP_SRC_URL/$base.c" "$src_file"
+    else
+        src_file=$drip_dir/src/$base.c
+    fi
+    if [[ $src_file -nt $bin_file ]]; then
+        gcc $src_file -o $bin_file
+    fi
+    echo "$bin_file"
+}
+
+function mvn_get {
+    local artifact="$1" group="$2" version="$3" url="$4"
+    local jar="$MVN_REPO/$group/$artifact/$version/$artifact-$version.jar"
+    [[ -e $jar ]] || http_get "$url" "$jar"
+    printf '%s' "$jar"
+}
+
+declare -a jvm_args
+declare -a main_args
+declare -a runtime_args
+
+function jar_main_class {
+    local jar=$1
+    local line=$(unzip -p $jar META-INF/MANIFEST.MF | grep ^Main-Class:)
+    local main_class=$(expr -- "$line" : '^Main-Class: \([^[:space:]]*\)')
+    echo $main_class
+}
+
+function parse_args {
+    unset drip_command java_command
+    if [[ $# -eq 0 ]]; then
+        echo 'Usage: drip [command | same args as java]'
+        echo
+        echo 'drip supports the following commands:'
+        echo '    version          print drip version and exit'
+        echo '    upgrade          upgrade drip to the latest version'
+        echo '    kill [-signal]   kill all idle drip JVMs (with signal)'
+        echo '    ps               print a list of all drip processes'
+        exit 0
+    elif ! expr -- "$1" : '.*[.-]' > /dev/null; then
+        drip_command=$1
+        return
+    elif [[ $# -eq 1 && $1 == -* ]]; then
+        java_command=$1
+        return
+    fi
+
+    unset classpath main_class main_args runtime_args context
+    for arg in "$@"; do
+        if [[ -z $main_class ]]; then
+            if [[ -z $context ]]; then
+                if [[ $arg == "-cp" || $arg == "-classpath" ]]; then
+                    context='-cp'
+                elif [[ $arg == "-jar" ]]; then
+                    context='-jar'
+                elif [[ $arg == --* ]]; then
+                    runtime_args+=("${arg:1}")
+                elif [[ $arg != -* ]]; then
+                    main_class=$arg
+                else
+                    jvm_args+=("$arg")
+                fi
+            else
+                classpath=$arg
+                if [[ $context == '-jar' ]]; then
+                    main_class=$(jar_main_class $arg)
+                fi
+                unset context
+            fi
+        else
+            main_args+=("$arg")
+        fi
+    done
+    main_class=${main_class//\//.}
+}
+
+function make_sha_path {
+    opts="$PWD ${jvm_args[*]} $classpath $main_class"
+    sha=$(echo -n "$opts" | git hash-object --stdin)
+    sha_path=$drip_root/$sha
+    mkdir -p "$sha_path"
+    echo -n "$opts" > $sha_path/opts
+}
+
+function default_init {
+    local f='%s\n%s'
+    case $main_class in
+        clojure.main)
+            DRIP_INIT_CLASS='clojure.main'
+            DRIP_INIT=$(printf $f '-e' 'nil');;
+        org.jruby.Main)
+            DRIP_INIT_CLASS='org.jruby.Main'
+            DRIP_INIT=$(printf $f '-e' 'nil');;
+        scala.tools.nsc.MainGenericRunner)
+            DRIP_INIT_CLASS='scala.tools.nsc.MainGenericRunner'
+            DRIP_INIT=$(printf $f '-e' 'null');;
+    esac
+}
+
+function launch_jvm {
+    jvm_dir=$sha_path/$$-$n
+
+    if mkdir "$jvm_dir"; then
+        mkfifo "$jvm_dir/control"
+
+        if [[ -z $DRIP_INIT_CLASS ]]; then
+            default_init
+        fi
+        export DRIP_INIT_CLASS=${DRIP_INIT_CLASS//\//.}
+        export DRIP_INIT
+
+        $drip_daemon $DRIP_JAVA_CMD "${jvm_args[@]}" -Djava.awt.headless=true \
+                                    "-classpath" "$drip_jar:$classpath" \
+                                    org.flatland.drip.Main "$main_class" "$jvm_dir" \
+                                    > /dev/null 2> $drip_root/error.log
+    fi
+}
+
+function kill_jvm {
+    local signal=$1
+    local pid=$(cat "$jvm_dir/jvm.pid" 2> /dev/null)
+    kill "$signal" $pid 2> /dev/null
+}
+
+function lock_dir {
+    if mkdir "$jvm_dir/lock" 2> /dev/null; then
+        if kill_jvm -0; then
+            echo $$ > "$jvm_dir/client.pid"
+            active_jvm_dir=$jvm_dir
+            return 0
+        else
+            rm -rf "$jvm_dir"
+        fi
+    fi
+    return 0
+}
+
+function find_jvm {
+    make_sha_path
+
+    for jvm_dir in $sha_path/*-*; do
+        if [[ -z $active_jvm_dir ]]; then
+            lock_dir
+        elif [[ ! -e $jvm_dir/lock ]]; then
+            let n=$n+1
+        fi
+    done
+
+    n=${n:-0}
+
+    while (( $n < $DRIP_POOL )); do
+        let n=$n+1
+        launch_jvm
+    done
+
+    if [[ -z $active_jvm_dir ]]; then
+        exec "$DRIP_JAVA_CMD" "${jvm_args[@]}" "${runtime_args[@]}" \
+                              "-classpath" "$classpath" \
+                              "$main_class" "${main_args[@]}"
+    fi
+}
+
+function kill_jvms {
+    local killed=false
+
+    for version_dir in $DRIP_HOME/*; do
+        [[ -d $version_dir ]] || continue
+        for sha_dir in $version_dir/*; do
+            [[ -d $sha_dir ]] || continue
+            [[ $sha_dir != $version_dir/src ]] || continue
+            for jvm_dir in $sha_dir/*-*; do
+                [[ -d $jvm_dir ]] || continue
+                if lock_dir; then
+                    kill_jvm "$1"
+                    rm -rf "$jvm_dir"
+                    killed=true
+                fi
+            done
+            local dirs=($sha_dir/*)
+            if [[ "${dirs[*]}" == "$sha_dir/opts" ]]; then
+                rm -rf "$sha_dir"
+            fi
+        done
+    done
+
+    $killed || echo "No idle Drip JVM running"
+}
+
+function send_array {
+    local string=$*
+    local length=${#string}
+    (( $length != 0 )) && let length=length+1
+
+    printf '%s:' "$length"
+    for e; do
+        printf -- '%s\0' "$e"
+    done
+    printf ','
+}
+
+function send_env {
+    declare -a vars
+
+    # Call declare in a bash subprocess to get rid of variables that aren't exported.
+    while read -r line; do
+        [[ $line == *=\(*\) ]] && continue # Filter bash arrays
+        [[ $line != *=*     ]] && break    # Filter function definitions
+
+        # Filter extra variables that were added by the bash subprocess but are not exported.
+        for var in BASH BASHOPTS BASH_EXECUTION_STRING BASH_VERSION \
+                   SHELLOPTS IFS PS4 UID EUID PPID; do
+            [[ $line == $var=*  ]] && continue 2
+        done
+
+        vars+=("$(eval echo $line)")
+    done <<< "$(bash -c declare)"
+
+    send_array "${vars[@]}"
+}
+
+function send_args {
+    mkfifo "$active_jvm_dir/status"
+    exec 4> "$active_jvm_dir/control"
+    send_array "${main_args[@]}" >&4
+    send_array "${runtime_args[@]}" >&4
+    send_env >&4
+    exec 4>&-
+}
+
+function wait_for_exit {
+    status=$(cat "$active_jvm_dir/status")
+    rm -rf "$active_jvm_dir"
+}
+
+function run_main {
+    send_args
+    $drip_proxy "$active_jvm_dir"
+
+    wait_for_exit
+}
+
+function run_drip_command {
+    case $drip_command in
+        version)
+            if [[ $drip_install == checkout ]]; then
+                git_sha="$(cd "$drip_dir"; git rev-parse --short HEAD)"
+            fi
+            printf 'drip version "%s" %s %s\n' $DRIP_VERSION $drip_install $git_sha;;
+        kill)
+            kill_jvms "$2";;
+        ps)
+            jps -vlm | grep org.flatland.drip.Main;;
+        upgrade)
+            case $drip_install in
+                standalone)
+                    rm -rf "$drip_src" # need to refetch in case it has changed
+                    http_get  "$DRIP_BIN_URL" "$script" || exit $?
+                    chmod +x "$script";;
+                checkout)
+                    (cd "$drip_dir" && git pull);;
+                package)
+                    echo Please use your package manager to upgrade Drip.
+                    echo For example:
+                    echo '  brew update && brew upgrade drip'
+            esac
+            bootstrap
+            exit $?;;
+        *)
+            echo Unknown command: $drip_command
+            exit 1;;
+    esac
+}
+
+# Let's go.
+
+DRIP_VERSION=0.2.3
+DRIP_POOL=1
+DRIP_HOME=${DRIP_HOME:-~/.drip}
+DRIP_BRANCH=${DRIP_BRANCH:-master}
+DRIP_REPO=${DRIP_REPO:-http://clojars.org/repo}
+DRIP_JAR_URL=${DRIP_JAR_URL:-$DRIP_REPO/org/flatland/drip/$DRIP_VERSION/drip-$DRIP_VERSION.jar}
+DRIP_BIN_URL=${DRIP_BIN_URL:-https://raw.github.com/flatland/drip/$DRIP_BRANCH/bin/drip}
+DRIP_SRC_URL=${DRIP_SRC_URL:-https://raw.github.com/flatland/drip/$DRIP_BRANCH/src}
+DRIP_JAVA_CMD=${DRIP_JAVA_CMD:-java}
+DRIP_JAVA_CMD=$(which $DRIP_JAVA_CMD)
+MVN_REPO=${MVN_REPO:-~/.m2/repository}
+
+bootstrap
+
+parse_args "$@"
+
+if [[ -z $drip_command ]]; then
+    [[ -z $java_command ]] || exec "$DRIP_JAVA_CMD" $java_command
+    find_jvm
+    run_main
+
+    exit $status
+else
+    run_drip_command
+fi

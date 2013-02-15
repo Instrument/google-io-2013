@@ -267,11 +267,12 @@ ww.mode.Core.prototype.onResize = function(redraw) {
 ww.mode.Core.prototype.updateBounds = function() {
   var maxContentWidth = 500; // Ratio 4x3
   var maxContentHeight = maxContentWidth * (3/4); // Ratio 4x3
-  var horizontalBuffer = 50;
-  var verticalBuffer = 75;
-  
+  var horizontalBuffer = 30;
+  var topBuffer = 60;
+  var bottomBuffer = 20;
+
   if (this.width_ > this.height_) {
-    var relativeHeight = (this.height_ - (verticalBuffer * 2));
+    var relativeHeight = (this.height_ - topBuffer - bottomBuffer);
     var desiredHeight = Math.min(maxContentHeight, relativeHeight);
 
     this.boundsHeight_ = desiredHeight;
@@ -285,7 +286,7 @@ ww.mode.Core.prototype.updateBounds = function() {
   }
 
   this.boundsCenterX_ = Math.floor(this.width_ / 2);
-  this.boundsCenterY_ = Math.floor(this.height_ / 2);
+  this.boundsCenterY_ = Math.floor(this.height_ / 2) + Math.floor((topBuffer - bottomBuffer) / 2);
 
   this.boundsX_ = this.boundsCenterX_ - Math.floor(this.boundsWidth_ / 2);
   this.boundsY_ = this.boundsCenterY_ - Math.floor(this.boundsHeight_ / 2);
@@ -838,45 +839,41 @@ ww.mode.Core.prototype.getCoords = function(e) {
 };
 
 ww.mode.Core.prototype.setPaperShapeData = function() {
-  var ratioParent = Math.max(this.width_, this.height_);
-
-  var screenCenterX = this.width_ / 2;
-  var screenCenterY = this.height_ / 2;
-
   // Set I's initial dimensions.
-  this.iWidth = ratioParent * 0.07361963;
-  this.iHeight = this.iWidth * 2.13541667;
+  this.iWidth = this.boundsWidth_ * 0.24;
+  this.iHeight = this.boundsWidth_ * 0.5125;
 
   // Set coordinates for I's upper left corner.
-  this.iX = screenCenterX - (ratioParent * 0.14417178);
-  this.iY = screenCenterY - (ratioParent * 0.06134969);
+  this.iX = this.boundsX_;
+  this.iY = this.boundsY_ + (this.boundsWidth_ * 0.1125);
 
   this.iCenter = new paper['Point'](this.iX + this.iWidth / 2,
     this.iY + this.iHeight / 2);
 
   // Set O's radius.
-  this.oRad = ratioParent * 0.08282209;
+  this.oRad = this.boundsWidth_ * 0.27;
 
   // Set O's coordinates.
-  this.oX = screenCenterX + this.oRad - (ratioParent * 0.00996933);
-  this.oY = screenCenterY + (ratioParent * 0.02300613);
+  this.oX = this.boundsX_ +
+    (this.boundsWidth_ - this.oRad - (this.boundsWidth_ * 0.0425));
+  this.oY = this.boundsY_ + (this.boundsWidth_ * 0.37);
 
   this.oCenter = new paper['Point'](this.oX, this.oY);
 
   // Set Slash's coordinates.
-  this.slashStartX = screenCenterX + (ratioParent * 0.00383436);
-  this.slashStartY = screenCenterY - (ratioParent * 0.09662577);
-  this.slashEndX = screenCenterX - (ratioParent * 0.06518405);
-  this.slashEndY = screenCenterY + (ratioParent * 0.1303681);
+  this.slashStartX = this.boundsX_ + (this.boundsWidth_ * 0.47);
+  this.slashStartY = this.boundsY_;
+  this.slashEndX = this.boundsX_ + (this.boundsWidth_ * 0.26);
+  this.slashEndY = this.boundsY_ + this.boundsHeight_;
 
-  this.slashWidth = ratioParent * 0.00766871;
+  this.slashWidth = this.boundsWidth_ * 0.025;
 
   if (this.find('.year-mark')) {
     this.find('.year-mark').css({
-      'width': ratioParent * 0.02837423,
-      'height': ratioParent * 0.02118704,
-      'left': screenCenterX + (ratioParent * 0.1303681),
-      'top': screenCenterY - (ratioParent * 0.09125767)
+      'width': this.boundsWidth_ * 0.0925,
+      'height': this.boundsWidth_ * 0.07,
+      'left': this.boundsX_ + this.boundsWidth_ - (this.boundsWidth_ * 0.0925),
+      'top': this.boundsY_ + (this.boundsWidth_ * 0.0175)
     });
   }
 };

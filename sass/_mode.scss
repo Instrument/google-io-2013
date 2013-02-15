@@ -41,7 +41,7 @@ body {
 
 .code, .back {
   position: absolute;
-  top: 2.5%;
+  top: 15px;
   border: 1px solid #393939;
   height: 34px;
   @include border-radius(17px);
@@ -52,11 +52,11 @@ body {
 .code {
   padding: 3px 5px 0 10px;
   line-height: 30px;
-  left: 2%;
+  left: 15px;
   pointer-events: none;
 }
 .back {
-  right: 2%;
+  right: 15px;
   width: 34px;
   cursor: pointer;
   background-size: 16px 16px;
