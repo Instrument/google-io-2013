@@ -216,7 +216,8 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
       setTimeout(function() {
         // Animate new mode in.
         var t2 = new TWEEN.Tween({ 'translateX': startX });
-        t2.to({ 'translateX': 0 }, 400);
+        t2.to({ 'translateX': 0 }, 800);
+        t2.easing(TWEEN.Easing.Exponential.InOut);
         t2.onUpdate(function() {
           mode.containerElem.style[self.transformKey_] =
             self.translateXString_(this['translateX']);
@@ -230,7 +231,8 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
         if (currentMode) {
           var endX = -startX;
           var t = new TWEEN.Tween({ 'translateX': 0 });
-          t.to({ 'translateX': endX }, 400);
+          t.easing(TWEEN.Easing.Exponential.InOut);
+          t.to({ 'translateX': endX }, 800);
           t.onUpdate(function() {
             currentMode.containerElem.style[self.transformKey_] =
               self.translateXString_(this['translateX']);
@@ -243,7 +245,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
 
         // Run the scheduled tweens.
         ww.raf.subscribe('app', self, self.renderFrame_);
-      }, 500);
+      }, 10);
     };
   } else {
     // Non-transition onload handler
