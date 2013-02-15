@@ -1,8 +1,3 @@
-.mode-wrapper {
-  @extend %absolute-full;
-  @include user-select(none);
-}
-
 .rocket-mode {
   .letter-o-over {
     pointer-events: none;

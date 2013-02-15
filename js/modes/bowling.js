@@ -26,7 +26,7 @@ ww.mode.BowlingMode.prototype.init = function() {
   this.centerY_ = this.$letterO_.attr('cy');
   this.ballCenter_ = [this.centerX_, this.centerY_];
   this.pinCenter_ = [this.$letterI_.attr('cx'), this.$letterI_.attr('cy')];
-  this.isReset_ = true;
+  this.isBowling_ = false;
 };
 
 /**
@@ -36,38 +36,43 @@ ww.mode.BowlingMode.prototype.init = function() {
 ww.mode.BowlingMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
-  var self = this;
-  var wiggle = 5;
+  if (!this.isBowling_) {
+    var self = this;
+    var wiggle = 5;
 
-  var wiggleLeft = new TWEEN.Tween({ 'rotate': 0 });
-  wiggleLeft.to({ 'rotate': -wiggle }, 100);
-  wiggleLeft.onUpdate(function() {
-    self.$letterI_.attr('transform',
-      'rotate(' + this['rotate'] + ', ' + self.pinCenterStr_ + ')');
-  });
+    var wiggleLeft = new TWEEN.Tween({ 'rotate': 0 });
+    wiggleLeft.to({ 'rotate': -wiggle }, 100);
+    wiggleLeft.onUpdate(function() {
+      self.$letterI_.attr('transform',
+        'rotate(' + this['rotate'] + ', ' +
+          self.pinCenter_[0] + ', ' + self.pinCenter_[1] + ')');
+    });
 
-  var wiggleRight = new TWEEN.Tween({ 'rotate': -wiggle });
-  wiggleRight.to({ 'rotate': wiggle }, 200);
-  wiggleRight.onStart(function() {
-    self.playSound('whoosh-1.wav');
-  });
-  wiggleRight.delay(100);
-  wiggleRight.onUpdate(function() {
-    self.$letterI_.attr('transform',
-      'rotate(' + this['rotate'] + ', ' + self.pinCenterStr_ + ')');
-  });
+    var wiggleRight = new TWEEN.Tween({ 'rotate': -wiggle });
+    wiggleRight.to({ 'rotate': wiggle }, 200);
+    wiggleRight.onStart(function() {
+      self.playSound('whoosh-1.wav');
+    });
+    wiggleRight.delay(100);
+    wiggleRight.onUpdate(function() {
+      self.$letterI_.attr('transform',
+        'rotate(' + this['rotate'] + ', ' +
+          self.pinCenter_[0] + ', ' + self.pinCenter_[1] + ')');
+    });
 
-  var wiggleBack = new TWEEN.Tween({ 'rotate': wiggle });
-  wiggleBack.to({ 'rotate': 0 }, 100);
-  wiggleBack.delay(300);
-  wiggleBack.onUpdate(function() {
-    self.$letterI_.attr('transform',
-      'rotate(' + this['rotate'] + ', ' + self.pinCenterStr_ + ')');
-  });
+    var wiggleBack = new TWEEN.Tween({ 'rotate': wiggle });
+    wiggleBack.to({ 'rotate': 0 }, 100);
+    wiggleBack.delay(300);
+    wiggleBack.onUpdate(function() {
+      self.$letterI_.attr('transform',
+        'rotate(' + this['rotate'] + ', ' +
+         self.pinCenter_[0] + ', ' + self.pinCenter_[1] + ')');
+    });
 
-  this.addTween(wiggleLeft);
-  this.addTween(wiggleRight);
-  this.addTween(wiggleBack);
+    this.addTween(wiggleLeft);
+    this.addTween(wiggleRight);
+    this.addTween(wiggleBack);
+  }
 };
 
 /**
@@ -78,49 +83,53 @@ ww.mode.BowlingMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
   this.playSound('strike.m4a');
-  if (this.isReset_) {
+  if (!this.isBowling_) {
+    this.isBowling_ = true;
+
     var self = this;
     var deg = ~~Random(400, 490);
+    var ballBounds = this.ballWrapper_[0].getBoundingClientRect();
+    var pinBounds = this.$letterI_[0].getBoundingClientRect();
+    var distance = (ballBounds['width'] / 2) +
+                    ballBounds['left'] - pinBounds['right'];
 
     var animateSpin = new TWEEN.Tween({ 'rotate': 0 });
     animateSpin.to({ 'rotate': 360 * 5 }, 1500);
     animateSpin.onUpdate(function() {
-      self.$letterO_.attr('transform', 'rotate(' + (this['rotate'] % 360) + ', ' +
-                              self.centerX_ + ', ' + self.centerY_ + ')');
+      self.$letterO_.attr('transform',
+        'rotate(' + (this['rotate'] % 360) + ', ' +
+          self.centerX_ + ', ' + self.centerY_ + ')');
     });
 
     var animateMove = new TWEEN.Tween({ 'translateX': 0 });
-    animateMove.to({ 'translateX': 180 }, 500);
+    animateMove.to({ 'translateX': distance }, 600);
     animateMove.delay(1000);
     animateMove.easing(TWEEN.Easing.Exponential.In);
     animateMove.onUpdate(function() {
-      self.centerX_ = self.centerX_ - this['translateX'];
-      self.transformElem_(self.ballWrapper_[0],
-                            'translateX(-' + this['translateX'] + '%)');
+      self.ballWrapper_.attr('transform',
+        'translate(' + -this['translateX'] + ', 0)');
     });
 
-    var animatePin = new TWEEN.Tween({ 'rotate': 0, 'scale': 1, 'x': 0 });
-    animatePin.to({ 'rotate': -deg, 'scale': 0.65, 'x': -175 }, 300);
+    var animatePin = new TWEEN.Tween({ 'rotate': 0, 'scale': 1, 'posX': 0 });
+    animatePin.to({ 'rotate': deg, 'scale': 0.5, 'posX': -20 }, 300);
     animatePin.delay(1500);
     animatePin.onUpdate(function() {
-      // var transform = 'scale(' + this['scale'] + ') ' +
-      //                 'rotate(' + this['rotate'] + 'deg) ' +
-      //                 'translateX(' + this['x'] + '%)';
-      // self.transformElem_(self.$letterI_[0], transform);
-    });
-    animatePin.onComplete(function() {
-      self.isReset_ = false;
+      self.$letterI_.attr('transform', 'scale(' + this['scale'] + ') ' +
+        'rotate(' + this['rotate'] + ', ' + self.pinCenter_[0] + ', ' +
+        self.pinCenter_[1] + ') ' + 'translate(' + this['posX'] + ', 0)');
     });
 
     var reset = new TWEEN.Tween({ 'opacity': 0 });
     reset.to({ 'opacity': 1 }, 500);
     reset.delay(3000);
     reset.onStart(function() {
-      self.$letterO_.attr('transform', 'rotate(0, ' + self.ballCenter_[0] + ', ' +
-                          self.ballCenter_[1] + ')');
-      self.centerX_ = self.ballCenter_[0];
-      self.transformElem_(self.ballWrapper_[0], 'translate(0px, 0px)');
-      self.transformElem_(self.$letterI_[0], 'scale(1) rotate(0deg)');
+      self.ballWrapper_.attr('transform', 'translate(0, 0)');
+      self.$letterO_.attr('transform',
+        'rotate(0, ' + self.ballCenter_[0] + ', ' + self.ballCenter_[1] + ')');
+
+      self.$letterI_.attr('transform', 'scale(1) ' +
+        'rotate(0, ' + self.pinCenter_[0] + ', ' + self.pinCenter_[1] + ') ' +
+        'translate(0, 0)');
     });
     reset.onUpdate(function() {
       self.$letterO_[0].style['opacity'] = this['opacity'];
@@ -128,7 +137,7 @@ ww.mode.BowlingMode.prototype.activateO = function() {
       self.ballWrapper_[0].style['opacity'] = this['opacity'];
     });
     reset.onComplete(function() {
-      self.isReset_ = true;
+      self.isBowling_ = false;
     });
 
     this.addTween(animateSpin);

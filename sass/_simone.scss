@@ -16,11 +16,10 @@
   @extend %absolute-full;
   padding: 5%;
   text-align: center;
-  @include user-select(none);
 }
 
 #play-again {
-  background: transparent image-url('simone/refresh.svg') no-repeat 50% 50%;
+  background: transparent image-url('shared/refresh.svg') no-repeat 50% 50%;
   @include background-size(100%);
   bottom: 7%;
   cursor: pointer;

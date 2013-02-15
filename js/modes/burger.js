@@ -40,6 +40,8 @@ ww.mode.BurgerMode.prototype.didFocus = function() {
 
   this.bitesO_.css('opacity', 0);
   this.biteOIndex_ = 0;
+
+  this.isReset = true;
 };
 
 
@@ -53,24 +55,26 @@ ww.mode.BurgerMode.prototype.activateI = function() {
     this.bitesI_[this.biteIIndex_].style['opacity'] = 1;
     this.biteIIndex_++;
     this.wantsAudio_ && this.playSound('bite-2.wav');
-  } else {
+  }
+
+  if (this.isReset && this.biteIIndex_ === this.maxBitesI_) {
     var self = this;
     var reset = new TWEEN.Tween({ 'opacity': 0 });
 
     reset.to({ 'opacity': 1 }, 200);
-
+    reset.delay(500);
     reset.onStart(function() {
       self.bitesI_.css('opacity', 0);
     });
-
     reset.onUpdate(function() {
       self.$letterI_.css('opacity', this['opacity']);
     });
-
     reset.onComplete(function() {
+      self.isReset = true;
       self.biteIIndex_ = 0;
     });
 
+    this.isReset = false;
     this.addTween(reset);
   }
 };
@@ -86,24 +90,26 @@ ww.mode.BurgerMode.prototype.activateO = function() {
     this.bitesO_[this.biteOIndex_].style['opacity'] = 1;
     this.biteOIndex_++;
     this.wantsAudio_ && this.playSound('bite-1.wav');
-  } else {
+  }
+
+  if (this.isReset && this.biteOIndex_ === this.maxBitesO_) {
     var self = this;
     var reset = new TWEEN.Tween({ 'opacity': 0 });
 
     reset.to({ 'opacity': 1 }, 200);
-
+    reset.delay(500);
     reset.onStart(function() {
       self.bitesO_.css('opacity', 0);
     });
-
     reset.onUpdate(function() {
       self.$letterO_.css('opacity', this['opacity']);
     });
-
     reset.onComplete(function() {
+      self.isReset = true;
       self.biteOIndex_ = 0;
     });
 
+    this.isReset = false;
     this.addTween(reset);
   }
 };

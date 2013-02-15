@@ -1,15 +1,24 @@
 // long cat
 .letter-i {
-  background-image: image-url('cat/cat-letter-i.png');
+  background-image: image-url('cat/letter-i.png');
+  background-position: right center;
+  left: 0;
+  right: 66%;
 }
 
 // hover cat
 .letter-o {
-  background-image: image-url('cat/cat-letter-o.png');
+  background-image: image-url('cat/letter-o.png');
+  left: 50%;
+  right: 0;
 }
 
-svg {
-  display: block;
-  margin: 0 auto;
-  max-width: 980px;
+.letter-i, .letter-o {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  @include background-size(auto 100%);
+  cursor: pointer;
+  display: inline-block;
+  position: absolute;
+  top: 15%; bottom: 15%; 
 }

@@ -139,12 +139,14 @@ canvas {
   display: none;
 }
 
-.bacon-mode {
-  @import "bacon";
+.bounds {
+  background-image: image-url('shared/slash+13.svg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(auto 100%);
 }
 
 .cat-mode {
-  @import "letters";
   @import "cat";
 }
 
@@ -168,6 +170,10 @@ canvas {
   font-size: 90%;
   position: relative;
   @import "simone";
+
+  .bounds {
+    background-image: none;
+  }
 }
 
 .song-mode {
@@ -177,6 +183,10 @@ canvas {
 
   @include iphone() {
     font-size: 90%;
+  }
+
+  .bounds {
+    background-image: none;
   }
 }
 

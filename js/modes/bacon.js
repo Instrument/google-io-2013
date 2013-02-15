@@ -47,19 +47,23 @@ ww.mode.BaconMode.prototype.activateI = function() {
 
   this.playSound('bacon-sizzle.m4a');
 
-  var stretchOut = new TWEEN.Tween({ 'scaleY': 1 });
-  stretchOut.to({ 'scaleY': 1.25 }, 700);
+  var stretchOut = new TWEEN.Tween({ 'scaleY': 1, 'translateY': 0 });
+  stretchOut.to({ 'scaleY': 1.25, 'translateY': -20 }, 700);
   stretchOut.easing(TWEEN.Easing.Elastic.In);
   stretchOut.onUpdate(function() {
-    self.$letterI_.attr('transform', 'scale(1, ' + this['scaleY'] + ')');
+    self.$letterI_.attr('transform',
+      'scale(1, ' + this['scaleY'] + ') ' +
+      'translate(0, ' + this['translateY'] + ')');
   });
 
-  var stretchBack = new TWEEN.Tween({ 'scaleY': 1.25 });
-  stretchBack.to({ 'scaleY': 1 }, 700);
+  var stretchBack = new TWEEN.Tween({ 'scaleY': 1.25, 'translateY': -20 });
+  stretchBack.to({ 'scaleY': 1, 'translateY': 0 }, 700);
   stretchBack.easing(TWEEN.Easing.Elastic.Out);
   stretchBack.delay(700);
   stretchBack.onUpdate(function() {
-    self.$letterI_.attr('transform', 'scale(1, ' + this['scaleY'] + ')');
+    self.$letterI_.attr('transform',
+      'scale(1, ' + this['scaleY'] + ') ' +
+      'translate(0, ' + this['translateY'] + ')');
   });
 
   this.addTween(stretchOut);
@@ -95,41 +99,19 @@ ww.mode.BaconMode.prototype.activateO = function() {
 ww.mode.BaconMode.prototype.showCracked_ = function() {
   var self = this;
 
-  var squishShell = new TWEEN.Tween({
-    'opacity': 1,
-    'scale': 1
-  });
-
-  squishShell.to({
-    'opacity': 0,
-    'scale': 0.25
-  }, 200);
-
+  var squishShell = new TWEEN.Tween({ 'opacity': 1 });
+  squishShell.to({ 'opacity': 0 }, 200);
   squishShell.onUpdate(function() {
     self.eggWhole_.style['opacity'] = this['opacity'];
-    self.transformElem_(self.eggWhole_, 'scale(' + this['scale'] + ')');
   });
-
-  var showWhites = new TWEEN.Tween({ 'scale': 2 });
-  showWhites.to({ 'scale': 1 }, 200);
-
-  showWhites.onStart(function() {
+  squishShell.onComplete(function() {
     self.eggOpened_.css('opacity', 1);
-  });
-
-  showWhites.onUpdate(function() {
-    self.transformElem_(self.eggOpened_[0], 'scale(' + this['scale'] + ')');
-  });
-
-  showWhites.onComplete(function() {
     self.stillHasShell = false;
     self.animateSpinEgg_();
-    self.transformElem_(self.eggOpened_[0], '');
   });
 
   this.eggOpened_.css('opacity', 0);
   this.addTween(squishShell);
-  this.addTween(showWhites);
 };
 
 
@@ -139,40 +121,28 @@ ww.mode.BaconMode.prototype.showCracked_ = function() {
 ww.mode.BaconMode.prototype.animateSpinEgg_ = function() {
   var self = this;
 
-  var shift = -1 * ~~(Math.random() * (270 - 20) + 20);
-  var pos = [~~Random(-75, 75), ~~Random(-75, 75)];
+  var pos = -1 * ~~(Math.random() * (270 - 20) + 20);
 
   var degs = self.eggOpened_.attr('transform') || '';
       degs = parseInt(degs.split('rotate(')[1], 10) || 0;
 
-  var sizeX = self.whites_[0].style[self.prefix_].split('skewX(')[1];
-      sizeX = ~~parseFloat(sizeX) || 0;
-
-  var sizeY = self.whites_[0].style[self.prefix_].split('skewY(')[1];
-      sizeY = ~~parseFloat(sizeY) || 0;
-
-  var sizing = [~~Random(-20, 20), ~~Random(-20, 20)];
+  var shift = ~~Random(-20, 20);
 
   var spinEgg = new TWEEN.Tween({
-    'skewX': sizeX,
-    'skewY': sizeY,
     'rotate': degs
   });
 
   spinEgg.to({
-    'skewX': sizing[0],
-    'skewY': sizing[1],
-    'rotate': (degs + shift / 2) / window.devicePixelRatio
+    'rotate': (degs + pos / 2) / window.devicePixelRatio
   }, 500);
 
   spinEgg.easing(TWEEN.Easing.Elastic.In);
 
   spinEgg.onUpdate(function() {
-    var whites = 'skewX(' + this['skewX'] + 'deg) ' +
-                 'skewY(' + this['skewY'] + 'deg)';
-    self.transformElem_(self.whites_[0], whites);
-    self.eggOpened_.attr('transform', 'rotate(' + this['rotate'] + ', ' +
-                          self.center_ + ')');
+    self.whites_.attr('transform',
+      'rotate(' + (this['rotate'] - shift) + ', ' + self.center_ + ')');
+    self.eggOpened_.attr('transform',
+      'rotate(' + this['rotate'] + ', ' + self.center_ + ')');
   });
 
   self.addTween(spinEgg);
