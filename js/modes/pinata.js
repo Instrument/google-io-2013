@@ -15,7 +15,7 @@ ww.mode.PinataMode = function(containerElem, assetPrefix) {
 
   goog.base(this, containerElem, assetPrefix, 'pinata', true, false, true);
 
-  this.ballSpeed_ = 175;
+  this.ballSpeed_ = 250;
 
   this.COLORS_ = ['#0da960', '#4387fd', '#e04a3f', '#ffd24d'];
   this.NUM_COLORS = this.COLORS_.length;
@@ -104,7 +104,6 @@ ww.mode.PinataMode.prototype.didFocus = function() {
   robot.setRadius(this.bounds_['width']);
   robot.fixed = true;
   robot.moveTo(new Vector(this.center_['x'], this.center_['y']));
-  this.collision_.pool = [];
   this.collision_.pool.push(robot);
   robot.behaviours.push(this.collision_);
   this.physicsWorld_.particles.push(robot);
@@ -210,11 +209,11 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
   for (var i = 0; i < number; i++) {
     dir = (i % 2 === 0) ? -1 : 1;
     ball = new Particle(Random(1, 5.0));
-    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2);
+    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2.5);
 
     ball.fixed = true; // disable from drawing
 
-    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir + ball.mass;
+    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir;
     ball['startY'] = this.center_['y'] + ball.radius / 2;
     ball['rotate'] = ~~Random(-360, 360) * (Math.PI / 180);
     ball['color'] = this.COLORS_[~~Random(0, this.NUM_COLORS)];
@@ -266,8 +265,8 @@ ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
   for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
     dir = (i % 2 === 0) ? -1 : 1;
     ball = this.physicsWorld_.particles[i];
-    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2);
-    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir + ball.mass;
+    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2.5);
+    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir;
     ball['startY'] = this.center_['y'] + ball.radius / 2;
     ball.moveTo(new Vector(ball['startX'], ball['startY']));
     ball.fixed = true;
