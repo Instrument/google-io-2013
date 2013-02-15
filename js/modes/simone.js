@@ -25,7 +25,7 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   this.evtStart = this.getPointerEventNames_('down', 'simone');
   this.evtEnd = this.getPointerEventNames_('up', 'simone');
-  this.startAction  = (Modernizr.touch) ? 'Tap' : 'Click';
+  this.startAction = (Modernizr.touch) ? 'Tap' : 'Click';
 
   this.topLeft = $('#red');        // 0 in sequence
   this.topRight = $('#green');     // 1 in sequence

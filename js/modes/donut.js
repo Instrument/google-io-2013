@@ -55,7 +55,7 @@ ww.mode.DonutMode.prototype.activateI = function() {
     this.bitesI_[this.biteIIndex_].style['opacity'] = 1;
     this.biteIIndex_++;
     this.playSound('bite-2.wav');
-  } 
+  }
 
   if (this.isReset && this.biteIIndex_ === this.maxBitesI_) {
     var self = this;
