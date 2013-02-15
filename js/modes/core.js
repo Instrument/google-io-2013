@@ -267,11 +267,12 @@ ww.mode.Core.prototype.onResize = function(redraw) {
 ww.mode.Core.prototype.updateBounds = function() {
   var maxContentWidth = 500; // Ratio 4x3
   var maxContentHeight = maxContentWidth * (3/4); // Ratio 4x3
-  var horizontalBuffer = 50;
-  var verticalBuffer = 75;
-  
+  var horizontalBuffer = 30;
+  var topBuffer = 60;
+  var bottomBuffer = 20;
+
   if (this.width_ > this.height_) {
-    var relativeHeight = (this.height_ - (verticalBuffer * 2));
+    var relativeHeight = (this.height_ - topBuffer - bottomBuffer);
     var desiredHeight = Math.min(maxContentHeight, relativeHeight);
 
     this.boundsHeight_ = desiredHeight;
@@ -285,7 +286,7 @@ ww.mode.Core.prototype.updateBounds = function() {
   }
 
   this.boundsCenterX_ = Math.floor(this.width_ / 2);
-  this.boundsCenterY_ = Math.floor(this.height_ / 2);
+  this.boundsCenterY_ = Math.floor(this.height_ / 2) + Math.floor((topBuffer - bottomBuffer) / 2);
 
   this.boundsX_ = this.boundsCenterX_ - Math.floor(this.boundsWidth_ / 2);
   this.boundsY_ = this.boundsCenterY_ - Math.floor(this.boundsHeight_ / 2);
