@@ -98,12 +98,15 @@ ww.mode.PinataMode.prototype.didFocus = function() {
   robot.setRadius(this.bounds_['width']);
   robot.fixed = true;
   robot.moveTo(new Vector(this.center_['x'], this.center_['y']));
+
+  this.collision_.pool = [];
   this.collision_.pool.push(robot);
   robot.behaviours.push(this.collision_);
+
+  this.physicsWorld_.particles = [];
   this.physicsWorld_.particles.push(robot);
 
   this.prepopulate_(150);
-
   this.current_ = 1;
 };
 
@@ -403,9 +406,8 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
         animateBack.onComplete(function() {
           self.$letterO_.css('opacity', 1);
           self.crackedElm_.css('opacity', 0);
-
+          self.didUnfocus();
           self.showReload(function() {
-            self.didUnfocus();
             self.didFocus();
           });
         });
