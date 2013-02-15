@@ -7,7 +7,8 @@ goog.provide('ww.mode.AsciiMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.AsciiMode = function(containerElem, assetPrefix) {
-  this.preloadSound('boing.wav');
+  this.preloadSound('i.wav');
+  this.preloadSound('o.wav');
 
   goog.base(this, containerElem, assetPrefix, 'ascii', true, true, true);
 };
@@ -21,7 +22,7 @@ ww.mode.AsciiMode.prototype.activateI = function() {
 
   this.pushPoints_(this.paperI_, this.lastClick_, 10);
 
-  this.playSound('boing.wav');
+  this.playSound('i.wav');
 };
 
 /**
@@ -32,7 +33,7 @@ ww.mode.AsciiMode.prototype.activateO = function() {
 
   this.pushPoints_(this.paperO_, this.lastClick_, 10);
 
-  this.playSound('boing.wav');
+  this.playSound('o.wav');
 };
 
 /**
