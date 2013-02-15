@@ -133,11 +133,11 @@ ww.mode.Core.prototype.bindEvent_ = function(elem, evt, onEvent) {
   var $elem = $(elem);
   var evtName = this.getPointerEventNames_(evt, this.name_);
 
-  if (window.navigator.msPointerEnabled) {
-    $elem[0].addEventListener(evtName, onEvent);
-  } else {
+  // if (window.navigator.msPointerEnabled) {
+  //   $elem[0].addEventListener(evtName, onEvent, false);
+  // } else {
     $elem.bind(evtName, onEvent);
-  }
+  // }
 };
 
 /**
@@ -151,11 +151,11 @@ ww.mode.Core.prototype.unbindEvent_ = function(elem, evt) {
   var $elem = $(elem);
   var evtName = this.getPointerEventNames_(evt, this.name_);
 
-  if (window.navigator.msPointerEnabled) {
-    $elem[0].removeEventListener(evtName);
-  } else {
+  // if (window.navigator.msPointerEnabled) {
+  //   $elem[0].removeEventListener(evtName);
+  // } else {
     $elem.unbind(evtName);
-  }
+  // }
 };
 
 /**
@@ -185,24 +185,25 @@ ww.mode.Core.prototype.getPointerEventNames_ = function(evt, name) {
     msEvent = 'MSPointerDown';
   }
 
+  var isWindows = navigator.userAgent.match(/(Windows)/i) ? true : false;
+  var isIETouch = navigator.userAgent.match(/(Touch)/i) ? true : false;
+
   // var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
   // var android = navigator.userAgent.match(/Android/) ? true : false;
 
-  if (window.navigator.msPointerEnabled) {
-    evts = [msEvent];
+  if (isWindows) {
+    if (Modernizr.touch || isIETouch) {
+      evts.push(touchEvt + '.' + name);
+    }
+
+    evts.push(mouseEvt + '.' + name);
   } else {
     if (Modernizr.touch) {
       evts.push(touchEvt + '.' + name);
     } else {
       evts.push(mouseEvt + '.' + name);
     }
-  }/* else {
-    if (Modernizr.touch) {
-      evts.push(touchEvt + '.' + name);
-    }
-
-    evts.push(mouseEvt + '.' + name);
-  }*/
+  }
 
   return evts.join(' ');
 };
