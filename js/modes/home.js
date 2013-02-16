@@ -11,7 +11,7 @@ ww.mode.HomeMode = function(containerElem, assetPrefix) {
   this.preloadSound('i.mp3');
   this.preloadSound('o.mp3');
 
-  goog.base(this, containerElem, assetPrefix, 'home', true, true);
+  goog.base(this, containerElem, assetPrefix, 'home', true, true, false, true);
 
   this.patternMatcher_ = new ww.PatternMatcher(ww.mode.modes);
 

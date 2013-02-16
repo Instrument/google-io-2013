@@ -12,7 +12,7 @@ goog.require('ww.util');
  * @param {Boolean} wantsPhysics Whether this mode needs physics.
  */
 ww.mode.Core = function(containerElem,
-  assetPrefix, name, wantsAudio, wantsDrawing, wantsPhysics) {
+  assetPrefix, name, wantsAudio, wantsDrawing, wantsPhysics, wantsRetina) {
 
   // Define transform prefix.
   this.prefix_ = Modernizr.prefixed('transform');
@@ -32,6 +32,9 @@ ww.mode.Core = function(containerElem,
 
   // By default, modes don't need audio.
   this.wantsPhysics_ = wantsPhysics || false;
+
+  // By default, modes don't need retina scaling.
+  this.wantsRetina_ = (wantsRetina && window.devicePixelRatio > 1) || false;
 
   // By default, modes don't need rAF.
   this.wantsRenderLoop_ = this.wantsDrawing_ || this.wantsPhysics_ || false;
@@ -250,10 +253,20 @@ ww.mode.Core.prototype.onResize = function(redraw) {
 
   this.updateBounds();
 
+  var scale = 1;
+  if (this.wantsRetina_) {
+    scale = 2;
+  }
+
   if (this.paperCanvas_) {
-    this.paperCanvas_.width = this.width_;
-    this.paperCanvas_.height = this.height_;
-    paper['view']['setViewSize'](this.width_, this.height_);
+    this.paperCanvas_.width = this.width_ * scale;
+    this.paperCanvas_.height = this.height_ * scale;
+    paper['view']['setViewSize'](this.width_ * scale, this.height_ * scale);
+
+    $(this.paperCanvas_).css({
+      'width': this.width_,
+      'height': this.height_
+    });
   }
 
   if (redraw) {
@@ -367,8 +380,17 @@ ww.mode.Core.prototype.redraw = function() {
 ww.mode.Core.prototype.onFrame = function(delta) {
   // Render paper if we're using it
   if (this.paperCanvas_) {
+    var scale = 1;
+    if (this.wantsRetina_) {
+      scale = 2;
+    }
+
     paper = this.paperScope_;
+    var pctx = this.paperCanvas_.getContext('2d');
+    pctx.save();
+    pctx.scale(scale, scale);
     paper['view']['draw']();
+    pctx.restore();
   }
 };
 
@@ -790,10 +812,21 @@ ww.mode.Core.prototype.transformElem_ = function(elem, value) {
 ww.mode.Core.prototype.getPaperCanvas_ = function(doNotAdd) {
   if (!this.paperCanvas_) {
     this.paperCanvas_ = document.createElement('canvas');
-    this.paperCanvas_.width = this.width_;
-    this.paperCanvas_.height = this.height_;
+
+    var scale = 1;
+    if (this.wantsRetina_) {
+      scale = 2;
+    }
+
+    this.paperCanvas_.width = this.width_ * scale;
+    this.paperCanvas_.height = this.height_ * scale;
 
     if (!doNotAdd) {
+      $(this.paperCanvas_).css({
+        'width': this.width_,
+        'height': this.height_
+      });
+
       $(this.containerElem_).prepend(this.paperCanvas_);
     }
 
