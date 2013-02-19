@@ -425,8 +425,6 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   this.setupStarCanvas_();
 
-  var canvas = this.getPaperCanvas_();
-
   var self = this;
 
   var lastPos = new paper['Point'](0, 0);
