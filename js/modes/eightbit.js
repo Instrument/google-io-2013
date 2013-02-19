@@ -411,7 +411,7 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
   var increment = Math.round(size * 80) / 4;
 
   for (i = 0; i < pixelData.data.length; i += increment) {
-    if (pixelData.data[i + 3] != 0) {
+    if (pixelData.data[i + 3] !== 0) {
       var r = pixelData.data[i];
       var g = pixelData.data[i + 1];
       var b = pixelData.data[i + 2];
