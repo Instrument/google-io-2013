@@ -1,7 +1,7 @@
 goog.require('ww.mode.Core');
 goog.provide('ww.mode.PinataMode');
 
-TWOPI = TWOPI || Math.PI * 2;
+var TWOPI = TWOPI || Math.PI * 2;
 
 /**
  * @constructor
@@ -13,15 +13,16 @@ ww.mode.PinataMode = function(containerElem, assetPrefix) {
   this.preloadSound('whoosh-1.wav');
   this.preloadSound('whoosh-2.wav');
 
-  goog.base(this, containerElem, assetPrefix, 'pinata', true, true, true);
+  goog.base(this, containerElem, assetPrefix, 'pinata', true, true, true, false);
 
   this.ballSpeed_ = 250;
 
   this.COLORS_ = ['#0da960', '#4387fd', '#e04a3f', '#ffd24d'];
   this.NUM_COLORS = this.COLORS_.length;
+
+  this.canvas_ = document.getElementById('pinata-canvas');
 };
 goog.inherits(ww.mode.PinataMode, ww.mode.Core);
-
 
 /**
  * Initailize PinataMode.
@@ -34,82 +35,41 @@ ww.mode.PinataMode.prototype.init = function() {
   this.force_ = new ConstantForce(new Vector(0, 1000));
   this.originO_ = this.$letterO_.attr('cx') + ', ' + this.$letterO_.attr('cy');
   this.originI_ = this.$letterI_.attr('cx') + ', ' + this.$letterI_.attr('cy');
-};
 
+  // particle representation of robot
+  if (!this.robotParticle_) {
+    this.robotParticle_ = new Particle(5.0);
+    this.robotParticle_.fixed = true;
+  }
 
-/**
- * Bind mouse/touch events which focus is gained.
- */
-ww.mode.PinataMode.prototype.didFocus = function() {
-  goog.base(this, 'didFocus');
+  this.robotParticle_.behaviours = [this.collision_];
+  this.collision_.pool = [this.robotParticle_];
 
-  this.$letterO_.css('opacity', 1);
+  this.physicsWorld_.particles = [this.robotParticle_];
 
-  this.whackCount_ = 0;
+  this.recenter_();
+
   this.cracks_ = this.cracks_ || $('[id*=crack-]');
-  this.cracks_.css('opacity', 0);
   this.maxWhacks_ = this.maxWhacks_ || this.cracks_.length;
 
   this.crackedElm_ = this.crackedElm_ || $('#cracked');
-  this.crackedElm_.css('opacity', 0);
   this.crackedParts_ = this.crackedParts_ || $('[id*=part-]');
   this.maxParts_ = this.maxParts_ || this.crackedParts_.length;
 
-  this.$canvas_ = this.$canvas_ || $('#pinata-canvas');
-  this.canvas_ = this.$canvas_[0];
-  this.canvas_.width = this.width_;
-  this.canvas_.height = this.height_;
-  this.ctx_ = this.ctx_ || this.canvas_.getContext('2d');
-
-  var devicePixelRatio = window.devicePixelRatio || 1,
-      backingStoreRatio = this.ctx_.webkitBackingStorePixelRatio ||
-                          this.ctx_.mozBackingStorePixelRatio ||
-                          this.ctx_.msBackingStorePixelRatio ||
-                          this.ctx_.oBackingStorePixelRatio ||
-                          this.ctx_.backingStorePixelRatio || 1,
-
-      ratio = devicePixelRatio / backingStoreRatio;
-
-  // upscale the this.canvas_ if the two ratios don't match
-  if (devicePixelRatio !== backingStoreRatio) {
-    var oldWidth = this.canvas_.width;
-    var oldHeight = this.canvas_.height;
-
-    this.ratio_ = ratio;
-
-    this.canvas_.width = oldWidth * ratio;
-    this.canvas_.height = oldHeight * ratio;
-
-    this.canvas_.style.width = oldWidth + 'px';
-    this.canvas_.style.height = oldHeight + 'px';
-
-    this.ctx_.scale(ratio, ratio);
-  }
-
-  this.scale_ = Math.round(this.boundsWidth_ * 0.005);
-
-  this.bounds_ = this.$letterO_[0].getBoundingClientRect();
-  this.center_ = this.center_ || {};
-  this.center_['x'] = ~~(this.bounds_['left'] + (this.bounds_['width'] / 2));
-  this.center_['y'] = ~~(this.bounds_['top'] + (this.bounds_['height'] / 2));
-
-  // particle representation of robot
-  var robot = new Particle(5.0);
-  robot.setRadius(this.bounds_['width']);
-  robot.fixed = true;
-  robot.moveTo(new Vector(this.center_['x'], this.center_['y']));
-
-  this.collision_.pool = [];
-  this.collision_.pool.push(robot);
-  robot.behaviours.push(this.collision_);
-
-  this.physicsWorld_.particles = [];
-  this.physicsWorld_.particles.push(robot);
-
-  this.prepopulate_(150);
-  this.current_ = 1;
+  this.resetToStart_();
 };
 
+/**
+ * Reset styles to default.
+ * @private
+ */
+ww.mode.PinataMode.prototype.resetToStart_ = function() {
+  this.$letterO_.css('opacity', 1);
+  this.whackCount_ = 0;
+
+  this.cracks_.css('opacity', 0);
+  this.crackedElm_.css('opacity', 0);
+};
 
 /**
  * On resize of the window, ecalculate the center and scale.
@@ -118,36 +78,76 @@ ww.mode.PinataMode.prototype.didFocus = function() {
 ww.mode.PinataMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', redraw);
 
-  if (this.canvas_) {
-    if (this.ratio_) {
-      var oldWidth = this.canvas_.width;
-      var oldHeight = this.canvas_.height;
+  this.recenter_();
 
-      this.canvas_.width = oldWidth * this.ratio_;
-      this.canvas_.height = oldHeight * this.ratio_;
-
-      this.canvas_.style.width = oldWidth + 'px';
-      this.canvas_.style.height = oldHeight + 'px';
-
-      this.ctx_.scale(this.ratio_, this.ratio_);
-    } else {
-      this.canvas_.width = this.width_;
-      this.canvas_.height = this.height_;
-    }
+  var scale = 1;
+  if (this.wantsRetina_) {
+    scale = 2;
   }
 
-  this.scale_ = Math.round(this.boundsWidth_ * 0.005);
+  this.canvas_.width = this.width_ * scale;
+  this.canvas_.height = this.height_ * scale;
 
-  this.bounds_ = this.$letterO_[0].getBoundingClientRect();
-  this.center_ = this.center_ || {};
-  this.center_['x'] = ~~(this.bounds_['left'] + (this.bounds_['width'] / 2));
-  this.center_['y'] = ~~(this.bounds_['top'] + (this.bounds_['height'] / 2));
+  $(this.canvas_).css({
+    'width': this.width_,
+    'height': this.height_
+  });
 
-  if (this.physicsWorld_.particles && this.physicsWorld_.particles.length > 0) {
-    this.moveAllCandyBack_();
+  if (redraw) {
+    this.redraw();
   }
 };
 
+/**
+ * Center the physics world after resize.
+ * @private
+ */
+ww.mode.PinataMode.prototype.recenter_ = function() {
+  this.bounds_ = this.$letterO_[0].getBoundingClientRect();
+
+  this.center_ = {
+    'x': ~~(this.bounds_['left'] + (this.bounds_['width'] / 2)),
+    'y': ~~(this.bounds_['top'] + (this.bounds_['height'] / 2))
+  };
+
+  this.robotParticle_.setRadius(this.bounds_['width']);
+  this.robotParticle_.moveTo(new Vector(this.center_['x'], this.center_['y']));
+};
+
+/**
+ * Step forward in time for physics.
+ * @param {Number} delta Ms since last step.
+ */
+ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
+  goog.base(this, 'stepPhysics', delta);
+
+  var forRemoval = [];
+
+  for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
+    var ball = this.physicsWorld_.particles[i];
+    var radius = ball.radius;
+    var r2 = radius * 2;
+    var r6 = radius * 6;
+
+    // ball is out of bounds
+    if (ball.pos && ball.pos.x > this.width_ + r6 ||
+        ball.pos.x < 0 - r6 ||
+        ball.pos.y > this.height_ + r6 ||
+        ball.pos.y < 0 - r6) {
+      
+      forRemoval.push(ball);
+    }
+  }
+
+  // Remove from world and collision pool
+  for (var j = 0, l2 = forRemoval.length; j < l2; j++) {
+    var idx1 = this.physicsWorld_.particles.indexOf(forRemoval[j]);
+    this.physicsWorld_.particles.splice(idx1, 1);
+
+    var idx2 = this.collision_.pool.indexOf(forRemoval[j]);
+    this.collision_.pool.splice(idx2, 1);
+  }
+};
 
 /**
  * Draw a single frame.
@@ -156,78 +156,71 @@ ww.mode.PinataMode.prototype.onResize = function(redraw) {
 ww.mode.PinataMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
-  var ctx_;
-  if (this.canvas_) {
-    ctx_ = this.canvas_.getContext('2d');
-    ctx_.clearRect(0, 0, this.width_, this.height_);
+  var ctx = this.canvas_.getContext('2d');
+  ctx.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
+
+  var scale = 1;
+  if (this.wantsRetina_) {
+    scale = 2;
   }
 
-  var ball, radius, r2, r6;
+  ctx.save();
+  ctx.scale(scale, scale);
+
   for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
-    ball = this.physicsWorld_.particles[i];
-    radius = ball.radius;
-    r2 = radius * 2;
-    r6 = radius * 6;
+    var ball = this.physicsWorld_.particles[i];
+    var radius = ball.radius;
+    var r2 = radius * 2;
+    var r6 = radius * 6;
 
-    if (ball.pos && ball.pos.x > this.width_ + r6 ||
-        ball.pos.x < 0 - r6 ||
-        ball.pos.y > this.height_ + r6 ||
-        ball.pos.y < 0 - r6) {
-      // ball is out of bounds, so make it hidden/fixed
-      ball.fixed = true;
-    }
+    ball['rotate'] += 10 * delta;
 
-    if (!ball.fixed) {
-      ball['rotate'] += 10 * delta;
+    ctx.save();
+    ctx.fillStyle = ball['color'];
+    ctx.translate(ball.pos.x, ball.pos.y);
+    ctx.rotate(ball['rotate']);
 
-      ctx_.save();
-      ctx_.fillStyle = ball['color'];
-      ctx_.translate(ball.pos.x, ball.pos.y);
-      ctx_.rotate(ball['rotate']);
+    // pill shape
+    ctx.beginPath();
+    ctx.arc(-radius, 0, radius, 0, TWOPI);
+    ctx.arc(radius, 0, radius, 0, TWOPI);
+    ctx.fillRect(-radius, -radius, r2, r2);
+    ctx.fill();
 
-      // pill shape
-      ctx_.beginPath();
-      ctx_.arc(-radius, 0, radius, 0, TWOPI);
-      ctx_.arc(radius, 0, radius, 0, TWOPI);
-      ctx_.fillRect(-radius, -radius, r2, r2);
-      ctx_.fill();
-
-      ctx_.restore();
-    }
+    ctx.restore();
   }
+
+  ctx.restore();
 };
 
 
 /**
- * Prepopulate balls.
- * @param {Number} number Number of balls to prepopulate.
+ * Create a particle and eject it from a position.
  * @private
+ * @param {Number} x X from point.
+ * @param {Number} y Y from point.
+ * @param {Number} dir Direction.
  */
-ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
-  var ball, dir;
-  for (var i = 0; i < number; i++) {
-    dir = (i % 2 === 0) ? -1 : 1;
-    ball = new Particle(Random(1, 5.0));
-    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2.5);
+ww.mode.PinataMode.prototype.ejectParticle_ = function(x, y, dir) {
+  var ball = new Particle(Random(2, 5.0));
+  ball.setRadius(ball.mass * 3);
 
-    ball.fixed = true; // disable from drawing
+  ball['rotate'] = ~~Random(-360, 360) * (Math.PI / 180);
+  ball['color'] = this.COLORS_[~~Random(0, this.NUM_COLORS)];
 
-    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir;
-    ball['startY'] = this.center_['y'] + ball.radius / 2;
-    ball['rotate'] = ~~Random(-360, 360) * (Math.PI / 180);
-    ball['color'] = this.COLORS_[~~Random(0, this.NUM_COLORS)];
+  ball.moveTo(new Vector(
+    x + (ball.radius / 2) * dir,
+    y + (ball.radius / 2)
+  ));
 
-    ball.moveTo(new Vector(0, 0));
+  ball.vel = new Vector(Random(3, 6) * this.ballSpeed_ * dir,
+                        Random(-3, 1.5) * this.ballSpeed_);
 
-    ball.vel = new Vector(Random(3, 6) * this.ballSpeed_ * dir,
-                          Random(-3, 1.5) * this.ballSpeed_);
+  ball.behaviours.push(this.force_);
+  this.collision_.pool.push(ball);
+  ball.behaviours.push(this.collision_);
 
-    ball.behaviours.push(this.force_);
-
-    this.physicsWorld_.particles.push(ball);
-  }
-
-  this.deactive_ = this.physicsWorld_.particles.length;
+  this.physicsWorld_.particles.push(ball);
 };
 
 /**
@@ -235,46 +228,17 @@ ww.mode.PinataMode.prototype.prepopulate_ = function(number) {
  * @private
  */
 ww.mode.PinataMode.prototype.activateBalls_ = function() {
-  var ball,
-      pop = Math.min(this.deactive_, ~~Random(1, 3) + ~~(this.whackCount_ / 2));
+  var pop = ~~Random(1, 3) + ~~(this.whackCount_ / 3);
 
-  for (var i = this.current_; i <= this.current_ + pop; i++) {
-    ball = this.physicsWorld_.particles[i];
-    ball.moveTo(new Vector(ball['startX'], ball['startY']));
-    this.collision_.pool.push(ball);
-    ball.behaviours.push(this.collision_);
-    ball.fixed = false;
-  }
-
-  this.deactive_ = this.deactive_ - pop;
-  this.current_ = this.current_ + pop;
-};
-
-
-/**
- * Hide, resize and move all balls back to original start positions.
- * Start positions updated to reflect new center.
- * @param {Boolean} hide Hide balls when moving back.
- * @private
- */
-ww.mode.PinataMode.prototype.moveAllCandyBack_ = function(hide) {
-  hide = hide || true;
-
-  this.physicsWorld_.particles[0].moveTo(
-      new Vector(this.center_['x'], this.center_['y']));
-
-  var ball, dir;
-  for (var i = 1, l = this.physicsWorld_.particles.length; i < l; i++) {
-    dir = (i % 2 === 0) ? -1 : 1;
-    ball = this.physicsWorld_.particles[i];
-    ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2.5);
-    ball['startX'] = this.center_['x'] + ball.radius / 2 * dir;
-    ball['startY'] = this.center_['y'] + ball.radius / 2;
-    ball.moveTo(new Vector(0, 0));
-    ball.fixed = true;
+  for (var i = 0; i <= pop; i++) {
+    var dir = (i % 2 === 0) ? -1 : 1;
+    this.ejectParticle_(
+      this.center_['x'],
+      this.center_['y'],
+      dir
+    );
   }
 };
-
 
 /**
  * Method called when activating the I.
@@ -411,9 +375,8 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
         animateBack.onComplete(function() {
           self.$letterO_.css('opacity', 1);
           self.crackedElm_.css('opacity', 0);
-          self.didUnfocus();
           self.showReload(function() {
-            self.didFocus();
+            self.resetToStart_();
           });
         });
       }
