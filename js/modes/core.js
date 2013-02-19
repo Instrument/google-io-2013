@@ -27,6 +27,11 @@ ww.mode.Core = function(containerElem,
   var aCtx = ww.util.getAudioContextConstructor();
   this.wantsAudio_ = (wantsAudio && aCtx) || false;
 
+  if (this.wantsAudio_) {
+    ww.mode.Core.audioContext = ww.mode.Core.audioContext || new aCtx();
+    this.audioContext_ = ww.mode.Core.audioContext;
+  }
+
   // By default, modes don't need audio.
   this.wantsDrawing_ = wantsDrawing || false;
 
@@ -46,42 +51,44 @@ ww.mode.Core = function(containerElem,
   this.height_ = 0;
 
   var self = this;
-  setTimeout(function() {
-    self.$bounds = self.find('.bounds');
-    self.$letterI_ = self.find('.letter-i');
-    self.$letterO_ = self.find('.letter-o');
-
-    self.init();
-
-    // self.$window_.resize(ww.util.throttle(function() {
-    //   self.onResize(true);
-    // }, 50));
-    self.onResize();
-
-    var modeDetails = ww.mode.findModeByName(self.name_);
-
-    if (modeDetails.pattern) {
-      self.$back = $('<div class="back"></div>').prependTo(self.containerElem_);
-
-      var modePattern = ww.util.pad(modeDetails.pattern.toString(2),
-        modeDetails.len);
-      var modeHTML = modePattern.replace(/1/g,
-        '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
-
-      $('<div class="code">' + modeHTML +
-        '</div>').prependTo(self.containerElem_);
-    }
-
-    // Autofocus
-    self.focus_();
+  // setTimeout(function() {
 
     // Mark this mode as ready.
-    self.log('Starting preload');
-    self.loadSounds_(function() {
+    this.log('Starting preload');
+    this.loadSounds_(function() {
       self.log('Preload complete');
+
+      self.$bounds = self.find('.bounds');
+      self.$letterI_ = self.find('.letter-i');
+      self.$letterO_ = self.find('.letter-o');
+
+      self.init();
+
+      // self.$window_.resize(ww.util.throttle(function() {
+      //   self.onResize(true);
+      // }, 50));
+      self.onResize();
+
+      var modeDetails = ww.mode.findModeByName(self.name_);
+
+      if (modeDetails.pattern) {
+        self.$back = $('<div class="back"></div>').prependTo(self.containerElem_);
+
+        var modePattern = ww.util.pad(modeDetails.pattern.toString(2),
+          modeDetails.len);
+        var modeHTML = modePattern.replace(/1/g,
+          '<span class="i"></span>').replace(/0/g, '<span class="o"></span>');
+
+        $('<div class="code">' + modeHTML +
+          '</div>').prependTo(self.containerElem_);
+      }
+
+      // Autofocus
+      self.focus_();
+      
       self.ready_();
     });
-  }, 10);
+  // }, 10);
 };
 
 /**
@@ -723,12 +730,6 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
  * @return {AudioContext} The shared audio context.
  */
 ww.mode.Core.prototype.getAudioContext_ = function() {
-  if (!this.audioContext_) {
-    var aCtx = ww.util.getAudioContextConstructor();
-    ww.mode.Core.audioContext = ww.mode.Core.audioContext || new aCtx();
-    this.audioContext_ = ww.mode.Core.audioContext;
-  }
-
   return this.audioContext_;
 };
 
