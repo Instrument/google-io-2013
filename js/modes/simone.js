@@ -90,6 +90,9 @@ ww.mode.SimoneMode.prototype.init = function() {
     this.analyser.fftSize = 512;
     this.analyser.smoothingTimeConstant = 0.85;
 
+    this.gainNode = aCtx.createGainNode();
+    this.gainNode.gain.value = 0.1;
+
     this.notes = [
       {
         // red
@@ -244,7 +247,8 @@ ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
     if (this.wantsAudio_) {
       fadeInQuick['onStart'](function() {
         self.source.connect(self.analyser);
-        self.analyser.connect(self.audioContext_.destination);
+        self.analyser.connect(self.gainNode);
+        self.gainNode.connect(self.audioContext_.destination);
         self.source.noteOn(0);
       });
     }
@@ -423,7 +427,8 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
                 self.source['detune']['value'] = note['detune'];
 
                 self.source.connect(self.analyser);
-                self.analyser.connect(self.audioContext_.destination);
+                self.analyser.connect(self.gainNode);
+                self.gainNode.connect(self.audioContext_.destination);
                 self.source.noteOn(0);
               }
             });
