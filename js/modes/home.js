@@ -494,10 +494,12 @@ ww.mode.HomeMode.prototype.onFrame = function(delta) {
     }
   }
 
-  this.fillI_();
-  this.fillO_();
+  if (this.paperI_ && this.paperO_) {
+    this.fillI_();
+    this.fillO_();
+  }
 
-  if (delta > 0) {
+  if (delta > 0 && this.paperI_ && this.paperO_) {
     this.updateVectors_(this.paperI_);
     this.updatePoints_(this.paperI_);
 
