@@ -47,7 +47,8 @@ function testWwModeAsciiModeDrawI_() {
   var tempPosition = mode.paperI_['position']['x'];
   var tempSize = mode.paperI_['bounds']['width'];
 
-  mode.iWidth_ = 20;
+  mode.iWidth = 20;
+  mode.iCenter['x'] = 20;
 
   mode.drawI_();
 
@@ -68,8 +69,8 @@ function testWwModeAsciiModeDrawO_() {
   var tempPosition = mode.paperO_['position']['x'];
   var tempSize = mode.paperO_['bounds']['width'];
 
-  mode.oX_ = 20;
-  mode.oRad_ = 20;
+  mode.oCenter['x'] = 20;
+  mode.oRad = 20;
 
   mode.drawO_();
 
@@ -90,7 +91,7 @@ function testWwModeAsciiModeDrawSlash_() {
 
   var tempPosition = mode.paperSlash_['segments'][0]['point']['x'];
 
-  mode.screenCenterX_ = 20;
+  mode.slashStartX = 20;
 
   mode.drawSlash_();
 
@@ -99,13 +100,32 @@ function testWwModeAsciiModeDrawSlash_() {
 }
 
 function testWwModeAsciiModeInit() {
-  mode.activateO();
+  mode.paperCanvas_.height = 0;
+  mode.paperI_ = false;
+  mode.paperO_ = false;
 
-  mode.oX_ = 10;
+  var iCreated = false;
+  var oCreated = false;
+
+  mode.constructor.prototype.drawI_ = function() {
+    iCreated = true;
+  }
+
+  mode.constructor.prototype.drawO_ = function() {
+    oCreated = true;
+  }
 
   mode.init();
 
-  assertEquals('lastClick_ should equal oX_', mode.oX_, mode.lastClick_['x']);
+  assertFalse('I should not be detected as created yet', iCreated);
+  assertFalse('I should not be detected as created yet', oCreated);
+
+  mode.paperCanvas_.height = 10;
+
+  mode.init();
+
+  assertTrue('I should now be detected as created', iCreated);
+  assertTrue('O should now be detected as created', oCreated);
 }
 
 function testWwModeAsciiModeOnResize() {
@@ -140,20 +160,16 @@ function testWwModeAsciiModeUpdateVectors_() {
   mode.init();
   mode.onResize();
 
-  mode.oRad_ = 10;
-
-  mode.paperI_['vectors'][0]['length'] = 0;
+  mode.paperI_['vectors'][0]['velocity'] = 10;
 
   mode.updateVectors_(mode.paperI_);
 
   assertNotEquals('paperI_ should now have a new length', 0,
     mode.paperI_['vectors'][0]['length']);
 
-
-  mode.paperO_['vectors'][0]['length'] = 0;
+  mode.paperO_['vectors'][0]['velocity'] = 10;
 
   mode.updateVectors_(mode.paperO_);
-
 
   assertNotEquals('paperO_ should now have a new length', 0,
     mode.paperO_['vectors'][0]['length']);
@@ -168,7 +184,7 @@ function testWwModeAsciiModeUpdatePoints_() {
   mode.updateVectors_(mode.paperI_);
   mode.updatePoints_(mode.paperI_);
 
-  var tempPoint = mode.paperI_['vectors'][0]['add'](mode.iCenter_);
+  var tempPoint = mode.paperI_['vectors'][0]['add'](mode.iCenter);
 
   assertEquals('paperI_ should match its static coordinates', tempPoint['x'],
     mode.paperI_['segments'][0]['point']['x']);
@@ -178,16 +194,19 @@ function testWwModeAsciiModeUpdatePoints_() {
   mode.updateVectors_(mode.paperO_);
   mode.updatePoints_(mode.paperO_);
 
-  tempPoint = mode.paperO_['vectors'][0]['add'](mode.oCenter_);
+  tempPoint = mode.paperO_['vectors'][0]['add'](mode.oCenter);
 
   assertEquals('paperO_ should match its static coordinates', tempPoint['x'],
     mode.paperO_['segments'][0]['point']['x']);
 }
 
 function testWwModeAsciiModeStepPhysics() {
-  mode.oRad_ = 10;
+  mode.oRad = 10;
   var tempX1 = mode.paperI_['segments'][0]['point']['x'];
   var tempX2 = mode.paperO_['segments'][0]['point']['x'];
+
+  mode.paperI_['vectors'][0]['velocity'] = 10;
+  mode.paperO_['vectors'][0]['velocity'] = 10;
 
   mode.stepPhysics();
 
