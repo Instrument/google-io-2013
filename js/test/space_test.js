@@ -133,13 +133,13 @@ function testWwModeSpaceModeDrawSlash_() {
 
 // Test that the slash gets redrawn if paperSlash_ already exists.
 function testWwModeSpaceModeDrawSlash_() {
-  mode.iX_ = 1;
-  mode.iWidth_ = 1;
+  var originalValue = mode.slashEndX_;
+  mode.slashEndX_ = 10;
 
   // slashEnd_['x'] should equal iX_ + iWidth_ after being redrawn.
   mode.drawSlash_();
 
-  assertEquals('paperSlash_ should have been redrawn', 2, mode.slashEnd_['x']);
+  assertNotEquals('paperSlash_ should have been redrawn', originalValue, mode.slashEnd_['x']);
 }
 
 // Make sure initial variables are created.
@@ -173,11 +173,12 @@ function testWwModeSpaceModeInit() {
 
 // Check to see if drawI() and drawO() get called.
 function testWwModeSpaceModeInit() {
-  var iCreated = false;
-  var oCreated = false;
-
+  mode.paperCanvas_.height = 0;
   mode.paperI_ = false;
   mode.paperO_ = false;
+
+  var iCreated = false;
+  var oCreated = false;
 
   mode.constructor.prototype.drawI_ = function() {
     iCreated = true;
@@ -192,8 +193,7 @@ function testWwModeSpaceModeInit() {
   assertFalse('I should not be detected as created yet', iCreated);
   assertFalse('I should not be detected as created yet', oCreated);
 
-  mode.paperI_ = true;
-  mode.paperO_ = true;
+  mode.paperCanvas_.height = 10;
 
   mode.init();
 
@@ -422,6 +422,13 @@ function testWwModeSpaceModeModCoords_() {
 }
 
 function testWwModeSpaceModeOnFrame() {
+  mode.width_ = 500;
+  mode.height_ = 500;
+  mode.updateBounds();
+  mode.setPaperShapeData();
+  mode.drawI_();
+  mode.drawO_();
+
   mode.iClicked_ = true;
   mode.oClicked_ = true;
 
