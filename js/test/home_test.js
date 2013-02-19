@@ -248,14 +248,14 @@ function testWwModeHomeModeUpdateVectors_() {
   mode.init();
   mode.onResize();
 
-  mode.paperI_['vectors'][0]['length'] = 0;
+  mode.paperI_['vectors'][0]['velocity'] = 10;
 
   mode.updateVectors_(mode.paperI_);
 
   assertNotEquals('paperI_ should now have a new length', 0,
-    mode.paperI_['vectors'][0]['velocity']);
+    mode.paperI_['vectors'][0]['length']);
 
-  mode.paperO_['vectors'][0]['length'] = 0;
+  mode.paperO_['vectors'][0]['velocity'] = 10;
 
   mode.updateVectors_(mode.paperO_);
 
