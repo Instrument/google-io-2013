@@ -10,7 +10,7 @@ goog.require('ww.mode.EightBitMode');
 // goog.require('ww.mode.ExplodeMode');
 // goog.require('ww.mode.FireplaceMode');
 goog.require('ww.mode.HomeMode');
-goog.require('ww.mode.MetaBallMode');
+// goog.require('ww.mode.MetaBallMode');
 goog.require('ww.mode.PinataMode');
 goog.require('ww.mode.PongMode');
 goog.require('ww.mode.RocketMode');
@@ -61,7 +61,7 @@ ww.mode.register('pinata', ww.mode.PinataMode, 15, 8); // 00001111
 ww.mode.register('bacon', ww.mode.BaconMode, 144, 8); // 10010000
 ww.mode.register('simone', ww.mode.SimoneMode, 211, 8); // 11010011
 ww.mode.register('eightbit', ww.mode.EightBitMode, 83, 8); // 01010011
-ww.mode.register('metaball', ww.mode.MetaBallMode, 170, 8); // 10101010
+// ww.mode.register('metaball', ww.mode.MetaBallMode, 170, 8); // 10101010
 
 // Audio available?
 if (ww.util.getAudioContextConstructor()) {
