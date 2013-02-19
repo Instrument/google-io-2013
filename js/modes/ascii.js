@@ -403,14 +403,16 @@ ww.mode.AsciiMode.prototype.updatePoints_ = function(path) {
 ww.mode.AsciiMode.prototype.stepPhysics = function(delta) {
   goog.base(this, 'stepPhysics', delta);
 
-  this.fillI_();
-  this.fillO_();
+  if (this.paperI_ && this.paperO_) {
+    this.fillI_();
+    this.fillO_();
 
-  this.updateVectors_(this.paperI_);
-  this.updatePoints_(this.paperI_);
+    this.updateVectors_(this.paperI_);
+    this.updatePoints_(this.paperI_);
 
-  this.updateVectors_(this.paperO_);
-  this.updatePoints_(this.paperO_);
+    this.updateVectors_(this.paperO_);
+    this.updatePoints_(this.paperO_);
+  }
 };
 
 /**

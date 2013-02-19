@@ -1,9 +1,9 @@
 #nav {
   position: absolute;
   z-index: 1000;
-  top: 30px;
-  left: 30px;
-  right: 30px;
+  top: 15px;
+  left: 15px;
+  right: 20px;
   height: 35px; }
   #logo {
     opacity: 0.5;
@@ -106,8 +106,8 @@
       position: absolute;
       top: -4px;
       right: -10px;
-      width: 32px;
-      height: 32px;
+      width: 35px;
+      height: 31px;
       cursor: pointer;
       background-image: image-url('shared/menu.svg');
       background-repeat: no-repeat;
@@ -166,8 +166,8 @@
 
   #dropdown {
     position: absolute;
-    top: 65px;
-    right: 20px;
+    top: 50px;
+    right: 10px;
     background: white;
     border-top: 10px solid #d1d1d1;
     border-right: 1px solid #d1d1d1;

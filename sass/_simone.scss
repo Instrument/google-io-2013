@@ -20,7 +20,7 @@
 
 #play-again {
   background: transparent image-url('shared/refresh.svg') no-repeat 50% 50%;
-  @include background-size(100%);
+  @include background-size(25px);
   bottom: 7%;
   cursor: pointer;
   display: none;
