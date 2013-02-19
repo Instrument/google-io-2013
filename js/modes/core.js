@@ -27,6 +27,11 @@ ww.mode.Core = function(containerElem,
   var aCtx = ww.util.getAudioContextConstructor();
   this.wantsAudio_ = (wantsAudio && aCtx) || false;
 
+  if (this.wantsAudio_) {
+    ww.mode.Core.audioContext = ww.mode.Core.audioContext || new aCtx();
+    this.audioContext_ = ww.mode.Core.audioContext;
+  }
+
   // By default, modes don't need audio.
   this.wantsDrawing_ = wantsDrawing || false;
 
@@ -723,12 +728,6 @@ ww.mode.Core.prototype.stepPhysics = function(delta) {
  * @return {AudioContext} The shared audio context.
  */
 ww.mode.Core.prototype.getAudioContext_ = function() {
-  if (!this.audioContext_) {
-    var aCtx = ww.util.getAudioContextConstructor();
-    ww.mode.Core.audioContext = ww.mode.Core.audioContext || new aCtx();
-    this.audioContext_ = ww.mode.Core.audioContext;
-  }
-
   return this.audioContext_;
 };
 
