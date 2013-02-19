@@ -405,7 +405,7 @@ ww.mode.PongMode.prototype.stepPhysics = function(delta) {
     targetPaddleY = this.height_ - (this.paddleHeight_ / 2);
   }
 
-  var newPaddleY = (targetPaddleY - currentPaddleY) * 0.5 * (delta * 10);
+  var newPaddleY = (targetPaddleY - currentPaddleY) * 0.7 * (delta * 10);
   this.paddleY_ = currentPaddleY + newPaddleY;
 
   // Speed up
