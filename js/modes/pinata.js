@@ -13,7 +13,7 @@ ww.mode.PinataMode = function(containerElem, assetPrefix) {
   this.preloadSound('whoosh-1.wav');
   this.preloadSound('whoosh-2.wav');
 
-  goog.base(this, containerElem, assetPrefix, 'pinata', true, false, true);
+  goog.base(this, containerElem, assetPrefix, 'pinata', true, true, true);
 
   this.ballSpeed_ = 250;
 
@@ -150,14 +150,16 @@ ww.mode.PinataMode.prototype.onResize = function(redraw) {
 
 
 /**
- * Step forward in time for physics.
- * @param {Number} delta Ms since last step.
+ * Draw a single frame.
+ * @param {Number} delta Ms since last draw.
  */
-ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
-  goog.base(this, 'stepPhysics', delta);
+ww.mode.PinataMode.prototype.onFrame = function(delta) {
+  goog.base(this, 'onFrame', delta);
 
+  var ctx_;
   if (this.canvas_) {
-    this.ctx_.clearRect(0, 0, this.width_, this.height_);
+    ctx_ = this.canvas_.getContext('2d');
+    ctx_.clearRect(0, 0, this.width_, this.height_);
   }
 
   var ball, radius, r2, r6;
@@ -177,20 +179,20 @@ ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
 
     if (!ball.fixed) {
       ball['rotate'] += 10 * delta;
-      this.ctx_.fillStyle = ball['color'];
 
-      this.ctx_.save();
-      this.ctx_.translate(ball.pos.x, ball.pos.y);
-      this.ctx_.rotate(ball['rotate']);
+      ctx_.save();
+      ctx_.fillStyle = ball['color'];
+      ctx_.translate(ball.pos.x, ball.pos.y);
+      ctx_.rotate(ball['rotate']);
 
       // pill shape
-      this.ctx_.beginPath();
-      this.ctx_.arc(-radius, 0, radius, 0, TWOPI);
-      this.ctx_.arc(radius, 0, radius, 0, TWOPI);
-      this.ctx_.fillRect(-radius, -radius, r2, r2);
-      this.ctx_.fill();
+      ctx_.beginPath();
+      ctx_.arc(-radius, 0, radius, 0, TWOPI);
+      ctx_.arc(radius, 0, radius, 0, TWOPI);
+      ctx_.fillRect(-radius, -radius, r2, r2);
+      ctx_.fill();
 
-      this.ctx_.restore();
+      ctx_.restore();
     }
   }
 };
@@ -252,9 +254,12 @@ ww.mode.PinataMode.prototype.activateBalls_ = function() {
 /**
  * Hide, resize and move all balls back to original start positions.
  * Start positions updated to reflect new center.
+ * @param {Boolean} hide Hide balls when moving back.
  * @private
  */
-ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
+ww.mode.PinataMode.prototype.moveAllCandyBack_ = function(hide) {
+  hide = hide || true;
+
   this.physicsWorld_.particles[0].moveTo(
       new Vector(this.center_['x'], this.center_['y']));
 
@@ -265,7 +270,7 @@ ww.mode.PinataMode.prototype.moveAllCandyBack_ = function() {
     ball.setRadius(ball.mass * this.scale_ + this.scale_ * 2.5);
     ball['startX'] = this.center_['x'] + ball.radius / 2 * dir;
     ball['startY'] = this.center_['y'] + ball.radius / 2;
-    ball.moveTo(new Vector(ball['startX'], ball['startY']));
+    ball.moveTo(new Vector(0, 0));
     ball.fixed = true;
   }
 };
