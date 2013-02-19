@@ -266,6 +266,7 @@ ww.mode.Core.prototype.onResize = function(redraw) {
   }
 
   if (this.paperCanvas_) {
+    paper = this.paperScope_;
     this.paperCanvas_.width = this.width_ * scale;
     this.paperCanvas_.height = this.height_ * scale;
     paper['view']['setViewSize'](this.width_ * scale, this.height_ * scale);
