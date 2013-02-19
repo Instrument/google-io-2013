@@ -382,8 +382,8 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
     var part = $(self.crackedParts_[i]);
 
     (function(part, i) {
-      var toX = parseInt(part.data('movedX')) || 0;
-      var toY = parseInt(part.data('movedY')) || 0;
+      var toX = parseInt(part.data('movedX'), 10) || 0;
+      var toY = parseInt(part.data('movedY'), 10) || 0;
 
       var animateBack = new TWEEN.Tween({
         'translateY': toY,
