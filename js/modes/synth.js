@@ -1,7 +1,6 @@
 goog.require('ww.mode.Core');
 goog.provide('ww.mode.SynthMode');
 
-
 /**
  * @constructor
  * @param {Element} containerElem The containing element.
@@ -12,9 +11,8 @@ ww.mode.SynthMode = function(containerElem, assetPrefix) {
 };
 goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 
-
 /**
- * Initailize SynthMode.
+ * Initialize SynthMode.
  */
 ww.mode.SynthMode.prototype.init = function() {
   goog.base(this, 'init');
@@ -48,13 +46,11 @@ ww.mode.SynthMode.prototype.init = function() {
   this.lastFreq = 80;
   this.lastDetune = 650;
   this.lastHue = 0;
-  this.lastXPercent = .5;
-  this.lastYPercent = .5;
+  this.lastXPercent = 0.5;
+  this.lastYPercent = 0.5;
 
   this.waveMap = ['sine', 'square', 'saw', 'triangle'];
-
 };
-
 
 /**
  * Draw a single frame.
@@ -78,17 +74,16 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   var adjustY;
   for (var i = 0, p = this.paths.length; i < p; i++) {
     for (var j = 0, l = data.length / 2; j < l; j++) {
-      newY = this.centerY - (data[j] * .75);
+      newY = this.centerY - (data[j] * 0.75);
       adjustY = newY === this.centerY ? 0 : i * 5;
       this.paths[i]['segments'][j]['point']['y'] = newY + adjustY;
     }
     this.paths[i]['smooth']();
   }
 
-
   // Draw waves.
-  var detune = Math.abs(Math.abs(this.lastDetune / 2400) - 2) + .5;
-  var freq = this.lastFreq * .05; // * 0.00075;
+  var detune = Math.abs(Math.abs(this.lastDetune / 2400) - 2) + 0.5;
+  var freq = this.lastFreq * 0.05; // * 0.00075;
 
   var min = 6;
   var amount = Math.floor(freq > min ? freq : min);
@@ -97,29 +92,28 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   var xAdjust = 100 * this.lastXPercent;
   var yAdjust = 100 * this.lastYPercent;
 
-  for (var j = 0, p = this.wavePaths.length; j < p; j++) {
-    if (this.wavePaths[j]['segments'].length - 1 !== amount) {
-      this.wavePaths[j]['removeSegments']();
-      for (var i = 0; i <= amount; i++) {
+  for (var j2 = 0, p2 = this.wavePaths.length; j2 < p2; j2++) {
+    if (this.wavePaths[j2]['segments'].length - 1 !== amount) {
+      this.wavePaths[j2]['removeSegments']();
+      for (var k = 0; k <= amount; k++) {
         var point = new paper['Point'](
-                      distance * i + j * xAdjust, this.centerY
+                      distance * k + j2 * xAdjust, this.centerY
                     );
-        this.wavePaths[j].add(point);
+        this.wavePaths[j2].add(point);
       }
     }
 
-    for (var i = 0; i <= amount; i++) {
-      var segment = this.wavePaths[j]['segments'][i];
-      var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i);
+    for (var i2 = 0; i2 <= amount; i2++) {
+      var segment = this.wavePaths[j2]['segments'][i];
+      var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i2);
       segment['point']['y'] = (sin * height + this.height_ / 2) +
-                              ((j - 1.5) * yAdjust);
+                              ((j2 - 1.5) * yAdjust);
     }
-    this.wavePaths[j]['strokeColor']['hue'] = this.lastHue;
-    this.wavePaths[j]['smooth']();
+    this.wavePaths[j2]['strokeColor']['hue'] = this.lastHue;
+    this.wavePaths[j2]['smooth']();
   }
 
 };
-
 
 /**
  * Handles a browser window resize.
@@ -150,7 +144,6 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
   this.oTop = this.oOffset.top + this.oRad;
 
   if (this.circle && this.tracker) {
-
     this.circleX = this.circle['position']['x'];
     this.circleY = this.circle['position']['y'];
 
@@ -165,8 +158,7 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
     this.currentRad = this.tracker['bounds']['width'] / 2;
     this.tracker['position']['x'] = this.oLeft;
     this.tracker['position']['y'] = this.oTop;
-    this.tracker['scale']((this.oRad * .08) / this.currentRad);
-
+    this.tracker['scale']((this.oRad * 0.08) / this.currentRad);
   }
 
   if (this.paths) {
@@ -186,15 +178,16 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
   }
 
   var boundingI = this.letterI[0]['getBoundingClientRect']();
+  var iPos = this.letterI.position();
+
   this.waveforms.css({
-    'top': ~~boundingI['top'] + 'px',
-    'left': ~~boundingI['left'] + 'px',
+    'top': ~~iPos['top'] + 'px',
+    'left': ~~iPos['left'] + 'px',
     'height': ~~boundingI['height'] + 'px',
     'width': ~~boundingI['width'] + 'px'
   });
 
 };
-
 
 /**
  * On focus, make the Synth interactive.
@@ -215,7 +208,7 @@ ww.mode.SynthMode.prototype.didFocus = function() {
 
   if (!self.path && !self.points) {
     self.getPaperCanvas_();
-    self.ctx = self.paperCanvas_.getContext('2d');
+    // self.ctx = self.paperCanvas_.getContext('2d');
 
     self.wavePath = new paper['Path']();
     self.wavePath['strokeColor'] = 'red';
@@ -238,24 +231,24 @@ ww.mode.SynthMode.prototype.didFocus = function() {
                   );
     self.circleClone = self.circle['clone']();
     self.circleClone['fillColor'] = '#3777e3';
-    self.circleClone['opacity'] = .9;
+    self.circleClone['opacity'] = 0.9;
 
     self.tracker = new paper['Path']['Circle'](
-                    new paper['Point'](self.oLeft, self.oTop), self.oRad * .08
+                    new paper['Point'](self.oLeft, self.oTop), self.oRad * 0.08
                     );
     self.tracker['fillColor'] = '#ffffff';
     self.tracker['strokeColor'] = '#ffffff';
-    self.tracker['strokeColor']['alpha'] = .3;
-    self.tracker['strokeWidth'] = self.oRad * .05;
-    self.tracker['opacity'] = .7;
+    self.tracker['strokeColor']['alpha'] = 0.3;
+    self.tracker['strokeWidth'] = self.oRad * 0.05;
+    self.tracker['opacity'] = 0.7;
 
     self.path = new paper['Path']();
     self.path['strokeColor'] = new paper['RgbColor'](255, 255, 255, 0.2);
     self.path['strokeWidth'] = 5;
 
-    for (var i = 0; i <= 128; i++) {
+    for (var i3 = 0; i3 <= 128; i3++) {
       var point = new paper['Point'](
-                    size * i + self.oLeft - self.oRad, self.centerY
+                    size * i3 + self.oLeft - self.oRad, self.centerY
                   );
       self.path.add(point);
     }
@@ -263,9 +256,9 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.paths = [];
     self.paths.push(self.path);
 
-    for (var i = 0; i < 3; i++) {
-      var path = self.path['clone']();
-      self.paths.push(path);
+    for (var i2 = 0; i2 < 3; i2++) {
+      var path2 = self.path['clone']();
+      self.paths.push(path2);
     }
 
     self.oscilloGroup = new paper['Group'](
@@ -306,9 +299,7 @@ ww.mode.SynthMode.prototype.didFocus = function() {
 
   self.oOffset = self.letterO.offset();
   self.oSize = self.letterO[0]['getBoundingClientRect']()['width'];
-
 };
-
 
 /**
  * On unfocus, deactivate the Synth.
@@ -327,7 +318,6 @@ ww.mode.SynthMode.prototype.didUnfocus = function() {
   this.connectPower_(); // disconnect
 };
 
-
 /**
  * @private
  */
@@ -335,7 +325,6 @@ ww.mode.SynthMode.prototype.buildEffects_ = function() {
   this.effects = {};
   this.effects['delay'] = new this.tuna_.Delay();
 };
-
 
 /**
  * @private
@@ -345,7 +334,6 @@ ww.mode.SynthMode.prototype.createSound_ = function() {
   this.source.frequency.value = this.lastFreq;
   this.source.detune.value = this.lastDetune;
 };
-
 
 /**
  * @private
@@ -360,7 +348,6 @@ ww.mode.SynthMode.prototype.connectPower_ = function() {
   }
 };
 
-
 /**
  * @private
  */
@@ -372,14 +359,12 @@ ww.mode.SynthMode.prototype.playSound_ = function() {
   this.source.noteOn(0);
 };
 
-
 /**
  * @private
  */
 ww.mode.SynthMode.prototype.pauseSound_ = function() {
   this.source.disconnect();
 };
-
 
 /**
  * Toggle wave type between square, saw, triangle and sine
@@ -392,9 +377,7 @@ ww.mode.SynthMode.prototype.changeWaveType = function() {
 
   $('.on', this.waveforms).removeClass('on');
   $('.' + this.waveMap[this.waveType], this.waveforms).addClass('on');
-
 };
-
 
 /**
  * Get new frequency and recreate sound.
@@ -405,7 +388,6 @@ ww.mode.SynthMode.prototype.changeFrequency = function(event) {
   this.createSound_();
 };
 
-
 /**
  * Position tracker based on pointer event.
  * @param {Object} event Page mouse event.
@@ -414,7 +396,6 @@ ww.mode.SynthMode.prototype.moveTracker = function(event) {
   this.tracker['position']['x'] = event.pageX;
   this.tracker['position']['y'] = event.pageY;
 };
-
 
 /**
  * Parse mouse position to calculate new frequency.

@@ -51,11 +51,11 @@ ww.mode.Core = function(containerElem,
   this.height_ = 0;
 
   var self = this;
-  // setTimeout(function() {
+  setTimeout(function() {
 
     // Mark this mode as ready.
-    this.log('Starting preload');
-    this.loadSounds_(function() {
+    self.log('Starting preload');
+    self.loadSounds_(function() {
       self.log('Preload complete');
 
       self.$bounds = self.find('.bounds');
@@ -88,7 +88,7 @@ ww.mode.Core = function(containerElem,
       
       self.ready_();
     });
-  // }, 10);
+  }, 10);
 };
 
 /**

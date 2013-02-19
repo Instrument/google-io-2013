@@ -262,7 +262,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
     };
   }
 
-  // If the mode is already loaded, use that iframe.
+  // If the mode is already loaded, use that instance.
   if (mode.instance) {
     this.currentMode = mode;
     if ('function' === typeof onComplete) {
