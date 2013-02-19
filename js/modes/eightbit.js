@@ -445,8 +445,8 @@ ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
   this.updateVectors_(this.paperO_);
   this.updatePoints_(this.paperO_);
 
-  this.paperI_['scale'](.75);
-  this.paperO_['scale'](.75);
+  this.paperI_['scale'](0.75);
+  this.paperO_['scale'](0.75);
 };
 
 /**
