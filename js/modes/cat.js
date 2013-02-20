@@ -51,7 +51,7 @@ ww.mode.CatMode.prototype.activateO = function() {
 
   var self = this;
 
-  var position = [Random(-50, 50), Random(-50, 50)];
+  var position = [~~Random(-50, 50), ~~Random(-50, 50)];
 
   var moveOut = new TWEEN.Tween({
     'scale': 1,
