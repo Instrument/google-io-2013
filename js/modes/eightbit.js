@@ -114,7 +114,7 @@ ww.mode.EightBitMode.prototype.drawO_ = function() {
 
     point['velocity'] = 0;
     point['acceleration'] = Math.random() * 5 + 10;
-    point['bounce'] = Math.random() * .1 + 1.05;
+    point['bounce'] = Math.random() * 0.1 + 1.05;
 
     this.paperO_['vectors'].push(point);
   }
@@ -331,7 +331,7 @@ ww.mode.EightBitMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
       distance = Math.max(0, this.iWidth - vector['length']);
     }
 
-    point['length'] += distance;
+    point['length'] += Math.max(distance * 4, 100);
     point['velocity'] += speed;
     point['velocity'] = Math.min(5, point['velocity']);
   }
@@ -400,14 +400,22 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
 
   // this.drawSlash_();
 
-  var size = Math.round(this.width_ * 0.0625);
+  var size = Math.min(Math.round(this.width_ * 0.0625), 64);
+  var viewSize = paper['view']['viewSize']['width'];
+  var viewRatio = (viewSize / this.width_) * (viewSize / this.width_);
+
   if (this.height_ * 6 < this.width_) {
     size /= 8;
   }
-  var increment = Math.round(size * 48) / 4;
+
+  var increment = Math.min(Math.round(size * 80) / 4, 1024 / viewRatio);
+
+  if (this.height_ * 6 < this.width_) {
+    size = Math.round(this.width_ * 0.0625) / 8;
+    increment = Math.round(size * 80) / 4;
+  }
 
   paper = this.paperScope_;
-  var viewSize = paper['view']['viewSize']['width'];
 
   for (i = 0; i < pixelData.data.length; i += increment) {
     if (pixelData.data[i + 3] !== 0) {

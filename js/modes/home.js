@@ -426,7 +426,7 @@ ww.mode.HomeMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
       distance = Math.max(0, this.iWidth - vector['length']);
     }
 
-    point['length'] += distance;
+    point['length'] += Math.max(distance, 20);
     point['velocity'] += speed;
   }
 };
