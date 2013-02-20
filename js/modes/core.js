@@ -307,7 +307,7 @@ ww.mode.Core.prototype.updateBounds = function() {
   }
 
   this.boundsCenterX_ = Math.floor(this.width_ / 2);
-  this.boundsCenterY_ = Math.floor(this.height_ / 2) + Math.floor((topBuffer - bottomBuffer) / 2);
+  this.boundsCenterY_ = Math.floor(this.height_ / 2);// + Math.floor((topBuffer - bottomBuffer) / 2);
 
   this.boundsX_ = this.boundsCenterX_ - Math.floor(this.boundsWidth_ / 2);
   this.boundsY_ = this.boundsCenterY_ - Math.floor(this.boundsHeight_ / 2);
