@@ -256,6 +256,11 @@ ww.mode.Core.prototype.showReload = function(onReload) {
 ww.mode.Core.prototype.onResize = function(redraw) {
   this.width_ = $(this.containerElem_).width();
   this.height_ = $(this.containerElem_).height();
+  if (this.width_ === 1024) {
+    this.width_ -= 2;
+    this.height_ -= 2;
+  }
+
   this.log('Resize ' + this.width_ + 'x' + this.height_);
 
   this.updateBounds();
