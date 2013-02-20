@@ -53,7 +53,7 @@ def Compile(compiler_jar_path, source_paths, flags=None):
                   'Please visit http://www.java.com/getjava')
     return
 
-  args = ['drip', '-jar', compiler_jar_path]
+  args = ['bin/drip', '-jar', compiler_jar_path]
   for path in source_paths:
     args += ['--js', path]
 
