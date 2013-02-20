@@ -105,7 +105,7 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
     }
 
     for (var i2 = 0; i2 <= amount; i2++) {
-      var segment = this.wavePaths[j2]['segments'][i];
+      var segment = this.wavePaths[j2]['segments'][i2];
       var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i2);
       segment['point']['y'] = (sin * height + this.height_ / 2) +
                               ((j2 - 1.5) * yAdjust);
