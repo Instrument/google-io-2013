@@ -26,7 +26,6 @@ ww.mode.RocketMode = function(containerElem, assetPrefix) {
   this.find('.letter-i').after(this.moonOver_);
 
   this.moonOver_.find('#moon-1').attr('id', 'moon-2');
-  this.moonOver_.find('#face-1').attr('id', 'face-2');
   this.moonOver_ = this.moonOver_[0];
 
   this.faces_ = $('[id*=face-]');
@@ -124,9 +123,7 @@ ww.mode.RocketMode.prototype.activateO = function() {
   var self = this,
       duration = 2000,
       deg = this.moons_[0].style[self.prefix_].split('rotate(')[1];
-      deg = parseInt(deg) || 0,
-      opacity = self.faces_[0].style['opacity'] || 0,
-      opacity = parseFloat(opacity);
+      deg = parseInt(deg) || 0;
 
   var rotateAround = new TWEEN.Tween({ 'rotate': deg });
   rotateAround.to({ 'rotate': deg + 360 * 2 }, duration);
@@ -138,20 +135,5 @@ ww.mode.RocketMode.prototype.activateO = function() {
     self.moons_.attr('transform', 'rotate(0, ' + self.moonCenter_ + ')');
   });
 
-  var fadeIn = new TWEEN.Tween({ 'opacity': opacity });
-  fadeIn.to({ 'opacity': 1 }, duration / 2);
-  fadeIn.onUpdate(function() {
-    self.faces_.css('opacity', this['opacity']);
-  });
-
-  var fadeOut = new TWEEN.Tween({ 'opacity': 1 });
-  fadeOut.to({ 'opacity': 0 }, duration / 2);
-  fadeOut.delay(duration / 2);
-  fadeOut.onUpdate(function() {
-    self.faces_.css('opacity', this['opacity']);
-  });
-
   self.addTween(rotateAround);
-  self.addTween(fadeIn);
-  self.addTween(fadeOut);
 };

@@ -33,7 +33,6 @@ ww.mode.BaconMode.prototype.init = function() {
   this.whites_ = $('#egg-whites');
   this.eggOpened_ = $('#egg-cracked');
   this.center_ = this.eggOpened_.attr('cx') + ', ' + this.eggOpened_.attr('cy');
-  this.centerFats_ = this.$letterI_.attr('cx') + ', ' + this.$letterI_.attr('cy');
 };
 
 

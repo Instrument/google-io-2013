@@ -87,7 +87,7 @@ ww.mode.BowlingMode.prototype.activateO = function() {
     this.isBowling_ = true;
 
     var self = this;
-    var deg = ~~Random(400, 490);
+    var deg = ~~Random(360, 380);
     var ballBounds = this.ballWrapper_[0].getBoundingClientRect();
     var pinBounds = this.$letterI_[0].getBoundingClientRect();
     var distance = (ballBounds['width'] / 2) +
