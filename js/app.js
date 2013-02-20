@@ -324,13 +324,9 @@ ww.app.Core.prototype.fetchModeContent_ = function(name, onComplete) {
 
     // Complete callback (responseText is used internally)
     complete: function(jqXHR, status, responseText) {
-      // Store the response as specified by the jqXHR object
       responseText = jqXHR.responseText;
 
-      // If successful, inject the HTML into all the matched elements
       if (jqXHR.isResolved()) {
-        // #4825: Get the actual response in case
-        // a dataFilter is present in ajaxSettings
         jqXHR.done(function(r) {
           responseText = r;
         });

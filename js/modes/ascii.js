@@ -41,34 +41,28 @@ ww.mode.AsciiMode.prototype.activateO = function() {
  * @private
  */
 ww.mode.AsciiMode.prototype.drawI_ = function() {
-  if (!this.paperI_) {
-    // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.iX, this.iY);
-    var iSize = new paper['Size'](this.iWidth, this.iHeight);
-    var letterI = new paper['Rectangle'](iTopLeft, iSize);
-    this.paperI_ = new paper['Path']['Rectangle'](letterI);
+  if (this.paperI_) {
+    this.paperI_['remove']();
+  }
+  // Create a new paper.js path based on the previous variables.
+  var iTopLeft = new paper['Point'](this.iX, this.iY);
+  var iSize = new paper['Size'](this.iWidth, this.iHeight);
+  var letterI = new paper['Rectangle'](iTopLeft, iSize);
+  this.paperI_ = new paper['Path']['Rectangle'](letterI);
 
-    this.paperI_['closed'] = true;
+  this.paperI_['closed'] = true;
 
-    this.paperI_['vectors'] = [];
+  this.paperI_['vectors'] = [];
 
-    for (var i = 0; i < this.paperI_['segments'].length; i++) {
-      var point = this.paperI_['segments'][i]['point']['clone']();
-      point = point['subtract'](this.iCenter);
+  for (var i = 0; i < this.paperI_['segments'].length; i++) {
+    var point = this.paperI_['segments'][i]['point']['clone']();
+    point = point['subtract'](this.iCenter);
 
-      point['velocity'] = 0;
-      point['acceleration'] = Math.random() * 5 + 10;
-      point['bounce'] = Math.random() * .1 + 1.05;
+    point['velocity'] = 0;
+    point['acceleration'] = Math.random() * 5 + 10;
+    point['bounce'] = Math.random() * 0.1 + 1.05;
 
-      this.paperI_['vectors'].push(point);
-    }
-  } else {
-    // Change the position based on new screen size values.
-    this.paperI_['position'] = {x: this.iX + this.iWidth / 2,
-      y: this.iY + this.iHeight / 2};
-
-    // Change the scale based on new screen size values.
-    this.paperI_['scale'](this.iWidth / this.paperI_['bounds']['width']);
+    this.paperI_['vectors'].push(point);
   }
 };
 

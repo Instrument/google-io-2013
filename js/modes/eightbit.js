@@ -11,7 +11,8 @@ ww.mode.EightBitMode = function(containerElem, assetPrefix) {
   this.preloadSound('o.wav');
   this.preloadSound('error.wav');
 
-  goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true);
+  goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true,
+    true);
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
 
@@ -42,33 +43,28 @@ ww.mode.EightBitMode.prototype.activateO = function() {
  * @private
  */
 ww.mode.EightBitMode.prototype.drawI_ = function() {
-  if (!this.paperI_) {
-    // Create a new paper.js path based on the previous variables.
-    var iTopLeft = new paper['Point'](this.iX, this.iY);
-    var iSize = new paper['Size'](this.iWidth, this.iHeight);
-    var letterI = new paper['Rectangle'](iTopLeft, iSize);
-    this.paperI_ = new paper['Path']['Rectangle'](letterI);
+  if (this.paperI_) {
+    this.paperI_['remove']();
+  }
+  // Create a new paper.js path based on the previous variables.
+  var iTopLeft = new paper['Point'](this.iX, this.iY);
+  var iSize = new paper['Size'](this.iWidth, this.iHeight);
+  var letterI = new paper['Rectangle'](iTopLeft, iSize);
+  this.paperI_ = new paper['Path']['Rectangle'](letterI);
 
-    this.paperI_['closed'] = true;
+  this.paperI_['closed'] = true;
 
-    this.paperI_['vectors'] = [];
+  this.paperI_['vectors'] = [];
 
-    for (var i = 0; i < this.paperI_['segments'].length; i++) {
-      var point = this.paperI_['segments'][i]['point']['clone']();
-      point = point['subtract'](this.iCenter);
+  for (var i = 0; i < this.paperI_['segments'].length; i++) {
+    var point = this.paperI_['segments'][i]['point']['clone']();
+    point = point['subtract'](this.iCenter);
 
-      point['velocity'] = 0;
-      point['acceleration'] = Math.random() * 5 + 10;
-      point['bounce'] = Math.random() * .1 + 1.05;
+    point['velocity'] = 0;
+    point['acceleration'] = Math.random() * 5 + 10;
+    point['bounce'] = Math.random() * 0.1 + 1.05;
 
-      this.paperI_['vectors'].push(point);
-    }
-  } else {
-    // Change the position based on new screen size values.
-    this.paperI_['position'] = this.iCenter;
-
-    // Change the scale based on new screen size values.
-    this.paperI_['scale'](this.iWidth / this.paperI_['bounds']['width']);
+    this.paperI_['vectors'].push(point);
   }
 };
 
@@ -159,12 +155,12 @@ ww.mode.EightBitMode.prototype.drawSlash_ = function() {
 
   // Determine the slash's start and end coordinates based on I and O sizes.
   pctx.strokeStyle = '#e5e5e5';
-  pctx.lineWidth = this.slashWidth;
+  pctx.lineWidth = this.slashWidth * 2;
 
   pctx.beginPath();
 
-  pctx.moveTo(this.slashStartX, this.slashStartY);
-  pctx.lineTo(this.slashEndX, this.slashEndY);
+  pctx.moveTo(this.slashStartX * 2, this.slashStartY * 2);
+  pctx.lineTo(this.slashEndX * 2, this.slashEndY * 2);
 
   pctx.stroke();
 };
@@ -410,14 +406,17 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
   }
   var increment = Math.round(size * 80) / 4;
 
+  paper = this.paperScope_;
+  var viewSize = paper['view']['viewSize']['width'];
+
   for (i = 0; i < pixelData.data.length; i += increment) {
     if (pixelData.data[i + 3] !== 0) {
       var r = pixelData.data[i];
       var g = pixelData.data[i + 1];
       var b = pixelData.data[i + 2];
       var pixel = Math.ceil(i / 4);
-      var x = pixel % this.width_;
-      var y = Math.floor(pixel / this.width_);
+      var x = pixel % viewSize;
+      var y = Math.floor(pixel / viewSize);
 
       var color = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
 
