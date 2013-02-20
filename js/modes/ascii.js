@@ -341,7 +341,7 @@ ww.mode.AsciiMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
       distance = Math.max(0, this.iWidth - vector['length']);
     }
 
-    point['length'] += distance;
+    point['length'] += Math.max(distance * 4, 100);
     point['velocity'] += speed;
     point['velocity'] = Math.min(5, point['velocity']);
   }

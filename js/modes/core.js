@@ -905,10 +905,8 @@ ww.mode.Core.prototype.setPaperShapeData = function() {
 
   if (this.find('.year-mark')) {
     this.find('.year-mark').css({
-      'width': this.boundsWidth_ * 0.0925,
-      'height': this.boundsWidth_ * 0.07,
-      'left': this.boundsX_ + this.boundsWidth_ - (this.boundsWidth_ * 0.0925),
-      'top': this.boundsY_ + (this.boundsWidth_ * 0.0175)
+      'left': this.boundsX_ + (this.boundsWidth_ * 0.85411765),
+      'top': this.boundsY_ + (this.boundsWidth_ * 0.08705882)
     });
   }
 };
