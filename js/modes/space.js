@@ -274,35 +274,6 @@ ww.mode.SpaceMode.prototype.drawO_ = function() {
 };
 
 /**
- * Function to create and draw Slash.
- * @private
- */
-ww.mode.SpaceMode.prototype.drawSlash_ = function() {
-  if (!this.paperSlash_) {
-    // Determine the slash's start and end coordinates based on I and O sizes.
-    this.slashStart_ = new paper['Point'](this.slashStartX, this.slashStartY);
-
-    this.slashEnd_ = new paper['Point'](this.slashEndX, this.slashEndY);
-
-    // Create a new paper.js path for the slash based on screen dimensions.
-    this.paperSlash_ = new paper['Path']();
-    this.paperSlash_['strokeWidth'] = 1;
-    this.paperSlash_['strokeColor'] = '#ebebeb';
-
-    this.paperSlash_['add'](this.slashStart_, this.slashEnd_);
-  } else {
-    this.slashStart_['x'] = this.slashStartX;
-    this.slashStart_['y'] = this.slashStartY;
-
-    this.slashEnd_['x'] = this.slashEndX;
-    this.slashEnd_['y'] = this.slashEndY;
-
-    this.paperSlash_['segments'][0]['point'] = this.slashStart_;
-    this.paperSlash_['segments'][1]['point'] = this.slashEnd_;
-  }
-};
-
-/**
  * Function to initialize the current mode.
  * Requests a paper canvas and creates paths.
  * Sets initial variables.
@@ -390,9 +361,6 @@ ww.mode.SpaceMode.prototype.init = function() {
   this.oMultiplier_ = 1;
 
   if (0 < this.paperCanvas_.height) {
-    // Draw Slash.
-    // this.drawSlash_();
-
     // Draw I.
     this.drawI_();
 
@@ -511,9 +479,6 @@ ww.mode.SpaceMode.prototype.onResize = function(redraw) {
         this.height_;
     }
   }
-
-  // Draw Slash.
-  // this.drawSlash_();
 
   // Draw I.
   this.drawI_();

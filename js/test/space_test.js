@@ -122,26 +122,6 @@ function testWwModeSpaceModeDrawO_() {
   assertTrue('paperO_ should have been redrawn', redrawn);
 }
 
-// Test that the slash gets drawn if it doesn't exist yet.
-function testWwModeSpaceModeDrawSlash_() {
-  mode.paperSlash_ = false;
-
-  mode.drawSlash_();
-
-  assertNotEquals('paperSlash_ should now exist', undefined, mode.paperSlash_);
-}
-
-// Test that the slash gets redrawn if paperSlash_ already exists.
-function testWwModeSpaceModeDrawSlash_() {
-  var originalValue = mode.slashEndX_;
-  mode.slashEndX_ = 10;
-
-  // slashEnd_['x'] should equal iX_ + iWidth_ after being redrawn.
-  mode.drawSlash_();
-
-  assertNotEquals('paperSlash_ should have been redrawn', originalValue, mode.slashEnd_['x']);
-}
-
 // Make sure initial variables are created.
 function testWwModeSpaceModeInit() {
   assertNotEquals('world_ should exist', undefined, mode.world_);
@@ -235,7 +215,6 @@ function testWwModeSpaceModeOnResize() {
 function testWwModeSpaceModeOnResize() {
   var callO = false;
   var callI = false;
-  var callSlash = false;
   var callRedraw = false;
 
   mode.constructor.prototype.drawO_ = function() {
@@ -246,10 +225,6 @@ function testWwModeSpaceModeOnResize() {
     callI = true;
   }
 
-  mode.constructor.prototype.drawSlash_ = function() {
-    callSlash = true;
-  }
-
   mode.constructor.prototype.redraw = function() {
     callRedraw = true;
   }
@@ -258,7 +233,6 @@ function testWwModeSpaceModeOnResize() {
 
   assertTrue('drawO_ should have been called', callO);
   assertTrue('drawI_ should have been called', callI);
-  assertTrue('drawSlash_ should have been called', callSlash);
   assertTrue('redraw should have been called', callRedraw);
 }
 
