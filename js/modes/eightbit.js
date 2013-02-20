@@ -147,25 +147,6 @@ ww.mode.EightBitMode.prototype.fillO_ = function() {
 };
 
 /**
- * Function to create and draw Slash.
- * @private
- */
-ww.mode.EightBitMode.prototype.drawSlash_ = function() {
-  var pctx = this.paperCanvas_.getContext('2d');
-
-  // Determine the slash's start and end coordinates based on I and O sizes.
-  pctx.strokeStyle = '#e5e5e5';
-  pctx.lineWidth = this.slashWidth * 2;
-
-  pctx.beginPath();
-
-  pctx.moveTo(this.slashStartX * 2, this.slashStartY * 2);
-  pctx.lineTo(this.slashEndX * 2, this.slashEndY * 2);
-
-  pctx.stroke();
-};
-
-/**
  * Function to initialize the current mode.
  * Requests a paper canvas and creates paths.
  * Sets initial variables.
@@ -397,8 +378,6 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
 
   pctx.clearRect(0, 0, sourceCanvas.width + 1,
     sourceCanvas.height + 1);
-
-  // this.drawSlash_();
 
   var size = Math.min(Math.round(this.width_ * 0.0625), 64);
   var viewSize = paper['view']['viewSize']['width'];

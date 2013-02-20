@@ -81,11 +81,6 @@ function testWwModeEightBitModeDrawO_() {
     mode.paperO_['bounds']['width']);
 }
 
-// drawSlash_ is purely canvas drawing. Nothing to test return data.
-/*function testWwModeEightBitModeDrawSlash_() {
-
-}*/
-
 function testWwModeEightBitModeInit() {
   mode.paperCanvas_.height = 0;
   mode.paperI_ = false;

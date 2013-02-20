@@ -166,24 +166,6 @@ function testWwModeHomeModeDrawO_() {
     mode.paperO_['bounds']['width']);
 }
 
-function testWwModeHomeModeDrawSlash_() {
-  mode.paperSlash_ = undefined;
-
-  mode.onResize();
-
-  assertNotEquals('paperSlash_ should have been created', undefined,
-    mode.paperSlash_);
-
-  var tempPosition = mode.paperSlash_['segments'][0]['point']['x'];
-
-  mode.slashStartX = 20;
-
-  mode.drawSlash_();
-
-  assertNotEquals('paperSlash_ should have changed position and scale',
-    tempPosition, mode.paperSlash_['segments'][0]['point']['x']);
-}
-
 function testWwModeHomeModeInit() {
   mode.paperCanvas_.height = 0;
   mode.paperI_ = false;
