@@ -421,7 +421,8 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
       var color = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
 
       pctx.fillStyle = color;
-      pctx.fillRect(x - size / 2, y - size / 2, size, size);
+      pctx.fillRect(Math.round(x - size / 2), Math.round(y - size / 2), size,
+        size);
     }
   }
 
