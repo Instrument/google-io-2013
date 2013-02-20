@@ -298,7 +298,7 @@ ww.mode.HomeMode.prototype.init = function() {
 
   if (0 < this.paperCanvas_.height) {
     // Draw Slash.
-    this.drawSlash_();
+    // this.drawSlash_();
 
     // Draw I.
     this.drawI_();
@@ -390,7 +390,7 @@ ww.mode.HomeMode.prototype.onResize = function(redraw) {
   this.setPaperShapeData();
 
   // Draw Slash.
-  this.drawSlash_();
+  // this.drawSlash_();
 
   // Draw I.
   this.drawI_();

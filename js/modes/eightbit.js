@@ -398,13 +398,13 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
   pctx.clearRect(0, 0, sourceCanvas.width + 1,
     sourceCanvas.height + 1);
 
-  this.drawSlash_();
+  // this.drawSlash_();
 
   var size = Math.round(this.width_ * 0.0625);
   if (this.height_ * 6 < this.width_) {
     size /= 8;
   }
-  var increment = Math.round(size * 80) / 4;
+  var increment = Math.round(size * 48) / 4;
 
   paper = this.paperScope_;
   var viewSize = paper['view']['viewSize']['width'];

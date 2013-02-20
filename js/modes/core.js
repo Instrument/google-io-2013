@@ -875,33 +875,33 @@ ww.mode.Core.prototype.getCoords = function(e) {
 
 ww.mode.Core.prototype.setPaperShapeData = function() {
   // Set I's initial dimensions.
-  this.iWidth = this.boundsWidth_ * 0.24;
-  this.iHeight = this.boundsWidth_ * 0.5125;
+  this.iWidth = this.boundsWidth_ * 0.2;
+  this.iHeight = this.boundsWidth_ * 0.43058824;
 
   // Set coordinates for I's upper left corner.
-  this.iX = this.boundsX_;
-  this.iY = this.boundsY_ + (this.boundsWidth_ * 0.1125);
+  this.iX = this.boundsX_  + (this.boundsWidth_ * 0.10352941);
+  this.iY = this.boundsY_ + (this.boundsWidth_ * 0.16);
 
   this.iCenter = new paper['Point'](this.iX + this.iWidth / 2,
     this.iY + this.iHeight / 2);
 
   // Set O's radius.
-  this.oRad = this.boundsWidth_ * 0.27;
+  this.oRad = this.boundsWidth_ * 0.22588235;
 
   // Set O's coordinates.
   this.oX = this.boundsX_ +
-    (this.boundsWidth_ - this.oRad - (this.boundsWidth_ * 0.0425));
-  this.oY = this.boundsY_ + (this.boundsWidth_ * 0.37);
+    (this.boundsWidth_ * 0.69647059);
+  this.oY = this.boundsY_ + (this.boundsWidth_ * 0.37411765);
 
   this.oCenter = new paper['Point'](this.oX, this.oY);
 
   // Set Slash's coordinates.
-  this.slashStartX = this.boundsX_ + (this.boundsWidth_ * 0.47);
-  this.slashStartY = this.boundsY_;
-  this.slashEndX = this.boundsX_ + (this.boundsWidth_ * 0.26);
-  this.slashEndY = this.boundsY_ + this.boundsHeight_;
+  this.slashStartX = this.boundsX_ + (this.boundsWidth_ * 0.50352941);
+  this.slashStartY = this.boundsY_ + (this.boundsWidth_ * 0.06823529);
+  this.slashEndX = this.boundsX_ + (this.boundsWidth_ * 0.32);
+  this.slashEndY = this.boundsY_ + (this.boundsWidth_ * 0.68705882);
 
-  this.slashWidth = this.boundsWidth_ * 0.025;
+  this.slashWidth = this.boundsWidth_ * 0.02212389;
 
   if (this.find('.year-mark')) {
     this.find('.year-mark').css({
