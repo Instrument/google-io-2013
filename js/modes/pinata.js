@@ -69,6 +69,7 @@ ww.mode.PinataMode.prototype.resetToStart_ = function() {
 
   this.cracks_.css('opacity', 0);
   this.crackedElm_.css('opacity', 0);
+  this.crackedParts_.attr('transform', '');
 };
 
 /**
@@ -247,27 +248,25 @@ ww.mode.PinataMode.prototype.activateBalls_ = function() {
 ww.mode.PinataMode.prototype.activateI = function() {
   goog.base(this, 'activateI');
 
-  this.playSound('whack.mp3');
+  if (!this.isAnimating_) {
+    this.playSound('whack.mp3');
+    this.animateI_();
 
-  this.animateI_();
+    if (this.whackCount_ < this.maxWhacks_) {
+      this.log('whack ' + this.whackCount_ + ' ' + this.reset_);
+      this.cracks_[this.whackCount_].style['opacity'] = 1;
+      this.activateBalls_();
+      this.animateO_();
+    } else if (this.whackCount_ === this.maxWhacks_) {
+      this.log('reached max whacks. breaking pinata.');
+      this.activateBalls_();
+      this.animatePartsOut_();
+    } else {
+      this.animatePartsIn_();
+    }
 
-  if (this.whackCount_ < this.maxWhacks_) {
-    this.log('whack ' + this.whackCount_);
-
-    this.activateBalls_();
-    this.cracks_[this.whackCount_].style['opacity'] = 1;
-
-    this.animateO_();
-  } else if (this.whackCount_ === this.maxWhacks_) {
-    this.log('reached max whacks. breaking pinata.');
-    this.activateBalls_();
-    this.animatePartsOut_();
-  } else {
-    this.log('pinata is done. still whacking. so showing reload.');
-    this.animatePartsIn_();
+    this.whackCount_++;
   }
-
-  this.whackCount_++;
 };
 
 
@@ -299,33 +298,41 @@ ww.mode.PinataMode.prototype.animatePartsOut_ = function() {
 
   var self = this;
 
-  self.$letterO_.css('opacity', 0);
-  self.cracks_.css('opacity', 0);
-  self.crackedElm_.css('opacity', 1);
+  this.cracks_.css('opacity', 0);
+  this.isAnimating_ = true;
 
   for (var i = 0; i < this.maxParts_; i++) {
     var part = $(self.crackedParts_[i]);
 
     (function(part, i) {
-      var toY = ~~Random(-10, 10) + 10;
-      var toX = ~~Random(-20, 20) + 20;
+      var toY = ~~Random(-45, 45);
+      var toX = ~~Random(-45, 45);
+      var rotate = ~~Random(-90, 90) + 5;
 
       part.data('movedX', toX);
       part.data('movedY', toY);
+      part.data('rotate', rotate);
 
       var animateOut = new TWEEN.Tween({
-        'translateY': 0,
-        'translateX': 0
+        'translateY': 0, 'translateX': 0, 'rotate': 0
       });
       animateOut.to({
-        'translateY': toY,
-        'translateX': toX
-      }, 5000);
+        'translateY': toY, 'translateX': toX, 'rotate': rotate
+      }, 1000);
+
       animateOut.easing(TWEEN.Easing.Exponential.Out);
+
       animateOut.onUpdate(function() {
         part.attr('transform',
+          'rotate(' + this['rotate'] + ', ' + self.originO_ + ') ' +
           'translate(' + this['translateX'] + ', ' + this['translateY'] + ') ');
       });
+
+      if (!(i + 1 < self.maxParts_)) {
+        animateOut.onComplete(function() {
+          self.isAnimating_ = false;
+        });
+      }
 
       self.addTween(animateOut);
     })(part, i);
@@ -341,11 +348,8 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
   this.log('animating back after break.');
 
   var self = this;
-  var windowHeight = window.innerHeight;
-  var windowWidth = window.innerWidth;
 
-  self.$letterO_.css('opacity', 0);
-  self.crackedElm_.css('opacity', 1);
+  this.isAnimating_ = true;
 
   for (var i = 0; i < this.maxParts_; i++) {
     var part = $(self.crackedParts_[i]);
@@ -353,31 +357,27 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
     (function(part, i) {
       var toX = parseInt(part.data('movedX'), 10) || 0;
       var toY = parseInt(part.data('movedY'), 10) || 0;
+      var rotate = parseInt(part.data('rotate'), 100) || 0;
 
       var animateBack = new TWEEN.Tween({
-        'translateY': toY,
-        'translateX': toX
+        'translateY': toY, 'translateX': toX, 'rotate': rotate
       });
-
       animateBack.to({
-        'translateY': 0,
-        'translateX': 0
-      }, 500);
+        'translateY': 0, 'translateX': 0, 'rotate': 0
+      }, 200);
 
       animateBack.easing(TWEEN.Easing.Exponential.Out);
 
       animateBack.onUpdate(function() {
         part.attr('transform',
+          'rotate(' + this['rotate'] + ', ' + self.originO_ + ') ' +
           'translate(' + this['translateX'] + ', ' + this['translateY'] + ') ');
       });
 
       if (!(i + 1 < self.maxParts_)) {
         animateBack.onComplete(function() {
-          self.$letterO_.css('opacity', 1);
-          self.crackedElm_.css('opacity', 0);
-          self.showReload(function() {
-            self.resetToStart_();
-          });
+          self.resetToStart_();
+          self.isAnimating_ = false;
         });
       }
 
