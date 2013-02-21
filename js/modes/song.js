@@ -9,36 +9,36 @@ goog.provide('ww.mode.SongMode');
  */
 ww.mode.SongMode = function(containerElem, assetPrefix) {
   // TODO: Maybe we need to do this on category change to save bandwidth
-  this.preloadSound('brass-note-1.m4a');
-  this.preloadSound('brass-note-2.m4a');
-  this.preloadSound('brass-note-3.m4a');
-  this.preloadSound('brass-note-4.m4a');
+  this.preloadSound('brass-note-1.mp3');
+  this.preloadSound('brass-note-2.mp3');
+  this.preloadSound('brass-note-3.mp3');
+  this.preloadSound('brass-note-4.mp3');
 
-  this.preloadSound('lute-note-1.m4a');
-  this.preloadSound('lute-note-2.m4a');
-  this.preloadSound('lute-note-3.m4a');
-  this.preloadSound('lute-note-4.m4a');
+  this.preloadSound('lute-note-1.mp3');
+  this.preloadSound('lute-note-2.mp3');
+  this.preloadSound('lute-note-3.mp3');
+  this.preloadSound('lute-note-4.mp3');
 
-  this.preloadSound('funky-note-1.m4a');
-  this.preloadSound('funky-note-2.m4a');
-  this.preloadSound('funky-note-3.m4a');
-  this.preloadSound('funky-note-4.m4a');
+  this.preloadSound('funky-note-1.mp3');
+  this.preloadSound('funky-note-2.mp3');
+  this.preloadSound('funky-note-3.mp3');
+  this.preloadSound('funky-note-4.mp3');
 
-  // this.preloadSound('organ-note-1.m4a');
-  // this.preloadSound('organ-note-2.m4a');
-  // this.preloadSound('organ-note-3.m4a');
-  // this.preloadSound('organ-note-4.m4a');
+  // this.preloadSound('organ-note-1.mp3');
+  // this.preloadSound('organ-note-2.mp3');
+  // this.preloadSound('organ-note-3.mp3');
+  // this.preloadSound('organ-note-4.mp3');
 
-  this.preloadSound('beats-piano.m4a');
-  this.preloadSound('beats-club.m4a');
-  this.preloadSound('beats-effected-kit.m4a');
-  this.preloadSound('beats-electric-1.m4a');
-  this.preloadSound('beats-electric-2.m4a');
-  this.preloadSound('beats-hip-hop.m4a');
-  this.preloadSound('beats-jazzy-rock.m4a');
-  this.preloadSound('beats-jazzy.m4a');
-  this.preloadSound('beats-lounge.m4a');
-  this.preloadSound('beats-motown.m4a');
+  this.preloadSound('beats-piano.mp3');
+  this.preloadSound('beats-club.mp3');
+  this.preloadSound('beats-effected-kit.mp3');
+  this.preloadSound('beats-electric-1.mp3');
+  this.preloadSound('beats-electric-2.mp3');
+  this.preloadSound('beats-hip-hop.mp3');
+  this.preloadSound('beats-jazzy-rock.mp3');
+  this.preloadSound('beats-jazzy.mp3');
+  this.preloadSound('beats-lounge.mp3');
+  this.preloadSound('beats-motown.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'song', true, true);
 
@@ -82,16 +82,16 @@ ww.mode.SongMode.prototype.init = function() {
 
   // setup drums
   this.drums = [
-    'beats-piano.m4a',
-    'beats-club.m4a',
-    'beats-effected-kit.m4a',
-    'beats-electric-1.m4a',
-    'beats-electric-2.m4a',
-    'beats-hip-hop.m4a',
-    'beats-jazzy-rock.m4a',
-    'beats-jazzy.m4a',
-    'beats-lounge.m4a',
-    'beats-motown.m4a'
+    'beats-piano.mp3',
+    'beats-club.mp3',
+    'beats-effected-kit.mp3',
+    'beats-electric-1.mp3',
+    'beats-electric-2.mp3',
+    'beats-hip-hop.mp3',
+    'beats-jazzy-rock.mp3',
+    'beats-jazzy.mp3',
+    'beats-lounge.mp3',
+    'beats-motown.mp3'
   ];
 
   this.numDrums = this.drums.length;
@@ -231,7 +231,7 @@ ww.mode.SongMode.prototype.beginSound_ = function(id) {
 
   var self = this;
 
-  self.playSound(self.active + '-' + id + '.m4a', function(source) {
+  self.playSound(self.active + '-' + id + '.mp3', function(source) {
     self.source = source;
   });
 
