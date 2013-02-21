@@ -135,7 +135,9 @@ ww.app.Core.prototype.loadModeByName_ = function(
  * @param {String} msg Log message.
  */
 ww.app.Core.prototype.log_ = function(msg) {
-  if (DEBUG_MODE && ('undefined' !== typeof console) && ('undefined' !== typeof console.log)) {
+  if (DEBUG_MODE &&
+      ('undefined' !== typeof console) &&
+      ('undefined' !== typeof console.log)) {
     var log = Function.prototype.bind.call(console.log, console);
     var args = Array.prototype.slice.call(arguments);
     if (typeof args[0] === 'string') {

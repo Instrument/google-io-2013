@@ -10,6 +10,7 @@ goog.require('ww.util');
  * @param {Boolean} wantsAudio Whether this mode needs webAudio.
  * @param {Boolean} wantsDrawing Whether this mode needs to draw onFrame.
  * @param {Boolean} wantsPhysics Whether this mode needs physics.
+ * @param {Boolean} wantsRetina Whether this mode should try to draw at 2x.
  */
 ww.mode.Core = function(containerElem,
   assetPrefix, name, wantsAudio, wantsDrawing, wantsPhysics, wantsRetina) {
@@ -72,7 +73,8 @@ ww.mode.Core = function(containerElem,
       var modeDetails = ww.mode.findModeByName(self.name_);
 
       if (modeDetails.pattern) {
-        self.$back = $('<div class="back"></div>').prependTo(self.containerElem_);
+        self.$back = $('<div class="back"></div>');
+        self.$back.prependTo(self.containerElem_);
 
         var modePattern = ww.util.pad(modeDetails.pattern.toString(2),
           modeDetails.len);
@@ -85,7 +87,7 @@ ww.mode.Core = function(containerElem,
 
       // Autofocus
       self.focus_();
-      
+
       self.ready_();
     });
   }, 10);
@@ -105,7 +107,9 @@ ww.mode.Core.prototype.find = function(query) {
  * @param {String} msg The message to log.
  */
 ww.mode.Core.prototype.log = function(msg) {
-  if (DEBUG_MODE && ('undefined' !== typeof console) && ('undefined' !== typeof console.log)) {
+  if (DEBUG_MODE &&
+      ('undefined' !== typeof console) &&
+      ('undefined' !== typeof console.log)) {
     var log = Function.prototype.bind.call(console.log, console);
     var args = Array.prototype.slice.call(arguments);
     if (typeof args[0] === 'string') {
@@ -138,7 +142,6 @@ ww.mode.Core.prototype.init = function() {
  * @param {String} elem Element to bind.
  * @param {String} evt Type of event.
  * @param {Function} onEvent Callback.
- * @return {String} The resulting events.
  */
 ww.mode.Core.prototype.bindEvent_ = function(elem, evt, onEvent) {
   var $elem = $(elem);
@@ -156,7 +159,6 @@ ww.mode.Core.prototype.bindEvent_ = function(elem, evt, onEvent) {
  * @private
  * @param {String} elem Element to unbind.
  * @param {String} evt Type of event.
- * @return {String} The resulting events.
  */
 ww.mode.Core.prototype.unbindEvent_ = function(elem, evt) {
   var $elem = $(elem);
@@ -292,7 +294,7 @@ ww.mode.Core.prototype.onResize = function(redraw) {
  */
 ww.mode.Core.prototype.updateBounds = function() {
   var maxContentWidth = 500; // Ratio 4x3
-  var maxContentHeight = maxContentWidth * (3/4); // Ratio 4x3
+  var maxContentHeight = maxContentWidth * (3 / 4); // Ratio 4x3
   var horizontalBuffer = 30;
   var topBuffer = 60;
   var bottomBuffer = 20;
@@ -302,17 +304,18 @@ ww.mode.Core.prototype.updateBounds = function() {
     var desiredHeight = Math.min(maxContentHeight, relativeHeight);
 
     this.boundsHeight_ = desiredHeight;
-    this.boundsWidth_ = this.boundsHeight_ * (4/3);
+    this.boundsWidth_ = this.boundsHeight_ * (4 / 3);
   } else {
     var relativeWidth = (this.width_ - (horizontalBuffer * 2));
     var desiredWidth = Math.min(maxContentWidth, relativeWidth);
 
     this.boundsWidth_ = desiredWidth;
-    this.boundsHeight_ = this.boundsWidth_ * (3/4);
+    this.boundsHeight_ = this.boundsWidth_ * (3 / 4);
   }
 
   this.boundsCenterX_ = Math.floor(this.width_ / 2);
-  this.boundsCenterY_ = Math.floor(this.height_ / 2);// + Math.floor((topBuffer - bottomBuffer) / 2);
+  this.boundsCenterY_ = Math.floor(this.height_ / 2);
+  // + Math.floor((topBuffer - bottomBuffer) / 2);
 
   this.boundsX_ = this.boundsCenterX_ - Math.floor(this.boundsWidth_ / 2);
   this.boundsY_ = this.boundsCenterY_ - Math.floor(this.boundsHeight_ / 2);
@@ -644,6 +647,7 @@ ww.mode.Core.prototype.didUnfocus = function() {
  * Get a preloaded sound buffer (binary audio file).
  * @private
  * @param {String} url Audio file URL.
+ * @return {AudioBuffer} Buffer representing sound.
  */
 ww.mode.Core.prototype.getLoadedSoundBufferFromURL_ = function(url) {
   this.soundBuffersFromURL_ = this.soundBuffersFromURL_ || {};
@@ -878,13 +882,16 @@ ww.mode.Core.prototype.getCoords = function(e) {
   return coords;
 };
 
+/**
+ * Shared function for modes using home's shape and interaction.
+ */
 ww.mode.Core.prototype.setPaperShapeData = function() {
   // Set I's initial dimensions.
   this.iWidth = this.boundsWidth_ * 0.2;
   this.iHeight = this.boundsWidth_ * 0.43058824;
 
   // Set coordinates for I's upper left corner.
-  this.iX = this.boundsX_  + (this.boundsWidth_ * 0.10352941);
+  this.iX = this.boundsX_ + (this.boundsWidth_ * 0.10352941);
   this.iY = this.boundsY_ + (this.boundsWidth_ * 0.16);
 
   this.iCenter = new paper['Point'](this.iX + this.iWidth / 2,
