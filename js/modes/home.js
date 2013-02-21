@@ -282,6 +282,8 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   var self = this;
 
+  this.enterIdle_();
+
   this.bindEvent_(this.find('#menu'), 'up', function() {
     $(self.containerElem_).addClass('nav-visible');
   });
