@@ -406,7 +406,7 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
     if (self.paperO_['hitTest'](lastPos) ||
       self.paperI_['hitTest'](lastPos)) {
-      
+
       if (self.hasFocus) {
         document.body.style.cursor = 'pointer';
       }

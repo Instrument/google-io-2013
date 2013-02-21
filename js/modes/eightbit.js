@@ -172,7 +172,7 @@ ww.mode.EightBitMode.prototype.init = function() {
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX, this.oY);
-  
+
   if (0 < this.paperCanvas_.height) {
     // Draw I.
     this.drawI_();

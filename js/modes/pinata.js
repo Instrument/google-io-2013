@@ -13,7 +13,8 @@ ww.mode.PinataMode = function(containerElem, assetPrefix) {
   this.preloadSound('whoosh-1.mp3');
   this.preloadSound('whoosh-2.mp3');
 
-  goog.base(this, containerElem, assetPrefix, 'pinata', true, true, true, false);
+  goog.base(this, containerElem, assetPrefix,
+            'pinata', true, true, true, false);
 
   this.ballSpeed_ = 250;
 
@@ -135,7 +136,7 @@ ww.mode.PinataMode.prototype.stepPhysics = function(delta) {
         ball.pos.x < 0 - r6 ||
         ball.pos.y > this.height_ + r6 ||
         ball.pos.y < 0 - r6) {
-      
+
       forRemoval.push(ball);
     }
   }

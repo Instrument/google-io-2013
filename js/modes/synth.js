@@ -289,7 +289,7 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.moveTracker(event);
     self.padTouchOn = false;
   });
-  
+
   var evt = this.getPointerEventNames_('move', this.name_);
   self.letterO.bind(evt, function() {
     if (self.padTouchOn) {

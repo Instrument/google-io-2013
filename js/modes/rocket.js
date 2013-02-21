@@ -113,11 +113,11 @@ ww.mode.RocketMode.prototype.animateLanding_ = function() {
       duration = 400,
       moonBounds = this.$letterO_[0].getBoundingClientRect(),
       rocketBounds = this.$letterI_[0].getBoundingClientRect(),
-      distance = ~~(moonBounds['left'] - rocketBounds['height'])
+      distance = ~~(moonBounds['left'] - rocketBounds['height']);
       transform = '', prevTransform = '';
 
   var flyUp = new TWEEN.Tween({ 'translateY': 0 });
-  flyUp.to({ 'translateY': 20 }, duration)
+  flyUp.to({ 'translateY': 20 }, duration);
 
   var rotateIn = new TWEEN.Tween({ 'rotate': 0 });
   rotateIn.to({ 'rotate': 90 }, delay);
