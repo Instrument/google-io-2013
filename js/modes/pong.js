@@ -417,12 +417,7 @@ ww.mode.PongMode.prototype.stepPhysics = function(delta) {
 
     if (this.ballSpeed_ <= this.maxBallSpeed_) {
       this.ballSpeed_ *= 1.001;
-
-      if (this.ball_.vel.x < 0) {
-        this.ball_.vel.x = -this.ballSpeed_;
-      } else {
-        this.ball_.vel.x = this.ballSpeed_;
-      }
+      this.ball_.vel.x = this.ballSpeed_;
 
       if (this.ball_.vel.y < 0) {
         this.ball_.vel.y = -this.ballSpeed_;
