@@ -90,7 +90,7 @@ ww.mode.BowlingMode.prototype.activateO = function() {
     var deg = ~~Random(360, 380);
     var ballBounds = this.ballWrapper_[0].getBoundingClientRect();
     var pinBounds = this.$letterI_[0].getBoundingClientRect();
-    var distance = (ballBounds['width'] / 2) +
+    var distance = (ballBounds['width'] / 3) +
                     ballBounds['left'] - pinBounds['right'];
 
     var animateSpin = new TWEEN.Tween({ 'rotate': 0 });
