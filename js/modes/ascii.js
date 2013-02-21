@@ -73,7 +73,7 @@ ww.mode.AsciiMode.prototype.drawI_ = function() {
 ww.mode.AsciiMode.prototype.fillI_ = function() {
   // The stops array: yellow mixes with red between 0 and 15%,
   // 15% to 30% is pure red, red mixes with black between 30% to 100%:
-  var stops = [['#000', 0], ['#fff', 1]];
+  var stops = [['#000', 0], ['#eee', 1]];
 
   // Create a linear gradient using the color stops array:
   var gradient = new paper['Gradient'](stops);
@@ -125,7 +125,7 @@ ww.mode.AsciiMode.prototype.drawO_ = function() {
 ww.mode.AsciiMode.prototype.fillO_ = function() {
   // The stops array: yellow mixes with red between 0 and 15%,
   // 15% to 30% is pure red, red mixes with black between 30% to 100%:
-  var stops = [['#000', 0], ['#fff', 1]];
+  var stops = [['#000', 0], ['#eee', 1]];
 
   // Create a linear gradient using the color stops array:
   var gradient = new paper['Gradient'](stops);
