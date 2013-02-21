@@ -8,8 +8,8 @@ goog.provide('ww.mode.DonutMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.DonutMode = function(containerElem, assetPrefix) {
-  this.preloadSound('bite-1.wav');
-  this.preloadSound('bite-2.wav');
+  this.preloadSound('bite-1.mp3');
+  this.preloadSound('bite-2.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'donut', true, true, false);
 };
@@ -54,7 +54,7 @@ ww.mode.DonutMode.prototype.activateI = function() {
   if (this.biteIIndex_ < this.maxBitesI_) {
     this.bitesI_[this.biteIIndex_].style['opacity'] = 1;
     this.biteIIndex_++;
-    this.playSound('bite-2.wav');
+    this.playSound('bite-2.mp3');
   }
 
   if (this.isReset && this.biteIIndex_ === this.maxBitesI_) {
@@ -89,7 +89,7 @@ ww.mode.DonutMode.prototype.activateO = function() {
   if (this.biteOIndex_ < this.maxBitesO_) {
     this.bitesO_[this.biteOIndex_].style['opacity'] = 1;
     this.biteOIndex_++;
-    this.playSound('bite-1.wav');
+    this.playSound('bite-1.mp3');
   }
 
   if (this.isReset && this.biteOIndex_ === this.maxBitesO_) {

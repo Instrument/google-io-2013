@@ -8,8 +8,8 @@ goog.provide('ww.mode.BowlingMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.BowlingMode = function(containerElem, assetPrefix) {
-  this.preloadSound('strike.m4a');
-  this.preloadSound('whoosh-1.wav');
+  this.preloadSound('strike.mp3');
+  this.preloadSound('whoosh-1.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'bowling', true, true, false);
 };
@@ -51,7 +51,7 @@ ww.mode.BowlingMode.prototype.activateI = function() {
     var wiggleRight = new TWEEN.Tween({ 'rotate': -wiggle });
     wiggleRight.to({ 'rotate': wiggle }, 200);
     wiggleRight.onStart(function() {
-      self.playSound('whoosh-1.wav');
+      self.playSound('whoosh-1.mp3');
     });
     wiggleRight.delay(100);
     wiggleRight.onUpdate(function() {
@@ -82,7 +82,7 @@ ww.mode.BowlingMode.prototype.activateI = function() {
 ww.mode.BowlingMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
-  this.playSound('strike.m4a');
+  this.playSound('strike.mp3');
   if (!this.isBowling_) {
     this.isBowling_ = true;
 

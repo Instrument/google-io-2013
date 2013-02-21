@@ -8,8 +8,8 @@ goog.provide('ww.mode.BurgerMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.BurgerMode = function(containerElem, assetPrefix) {
-   this.preloadSound('bite-1.wav');
-  this.preloadSound('bite-2.wav');
+  this.preloadSound('bite-1.wav');
+  this.preloadSound('bite-2.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'burger', true, true, false);
 };
@@ -54,7 +54,7 @@ ww.mode.BurgerMode.prototype.activateI = function() {
   if (this.biteIIndex_ < this.maxBitesI_) {
     this.bitesI_[this.biteIIndex_].style['opacity'] = 1;
     this.biteIIndex_++;
-    this.wantsAudio_ && this.playSound('bite-2.wav');
+    this.playSound('bite-2.mp3');
   }
 
   if (this.isReset && this.biteIIndex_ === this.maxBitesI_) {
@@ -89,7 +89,7 @@ ww.mode.BurgerMode.prototype.activateO = function() {
   if (this.biteOIndex_ < this.maxBitesO_) {
     this.bitesO_[this.biteOIndex_].style['opacity'] = 1;
     this.biteOIndex_++;
-    this.wantsAudio_ && this.playSound('bite-1.wav');
+    this.playSound('bite-1.wav');
   }
 
   if (this.isReset && this.biteOIndex_ === this.maxBitesO_) {

@@ -10,8 +10,8 @@ var TWOPI = TWOPI || Math.PI * 2;
  */
 ww.mode.PinataMode = function(containerElem, assetPrefix) {
   this.preloadSound('whack.mp3');
-  this.preloadSound('whoosh-1.wav');
-  this.preloadSound('whoosh-2.wav');
+  this.preloadSound('whoosh-1.mp3');
+  this.preloadSound('whoosh-2.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'pinata', true, true, true, false);
 
@@ -280,9 +280,9 @@ ww.mode.PinataMode.prototype.activateO = function() {
 
   if (this.wantsAudio_) {
     if (this.whackCount_ % 2 === 0) {
-      this.playSound('whoosh-1.wav');
+      this.playSound('whoosh-1.mp3');
     } else {
-      this.playSound('whoosh-2.wav');
+      this.playSound('whoosh-2.mp3');
     }
   }
 

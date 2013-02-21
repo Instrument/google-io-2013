@@ -8,10 +8,10 @@ goog.provide('ww.mode.BaconMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.BaconMode = function(containerElem, assetPrefix) {
-  this.preloadSound('bacon-sizzle.m4a');
-  this.preloadSound('egg-cracked.m4a');
-  this.preloadSound('cracked-open.m4a');
-  this.preloadSound('eggs-sizzling.m4a');
+  this.preloadSound('bacon-sizzle.mp3');
+  this.preloadSound('egg-cracked.mp3');
+  this.preloadSound('cracked-open.mp3');
+  this.preloadSound('eggs-sizzling.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'bacon', true, true, false);
 };
@@ -44,7 +44,7 @@ ww.mode.BaconMode.prototype.activateI = function() {
 
   var self = this;
 
-  this.playSound('bacon-sizzle.m4a');
+  this.playSound('bacon-sizzle.mp3');
 
   var stretchOut = new TWEEN.Tween({ 'scaleY': 1, 'translateY': 0 });
   stretchOut.to({ 'scaleY': 1.25, 'translateY': -20 }, 700);
@@ -79,13 +79,13 @@ ww.mode.BaconMode.prototype.activateO = function() {
   if (this.currentCrack_ < this.totalCracks_) {
     this.cracks_[this.currentCrack_].style['opacity'] = 1;
     this.currentCrack_++;
-    this.playSound('egg-cracked.m4a');
+    this.playSound('egg-cracked.mp3');
   } else {
     if (this.stillHasShell) {
-      this.playSound('cracked-open.m4a');
+      this.playSound('cracked-open.mp3');
       this.showCracked_();
     } else {
-      this.playSound('eggs-sizzling.m4a');
+      this.playSound('eggs-sizzling.mp3');
       this.animateSpinEgg_();
     }
   }
