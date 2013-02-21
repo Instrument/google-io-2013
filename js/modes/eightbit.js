@@ -387,7 +387,7 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
     size /= 8;
   }
 
-  var increment = Math.min(Math.round(size * 80) / 4, 1024 / viewRatio);
+  var increment = Math.min(Math.round(size * 80) / 4, 512 / viewRatio);
 
   if (this.height_ * 6 < this.width_) {
     size = Math.round(this.width_ * 0.0625) / 8;

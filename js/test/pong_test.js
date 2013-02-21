@@ -214,3 +214,63 @@ function testWwModePongModeReflectBall_() {
 
   assertTrue('paddle should have been hit', paddleHit);
 }
+
+function testWwModePongModeStepPhysics() {
+  var reflected = false;
+
+  mode.constructor.prototype.reflectBall_ = function() {
+    reflected = true;
+  };
+
+  mode.paddleHeight_ = 10;
+  mode.mouseY_ = 2;
+  var startY = mode.paddleY_;
+
+  mode.stepPhysics(1);
+
+  assertTrue('ball should have been reflected', reflected);
+
+  assertTrue('paddle position should have moved up on the screen',
+    startY > mode.paddleY_);
+
+  mode.mouseY_ = 100;
+  startY = mode.paddleY_;
+
+  mode.stepPhysics(1);
+
+  assertTrue('paddle position should have moved down on the screen',
+    startY < mode.paddleY_);
+
+  mode.ball_.vel.x = 10;
+  mode.ball_.vel.y = 10;
+  mode.ballRadius_ = mode.minBallRadius_ + 5;
+  var startRad = mode.ballRadius_;
+
+  mode.ballSpeed_ = mode.maxBallSpeed_ - 5;
+  var startSpeed = mode.ballSpeed_;
+
+  mode.stepPhysics(1);
+
+  assertTrue('ball radius should have shrunk', mode.ballRadius_ < startRad);
+  assertTrue('ball speed should have increased', mode.ballSpeed_ > startSpeed);
+
+  assertEquals('ball velocity x should match ball speed', mode.ballSpeed_,
+    mode.ball_.vel.x);
+
+  assertEquals('ball velocity y should match ball speed', mode.ballSpeed_,
+    mode.ball_.vel.y);
+
+  mode.ball_.vel.y = -10;
+
+  mode.stepPhysics(1);
+
+  assertEquals('ball velocity y should have reversed', mode.ballSpeed_ * -1,
+    mode.ball_.vel.y);
+}
+
+function testWwModePongModeOnFrame() {
+  mode.onFrame(0);
+
+  assertEquals('the canvas fill style should end up as f3cdca', '#f3cdca',
+    mode.ctx_.fillStyle);
+}
