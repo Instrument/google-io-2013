@@ -7,9 +7,9 @@ goog.provide('ww.mode.EightBitMode');
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.EightBitMode = function(containerElem, assetPrefix) {
-  this.preloadSound('i.wav');
-  this.preloadSound('o.wav');
-  this.preloadSound('error.wav');
+  this.preloadSound('i.mp3');
+  this.preloadSound('o.mp3');
+  this.preloadSound('error.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true,
     true);
@@ -24,7 +24,7 @@ ww.mode.EightBitMode.prototype.activateI = function() {
 
   this.pushPoints_(this.paperI_, this.lastClick_, 10);
 
-  this.playSound('i.wav');
+  this.playSound('i.mp3');
 };
 
 /**
@@ -35,7 +35,7 @@ ww.mode.EightBitMode.prototype.activateO = function() {
 
   this.pushPoints_(this.paperO_, this.lastClick_, 10);
 
-  this.playSound('o.wav');
+  this.playSound('o.mp3');
 };
 
 /**
@@ -281,7 +281,7 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   this.drawO_();
 
   if (this.height_ * 6 < this.width_) {
-    this.playSound('error.wav');
+    this.playSound('error.mp3');
   }
 
   if (redraw) {
