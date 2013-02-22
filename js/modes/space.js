@@ -658,13 +658,11 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   if (!this.canvas_) { return; }
 
   var ctx = this.canvas_.getContext('2d');
-  ctx.globalCompositeOperation = 'lighter';
   ctx.fillStyle = '#e4e4e4';
 
   ctx.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
 
   for (i = 0; i < this.world_.particles.length; i++) {
-    // ctx.shadowBlur = this.world_.particles[i].radius * 2;
     ctx.beginPath();
     ctx.arc(this.world_.particles[i].pos.x + 0.5,
       this.world_.particles[i].pos.y + 0.5,

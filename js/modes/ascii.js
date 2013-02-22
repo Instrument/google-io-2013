@@ -54,6 +54,7 @@ ww.mode.AsciiMode.prototype.drawI_ = function() {
 
   this.paperI_['vectors'] = [];
 
+  // Add an array of vector points and properties to the object.
   for (var i = 0; i < this.paperI_['segments'].length; i++) {
     var point = this.paperI_['segments'][i]['point']['clone']();
     point = point['subtract'](this.iCenter);
@@ -106,6 +107,7 @@ ww.mode.AsciiMode.prototype.drawO_ = function() {
 
   this.paperO_['vectors'] = [];
 
+  // Add an array of vector points and properties to the object.
   for (var i = 0; i < this.paperO_['segments'].length; i++) {
     var point = this.paperO_['segments'][i]['point']['clone']();
     point = point['subtract'](this.oCenter);
@@ -203,10 +205,6 @@ ww.mode.AsciiMode.prototype.init = function() {
   // Prep paperjs
   this.getPaperCanvas_();
 
-  // Gets the centerpoint of the viewport.
-  this.screenCenterX_ = this.width_ / 2;
-  this.screenCenterY_ = this.height_ / 2;
-
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX, this.oY);
@@ -237,6 +235,7 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
 
   var self = this;
 
+  // Check to see if the I or O were clicked.
   var evt = this.getPointerEventNames_('down', this.name_);
   this.$canvas_.bind(evt, function(e) {
     self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
@@ -259,6 +258,7 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
     }
   });
 
+  // Check to see if the I or O were moused over.
   var evt2 = this.getPointerEventNames_('move', this.name_);
   this.$canvas_.bind(evt2, function(e) {
     var lastPos = new paper['Point'](self.getCoords(e)['x'],
@@ -297,10 +297,6 @@ ww.mode.AsciiMode.prototype.didUnfocus = function() {
  */
 ww.mode.AsciiMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
-
-  // Recalculate the center of the screen based on the new window size.
-  this.screenCenterX_ = this.width_ / 2;
-  this.screenCenterY_ = this.height_ / 2;
 
   this.setPaperShapeData();
 
