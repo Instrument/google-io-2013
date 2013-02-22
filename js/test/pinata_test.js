@@ -10,22 +10,6 @@ function testWwModePinataModeActivateBalls_() {
   assertTrue('Current active amount should be increased after activateBalls_', mode.current_ > prevCurrent);
 }
 
-function testWwModePinataModeMoveAllCandyBack_() {
-  var particle = mode.physicsWorld_.particles[1]; // get a particle that's not the pinata (0)
-  var startX = Math.abs(particle['startX']);
-  var startY = Math.abs(particle['startY']);
-
-  // move particle to some other location
-  particle.moveTo(new Vector(0 - startX, 0 - startY));
-
-  mode.moveAllCandyBack_();
-
-  var endX = Math.abs(particle.pos.x);
-  var endY = Math.abs(particle.pos.y);
-
-  assertEquals('X should be reset to startX', startX, endX);
-  assertEquals('Y should be reset to startY', startY, endY);
-}
 
 function testWwModePinataModeStepPhysics() {
   mode.focus_();
@@ -43,19 +27,19 @@ console.log(particle);
 }
 
 
-function testWwModePinataModeDidFocus() {
-  mode.unfocus_();
+// function testWwModePinataModeDidFocus() {
+//   mode.unfocus_();
 
-  var prepopCount = 0;
+//   var prepopCount = 0;
 
-  mode.constructor.prototype.prepopulate_ = function(number) {
-    prepopCount++;
-  };
+//   mode.constructor.prototype.prepopulate_ = function(number) {
+//     prepopCount++;
+//   };
 
-  mode.focus_();
+//   mode.focus_();
 
-  assertTrue('Some particles should be prepopulated', prepopCount > 0);
-}
+//   assertTrue('Some particles should be prepopulated', prepopCount > 0);
+// }
 
 
 function testWwModePinataModeOnResize() {
