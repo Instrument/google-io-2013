@@ -274,3 +274,24 @@ function testWwModePongModeOnFrame() {
   assertEquals('the canvas fill style should end up as f3cdca', '#f3cdca',
     mode.ctx_.fillStyle);
 }
+
+function testWwModePongModeDidUnfocus() {
+  mode.focus_();
+  mode.unfocus_();
+
+  var bindCount = 0;
+  var elements = [mode.$canvas_];
+  
+  var elem, bindData;
+  for (var i = 0, l = elements.length; i < l; i++) {
+    var bindDataCount = 0;
+    elem = elements[i];
+    bindData = elem.data();
+
+    for (bind in bindData) {
+      bindDataCount++;
+    }
+
+    assertTrue('There should be no bind data left.', bindDataCount === 0);
+  }
+}

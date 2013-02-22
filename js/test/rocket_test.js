@@ -51,3 +51,29 @@ function testWwModeRocketModeActivateO() {
   mode.$letterO_.trigger('mouseup');
   assertTrue('Number of tweens should be greater than 0. Got (' + tweens.length + ')', tweens.length > 0);
 }
+
+function testWwModeRocketModeAnimateLanding_() {
+  var tweens = [];
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  assertTrue('Number of tweens added should be 0', tweens.length === 0);
+
+  mode.animateLanding_();
+  assertTrue('Number of tweens should be greater than 0. Got (' + tweens.length + ')', tweens.length > 0);
+}
+
+function testWwModeRocketModeAnimateWiggle_() {
+  mode.isAnimating_ = false;
+
+  var tweens = [];
+  mode.constructor.prototype.addTween = function(tween) {
+    tweens.push(tween);
+  };
+
+  assertTrue('Number of tweens added should be 0', tweens.length === 0);
+
+  mode.animateWiggle_();
+  assertTrue('Number of tweens should be greater than 0. Got (' + tweens.length + ')', tweens.length > 0);
+}

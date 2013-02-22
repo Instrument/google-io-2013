@@ -136,6 +136,8 @@ function testWwModeSynthModeOnResize() {
     mode.paths.push(path);
   }
 
+  mode.onResize();
+
   if(mode.paths) {
     pathsExist++;
   }
