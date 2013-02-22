@@ -56,6 +56,7 @@ ww.mode.EightBitMode.prototype.drawI_ = function() {
 
   this.paperI_['vectors'] = [];
 
+  // Add an array of vector points and properties to the object.
   for (var i = 0; i < this.paperI_['segments'].length; i++) {
     var point = this.paperI_['segments'][i]['point']['clone']();
     point = point['subtract'](this.iCenter);
@@ -108,6 +109,7 @@ ww.mode.EightBitMode.prototype.drawO_ = function() {
 
   this.paperO_['vectors'] = [];
 
+  // Add an array of vector points and properties to the object.
   for (var i = 0; i < this.paperO_['segments'].length; i++) {
     var point = this.paperO_['segments'][i]['point']['clone']();
     point = point['subtract'](this.oCenter);
@@ -160,15 +162,6 @@ ww.mode.EightBitMode.prototype.init = function() {
   // Prep paperjs
   this.getPaperCanvas_();
 
-  // Gets the centerpoint of the viewport.
-  this.screenCenterX_ = this.width_ / 2;
-  this.screenCenterY_ = this.height_ / 2;
-
-  if (this.canvas_) {
-    this.canvas_.width = this.width_;
-    this.canvas_.height = this.height_;
-  }
-
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX, this.oY);
@@ -198,6 +191,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
 
   var evt = this.getPointerEventNames_('down', this.name_);
 
+  // Check if the I or O and a small area surrounding them were clicked.
   $(this.paperCanvas_).bind(evt, function(event) {
     self.lastClick_ = new paper['Point'](self.getCoords(event)['x'],
       self.getCoords(event)['y']);
@@ -225,6 +219,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
 
   var lastPos = new paper['Point'](0, 0);
 
+  // Check if the I or O and a small area surrounding them were moused over.
   $(this.paperCanvas_).bind(evt2, function(event) {
     lastPos = {'x': self.getCoords(event)['x'],
       'y': self.getCoords(event)['y']};
@@ -252,9 +247,12 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
 /**
  * Event is called after a mode is unfocused.
  */
-// ww.mode.EightBitMode.prototype.didUnfocus = function() {
-//   goog.base(this, 'didUnfocus');
-// };
+ww.mode.EightBitMode.prototype.didUnfocus = function() {
+  goog.base(this, 'didUnfocus');
+
+  this.unbindEvent_($(this.paperCanvas_), 'down');
+  this.unbindEvent_($(this.paperCanvas_), 'move');
+};
 
 /**
  * Handles a browser window resize.
@@ -262,15 +260,6 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
  */
 ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
-
-  if (this.canvas_) {
-    this.canvas_.width = this.width_;
-    this.canvas_.height = this.height_;
-  }
-
-  // Recalculate the center of the screen based on the new window size.
-  this.screenCenterX_ = this.width_ / 2;
-  this.screenCenterY_ = this.height_ / 2;
 
   this.setPaperShapeData();
 

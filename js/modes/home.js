@@ -151,6 +151,7 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
 
   this.paperI_['vectors'] = [];
 
+  // Add an array of vector points and properties to the object.
   for (var i = 0; i < this.paperI_['segments'].length; i++) {
     var point = this.paperI_['segments'][i]['point']['clone']();
     point = point['subtract'](this.iCenter);
@@ -203,6 +204,7 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
 
   this.paperO_['vectors'] = [];
 
+  // Add an array of vector points and properties to the object.
   for (var i = 0; i < this.paperO_['segments'].length; i++) {
     var point = this.paperO_['segments'][i]['point']['clone']();
     point = point['subtract'](this.oCenter);
@@ -257,10 +259,6 @@ ww.mode.HomeMode.prototype.init = function() {
   // Prep paperjs
   this.getPaperCanvas_();
 
-  // Gets the centerpoint of the viewport.
-  this.screenCenterX_ = this.width_ / 2;
-  this.screenCenterY_ = this.height_ / 2;
-
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX, this.oY);
@@ -297,6 +295,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
     evt.stopPropagation();
   });
 
+  // Check if the I or O were clicked or touched.
   this.bindEvent_($(this.paperCanvas_), 'down', function(event) {
     self.lastClick_ = new paper['Point'](self.getCoords(event)['x'],
       self.getCoords(event)['y']);
@@ -315,6 +314,7 @@ ww.mode.HomeMode.prototype.didFocus = function() {
 
   var lastPos = new paper['Point'](0, 0);
 
+  // Check if the I or O were moused over.
   this.bindEvent_($(this.paperCanvas_), 'move', function(event) {
     lastPos = {'x': self.getCoords(event)['x'],
       'y': self.getCoords(event)['y']};
@@ -350,10 +350,6 @@ ww.mode.HomeMode.prototype.didUnfocus = function() {
  */
 ww.mode.HomeMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
-
-  // Recalculate the center of the screen based on the new window size.
-  this.screenCenterX_ = this.width_ / 2;
-  this.screenCenterY_ = this.height_ / 2;
 
   this.setPaperShapeData();
 
