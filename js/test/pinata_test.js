@@ -1,45 +1,40 @@
-function testWwModePinataModeActivateBalls_() {
-  var prevDeactive = mode.deactive_;
-  var prevCurrent = mode.current_;
+function testWwModePinataModeEjectParticle_() {
+  var prevParticleCount = mode.physicsWorld_.particles.length;
 
-  assertEquals('Only one ball hould be in the collision pool initially (represents the pinata)', 1, mode.collision_.pool.length);
-
-  mode.activateBalls_();
-  assertTrue('There should be balls in the collision pool after activateBalls_', mode.collision_.pool.length > 1);
-  assertTrue('Deactive amount should be decreased after activateBalls_', mode.deactive_ < prevDeactive);
-  assertTrue('Current active amount should be increased after activateBalls_', mode.current_ > prevCurrent);
+  mode.ejectParticle_(20, 20, -1); // dummy x, y, and direction values
+  assertNotEquals('After ejecting a particle, there should be more particles then previously found.',
+                  prevParticleCount, mode.physicsWorld_.particles.length);
 }
 
 
 function testWwModePinataModeStepPhysics() {
-  mode.focus_();
-  
-  var particle = mode.physicsWorld_.particles[1];
-      particle.fixed = false;
-console.log(particle);
-  var particleSize = particle.radius * 6;
+  // add dummy particles
+  mode.ejectParticle_(20, 20, 1);
+  mode.ejectParticle_(25, 20, -1);
+  mode.ejectParticle_(25, 25, 1);
+  mode.ejectParticle_(20, 25, -1);
+  mode.ejectParticle_(10, 10, 1);
+  mode.ejectParticle_(10000, 10000, -1); // ensure dummy is out of bounds
 
-  // // move ball out of bounds
-  particle.moveTo(new Vector(-mode.width_ - particleSize, -mode.height_ - particleSize));
+  var particleCount = mode.physicsWorld_.particles.length;
 
-  mode.stepPhysics(1000);
-  assertTrue('Particle should be fixed if out of bounds.', mode.physicsWorld_.particles[1].fixed);
+  mode.stepPhysics();
+  assertTrue('Particle count should be less after removal/particle out of bounds',
+              mode.physicsWorld_.particles.length < particleCount);
 }
 
 
-// function testWwModePinataModeDidFocus() {
-//   mode.unfocus_();
+function testWwModePinataModeActivateBalls_() {
+  var ejectedCount = 0;
 
-//   var prepopCount = 0;
+  mode.constructor.prototype.ejectParticle_ = function() {
+    ejectedCount++;
+  };
 
-//   mode.constructor.prototype.prepopulate_ = function(number) {
-//     prepopCount++;
-//   };
+  mode.activateBalls_();
 
-//   mode.focus_();
-
-//   assertTrue('Some particles should be prepopulated', prepopCount > 0);
-// }
+  assertTrue('One particle or more should have been ejected/activated', ejectedCount > 0);
+}
 
 
 function testWwModePinataModeOnResize() {
@@ -48,20 +43,28 @@ function testWwModePinataModeOnResize() {
       canvas.height = 10;
   var ctx = canvas.getContext('2d');
 
+  mode.wantsRetina_ = false;
   mode.canvas_ = canvas;
-  mode.ratio_ = null;
 
-  mode.onResize();
+  mode.onResize(false);
 
   assertTrue('After resize, canvas width should have changed', mode.canvas_.width != 10);
+  assertTrue('After resize, canvas height should have changed', mode.canvas_.height != 10);
 
-  var oldWidth = mode.canvas_.width;
+  var redraw = 0;
+  mode.constructor.prototype.redraw = function() {
+    redraw++;
+  };
 
-  mode.ratio_ = 2;
+  mode.onResize(true);
+  assertTrue('Redraw should have been called', redraw > 0);
+
+  var prevWidth = mode.canvas_.width;
+  var prevHeight = mode.canvas_.height;
+  mode.wantsRetina_ = true;
   mode.onResize();
-  
-  assertNotEquals('After resize with a DPI ratio, canvas width should have changed',
-                mode.canvas_.width, oldWidth);
+  assertNotEquals('After wants retina for canvas and resize, canvas width should have changed', mode.canvas_.width, prevWidth);
+  assertNotEquals('After wants retina for canvas and resize, canvas height should have changed', mode.canvas_.height, prevHeight);
 }
 
 function testWwModePinataModeAnimateI_() {
