@@ -43,15 +43,15 @@ body {
   position: absolute;
   top: 15px;
   border: 1px solid #393939;
-  height: 34px;
+  height: 35px;
   @include border-radius(17px);
   z-index: 1000;
   background-color: #fff;
   border: 2px solid #f3f3f3;
 }
 .code {
-  padding: 2px 5px 0 10px;
-  line-height: 30px;
+  padding: 0 5px 0 10px;
+  line-height: 36px;
   left: 15px;
   pointer-events: none;
 }

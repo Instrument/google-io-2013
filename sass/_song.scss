@@ -1,7 +1,17 @@
+& {
+  overflow:hidden;
+}
+
 #instruments {
   @extend %absolute-full;
   @include transform(translate3d(0, 0, 0));
   @include user-select(none);
+
+  #instrument-notes {
+    height: 150%;
+    margin: -25% 0 0 -25%;
+    width: 150%;
+  }
 
   .shape {
     opacity: 0.75;
@@ -100,12 +110,16 @@
     font-size: 19px;
 
     ul {
-      padding: 0 2%;
+      font-size: smaller;
       width: 100%;
+
+      li {
+        margin: 0 20px 0 0;
+      }
 
       li#drumkit {
         float: right;
-        margin-left: 0;
+        margin: 0;
       }
     }
   }

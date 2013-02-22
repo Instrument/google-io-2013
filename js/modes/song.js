@@ -24,11 +24,6 @@ ww.mode.SongMode = function(containerElem, assetPrefix) {
   this.preloadSound('funky-note-3.mp3');
   this.preloadSound('funky-note-4.mp3');
 
-  // this.preloadSound('organ-note-1.mp3');
-  // this.preloadSound('organ-note-2.mp3');
-  // this.preloadSound('organ-note-3.mp3');
-  // this.preloadSound('organ-note-4.mp3');
-
   this.preloadSound('beats-piano.mp3');
   this.preloadSound('beats-club.mp3');
   this.preloadSound('beats-effected-kit.mp3');
