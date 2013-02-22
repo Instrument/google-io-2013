@@ -9,8 +9,8 @@ goog.provide('ww.mode.RocketMode');
  */
 ww.mode.RocketMode = function(containerElem, assetPrefix) {
   this.preloadSound('rocket-launch.mp3');
-  this.preloadSound('rumble.wav');
-  this.preloadSound('sci-fi-door.wav');
+  this.preloadSound('rumble.mp3');
+  this.preloadSound('sci-fi-door.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'rocket', true, true, false);
 
@@ -58,7 +58,7 @@ ww.mode.RocketMode.prototype.animateWiggle_ = function() {
   if (!this.isAnimating_) {
     var self = this;
 
-    this.playSound('rumble.wav');
+    this.playSound('rumble.mp3');
 
     this.fires_[this.currentFire_].style['opacity'] = 1;
     this.fires_[this.currentFire_ + 1].style['opacity'] = 1;
@@ -185,7 +185,7 @@ ww.mode.RocketMode.prototype.animateLanding_ = function() {
 ww.mode.RocketMode.prototype.activateO = function() {
   goog.base(this, 'activateO');
 
-  this.playSound('sci-fi-door.wav');
+  this.playSound('sci-fi-door.mp3');
 
   var self = this,
       duration = 1000,
