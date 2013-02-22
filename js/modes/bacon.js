@@ -25,13 +25,13 @@ ww.mode.BaconMode.prototype.init = function() {
   goog.base(this, 'init');
 
   this.stillHasShell = true;
-  this.eggWhole_ = $('#egg-whole')[0];
-  this.cracks_ = $('[id*=crack-]');
+  this.eggWhole_ = $('#egg-whole').css('opacity', 1)[0];
+  this.cracks_ = $('[id*=crack-]').css('opacity', 0);
   this.currentCrack_ = 0;
   this.totalCracks_ = this.cracks_.length;
 
   this.whites_ = $('#egg-whites');
-  this.eggOpened_ = $('#egg-cracked');
+  this.eggOpened_ = $('#egg-cracked').css('opacity', 0);
   this.center_ = this.eggOpened_.attr('cx') + ', ' + this.eggOpened_.attr('cy');
 };
 
