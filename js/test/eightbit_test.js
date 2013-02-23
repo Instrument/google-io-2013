@@ -111,12 +111,15 @@ function testWwModeEightBitModeInit() {
 }
 
 function testWwModeEightBitModeOnResize() {
-  mode.screenCenterX_ = 20;
+  var dataIsSet = false;
+
+  mode.constructor.prototype.setPaperShapeData = function() {
+    dataIsSet = true;
+  };
 
   mode.onResize(true);
 
-  assertNotEquals('screenCenterX_ should have changed on resize', 20,
-    mode.screenCenterX_);
+  assertTrue('paper data should be set', dataIsSet);
 }
 
 function testWwModeEightBitModePushPoints_() {
