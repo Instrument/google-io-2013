@@ -277,8 +277,8 @@ ww.mode.PongMode.prototype.gameOver_ = function() {
   this.paused_ = true;
   var self = this;
   this.showReload(function() {
-    self.paused_ = false;
     self.resetGame_();
+    self.paused_ = false;
   });
 };
 
@@ -304,6 +304,7 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
    */
   if (this.ball_.pos.x <= this.ball_.radius) {
     this.gameOver_();
+    return;
   }
 
   var self;
