@@ -5,7 +5,7 @@ goog.require('ww.mode.BaconMode');
 goog.require('ww.mode.BowlingMode');
 goog.require('ww.mode.BurgerMode');
 goog.require('ww.mode.CatMode');
-goog.require('ww.mode.DonutMode');
+// goog.require('ww.mode.DonutMode');
 goog.require('ww.mode.EightBitMode');
 // goog.require('ww.mode.ExplodeMode');
 // goog.require('ww.mode.FireplaceMode');
@@ -72,7 +72,7 @@ if (ww.util.getAudioContextConstructor()) {
 ww.mode.register('ascii', ww.mode.AsciiMode, 127, 8); // 01111111
 ww.mode.register('bowling', ww.mode.BowlingMode, 117, 8); // 01110101
 ww.mode.register('rocket', ww.mode.RocketMode, 69, 8); // 01000101
-ww.mode.register('donut', ww.mode.DonutMode, 150, 8); // 10010110
+// ww.mode.register('donut', ww.mode.DonutMode, 150, 8); // 10010110
 ww.mode.register('burger', ww.mode.BurgerMode, 57, 8); // 00111001
 
 if ((window.location.href.indexOf('modes') >= 0) ||
