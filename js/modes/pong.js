@@ -3,7 +3,6 @@ goog.provide('ww.mode.PongMode');
 
 var TWOPI = Math.PI * 2;
 
-
 /**
  * @constructor
  * @param {Element} containerElem The containing element.
@@ -31,7 +30,6 @@ ww.mode.PongMode = function(containerElem, assetPrefix) {
   this['bottomWallOpacity_'] = 0;
 };
 goog.inherits(ww.mode.PongMode, ww.mode.Core);
-
 
 /**
  * Function to initialize the current mode.
@@ -70,24 +68,20 @@ ww.mode.PongMode.prototype.init = function() {
   this.resetGame_();
 };
 
-
 /**
  * Reset game state to a new round.
  * @private
  */
 ww.mode.PongMode.prototype.startRound_ = function() {
-  // this.roundNumber_ = 2;
   this.gamesPlayed_ = this.gamesPlayed_ || 0;
   this.gamesPlayed_++;
   this.setScore_(0);
 
   this.bonusEl_.style.opacity = 0;
   this.transformElem_(this.bonusEl_, 'translateX(50px)');
-  // this.$lives_.text(this.roundNumber_);
 
   this.paused_ = false;
 };
-
 
 /**
  * Reset the ball to its starting position.
@@ -110,7 +104,6 @@ ww.mode.PongMode.prototype.resetGame_ = function() {
 
   this.setScore_(0);
 };
-
 
 /**
  * Handles a browser window resize.
@@ -136,7 +129,6 @@ ww.mode.PongMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
   this.bonusEl_ = document.getElementById('bonus');
-  // this.$lives_ = $('#lives');
   this.$score_ = $('#score');
 
   this.$canvas_ = $('#pong-canvas');
@@ -159,7 +151,6 @@ ww.mode.PongMode.prototype.didFocus = function() {
   this.startRound_();
 };
 
-
 /**
  * Unbind mouse/touch events which focus is lost.
  */
@@ -169,7 +160,6 @@ ww.mode.PongMode.prototype.didUnfocus = function() {
   var evt = ww.util.getPointerEventNames('move', this.name_);
   this.$canvas_.unbind(evt);
 };
-
 
 /**
  * Pulse walls when they are hit.
@@ -197,7 +187,6 @@ ww.mode.PongMode.prototype.hitWall_ = function(wall) {
 
   this.addTween(fadeInTween);
 };
-
 
 /**
  * When the paddle hits the ball.
@@ -273,10 +262,7 @@ ww.mode.PongMode.prototype.hitPaddle_ = function() {
   });
 
   this.addTween(fadeOutTween);
-
-  // Add points
 };
-
 
 /**
  * When the paddle misses the ball, it's game over.
@@ -296,7 +282,6 @@ ww.mode.PongMode.prototype.gameOver_ = function() {
   });
 };
 
-
 /**
  * Update the score.
  * @private
@@ -309,7 +294,6 @@ ww.mode.PongMode.prototype.setScore_ = function(val) {
   }
 };
 
-
 /**
  * Handle collisions.
  * @private
@@ -319,14 +303,7 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
    * Window boundary collision detection.
    */
   if (this.ball_.pos.x <= this.ball_.radius) {
-    // this.roundNumber_--;
-    // this.$lives_.text(Math.max(this.roundNumber_, 0));
-
-    // if (this.startXBall_ < 0) {
-      this.gameOver_();
-    // } else {
-      // this.resetGame_();
-    // }
+    this.gameOver_();
   }
 
   var self;
@@ -387,7 +364,6 @@ ww.mode.PongMode.prototype.reflectBall_ = function() {
   }
 };
 
-
 /**
  * On each physics tick, check for collisions and adjust speed.
  * @param {Float} delta Time since last tick.
@@ -431,7 +407,6 @@ ww.mode.PongMode.prototype.stepPhysics = function(delta) {
 
   this.reflectBall_();
 };
-
 
 /**
  * Draw a single frame.
