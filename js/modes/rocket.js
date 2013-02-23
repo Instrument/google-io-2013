@@ -130,7 +130,7 @@ ww.mode.RocketMode.prototype.animateLanding_ = function() {
   orbitOver.to({ 'translateY': distance, 'scale': 0.25 }, duration);
   orbitOver.delay(delay);
   orbitOver.onUpdate(function() {
-    transform = 'scale(' + this['scale'] + ') ' +
+    transform = 'scale(' + this['scale'] + ', ' + this['scale'] + ') ' +
                 'translate(-20, -' + this['translateY'] + ')';
     self.rocket_.attr('transform', transform);
   });
