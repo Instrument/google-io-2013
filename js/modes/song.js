@@ -47,8 +47,8 @@ goog.inherits(ww.mode.SongMode, ww.mode.Core);
 ww.mode.SongMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.evtStart = this.getPointerEventNames_('down', 'song');
-  this.evtEnd = this.getPointerEventNames_('up', 'song');
+  this.evtStart = ww.util.getPointerEventNames('down', 'song');
+  this.evtEnd = ww.util.getPointerEventNames('up', 'song');
 
   // setup instruments and animation elements
   this.instruments = $('.instrument');

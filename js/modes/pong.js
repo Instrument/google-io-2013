@@ -146,7 +146,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
   this.ctx_ = this.canvas_.getContext('2d');
 
   var self = this;
-  var evt = this.getPointerEventNames_('move', this.name_);
+  var evt = ww.util.getPointerEventNames('move', this.name_);
 
   this.$canvas_.bind(evt, function(e) {
     e.preventDefault();
@@ -166,7 +166,7 @@ ww.mode.PongMode.prototype.didFocus = function() {
 ww.mode.PongMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = this.getPointerEventNames_('move', this.name_);
+  var evt = ww.util.getPointerEventNames('move', this.name_);
   this.$canvas_.unbind(evt);
 };
 

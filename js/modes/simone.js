@@ -23,8 +23,8 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   TWEEN.removeAll();
 
-  this.evtStart = this.getPointerEventNames_('down', 'simone');
-  this.evtEnd = this.getPointerEventNames_('up', 'simone');
+  this.evtStart = ww.util.getPointerEventNames('down', 'simone');
+  this.evtEnd = ww.util.getPointerEventNames('up', 'simone');
   this.startAction = (Modernizr.touch) ? 'Tap' : 'Click';
 
   this.topLeft = $('#red');        // 0 in sequence

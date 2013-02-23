@@ -36,7 +36,22 @@ ww.app.Core = function() {
     document.body.style[
       Modernizr.prefixed('tapHighlightColor')] = 'rgba(0,0,0,0)';
 
-    this.$window_.bind('touchmove.app', function(e) {
+    var moveEvt = ww.util.getPointerEventNames('move', 'app');
+    this.$window_.bind(moveEvt, function(e) {
+      e.preventDefault();
+    });
+
+    var upEvt = ww.util.getPointerEventNames('up', 'app');
+    this.$window_.bind(upEvt, function(e) {
+      e.preventDefault();
+    });
+
+    var downEvt = ww.util.getPointerEventNames('down', 'app');
+    this.$window_.bind(downEvt, function(e) {
+      e.preventDefault();
+    });
+
+    this.$window_.bind('dblclick.app', function(e) {
       e.preventDefault();
     });
   }

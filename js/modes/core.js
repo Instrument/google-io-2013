@@ -146,7 +146,7 @@ ww.mode.Core.prototype.init = function() {
  */
 ww.mode.Core.prototype.bindEvent_ = function(elem, evt, onEvent) {
   var $elem = $(elem);
-  var evtName = this.getPointerEventNames_(evt, this.name_);
+  var evtName = ww.util.getPointerEventNames(evt, this.name_);
 
   // if (window.navigator.msPointerEnabled) {
   //   $elem[0].addEventListener(evtName, onEvent, false);
@@ -163,7 +163,7 @@ ww.mode.Core.prototype.bindEvent_ = function(elem, evt, onEvent) {
  */
 ww.mode.Core.prototype.unbindEvent_ = function(elem, evt) {
   var $elem = $(elem);
-  var evtName = this.getPointerEventNames_(evt, this.name_);
+  var evtName = ww.util.getPointerEventNames(evt, this.name_);
 
   // if (window.navigator.msPointerEnabled) {
   //   $elem[0].removeEventListener(evtName);
@@ -171,57 +171,6 @@ ww.mode.Core.prototype.unbindEvent_ = function(elem, evt) {
     $elem.unbind(evtName);
   // }
 };
-
-/**
- * Point events for binding.
- * @private
- * @param {String} evt Type of event.
- * @param {String} name Namespace of event.
- * @return {String} The resulting events.
- */
-ww.mode.Core.prototype.getPointerEventNames_ = function(evt, name) {
-  var evts = [],
-      touchEvt,
-      mouseEvt,
-      msEvent;
-
-  if (evt === 'up') {
-    touchEvt = 'touchend';
-    mouseEvt = 'mouseup';
-    msEvent = 'MSPointerUp';
-  } else if (evt === 'move') {
-    touchEvt = 'touchmove';
-    mouseEvt = 'mousemove';
-    msEvent = 'MSPointerMove';
-  } else if (evt === 'down') {
-    touchEvt = 'touchstart';
-    mouseEvt = 'mousedown';
-    msEvent = 'MSPointerDown';
-  }
-
-  var isWindows = navigator.userAgent.match(/(Windows)/i) ? true : false;
-  var isIETouch = navigator.userAgent.match(/(Touch)/i) ? true : false;
-
-  // var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
-  // var android = navigator.userAgent.match(/Android/) ? true : false;
-
-  if (isWindows) {
-    if (Modernizr.touch || isIETouch) {
-      evts.push(touchEvt + '.' + name);
-    }
-
-    evts.push(mouseEvt + '.' + name);
-  } else {
-    if (Modernizr.touch) {
-      evts.push(touchEvt + '.' + name);
-    } else {
-      evts.push(mouseEvt + '.' + name);
-    }
-  }
-
-  return evts.join(' ');
-};
-
 
 /**
  * Block screen with modal reload button.
@@ -240,7 +189,7 @@ ww.mode.Core.prototype.showReload = function(onReload) {
     }
   }
   this.$reloadModal_.fadeOut(0);
-  var upEvt = this.getPointerEventNames_('up', 'reload');
+  var upEvt = ww.util.getPointerEventNames('up', 'reload');
   this.$reloadModal_.bind(upEvt, function() {
     self.$reloadModal_.fadeOut();
     // self.focus_();
@@ -563,7 +512,7 @@ ww.mode.Core.prototype.willFocus = function() {
 ww.mode.Core.prototype.didFocus = function() {
   var self = this;
 
-  var upEvt = this.getPointerEventNames_('up', this.name_);
+  var upEvt = ww.util.getPointerEventNames('up', this.name_);
 
   this.$letterI_.bind(upEvt, function() {
     self.activateI();
@@ -625,7 +574,7 @@ ww.mode.Core.prototype.willUnfocus = function() {
  * Event is called after a mode unfocused.
  */
 ww.mode.Core.prototype.didUnfocus = function() {
-  var upEvt = this.getPointerEventNames_('up', this.name_);
+  var upEvt = ww.util.getPointerEventNames('up', this.name_);
   this.$letterI_.unbind(upEvt);
   this.$letterO_.unbind(upEvt);
 
@@ -635,7 +584,7 @@ ww.mode.Core.prototype.didUnfocus = function() {
 
   if (this.$reloadModal_) {
     this.$reloadModal_.hide();
-    this.$reloadModal_.unbind(this.getPointerEventNames_('up', 'reload'));
+    this.$reloadModal_.unbind(ww.util.getPointerEventNames('up', 'reload'));
   }
 
   $(document).unbind('keyup.' + this.name_);

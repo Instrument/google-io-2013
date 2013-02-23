@@ -188,7 +188,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   var self = this;
 
   // Check to see if the I or O were clicked.
-  var evt = this.getPointerEventNames_('down', this.name_);
+  var evt = ww.util.getPointerEventNames('down', this.name_);
   this.$canvas_.bind(evt, function(e) {
     self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
@@ -211,7 +211,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   });
 
   // Check to see if the I or O were moused over.
-  var evt2 = this.getPointerEventNames_('move', this.name_);
+  var evt2 = ww.util.getPointerEventNames('move', this.name_);
   this.$canvas_.bind(evt2, function(e) {
     var lastPos = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);

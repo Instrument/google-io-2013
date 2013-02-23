@@ -394,7 +394,7 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   var lastPos = new paper['Point'](0, 0);
 
-  var evt = this.getPointerEventNames_('move', this.name_);
+  var evt = ww.util.getPointerEventNames('move', this.name_);
   $(this.containerElem_).bind(evt, function(e) {
     self.mouseX_ = self.getCoords(e)['x'];
     self.mouseY_ = self.getCoords(e)['y'];
@@ -412,7 +412,7 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
     }
   });
 
-  var evt2 = this.getPointerEventNames_('down', this.name_);
+  var evt2 = ww.util.getPointerEventNames('down', this.name_);
   $(this.containerElem_).bind(evt2, function(e) {
     var coords = self.getCoords(e);
     var p = new paper['Point'](coords['x'], coords['y']);
@@ -437,10 +437,10 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 ww.mode.SpaceMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var evt = this.getPointerEventNames_('move', this.name_);
+  var evt = ww.util.getPointerEventNames('move', this.name_);
   $(this.containerElem_).unbind(evt + '.space');
 
-  var evt2 = this.getPointerEventNames_('down', this.name_);
+  var evt2 = ww.util.getPointerEventNames('down', this.name_);
   $(this.containerElem_).unbind(evt2 + '.space');
 };
 

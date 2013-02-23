@@ -16,8 +16,8 @@ goog.inherits(ww.mode.SynthMode, ww.mode.Core);
 ww.mode.SynthMode.prototype.init = function() {
   goog.base(this, 'init');
 
-  this.evtStart = this.getPointerEventNames_('down', 'synth');
-  this.evtEnd = this.getPointerEventNames_('up', 'synth');
+  this.evtStart = ww.util.getPointerEventNames('down', 'synth');
+  this.evtEnd = ww.util.getPointerEventNames('up', 'synth');
 
   var aCtx = this.getAudioContext_();
   this.source = aCtx.createOscillator();
@@ -294,7 +294,7 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.padTouchOn = false;
   });
 
-  var evt = this.getPointerEventNames_('move', this.name_);
+  var evt = ww.util.getPointerEventNames('move', this.name_);
   self.letterO.bind(evt, function() {
     if (self.padTouchOn) {
       self.changeFrequency(event);
@@ -317,7 +317,7 @@ ww.mode.SynthMode.prototype.didUnfocus = function() {
   this.letterO.unbind(this.evtStart);
   this.letterO.unbind(this.evtEnd);
 
-  var evt = this.getPointerEventNames_('move', this.name_);
+  var evt = ww.util.getPointerEventNames('move', this.name_);
   this.letterO.unbind(evt);
 
   this.isPlaying = true;

@@ -343,7 +343,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   var self = this;
 
   // Multiple bound events upon click or touch.
-  var downEvt = this.getPointerEventNames_('down', this.name_);
+  var downEvt = ww.util.getPointerEventNames('down', this.name_);
   this.$canvas_.bind(downEvt, function(e) {
 
     self.mouseX_ = self.getCoords(e)['x'];
@@ -411,7 +411,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
     }
 
     // Update mouse or touch coordinates on move.
-    var moveEvt = self.getPointerEventNames_('move', self.name_);
+    var moveEvt = ww.util.getPointerEventNames('move', self.name_);
     self.$canvas_.bind(moveEvt, function(e) {
       self.mouseX_ = self.getCoords(e)['x'];
       self.mouseY_ = self.getCoords(e)['y'];
@@ -424,7 +424,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
     });
 
     // On mouseup or touchend, let go of all our events and unlock any balls.
-    var upEvt = self.getPointerEventNames_('up', self.name_);
+    var upEvt = ww.util.getPointerEventNames('up', self.name_);
     self.$canvas_.bind(upEvt, function(e) {
       if (activeBall) {
         activeBall['fixed'] = false;
@@ -444,7 +444,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 ww.mode.MetaBallMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
 
-  var downEvt = this.getPointerEventNames_('down', this.name_);
+  var downEvt = ww.util.getPointerEventNames('down', this.name_);
   this.$canvas_.unbind(downEvt);
 
   if (this.wantsAudio_) {

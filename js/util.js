@@ -122,6 +122,55 @@ ww.util.getAudioContextConstructor = function() {
 };
 
 /**
+ * Point events for binding.
+ * @param {String} evt Type of event.
+ * @param {String} name Namespace of event.
+ * @return {String} The resulting events.
+ */
+ww.util.getPointerEventNames = function(evt, name) {
+  var evts = [],
+      touchEvt,
+      mouseEvt,
+      msEvent;
+
+  if (evt === 'up') {
+    touchEvt = 'touchend';
+    mouseEvt = 'mouseup';
+    msEvent = 'MSPointerUp';
+  } else if (evt === 'move') {
+    touchEvt = 'touchmove';
+    mouseEvt = 'mousemove';
+    msEvent = 'MSPointerMove';
+  } else if (evt === 'down') {
+    touchEvt = 'touchstart';
+    mouseEvt = 'mousedown';
+    msEvent = 'MSPointerDown';
+  }
+
+  var isWindows = navigator.userAgent.match(/(Windows)/i) ? true : false;
+  var isIETouch = navigator.userAgent.match(/(Touch)/i) ? true : false;
+
+  // var iOS = navigator.userAgent.match(/(iPad|iPhone|iPod)/i) ? true : false;
+  // var android = navigator.userAgent.match(/Android/) ? true : false;
+
+  if (isWindows) {
+    if (Modernizr.touch || isIETouch) {
+      evts.push(touchEvt + '.' + name);
+    }
+
+    evts.push(mouseEvt + '.' + name);
+  } else {
+    if (Modernizr.touch) {
+      evts.push(touchEvt + '.' + name);
+    } else {
+      evts.push(mouseEvt + '.' + name);
+    }
+  }
+
+  return evts.join(' ');
+};
+
+/**
  * RequestAnimationFrame polyfill.
  */
  (function() {
