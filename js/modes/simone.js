@@ -91,7 +91,7 @@ ww.mode.SimoneMode.prototype.init = function() {
     this.analyser.smoothingTimeConstant = 0.85;
 
     this.gainNode = aCtx.createGainNode();
-    this.gainNode.gain.value = 0.1;
+    this.gainNode.gain.value = 0.02;
 
     this.notes = [
       {
