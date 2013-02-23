@@ -105,14 +105,12 @@ ww.mode.PinataMode.prototype.onResize = function(redraw) {
  * @private
  */
 ww.mode.PinataMode.prototype.recenter_ = function() {
-  this.bounds_ = this.$letterO_[0].getBoundingClientRect();
-
   this.center_ = {
-    'x': ~~(this.bounds_['left'] + (this.bounds_['width'] / 2)),
-    'y': ~~(this.bounds_['top'] + (this.bounds_['height'] / 2))
+    'x': this.boundsX_ + (this.boundsWidth_ * 0.7),
+    'y': this.boundsY_ + (this.boundsHeight_ / 2)
   };
 
-  this.robotParticle_.setRadius(this.bounds_['width']);
+  this.robotParticle_.setRadius(this.boundsWidth_ * 0.41);
   this.robotParticle_.moveTo(new Vector(this.center_['x'], this.center_['y']));
 };
 
