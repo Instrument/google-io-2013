@@ -142,7 +142,7 @@ function testWwModeMetaBallModeOnResize() {
   mode.oPaths_.push(new paper['Path']['Circle'](mode.oCenter_, 100));
   var oHeight2 = mode.oPaths_[1]['bounds']['height'];
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertEquals('canvas_.width should equal width_', mode.width_,
     mode.canvas_.width);

@@ -75,7 +75,7 @@ function testWwModePongModeResetGame_() {
 function testWwModePongModeOnResize() {
   mode.canvas_.width_ = 20;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('screenCenterX_ should have changed on resize', 20,
     mode.canvas_.width);

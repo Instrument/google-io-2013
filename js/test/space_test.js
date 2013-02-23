@@ -187,7 +187,7 @@ function testWwModeSpaceModeOnResize() {
   mode.canvas_ = false;
   mode.world_ = false;
 
-  mode.onResize();
+  mode.onResize(true);
 
   var tempWidth = mode.canvas_.width;
 
@@ -203,7 +203,7 @@ function testWwModeSpaceModeOnResize() {
   mode.width_ = 0;
   mode.tempFloat_ = 0;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('canvas_.width should have changed', 0,
     mode.canvas_.width);
@@ -229,7 +229,7 @@ function testWwModeSpaceModeOnResize() {
     callRedraw = true;
   }
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertTrue('drawO_ should have been called', callO);
   assertTrue('drawI_ should have been called', callI);

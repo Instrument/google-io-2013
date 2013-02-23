@@ -10,7 +10,7 @@ function testWwModeSynthModeDidFocus() {
     elem = elements[i];
     bindData = elem.data();
 
-    for (bind in bindData) {
+    for (var bind in bindData) {
       bindDataCount++;
     }
 
@@ -31,7 +31,7 @@ function testWwModeSynthModeDidUnFocus() {
     elem = elements[i];
     bindData = elem.data();
 
-    for (bind in bindData) {
+    for (var bind in bindData) {
       bindDataCount++;
     }
 
@@ -88,7 +88,7 @@ function testWwModeSynthModeChangeFrequency() {
   var mockEvent = {
     pageX: 0,
     pageY: 0
-  }
+  };
   mode.constructor.prototype.calculateFrequency = function() {
     frequencyCalculated++;
   };
@@ -136,7 +136,7 @@ function testWwModeSynthModeOnResize() {
     mode.paths.push(path);
   }
 
-  mode.onResize();
+  mode.onResize(true);
 
   if(mode.paths) {
     pathsExist++;

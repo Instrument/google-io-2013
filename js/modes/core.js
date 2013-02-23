@@ -69,7 +69,7 @@ ww.mode.Core = function(containerElem,
       // self.$window_.resize(ww.util.throttle(function() {
       //   self.onResize(true);
       // }, 50));
-      self.onResize();
+      self.onResize(true);
 
       var modeDetails = ww.mode.findModeByName(self.name_);
 

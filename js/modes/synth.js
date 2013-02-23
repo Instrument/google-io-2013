@@ -53,7 +53,7 @@ ww.mode.SynthMode.prototype.init = function() {
   this.waveMap = ['sine', 'square', 'saw', 'triangle'];
   var self = this;
   setTimeout(function() {
-    self.onResize();
+    self.onResize(true);
   }, 800);
 };
 

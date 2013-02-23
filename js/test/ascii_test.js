@@ -16,7 +16,7 @@ function tearDown() {
 }
 
 function testWwModeAsciiModeActivateI() {
-  mode.onResize();
+  mode.onResize(true);
 
   var tempX = mode.paperI_['vectors'][0]['velocity'];
 
@@ -27,7 +27,7 @@ function testWwModeAsciiModeActivateI() {
 }
 
 function testWwModeAsciiModeActivateO() {
-  mode.onResize();
+  mode.onResize(true);
 
   var tempX = mode.paperO_['vectors'][0]['velocity'];
 
@@ -40,7 +40,7 @@ function testWwModeAsciiModeActivateO() {
 function testWwModeAsciiModeDrawI_() {
   mode.paperI_ = undefined;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('paperI_ should have been created', undefined, mode.paperI_);
 
@@ -62,7 +62,7 @@ function testWwModeAsciiModeDrawI_() {
 function testWwModeAsciiModeDrawO_() {
   mode.paperO_ = undefined;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('paperO_ should have been created', undefined, mode.paperO_);
 
@@ -84,7 +84,7 @@ function testWwModeAsciiModeDrawO_() {
 function testWwModeAsciiModeDrawSlash_() {
   mode.paperSlash_ = undefined;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('paperSlash_ should have been created', undefined,
     mode.paperSlash_);
@@ -131,7 +131,7 @@ function testWwModeAsciiModeInit() {
 function testWwModeAsciiModeOnResize() {
   mode.screenCenterX_ = 20;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('screenCenterX_ should have changed on resize', 20,
     mode.screenCenterX_);
@@ -139,7 +139,7 @@ function testWwModeAsciiModeOnResize() {
 
 function testWwModeAsciiModePushPoints_() {
   mode.init();
-  mode.onResize();
+  mode.onResize(true);
 
   mode.paperI_['vectors'][0]['velocity'] = 0;
 
@@ -158,7 +158,7 @@ function testWwModeAsciiModePushPoints_() {
 
 function testWwModeAsciiModeUpdateVectors_() {
   mode.init();
-  mode.onResize();
+  mode.onResize(true);
 
   mode.paperI_['vectors'][0]['velocity'] = 10;
 
@@ -177,7 +177,7 @@ function testWwModeAsciiModeUpdateVectors_() {
 
 function testWwModeAsciiModeUpdatePoints_() {
   mode.init();
-  mode.onResize();
+  mode.onResize(true);
 
   mode.paperI_['vectors'][0]['length'] = 0;
 

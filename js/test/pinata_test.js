@@ -62,7 +62,7 @@ function testWwModePinataModeOnResize() {
   var prevWidth = mode.canvas_.width;
   var prevHeight = mode.canvas_.height;
   mode.wantsRetina_ = true;
-  mode.onResize();
+  mode.onResize(true);
   assertNotEquals('After wants retina for canvas and resize, canvas width should have changed', mode.canvas_.width, prevWidth);
   assertNotEquals('After wants retina for canvas and resize, canvas height should have changed', mode.canvas_.height, prevHeight);
 }

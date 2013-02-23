@@ -93,7 +93,7 @@ function testGoToMode() {
 function testWwModeHomeModeActivateI() {
   mode.patternMatcher_.reset();
 
-  mode.onResize();
+  mode.onResize(true);
 
   var tempX = mode.paperI_['vectors'][0]['velocity'];
 
@@ -109,7 +109,7 @@ function testWwModeHomeModeActivateI() {
 function testWwModeHomeModeActivateO() {
   mode.patternMatcher_.reset();
 
-  mode.onResize();
+  mode.onResize(true);
 
   var tempX = mode.paperO_['vectors'][0]['velocity'];
 
@@ -125,7 +125,7 @@ function testWwModeHomeModeActivateO() {
 function testWwModeHomeModeDrawI_() {
   mode.paperI_ = undefined;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('paperI_ should have been created', undefined, mode.paperI_);
 
@@ -147,7 +147,7 @@ function testWwModeHomeModeDrawI_() {
 function testWwModeHomeModeDrawO_() {
   mode.paperO_ = undefined;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('paperO_ should have been created', undefined, mode.paperO_);
 
@@ -201,7 +201,7 @@ function testWwModeHomeModeInit() {
 function testWwModeHomeModeOnResize() {
   mode.screenCenterX_ = 20;
 
-  mode.onResize();
+  mode.onResize(true);
 
   assertNotEquals('screenCenterX_ should have changed on resize', 20,
     mode.screenCenterX_);
@@ -209,7 +209,7 @@ function testWwModeHomeModeOnResize() {
 
 function testWwModeHomeModePushPoints_() {
   mode.init();
-  mode.onResize();
+  mode.onResize(true);
 
   mode.paperI_['vectors'][0]['velocity'] = 0;
 
@@ -228,7 +228,7 @@ function testWwModeHomeModePushPoints_() {
 
 function testWwModeHomeModeUpdateVectors_() {
   mode.init();
-  mode.onResize();
+  mode.onResize(true);
 
   mode.paperI_['vectors'][0]['velocity'] = 10;
 
@@ -247,7 +247,7 @@ function testWwModeHomeModeUpdateVectors_() {
 
 function testWwModeHomeModeUpdatePoints_() {
   mode.init();
-  mode.onResize();
+  mode.onResize(true);
 
   mode.paperI_['vectors'][0]['length'] = 0;
 

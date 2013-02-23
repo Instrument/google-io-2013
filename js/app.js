@@ -85,7 +85,7 @@ ww.app.Core.prototype.onResize_ = function() {
         }
 
         if (mode.instance) {
-          mode.instance.onResize();
+          mode.instance.onResize(true);
         }
       }
     }

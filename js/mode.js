@@ -106,7 +106,7 @@ if ((window.location.href.indexOf('modes') >= 0) ||
       $(window).resize(ww.util.throttle(function() {
         $('.mode').css({ 'width': $(window).width(),
           'height': $(window).height() });
-        window['currentMode'].onResize();
+        window['currentMode'].onResize(true);
       }, 50));
     }
   });
