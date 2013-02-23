@@ -56,15 +56,7 @@ ww.app.Core = function() {
     });
   }
 
-  // This should be worked in somehow to prevent text selection in IE on touch.
-  /*this.$window_.addEventListener('selectstart', function(e) {
-    e.preventDefault();
-  }, false);*/
-
-  // Start event listeners.
-  // setTimeout(function() {
-    self.start_();
-  // }, 1000);
+  self.start_();
 };
 
 /**
@@ -136,8 +128,8 @@ ww.app.Core.prototype.postMessage = function(data) {
  * @param {Boolean} transition Whether the mode will animate in.
  * @param {Boolean} reverse Whether the animation should be reversed.
  */
-ww.app.Core.prototype.loadModeByName_ = function(
-                                          modeName, transition, reverse) {
+ww.app.Core.prototype.loadModeByName_ = function(modeName,
+                                                 transition, reverse) {
   this.loadedModes_ = this.loadedModes_ || {};
   this.loadedModes_[modeName] = this.loadedModes_[modeName] ||
                                 { name: modeName };
@@ -304,7 +296,6 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
   modeElem.className = 'mode ' + mode.name + '-mode';
   modeElem.style.visibility = 'hidden';
   modeElem.style.pointerEvents = 'none';
-  // modeElem.src = 'modes/' + mode.name + '.html';
   modeElem.style.width = this.width_ + 'px';
   modeElem.style.height = this.height_ + 'px';
 
