@@ -238,17 +238,17 @@ ww.mode.Core.prototype.showReload = function(onReload) {
         $("<div class='reload'></div>").appendTo(this.containerElem_);
     }
   }
-
+  this.$reloadModal_.fadeOut(0);
   var upEvt = this.getPointerEventNames_('up', 'reload');
   this.$reloadModal_.bind(upEvt, function() {
-    self.$reloadModal_.hide();
+    self.$reloadModal_.fadeOut();
     // self.focus_();
     if ('function' === typeof onReload) {
       onReload();
     }
   });
 
-  this.$reloadModal_.show();
+  this.$reloadModal_.fadeIn();
 };
 
 /**

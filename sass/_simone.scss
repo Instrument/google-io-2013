@@ -1,3 +1,8 @@
+.reload {
+  background-color: rgba(#000, 0.5);
+  @include background-size(3em);
+}
+
 #message {
   left: 0;
   line-height: 1.5em;

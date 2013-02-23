@@ -47,7 +47,6 @@ ww.mode.SimoneMode.prototype.init = function() {
 
   this.message = $('#message').text(this.startAction + ' to play.');
   this.message.css('opacity', 1);
-  this.playAgainEl = $('#play-again').fadeOut();
 
   // display 'how to start playing' message
   // unbind and hide once first game has started
@@ -131,10 +130,6 @@ ww.mode.SimoneMode.prototype.didFocus = function() {
 
   var self = this;
 
-  self.playAgainEl.bind(this.evtEnd, function() {
-    self.beginGame_();
-  });
-
   self.topLeft.bind(this.evtStart, function() {
     self.startCheck_(0);
   });
@@ -170,8 +165,6 @@ ww.mode.SimoneMode.prototype.didFocus = function() {
  */
 ww.mode.SimoneMode.prototype.didUnfocus = function() {
   goog.base(this, 'didUnfocus');
-
-  this.playAgainEl.unbind(this.evtEnd);
 
   this.topLeft.unbind(this.evtStart);
   this.topRight.unbind(this.evtStart);
@@ -339,7 +332,10 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
             self.segmentEls.css('opacity', this['opacity']);
           });
           fadeIn.onComplete(function() {
-            self.playAgainEl.fadeIn();
+            self.playStatus.removeClass();
+            self.showReload(function(){
+              self.beginGame_();
+            });
           });
 
       self.addTween(fadeIn);
@@ -366,7 +362,6 @@ ww.mode.SimoneMode.prototype.beginGame_ = function() {
     self.shuffleSequence_();
     self.levels.removeClass().text('');
     self.playStatus.removeClass();
-    self.playAgainEl.fadeOut();
 
     this.log('Playing sequence: ' + this.sequence);
 
