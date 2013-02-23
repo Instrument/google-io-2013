@@ -335,7 +335,7 @@ ww.mode.SimoneMode.prototype.checkSequence_ = function(guess) {
             self.playStatus.removeClass();
             self.showReload(function(){
               self.beginGame_();
-            });
+            }, true);
           });
 
       self.addTween(fadeIn);

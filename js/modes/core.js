@@ -175,8 +175,9 @@ ww.mode.Core.prototype.unbindEvent_ = function(elem, evt) {
 /**
  * Block screen with modal reload button.
  * @param {Function} onReload A callback.
+ * @param {Boolean} shouldAnimate Whether modal should animate.
  */
-ww.mode.Core.prototype.showReload = function(onReload) {
+ww.mode.Core.prototype.showReload = function(onReload, shouldAnimate) {
   // this.unfocus_();
 
   var self = this;
@@ -188,17 +189,28 @@ ww.mode.Core.prototype.showReload = function(onReload) {
         $("<div class='reload'></div>").appendTo(this.containerElem_);
     }
   }
-  this.$reloadModal_.fadeOut(0);
+
+  this.$reloadModal_.hide();
+
   var upEvt = ww.util.getPointerEventNames('up', 'reload');
   this.$reloadModal_.bind(upEvt, function() {
-    self.$reloadModal_.fadeOut();
-    // self.focus_();
+
+    if (shouldAnimate) {
+      self.$reloadModal_.fadeOut();
+    } else {
+      self.$reloadModal_.hide();
+    }
+
     if ('function' === typeof onReload) {
       onReload();
     }
   });
 
-  this.$reloadModal_.fadeIn();
+  if (shouldAnimate) {
+    this.$reloadModal_.fadeIn();
+  } else {
+    this.$reloadModal_.show();
+  }
 };
 
 /**
