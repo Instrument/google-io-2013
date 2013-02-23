@@ -114,7 +114,7 @@ ww.mode.AsciiMode.prototype.drawO_ = function() {
 
     point['velocity'] = 0;
     point['acceleration'] = Math.random() * 5 + 10;
-    point['bounce'] = Math.random() * .1 + 1.05;
+    point['bounce'] = Math.random() * 0.1 + 1.05;
 
     this.paperO_['vectors'].push(point);
   }
@@ -203,7 +203,7 @@ ww.mode.AsciiMode.prototype.init = function() {
   this.world_ = this.getPhysicsWorld_();
 
   // Prep paperjs
-  this.getPaperCanvas_();
+  this.getPaperCanvas_(true);
 
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =

@@ -12,7 +12,9 @@ ww.mode.EightBitMode = function(containerElem, assetPrefix) {
   this.preloadSound('error.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true,
-    true);
+    false);
+
+  this.canvas_ = document.getElementById('eightbit-canvas');
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
 
@@ -160,7 +162,7 @@ ww.mode.EightBitMode.prototype.init = function() {
   this.world_ = this.getPhysicsWorld_();
 
   // Prep paperjs
-  this.getPaperCanvas_();
+  this.getPaperCanvas_(true);
 
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
@@ -181,65 +183,49 @@ ww.mode.EightBitMode.prototype.init = function() {
 ww.mode.EightBitMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
+  this.$canvas_ = $(this.canvas_);
+
   var self = this;
 
-  var oSize;
-  var iSizeX;
-  var iSizeY;
-  var distX;
-  var distY;
-
+  // Check to see if the I or O were clicked.
   var evt = this.getPointerEventNames_('down', this.name_);
+  this.$canvas_.bind(evt, function(e) {
+    self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
+      self.getCoords(e)['y']);
 
-  // Check if the I or O and a small area surrounding them were clicked.
-  $(this.paperCanvas_).bind(evt, function(event) {
-    self.lastClick_ = new paper['Point'](self.getCoords(event)['x'],
-      self.getCoords(event)['y']);
-    oSize = Math.round(self.width_ * 0.03125) + self.oRad;
-    iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth / 2;
-    iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight / 2;
-
-    distX = Math.abs(self.paperI_['position']['x'] - self.lastClick_['x']);
-    distY = Math.abs(self.paperI_['position']['y'] - self.lastClick_['y']);
-
-    if (self.paperO_['position']['getDistance'](self.lastClick_) < oSize) {
+    if (self.lastClick_['getDistance'](self.paperO_['position']) < self.oRad) {
       if (self.hasFocus) {
         self.activateO();
       }
     }
 
-    if (distX < iSizeX && distY < iSizeY) {
+    if (Math.abs(self.lastClick_['x'] - self.paperI_['position']['x']) <
+      self.iWidth / 2 && Math.abs(self.lastClick_['y'] -
+      self.paperI_['position']['y']) <
+      self.iHeight / 2) {
+
       if (self.hasFocus) {
         self.activateI();
       }
     }
   });
 
+  // Check to see if the I or O were moused over.
   var evt2 = this.getPointerEventNames_('move', this.name_);
+  this.$canvas_.bind(evt2, function(e) {
+    var lastPos = new paper['Point'](self.getCoords(e)['x'],
+      self.getCoords(e)['y']);
 
-  var lastPos = new paper['Point'](0, 0);
-
-  // Check if the I or O and a small area surrounding them were moused over.
-  $(this.paperCanvas_).bind(evt2, function(event) {
-    lastPos = {'x': self.getCoords(event)['x'],
-      'y': self.getCoords(event)['y']};
-    oSize = Math.round(self.width_ * 0.03125) + self.oRad;
-    iSizeX = Math.round(self.width_ * 0.03125) + self.iWidth / 2;
-    iSizeY = Math.round(self.width_ * 0.03125) + self.iHeight / 2;
-
-    distX = Math.abs(self.paperI_['position']['x'] - lastPos['x']);
-    distY = Math.abs(self.paperI_['position']['y'] - lastPos['y']);
-
-    if (self.paperO_['position']['getDistance'](lastPos) < oSize) {
+    if (lastPos['getDistance'](self.paperO_['position']) < self.oRad ||
+      Math.abs(lastPos['x'] - self.paperI_['position']['x']) <
+      self.iWidth / 2 && Math.abs(lastPos['y'] -
+      self.paperI_['position']['y']) <
+      self.iHeight / 2) {
       if (self.hasFocus) {
-        document.body.style.cursor = 'pointer';
-      }
-    } else if (distX < iSizeX && distY < iSizeY) {
-      if (self.hasFocus) {
-        document.body.style.cursor = 'pointer';
+        self.canvas_.style.cursor = 'pointer';
       }
     } else {
-      document.body.style.cursor = 'default';
+      self.canvas_.style.cursor = 'default';
     }
   });
 };
@@ -272,6 +258,19 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   if (this.height_ * 6 < this.width_) {
     this.playSound('error.mp3');
   }
+
+  var scale = 1;
+  if (window.devicePixelRatio > 1) {
+    scale = 2;
+  }
+
+  this.canvas_.width = this.width_ * scale;
+  this.canvas_.height = this.height_ * scale;
+
+  $(this.canvas_).css({
+    'width': this.width_,
+    'height': this.height_
+  });
 
   if (redraw) {
     this.redraw();
@@ -352,23 +351,31 @@ ww.mode.EightBitMode.prototype.updatePoints_ = function(path) {
 
 /**
  * Draws pixels over the paper canvas.
- * @param {Object} sourceCanvas The canvas to sample data from.
  * @return {Number} pixelData.data.length The length of the pixelData array.
  * @private
  */
-ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
+ww.mode.EightBitMode.prototype.drawPixels_ = function() {
+  var sourceCanvas = this.paperCanvas_;
+  var targetCanvas = this.canvas_;
+
   if (!sourceCanvas.width || sourceCanvas.width < 1) { return; }
   if (!sourceCanvas.height || sourceCanvas.height < 1) { return; }
 
   var pctx = sourceCanvas.getContext('2d');
+  var tctx = targetCanvas.getContext('2d');
 
   var pixelData = pctx.getImageData(0, 0, sourceCanvas.width,
     sourceCanvas.height);
 
-  pctx.clearRect(0, 0, sourceCanvas.width + 1,
-    sourceCanvas.height + 1);
+  tctx.clearRect(0, 0, targetCanvas.width + 1,
+    targetCanvas.height + 1);
 
-  var size = Math.min(Math.round(this.width_ * 0.0625), 64);
+  // tctx.imageSmoothingEnabled = false;
+  // tctx.mozImageSmoothingEnabled = false;
+  // tctx.oImageSmoothingEnabled = false;
+  // tctx.webkitImageSmoothingEnabled = false;
+
+  var size = Math.min(~~(this.width_ * 0.0625), 64);
   var viewSize = paper['view']['viewSize']['width'];
   var viewRatio = (viewSize / this.width_) * (viewSize / this.width_);
 
@@ -385,6 +392,14 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
 
   paper = this.paperScope_;
 
+  var scale = 1;
+  if (window.devicePixelRatio > 1) {
+    scale = 2;
+  }
+
+  tctx.save();
+  tctx.scale(scale, scale);
+
   for (i = 0; i < pixelData.data.length; i += increment) {
     if (pixelData.data[i + 3] !== 0) {
       var r = pixelData.data[i];
@@ -396,11 +411,13 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function(sourceCanvas) {
 
       var color = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
 
-      pctx.fillStyle = color;
-      pctx.fillRect(Math.round(x - size / 2), Math.round(y - size / 2), size,
+      tctx.fillStyle = color;
+      tctx.fillRect(x - ~~(size / 2), y - ~~(size / 2), size,
         size);
     }
   }
+
+  tctx.restore();
 
   return pixelData.data.length;
 };
