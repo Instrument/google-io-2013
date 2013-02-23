@@ -296,9 +296,12 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   });
 
   // Check if the I or O were clicked or touched.
-  this.bindEvent_($(this.paperCanvas_), 'down', function(event) {
-    self.lastClick_ = new paper['Point'](self.getCoords(event)['x'],
-      self.getCoords(event)['y']);
+  this.bindEvent_($(this.paperCanvas_), 'down', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
+      self.getCoords(e)['y']);
     if (self.paperO_['hitTest'](self.lastClick_)) {
       if (self.hasFocus) {
         self.activateO();
@@ -315,9 +318,12 @@ ww.mode.HomeMode.prototype.didFocus = function() {
   var lastPos = new paper['Point'](0, 0);
 
   // Check if the I or O were moused over.
-  this.bindEvent_($(this.paperCanvas_), 'move', function(event) {
-    lastPos = {'x': self.getCoords(event)['x'],
-      'y': self.getCoords(event)['y']};
+  this.bindEvent_($(this.paperCanvas_), 'move', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    lastPos = {'x': self.getCoords(e)['x'],
+      'y': self.getCoords(e)['y']};
     if (self.paperO_['hitTest'](lastPos) ||
       self.paperI_['hitTest'](lastPos)) {
 

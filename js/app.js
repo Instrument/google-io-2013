@@ -39,20 +39,24 @@ ww.app.Core = function() {
     var moveEvt = ww.util.getPointerEventNames('move', 'app');
     this.$window_.bind(moveEvt, function(e) {
       e.preventDefault();
+      e.stopPropagation();
     });
 
     var upEvt = ww.util.getPointerEventNames('up', 'app');
     this.$window_.bind(upEvt, function(e) {
       e.preventDefault();
+      e.stopPropagation();
     });
 
     var downEvt = ww.util.getPointerEventNames('down', 'app');
     this.$window_.bind(downEvt, function(e) {
       e.preventDefault();
+      e.stopPropagation();
     });
 
     this.$window_.bind('dblclick.app', function(e) {
       e.preventDefault();
+      e.stopPropagation();
     });
   }
 

@@ -365,7 +365,7 @@ ww.mode.SpaceMode.prototype.init = function() {
     this.drawO_();
   }
 
-  paper['view']['setViewSize'](this.width_, this.height_);
+  // paper['view']['setViewSize'](this.width_, this.height_);
 };
 
 /**
@@ -396,6 +396,9 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   var evt = ww.util.getPointerEventNames('move', this.name_);
   $(this.containerElem_).bind(evt, function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
     self.mouseX_ = self.getCoords(e)['x'];
     self.mouseY_ = self.getCoords(e)['y'];
 
@@ -414,6 +417,9 @@ ww.mode.SpaceMode.prototype.willFocus = function() {
 
   var evt2 = ww.util.getPointerEventNames('down', this.name_);
   $(this.containerElem_).bind(evt2, function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
     var coords = self.getCoords(e);
     var p = new paper['Point'](coords['x'], coords['y']);
     self.lastClick = p;
