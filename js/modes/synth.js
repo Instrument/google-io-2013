@@ -51,6 +51,10 @@ ww.mode.SynthMode.prototype.init = function() {
   this.lastYPercent = 0.5;
 
   this.waveMap = ['sine', 'square', 'saw', 'triangle'];
+  var self = this;
+  setTimeout(function() {
+    self.onResize();
+  }, 800);
 };
 
 /**
@@ -299,6 +303,7 @@ ww.mode.SynthMode.prototype.didFocus = function() {
   });
 
   self.oOffset = self.letterO.offset();
+
   self.oSize = self.letterO[0]['getBoundingClientRect']()['width'];
 };
 
@@ -416,5 +421,4 @@ ww.mode.SynthMode.prototype.calculateFrequency = function(x, y) {
   this.lastHue = 60 - (60 * yPercent);
   this.lastYPercent = yPercent;
   this.lastXPercent = xPercent;
-
 };
