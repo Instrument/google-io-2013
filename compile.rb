@@ -50,10 +50,50 @@ def create_test_for_mode(p)
   end
 end
 
+def create_test_for_core
+  p = "index.html"
+  name = File.basename(p, '.html')
+  test_name = "#{name}_test"
+  source = File.read(p)
+
+  appendScripts = %Q{
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="#{test_name}.js"></script>
+  }
+
+  source.gsub!("js/", "../")
+  source.gsub!("css/", "../../css/")
+  source.gsub!(".min.js", ".test.js")
+  
+  lines = source.split("\n")
+  lines.delete_at(30)
+  lines.delete_at(30)
+  lines.delete_at(30)
+  lines.delete_at(30)
+  lines.delete_at(30)
+  lines.delete_at(30)
+  lines.delete_at(30)
+  source = lines.join("\n")
+
+  appendScripts = %Q{
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="#{test_name}.js"></script>
+  }
+  source.sub!("</body>", "#{appendScripts}</body>")
+
+  File.open("js/test/#{test_name}.html", 'w') do |f|
+    f.write(source)
+  end
+end
+
 def create_test_for_all_modes
   Dir["modes/*.html"].each do |p|
     create_test_for_mode(p)
   end
+
+  create_test_for_core
 end
 
 def build_css

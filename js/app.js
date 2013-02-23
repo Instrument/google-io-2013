@@ -301,7 +301,7 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
 
     // Initialize
     if (pair && pair.klass) {
-      mode.instance = new pair.klass(modeElem);
+      mode.instance = new pair.klass(modeElem, ww.testMode ? '../../' : '');
     }
 
     self.currentMode = mode;
@@ -318,6 +318,9 @@ ww.app.Core.prototype.loadMode_ = function(mode, transition, reverse) {
  */
 ww.app.Core.prototype.fetchModeContent_ = function(name, onComplete) {
   var url = 'modes/' + name + '.html?' + (+(new Date()));
+  if (ww.testMode) {
+    url = '../../' + url;
+  }
 
   $.ajax({
     url: url,

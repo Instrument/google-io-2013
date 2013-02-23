@@ -18,6 +18,7 @@ ww.mode.Core = function(containerElem,
   // Define transform prefix.
   this.prefix_ = Modernizr.prefixed('transform');
   this.assetPrefix_ = assetPrefix || '';
+
   this.containerElem_ = containerElem;
 
   this.name_ = name;
@@ -440,9 +441,6 @@ ww.mode.Core.prototype.loadSounds_ = function(onComplete) {
     if (this.unloadedSounds_.hasOwnProperty(filename)) {
       (function(filename) {
         var url = self.assetPrefix_ + 'sounds/' + self.name_ + '/' + filename;
-        if (ww.testMode) {
-          url = '../' + url;
-        }
 
         self.log('Requested sound "' + url + '"');
 
@@ -762,9 +760,6 @@ ww.mode.Core.prototype.playSound = function(filename, onPlay, loop) {
   if (!this.wantsAudio_) { return; }
 
   var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
-  if (ww.testMode) {
-    url = '../' + url;
-  }
 
   this.log('Playing sound "' + filename + '"');
 

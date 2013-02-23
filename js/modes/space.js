@@ -52,9 +52,6 @@ ww.mode.SpaceMode.prototype.playSound = function(filename,
   if (!this.wantsAudio_) { return; }
 
   var url = this.assetPrefix_ + 'sounds/' + this.name_ + '/' + filename;
-  if (ww.testMode) {
-    url = '../' + url;
-  }
 
   this.log('Playing sound "' + filename + '"');
 
