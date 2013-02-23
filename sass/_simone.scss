@@ -74,13 +74,13 @@
   background-position: center center;
   background-repeat: no-repeat;
   color: #979797;
-  left: 0;
+  left: 35%;
   line-height: 2em;
-  margin: 1.5em 0 0;
+  margin: 0;
   position: absolute;
-  right: 0;
+  right: 35%;
   text-align: center;
-  top: 50%;
+  top: 56%;
 
   &.your-turn {
     text-indent: 0;
@@ -95,5 +95,4 @@
     background-image: image-url('simone/success.svg');
     @include background-size(25px);
   }
-
 }

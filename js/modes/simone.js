@@ -46,12 +46,12 @@ ww.mode.SimoneMode.prototype.init = function() {
   this.container = $('#simone');
 
   this.message = $('#message').text(this.startAction + ' to play.');
-  this.message.css('opacity', 1);
+  // this.message.css('opacity', 1);
 
   // display 'how to start playing' message
   // unbind and hide once first game has started
   this.container.bind(this.evtEnd, function() {
-    self.message.css('opacity', 0);
+    self.message.hide();
     self.beginGame_();
     self.container.unbind(self.evtEnd);
   });
