@@ -107,6 +107,8 @@ ww.mode.PongMode.prototype.resetGame_ = function() {
   this.ball_.pos.y = this.ballRadius_;
   this.ball_.vel.x = this.ballSpeed_;
   this.ball_.vel.y = this.ballSpeed_;
+
+  this.setScore_(0);
 };
 
 
