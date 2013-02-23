@@ -59,8 +59,8 @@ body {
   right: 15px;
   width: 34px;
   cursor: pointer;
-  background-size: 16px 16px;
-  background-position: 7px 7px;
+  @include background-size(16px 16px);
+  background-position: 50% 50%;
   background-repeat: no-repeat;
   background-image: image-url('shared/close-light.svg');
 }
@@ -68,7 +68,7 @@ body {
   width: 4px;
   height: 16px;
   display: inline-block;
-  background-size: 4px 16px;
+  @include background-size(100% 100%);
   background-repeat: no-repeat;
   margin-right: 5px;
   background-image: image-url('shared/i-light.svg');
@@ -79,7 +79,7 @@ body {
   width: 16px;
   height: 16px;
   display: inline-block;
-  background-size: 16px 16px;
+  @include background-size(100% 100%);
   background-repeat: no-repeat;
   margin-right: 5px;
   background-image: image-url('shared/o-light.svg');
