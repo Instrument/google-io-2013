@@ -1,3 +1,19 @@
+var savedFunctions = {};
+function setUp() {
+  for (var key in mode.constructor.prototype) {
+    if (mode.constructor.prototype.hasOwnProperty(key)) {
+      savedFunctions[key] = mode.constructor.prototype[key];
+    }
+  }
+}
+
+function tearDown() {
+  for (var key in savedFunctions) {
+    if (savedFunctions.hasOwnProperty(key)) {
+      mode.constructor.prototype[key] = savedFunctions[key];
+    }
+  }
+}
 
 function testWwModeSimoneModeStartCheckNotPlaying_() {
   mode.isPlaying = false;
@@ -279,7 +295,7 @@ function testWwModeSimoneModeDidFocus() {
   mode.focus_();
 
   var bindCount = 0;
-  var elements = [$('#play-again'), $('#red'), $('#green'), $('#blue'), $('#yellow')];
+  var elements = [$('#red'), $('#green'), $('#blue'), $('#yellow')];
 
   var elem, bindData;
   for (var i = 0, l = elements.length; i < l; i++) {
@@ -287,7 +303,7 @@ function testWwModeSimoneModeDidFocus() {
     elem = elements[i];
     bindData = elem.data();
 
-    for (bind in bindData) {
+    for (var bind in bindData) {
       bindDataCount++;
     }
 
@@ -300,7 +316,7 @@ function testWwModeSimoneModeDidUnfocus() {
   mode.unfocus_();
 
   var bindCount = 0;
-  var elements = [$('#play-again'), $('#red'), $('#green'), $('#blue'), $('#yellow')];
+  var elements = [$('#red'), $('#green'), $('#blue'), $('#yellow')];
   
   var elem, bindData;
   for (var i = 0, l = elements.length; i < l; i++) {
@@ -308,10 +324,10 @@ function testWwModeSimoneModeDidUnfocus() {
     elem = elements[i];
     bindData = elem.data();
 
-    for (bind in bindData) {
+    for (var bind in bindData) {
       bindDataCount++;
     }
 
-    assertTrue('There should be no bind data left.', bindDataCount === 0);
+    assertEquals('There should be no bind data left.', 0, bindDataCount);
   }
 }
