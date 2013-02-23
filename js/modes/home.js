@@ -202,6 +202,8 @@ ww.mode.HomeMode.prototype.drawO_ = function() {
   this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter, 6,
     this.oRad);
 
+  this.paperO_['smooth']();
+
   this.paperO_['vectors'] = [];
 
   // Add an array of vector points and properties to the object.

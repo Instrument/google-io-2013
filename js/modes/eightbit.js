@@ -109,6 +109,8 @@ ww.mode.EightBitMode.prototype.drawO_ = function() {
   this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter, 6,
     this.oRad);
 
+  this.paperO_['smooth']();
+
   this.paperO_['vectors'] = [];
 
   // Add an array of vector points and properties to the object.
@@ -192,7 +194,7 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   this.$canvas_.bind(evt, function(e) {
     e.preventDefault();
     e.stopPropagation();
-    
+
     self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
 

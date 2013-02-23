@@ -105,6 +105,8 @@ ww.mode.AsciiMode.prototype.drawO_ = function() {
   this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter, 6,
     this.oRad);
 
+  this.paperO_['smooth']();
+
   this.paperO_['vectors'] = [];
 
   // Add an array of vector points and properties to the object.
@@ -266,7 +268,7 @@ ww.mode.AsciiMode.prototype.didFocus = function() {
   this.$canvas_.bind(evt2, function(e) {
     e.preventDefault();
     e.stopPropagation();
-    
+
     var lastPos = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
 
