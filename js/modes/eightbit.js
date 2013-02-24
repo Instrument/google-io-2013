@@ -383,20 +383,13 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
   // tctx.oImageSmoothingEnabled = false;
   // tctx.webkitImageSmoothingEnabled = false;
 
-  var size = Math.min(~~(this.width_ * 0.0625), 64);
-  var viewSize = paper['view']['viewSize']['width'];
-  var viewRatio = (viewSize / this.width_) * (viewSize / this.width_);
+  var size = ~~(this.width_ * 0.0625);
 
   if (this.height_ * 6 < this.width_) {
     size /= 8;
   }
 
-  var increment = Math.min(Math.round(size * 80) / 4, 512 / viewRatio);
-
-  if (this.height_ * 6 < this.width_) {
-    size = Math.round(this.width_ * 0.0625) / 8;
-    increment = Math.round(size * 80) / 4;
-  }
+  var increment = Math.min(Math.round(size * 80) / 4, 980);
 
   paper = this.paperScope_;
 
@@ -414,8 +407,8 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
       var g = pixelData.data[i + 1];
       var b = pixelData.data[i + 2];
       var pixel = Math.ceil(i / 4);
-      var x = pixel % viewSize;
-      var y = Math.floor(pixel / viewSize);
+      var x = pixel % this.width_;
+      var y = Math.floor(pixel / this.width_);
 
       var color = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
 
@@ -447,8 +440,13 @@ ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
     this.updateVectors_(this.paperO_);
     this.updatePoints_(this.paperO_);
 
-    this.paperI_['scale'](0.75);
-    this.paperO_['scale'](0.75);
+    if (window.devicePixelRatio > 1) {
+      this.paperI_['scale'](0.65);
+      this.paperO_['scale'](0.65);
+    } else {
+      this.paperI_['scale'](0.75);
+      this.paperO_['scale'](0.75);
+    }
   }
 };
 
