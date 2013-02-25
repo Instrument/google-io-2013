@@ -70,8 +70,9 @@ ww.HelloLogo = function (elemId) {
   var self = this;
   
   $(window).resize(function() { self.setSize(); });
-  $(window).click(function(e) { self.setSpeed(e); });
-  $(window).bind('touchstart', function(e) { self.setSpeed(e.originalEvent.touches[0]); });
+  $(window).dblclick(function(e) { self.setSpeed(e); return false; });
+  $(window).click(function(e) { self.setSpeed(e); return false; });
+  $(window).bind('touchstart', function(e) { self.setSpeed(e.originalEvent.touches[0]); return false; });
 
   this.play();
 
