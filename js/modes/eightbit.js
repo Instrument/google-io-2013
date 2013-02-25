@@ -14,6 +14,9 @@ ww.mode.EightBitMode = function(containerElem, assetPrefix) {
   goog.base(this, containerElem, assetPrefix, 'eightbit', true, true, true,
     false);
 
+  this.frontmostRequestsRetina_ = (window.devicePixelRatio > 1);
+  this.frontmostWantsRetina_ = this.frontmostRequestsRetina_;
+
   this.canvas_ = document.getElementById('eightbit-canvas');
 };
 goog.inherits(ww.mode.EightBitMode, ww.mode.Core);
@@ -255,6 +258,10 @@ ww.mode.EightBitMode.prototype.didUnfocus = function() {
 ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   goog.base(this, 'onResize', false);
 
+  if (this.frontmostRequestsRetina_) {
+    this.frontmostWantsRetina_ = !($.browser.safari && (this.width_ > 1024));
+  }
+
   this.setPaperShapeData();
 
   // Draw I.
@@ -268,7 +275,7 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   }
 
   var scale = 1;
-  if (window.devicePixelRatio > 1) {
+  if (this.frontmostWantsRetina_) {
     scale = 2;
   }
 
@@ -394,7 +401,7 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
   paper = this.paperScope_;
 
   var scale = 1;
-  if (window.devicePixelRatio > 1) {
+  if (this.frontmostWantsRetina_) {
     scale = 2;
   }
 
@@ -440,7 +447,7 @@ ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
     this.updateVectors_(this.paperO_);
     this.updatePoints_(this.paperO_);
 
-    if (window.devicePixelRatio > 1) {
+    if (this.frontmostWantsRetina_) {
       this.paperI_['scale'](0.65);
       this.paperO_['scale'](0.65);
     } else {

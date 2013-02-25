@@ -41,7 +41,8 @@ ww.mode.Core = function(containerElem,
   this.wantsPhysics_ = wantsPhysics || false;
 
   // By default, modes don't need retina scaling.
-  this.wantsRetina_ = (wantsRetina && window.devicePixelRatio > 1) || false;
+  this.requestsRetina_ = (wantsRetina && window.devicePixelRatio > 1) || false;
+  this.wantsRetina_ = this.requestsRetina_;
 
   // By default, modes don't need rAF.
   this.wantsRenderLoop_ = this.wantsDrawing_ || this.wantsPhysics_ || false;
@@ -54,7 +55,6 @@ ww.mode.Core = function(containerElem,
 
   var self = this;
   setTimeout(function() {
-
     // Mark this mode as ready.
     self.log('Starting preload');
     self.loadSounds_(function() {
@@ -65,10 +65,6 @@ ww.mode.Core = function(containerElem,
       self.$letterO_ = self.find('.letter-o');
 
       self.init();
-
-      // self.$window_.resize(ww.util.throttle(function() {
-      //   self.onResize(true);
-      // }, 50));
       self.onResize(true);
 
       var modeDetails = ww.mode.findModeByName(self.name_);
@@ -220,19 +216,25 @@ ww.mode.Core.prototype.showReload = function(onReload, shouldAnimate) {
 ww.mode.Core.prototype.onResize = function(redraw) {
   this.width_ = $(this.containerElem_).width();
   this.height_ = $(this.containerElem_).height();
-  if (this.width_ === 1024) {
-    this.width_ -= 2;
-    this.height_ -= 2;
+
+  if (this.requestsRetina_) {
+    this.wantsRetina_ = !($.browser.safari && (this.width_ > 1024));
+  }
+
+  var scale = 1;
+  if (this.wantsRetina_) {
+    // Hack around iPad 3 landscape GPU issue
+    if (this.width_ === 1024) {
+      this.width_ -= 2;
+      this.height_ -= 2;
+    }
+    
+    scale = 2;
   }
 
   this.log('Resize ' + this.width_ + 'x' + this.height_);
 
   this.updateBounds();
-
-  var scale = 1;
-  if (this.wantsRetina_) {
-    scale = 2;
-  }
 
   if (this.paperCanvas_) {
     paper = this.paperScope_;
