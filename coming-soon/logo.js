@@ -37,6 +37,8 @@ goog.provide('ww.HelloLogo');
  * @param {String} elemId ID of element to contain the logo.
  */
 ww.HelloLogo = function (elemId) {
+  this.isPlaying = true;
+
   this.container = $(elemId);
   this.dimensions = { w: 214, h: 163 };
   this.maxWidth = 321;
@@ -59,7 +61,7 @@ ww.HelloLogo = function (elemId) {
 
   this.setSize();
 
-  this.iSpinner.play(true);
+  // this.iSpinner.play(true);
   this.oSpinner.update();
   $(this.oSpinner.dom).hide();
 
@@ -68,11 +70,13 @@ ww.HelloLogo = function (elemId) {
   var self = this;
   
   $(window).resize(function() { self.setSize(); });
-  $(window).click(function(e) { self.setSpeed(e.pageX); });
-  $(window).bind('touchstart', function(e) { self.setSpeed(e.originalEvent.touches[0].pageX); });
+  $(window).click(function(e) { self.setSpeed(e); });
+  $(window).bind('touchstart', function(e) { self.setSpeed(e.originalEvent.touches[0]); });
+
+  this.play();
 
   setTimeout(function() {
-    self.oSpinner.play(true);
+    // self.oSpinner.play(true);
     $(self.oSpinner.dom).show();
     $(self.logoParts).fadeIn('slow');
   }, 400);
@@ -81,20 +85,35 @@ ww.HelloLogo = function (elemId) {
 /**
  * Set the speed of the animation based on the distance
  * of a click event from the center.
- * @param {Number} pageX X position of a click event.
+ * @param {Event} event Event.
  */
-ww.HelloLogo.prototype.setSpeed = function(pageX) {
-  if (!event || event === undefined) {
-    return;
-  }
+ww.HelloLogo.prototype.setSpeed = function(event) {
+  if (!event || event === undefined) { return; }
 
   var windowWidth = $(window).width();
-  var x = pageX;
-  var d = x - (windowWidth / 2);
-  var s = (d < 0) ? Math.max(-0.5, d / 1000) : Math.min(0.5, d / 1000);
-
-  this.oSpinner.da = s;
-  this.iSpinner.da = s;
+  var x = event.pageX;
+  var y = event.pageY;
+  var d = x-windowWidth/2;
+  var s = (d < 0) ? Math.max(-0.5, d/1000) : Math.min(0.5, d/1000);
+  
+  var containerPosition = $(this.container).position();
+  containerPosition.x = Math.round( ( windowWidth - $(this.container).width() )/2 );
+  
+  var d2;
+  var range = $(this.container).width();
+  var strength = 1000;
+  
+  var iD = x - (containerPosition.x + this.iPosition.x + this.iSpinner.r * 0.46);
+  if (Math.abs(iD) < range) {
+    d2 = (range - Math.abs(iD)) * Math.abs(iD)/iD;
+    this.iSpinner.da += d2 / strength;
+  }
+  
+  var oD = x - (containerPosition.x + this.oPosition.x + this.oSpinner.r);
+  if (Math.abs(oD) < range) {
+    d2 = ( range - Math.abs( oD ) )*Math.abs(oD)/oD;
+    this.oSpinner.da += d2 / strength;
+  }
 };
 
 /**
@@ -126,6 +145,16 @@ ww.HelloLogo.prototype.setSize = function() {
   var newOPosition = { x: this.oPosition.x * s, y: this.oPosition.y * s };
   this.oSpinner.setSize(newSize);
   this.oSpinner.setCenter(newOPosition);
+};
+
+ww.HelloLogo.prototype.play = function() {
+  this.iSpinner.update();
+  this.oSpinner.update();
+
+  if (this.isPlaying) {
+    var thisLoader = this;
+    requestAnimationFrame(function() { thisLoader.play(); });
+  }
 };
 
 /**
@@ -170,6 +199,7 @@ ww.SpinnerView = function(canvasDomElement, radius, center, speed, wantsRetina) 
   this.c = { x: 0, y: 0 };
 
   this.isPlaying = false;
+  this.isResetting = false;
   this.changeRotation = false;
 
   this.a = 0;
@@ -191,9 +221,11 @@ ww.SpinnerView = function(canvasDomElement, radius, center, speed, wantsRetina) 
   // grab gradient values and steps
   this.getGradients();
 
-  this.color1 = [{ r: 249, g: 249, b: 249, a: 1 }];
-  this.color2 = this.colors[0];
-  this.colorCount = 1;
+  this.startColor = [ { r:249, g:249, b:249, a:1 } ];
+  this.color1 = this.startColor;
+  this.color2 = this.colors[1];
+  this.defaultColor = this.colors[0];
+  this.colorCount = 2;
 };
 
 /**
@@ -269,34 +301,70 @@ ww.SpinnerView.prototype.checkColors = function(color, scale) {
  * Update some state.
  */
 ww.SpinnerView.prototype.checkState = function() {
-  if (this.a > Math.PI) {
-    this.a = this.a - Math.PI;
-    this.color1 = this.color2;
-    this.colorCount++;
-    if (this.colorCount >= this.colors.length) {
-      this.colorCount = 0;
+ 
+  if( this.isResetting )
+  {
+    if( this.a >= Math.PI && this.color2 == this.defaultColor )
+    {
+      this.a = Math.PI;
+      this.da = 0;
+      this.isResetting = false;
+      
+      if( this.color1 == this.startColor ) this.color1 = this.colors[1];
     }
-    this.color2 = this.colors[this.colorCount];
-    // if (this.changeRotation)
-    // {
-    //   this.canvas.rotate(90 * Math.PI / 180);
-    //   this.canvas.save();
-    // }
+    
+    if( this.a <= 0  && this.color1 == this.defaultColor )
+    {
+      this.a = 0;
+      this.da = 0;
+      this.isResetting = false;
+      
+      if( this.color2 == this.startColor ) this.color2 = this.colors[1];
+    }
   }
-
-  if (this.a < 0) {
+  
+  if( this.a > Math.PI )
+  {
+    this.a = this.a-Math.PI;
+    this.color1 = this.color2;
+    this.colorCount ++;
+    if( this.colorCount >= this.colors.length ) this.colorCount = 0;
+    
+    if(Math.abs(this.da) < .06)
+    {
+      this.isResetting = true;
+      this.da = .1*Math.abs(this.da)/this.da;
+    }
+    
+    if( this.colors[this.colorCount] == this.color1 )
+    {
+      this.colorCount ++;
+      if( this.colorCount >= this.colors.length ) this.colorCount = 0;
+    }
+    
+    this.color2 = ( this.isResetting ) ? this.defaultColor : this.colors[this.colorCount];
+  }
+  
+  if( this.a < 0 )
+  {
     this.a = Math.PI + this.a;
     this.color2 = this.color1;
-    this.colorCount--;
-    if (this.colorCount < 0) {
-      this.colorCount = this.colors.length - 1;
+    this.colorCount --;
+    if( this.colorCount < 0 ) this.colorCount = this.colors.length-1;
+
+    if(Math.abs(this.da) < .06)
+    {
+      this.isResetting = true;
+      this.da = .1*Math.abs(this.da)/this.da;
     }
-    this.color1 = this.colors[this.colorCount];
-    // if (this.changeRotation)
-    // {
-    //   this.canvas.rotate(90 * Math.PI / 180);
-    //   this.canvas.save();
-    // }
+    
+    if( this.colors[this.colorCount] == this.color2 )
+    {
+      this.colorCount --;
+      if( this.colorCount < 0 ) this.colorCount = this.colors.length-1;
+    }
+    
+    this.color1 = ( this.isResetting ) ? this.defaultColor : this.colors[this.colorCount];
   }
 };
 
@@ -316,6 +384,15 @@ ww.SpinnerView.prototype.update = function() {
   }
 
   ctx.translate(Math.round(this.center.x), Math.round(this.center.y));
+
+  if (!this.isResetting) {
+    this.da *= 0.98;
+  }
+  
+  if (!this.isResetting && (Math.abs(this.da) < 0.01) && (this.da !== 0)) {
+    this.isResetting = true;
+    this.da = 0.2 * (-Math.abs(this.da)/this.da);
+  }
 
   this.a += this.da;
   this.checkState();
@@ -395,27 +472,6 @@ ww.SpinnerView.prototype.draw = function(scale, color, a) {
   ctx.fill();
 };
 
-/**
- * Start animating.
- * @param {Boolean} start Whether to keep playing.
- */
-ww.SpinnerView.prototype.play = function(start) {
-  if (start) { this.isPlaying = true; }
-
-  this.update();
-
-  if (this.isPlaying) {
-    var thisLoader = this;
-    requestAnimationFrame(function() { thisLoader.play(); });
-  }
-};
-
-/**
- * Stop animating.
- */
-ww.SpinnerView.prototype.stop = function() {
-  this.isPlaying = false;
-};
 
 /**
  * View to draw the I.
