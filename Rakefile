@@ -9,6 +9,10 @@ task :compile do
   build_css
 end
 
+task :logo do
+  build_logo_js
+end
+
 task :test do
   create_test_for_all_modes
   build_js_test
