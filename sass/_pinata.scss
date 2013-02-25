@@ -49,7 +49,7 @@
     $height: ceil(image-height('pinata/part-#{$i}.png')) / 2 / 318px * 100%;
     $width: ceil(image-width('pinata/part-#{$i}.png')) / 2 / 425px * 100%;
     height: $height;
-    margin-left: -1 * ceil($width) / 2 + 20%;
+    margin-left: -1 * ceil($width) / 2 + 22%;
     margin-top: -1 * ceil($height) / 2;
     width: $width;
   }
