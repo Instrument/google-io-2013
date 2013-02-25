@@ -451,8 +451,8 @@ ww.mode.EightBitMode.prototype.stepPhysics = function(delta) {
       this.paperI_['scale'](0.65);
       this.paperO_['scale'](0.65);
     } else {
-      this.paperI_['scale'](0.75);
-      this.paperO_['scale'](0.75);
+      this.paperI_['scale'](0.55);
+      this.paperO_['scale'](0.55);
     }
   }
 };
