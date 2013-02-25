@@ -50,11 +50,9 @@ ww.mode.PinataMode.prototype.init = function() {
 
   this.recenter_();
 
-  this.cracks_ = this.cracks_ || $('[id*=crack-]');
-  this.maxWhacks_ = this.maxWhacks_ || this.cracks_.length;
+  this.maxWhacks_ = 5;
 
-  this.crackedElm_ = this.crackedElm_ || $('#cracked');
-  this.crackedParts_ = this.crackedParts_ || $('[id*=part-]');
+  this.crackedParts_ = this.crackedParts_ || $('[id*=pinata-part-]');
   this.maxParts_ = this.maxParts_ || this.crackedParts_.length;
 
   this.resetToStart_();
@@ -67,10 +65,7 @@ ww.mode.PinataMode.prototype.init = function() {
 ww.mode.PinataMode.prototype.resetToStart_ = function() {
   this.$letterO_.css('opacity', 1);
   this.whackCount_ = 0;
-
-  this.cracks_.css('opacity', 0);
-  this.crackedElm_.css('opacity', 0);
-  this.crackedParts_.attr('transform', '');
+  this.crackedParts_.removeAttr('style').css('opacity', 0);
 };
 
 /**
@@ -253,7 +248,6 @@ ww.mode.PinataMode.prototype.activateI = function() {
 
     if (this.whackCount_ < this.maxWhacks_) {
       this.log('whack ' + this.whackCount_ + ' ' + this.reset_);
-      this.cracks_[this.whackCount_].style['opacity'] = 1;
       this.activateBalls_();
       this.animateO_();
     } else if (this.whackCount_ === this.maxWhacks_) {
@@ -297,7 +291,8 @@ ww.mode.PinataMode.prototype.animatePartsOut_ = function() {
 
   var self = this;
 
-  this.cracks_.css('opacity', 0);
+  // this.cracks_.css('opacity', 0);
+  this.$letterO_.css('opacity', 0);
   this.isAnimating_ = true;
 
   for (var i = 0; i < this.maxParts_; i++) {
@@ -313,18 +308,26 @@ ww.mode.PinataMode.prototype.animatePartsOut_ = function() {
       part.data('rotate', rotate);
 
       var animateOut = new TWEEN.Tween({
-        'translateY': 0, 'translateX': 0, 'rotate': 0
+        'translateY': 0,
+        'translateX': 0,
+        'rotate': 0
       });
+
+      animateOut.onStart(function() { part.css('opacity', 1); });
+
       animateOut.to({
-        'translateY': toY, 'translateX': toX, 'rotate': rotate
+        'translateY': toY,
+        'translateX': toX,
+        'rotate': rotate
       }, 1000);
 
       animateOut.easing(TWEEN.Easing.Exponential.Out);
 
       animateOut.onUpdate(function() {
-        part.attr('transform',
-          'rotate(' + this['rotate'] + ', ' + self.originO_ + ') ' +
-          'translate(' + this['translateX'] + ', ' + this['translateY'] + ') ');
+        self.transformElem_(part[0],
+          'rotate(' + this['rotate'] + 'deg) ' +
+          'translate(' + this['translateX'] + 'px, ' +
+            this['translateY'] + 'px)');
       });
 
       if (!(i + 1 < self.maxParts_)) {
@@ -350,39 +353,25 @@ ww.mode.PinataMode.prototype.animatePartsIn_ = function() {
 
   this.isAnimating_ = true;
 
-  for (var i = 0; i < this.maxParts_; i++) {
-    var part = $(self.crackedParts_[i]);
+  var fadeOut = new TWEEN.Tween({ 'opacity': 1 });
+  fadeOut.to({ 'opacity': 0 }, 250);
+  fadeOut.onUpdate(function() {
+    self.crackedParts_.css('opacity', this['opacity']);
+  });
 
-    (function(part, i) {
-      var toX = parseInt(part.data('movedX'), 10) || 0;
-      var toY = parseInt(part.data('movedY'), 10) || 0;
-      var rotate = parseInt(part.data('rotate'), 100) || 0;
+  var fadeIn = new TWEEN.Tween({ 'opacity': 0 });
+  fadeIn.to({ 'opacity': 1 }, 250);
+  fadeIn.delay(250);
+  fadeIn.onUpdate(function() {
+    self.$letterO_.css('opacity', this['opacity']);
+  });
+  fadeIn.onComplete(function() {
+    self.isAnimating_ = false;
+    self.resetToStart_();
+  });
 
-      var animateBack = new TWEEN.Tween({
-        'translateY': toY, 'translateX': toX, 'rotate': rotate
-      });
-      animateBack.to({
-        'translateY': 0, 'translateX': 0, 'rotate': 0
-      }, 200);
-
-      animateBack.easing(TWEEN.Easing.Exponential.Out);
-
-      animateBack.onUpdate(function() {
-        part.attr('transform',
-          'rotate(' + this['rotate'] + ', ' + self.originO_ + ') ' +
-          'translate(' + this['translateX'] + ', ' + this['translateY'] + ') ');
-      });
-
-      if (!(i + 1 < self.maxParts_)) {
-        animateBack.onComplete(function() {
-          self.resetToStart_();
-          self.isAnimating_ = false;
-        });
-      }
-
-      self.addTween(animateBack);
-    })(part, i);
-  }
+  this.addTween(fadeOut);
+  this.addTween(fadeIn);
 };
 
 
@@ -407,9 +396,9 @@ ww.mode.PinataMode.prototype.animateI_ = function() {
   }, stickDuration);
 
   whackOver.onUpdate(function() {
-    self.$letterI_.attr('transform',
-      'rotate(' + this['rotate'] + ', ' + self.originI_ + ') ' +
-      'translate(' + this['translateX'] + ', ' + this['translateY'] + ')');
+    self.transformElem_(self.$letterI_[0],
+      'rotate(' + this['rotate'] + 'deg) ' +
+      'translate(' + this['translateX'] + 'px, ' + this['translateY'] + 'px)');
   });
 
   var whackBack = new TWEEN.Tween({
@@ -426,9 +415,9 @@ ww.mode.PinataMode.prototype.animateI_ = function() {
   whackBack.delay(stickDuration);
 
   whackBack.onUpdate(function() {
-    self.$letterI_.attr('transform',
-      'rotate(' + this['rotate'] + ', ' + self.originI_ + ') ' +
-      'translate(' + this['translateX'] + ', ' + this['translateY'] + ')');
+    self.transformElem_(self.$letterI_[0],
+      'rotate(' + this['rotate'] + 'deg) ' +
+      'translate(' + this['translateX'] + 'px, ' + this['translateY'] + 'px)');
   });
 
   self.addTween(whackOver);
@@ -449,24 +438,21 @@ ww.mode.PinataMode.prototype.animateO_ = function() {
   var wiggleOne = new TWEEN.Tween({ 'rotate': 0 });
   wiggleOne.to({ 'rotate': dir * deg }, pinataDuration);
   wiggleOne.onUpdate(function() {
-    self.$letterO_.attr('transform',
-      'rotate(' + this['rotate'] + ', ' + self.originO_ + ')');
+    self.transformElem_(self.$letterO_[0], 'rotate(' + this['rotate'] + 'deg)');
   });
 
   var wiggleTwo = new TWEEN.Tween({ 'rotate': dir * deg });
   wiggleTwo.to({ 'rotate': -1 * dir * deg }, pinataDuration);
   wiggleTwo.delay(pinataDuration);
   wiggleTwo.onUpdate(function() {
-    self.$letterO_.attr('transform',
-      'rotate(' + this['rotate'] + ', ' + self.originO_ + ')');
+    self.transformElem_(self.$letterO_[0], 'rotate(' + this['rotate'] + 'deg)');
   });
 
   var wiggleBack = new TWEEN.Tween({ 'rotate': -1 * dir * deg });
   wiggleBack.to({ 'rotate': 0 }, pinataDuration);
   wiggleBack.delay(pinataDuration * 2);
   wiggleBack.onUpdate(function() {
-    self.$letterO_.attr('transform',
-      'rotate(' + this['rotate'] + ', ' + self.originO_ + ')');
+    self.transformElem_(self.$letterO_[0], 'rotate(' + this['rotate'] + 'deg)');
   });
 
   self.addTween(wiggleOne);

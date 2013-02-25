@@ -1,11 +1,3 @@
-#cracked {
-  @include transform(translate3d(0,0,0));
-}
-
-[id*=part-] {
-  @include transition(all 190ms ease-out);
-}
-
 #pinata-canvas {
   pointer-events: none;
   position: absolute;
@@ -14,5 +6,51 @@
   // moves the canvas behind elements since pointer-event are not supported
   @media screen and (min-width:0\0) {
     z-index: -1;
+  }
+}
+
+#stick-wrapper, #pinata-wrapper {
+  background-color: transparent;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(100% auto);
+  height: 100%;
+  position: absolute;
+}
+
+#stick-wrapper {
+  background-image: image-url('pinata/stick.png');
+  left: 15%;
+  width: 9.857%;
+  @include transform-origin(right bottom, false);
+}
+
+#pinata-wrapper {
+  background-image: image-url('pinata/pinata.png');
+  right: 10%;
+  width: 41.4188%;
+  @include transform-origin(center center, false);
+}
+
+[id*=pinata-part-] {
+  background-color: transparent;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(100%);
+  position: absolute;
+  right: 22%;
+  top: 55%;
+  @include transform-origin(center center, false);
+}
+
+@for $i from 1 through 10 {
+  #pinata-part-#{$i} {
+    background-image: image-url('pinata/part-#{$i}.png');
+    $height: ceil(image-height('pinata/part-#{$i}.png')) / 2 / 318px * 100%;
+    $width: ceil(image-width('pinata/part-#{$i}.png')) / 2 / 425px * 100%;
+    height: $height;
+    margin-left: -1 * ceil($width) / 2 + 20%;
+    margin-top: -1 * ceil($height) / 2;
+    width: $width;
   }
 }
