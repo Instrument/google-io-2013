@@ -223,7 +223,7 @@ ww.mode.PinataMode.prototype.ejectParticle_ = function(x, y, dir) {
  * @private
  */
 ww.mode.PinataMode.prototype.activateBalls_ = function() {
-  var pop = ~~Random(1, 3) + ~~(this.whackCount_ / 3);
+  var pop = ~~Random(2, 4) + ~~(this.whackCount_ / 3);
 
   for (var i = 0; i <= pop; i++) {
     var dir = (i % 2 === 0) ? -1 : 1;

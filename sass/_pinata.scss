@@ -1,4 +1,4 @@
-#pinata-canvas {
+#pinata-canvas, [id*=pinata-part-] {
   pointer-events: none;
   position: absolute;
   
@@ -37,7 +37,6 @@
   background-position: 50% 50%;
   background-repeat: no-repeat;
   @include background-size(100%);
-  position: absolute;
   right: 22%;
   top: 55%;
   @include transform-origin(center center, false);
