@@ -1,36 +1,3 @@
-/*#controls {
-  display: table;
-  position: absolute;
-  text-align: center;
-
-  display: none;
-
-  ul {
-    @include no-bullets;
-    margin: 0;
-    padding: 0;
-    display: table-cell;
-    vertical-align: middle;
-
-    li {
-      height: 1.5em;
-      line-height: 1.5em;
-    }
-
-    input {
-      vertical-align: middle;
-      width: 80%;
-    }
-  }
-}*/
-
-/*#states {
-  position: absolute;
-  top: 10%;
-  left: 2%;
-  display: none;
-}*/
-
 canvas {
   z-index: 0;
 }
@@ -44,10 +11,10 @@ canvas {
   pointer-events: none;
 
   li {
-    margin: 10% 0;
+    // margin: 10% 0;
   }
     li:first-child {
-      margin-top: 24%;
+      // margin-top: 24%;
     }
     svg {
       height: 15%;

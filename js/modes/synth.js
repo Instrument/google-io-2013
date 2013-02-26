@@ -87,36 +87,36 @@ ww.mode.SynthMode.prototype.onFrame = function(delta) {
   }
 
   // Draw waves.
-  var detune = Math.abs(Math.abs(this.lastDetune / 2400) - 2) + 0.5;
-  var freq = this.lastFreq * 0.05; // * 0.00075;
+  // var detune = Math.abs(Math.abs(this.lastDetune / 2400) - 2) + 0.5;
+  // var freq = this.lastFreq * 0.05; // * 0.00075;
 
-  var min = 6;
-  var amount = Math.floor(freq > min ? freq : min);
-  var height = 100 * detune;
-  var distance = this.width_ / amount;
-  var xAdjust = 100 * this.lastXPercent;
-  var yAdjust = 100 * this.lastYPercent;
+  // var min = 6;
+  // var amount = Math.floor(freq > min ? freq : min);
+  // var height = 100 * detune;
+  // var distance = this.width_ / amount;
+  // var xAdjust = 100 * this.lastXPercent;
+  // var yAdjust = 100 * this.lastYPercent;
 
-  for (var j2 = 0, p2 = this.wavePaths.length; j2 < p2; j2++) {
-    if (this.wavePaths[j2]['segments'].length - 1 !== amount) {
-      this.wavePaths[j2]['removeSegments']();
-      for (var k = 0; k <= amount; k++) {
-        var point = new paper['Point'](
-                      distance * k + j2 * xAdjust, this.centerY
-                    );
-        this.wavePaths[j2].add(point);
-      }
-    }
+  // for (var j2 = 0, p2 = this.wavePaths.length; j2 < p2; j2++) {
+  //   if (this.wavePaths[j2]['segments'].length - 1 !== amount) {
+  //     this.wavePaths[j2]['removeSegments']();
+  //     for (var k = 0; k <= amount; k++) {
+  //       var point = new paper['Point'](
+  //                     distance * k + j2 * xAdjust, this.centerY
+  //                   );
+  //       this.wavePaths[j2].add(point);
+  //     }
+  //   }
 
-    for (var i2 = 0; i2 <= amount; i2++) {
-      var segment = this.wavePaths[j2]['segments'][i2];
-      var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i2);
-      segment['point']['y'] = (sin * height + this.height_ / 2) +
-                              ((j2 - 1.5) * yAdjust);
-    }
-    this.wavePaths[j2]['strokeColor']['hue'] = this.lastHue;
-    this.wavePaths[j2]['smooth']();
-  }
+  //   for (var i2 = 0; i2 <= amount; i2++) {
+  //     var segment = this.wavePaths[j2]['segments'][i2];
+  //     var sin = Math.sin(this.duration * (amount * Math.PI / 8) + i2);
+  //     segment['point']['y'] = (sin * height + this.height_ / 2) +
+  //                             ((j2 - 1.5) * yAdjust);
+  //   }
+  //   this.wavePaths[j2]['strokeColor']['hue'] = this.lastHue;
+  //   this.wavePaths[j2]['smooth']();
+  // }
 
 };
 
@@ -185,13 +185,24 @@ ww.mode.SynthMode.prototype.onResize = function(redraw) {
   var boundingI = this.letterI[0]['getBoundingClientRect']();
   var iPos = this.letterI.position();
 
+  var containerHeight = ~~boundingI['height'];
+
   this.waveforms.css({
     'top': ~~iPos['top'] + 'px',
     'left': ~~iPos['left'] + 'px',
-    'height': ~~boundingI['height'] + 'px',
+    'height': containerHeight + 'px',
     'width': ~~boundingI['width'] + 'px'
   });
 
+  var self = this;
+  setTimeout(function() {
+    var boxes = self.waveforms.find('li');
+    var eachHeight = boxes.height();
+
+    var remainingSpace = containerHeight - (eachHeight * 4);
+    var margins = remainingSpace / 4.5;
+    boxes.css('margin-top', ~~margins);
+  }, 100);
 };
 
 /**
@@ -215,18 +226,18 @@ ww.mode.SynthMode.prototype.didFocus = function() {
     self.getPaperCanvas_();
     // self.ctx = self.paperCanvas_.getContext('2d');
 
-    self.wavePath = new paper['Path']();
-    self.wavePath['strokeColor'] = 'red';
-    self.wavePath['strokeWidth'] = 2;
+    // self.wavePath = new paper['Path']();
+    // self.wavePath['strokeColor'] = 'red';
+    // self.wavePath['strokeWidth'] = 2;
 
-    self.wavePaths = [];
-    self.wavePaths.push(self.wavePath);
+    // self.wavePaths = [];
+    // self.wavePaths.push(self.wavePath);
 
-    for (var i = 0; i < 3; i++) {
-      var path = self.wavePath['clone']();
-      path['strokeColor']['alpha'] = 0.3;
-      self.wavePaths.push(path);
-    }
+    // for (var i = 0; i < 3; i++) {
+    //   var path = self.wavePath['clone']();
+    //   path['strokeColor']['alpha'] = 0.3;
+    //   self.wavePaths.push(path);
+    // }
 
     var max = Math.max(self.oRad * 2, 128);
     var size = (self.oRad * 2) / 128;
