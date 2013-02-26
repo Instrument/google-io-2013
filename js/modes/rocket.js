@@ -113,10 +113,12 @@ ww.mode.RocketMode.prototype.animateLanding_ = function() {
       duration = 400,
       moonBounds = this.$letterO_[0].getBoundingClientRect(),
       rocketBounds = this.$letterI_[0].getBoundingClientRect(),
-      distance = ~~(moonBounds['left'] - rocketBounds['height']);
+      distance = ~~((moonBounds['left'] + moonBounds['width'] / 2)
+                    - rocketBounds['height'])
+      transform = '', prevTransform = '';
 
   var flyUp = new TWEEN.Tween({ 'translateY': 0 });
-  flyUp.to({ 'translateY': 20 }, duration);
+  flyUp.to({ 'translateY': 20 }, duration)
 
   var rotateIn = new TWEEN.Tween({ 'rotate': 0 });
   rotateIn.to({ 'rotate': 90 }, delay);
@@ -129,19 +131,21 @@ ww.mode.RocketMode.prototype.animateLanding_ = function() {
   orbitOver.to({ 'translateY': distance, 'scale': 0.25 }, duration);
   orbitOver.delay(delay);
   orbitOver.onUpdate(function() {
-    var transform = 'scale(' + this['scale'] + ') translate(-20, ' + this['translateY'] + ')';
+    transform = 'scale(' + this['scale'] + ') ' +
+                'translate(0, ' + (-1 * this['translateY']) + ')';
     self.rocket_.attr('transform', transform);
+  });
+  orbitOver.onComplete(function() {
+    prevTransform = transform;
   });
 
   delay += duration;
-
-  var prevTransform = 'scale(0.25, 0.25) translate(-20, ' + distance + ')';
 
   var rotateLand = new TWEEN.Tween({ 'rotate': 0 });
   rotateLand.to({ 'rotate': -90 }, duration);
   rotateLand.delay(delay);
   rotateLand.onUpdate(function() {
-    var transform = prevTransform + ' rotate(' +
+    transform = prevTransform + ' rotate(' +
                 this['rotate'] + ', ' + self.centerI_ + ')';
     self.rocket_.attr('transform', transform);
   });
