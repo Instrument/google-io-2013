@@ -113,7 +113,7 @@ end
 def build_logo_js
   debug_flag = %Q{--define='DEBUG_MODE=true'}
 
-  `closure-library-20121212-r2367/closure/bin/build/closurebuilder.py --root=closure-library-20121212-r2367/ --root=coming-soon/ --namespace="ww.HelloLogo" --output_mode=compiled --compiler_flags="--externs='externs/jquery-1.6.js'" --compiler_flags="--compilation_level=ADVANCED_OPTIMIZATIONS" --compiler_flags="#{debug_flag}" --compiler_flags="--debug=true" --compiler_flags="--define='goog.ENABLE_DEBUG_LOADER=false'" --compiler_jar=compiler-latest/compiler.jar --output_file=coming-soon/logo.min.js`
+  `closure-library-20121212-r2367/closure/bin/build/closurebuilder.py --root=closure-library-20121212-r2367/ --root=coming-soon/ --namespace="ww.HelloLogo" --output_mode=compiled --compiler_flags="--externs='externs/jquery-1.6.js'" --compiler_flags="--compilation_level=ADVANCED_OPTIMIZATIONS" --compiler_jar=compiler-latest/compiler.jar --output_file=coming-soon/logo.min.js`
 end
 
 def build_js_test
