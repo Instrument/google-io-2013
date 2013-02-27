@@ -75,7 +75,7 @@ ww.mode.register('rocket', ww.mode.RocketMode, 69, 8); // 01000101
 // ww.mode.register('donut', ww.mode.DonutMode, 150, 8); // 10010110
 ww.mode.register('burger', ww.mode.BurgerMode, 57, 8); // 00111001
 
-if ((window.location.href.indexOf('modes') >= 0) ||
+if (((window.location.href.indexOf('modes') >= 0) && DEBUG_MODE) ||
     ww.testMode) {
   // On DocumentReady (direct access only)
   $(function() {

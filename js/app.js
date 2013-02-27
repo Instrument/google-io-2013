@@ -13,6 +13,19 @@ var DEBUG_MODE = false;
  * @constructor
  */
 ww.app.Core = function() {
+  // Detect invalid browser
+  var isSupported = Modernizr.svg && Modernizr.csstransforms && Modernizr.canvas;
+
+  // Manually disable on given browser combos here:
+  // if (oldAndroid) { isSupported = false; }
+  // if (specificDevice) { isSupported = false; }
+
+  if (!isSupported) {
+    $(document.body).addClass('unsupported');
+    // Show disabled page.
+    return;
+  }
+
   // Save key for CSS3 transforms.
   this.transformKey_ = Modernizr.prefixed('transform');
 

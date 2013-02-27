@@ -27,6 +27,16 @@ body {
   bottom: 0;
   left: 0;
   overflow: hidden;
+  .unsupported & {
+    display: none;
+  }
+}
+
+#unsupported {
+  display: none;
+  .unsupported & {
+    display: block;
+  }
 }
 
 @import "mode";
