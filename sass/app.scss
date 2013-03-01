@@ -38,13 +38,28 @@ body {
     display: block;
   }
 
-  h1 {
-    width: 395px;
-    height: 299px;
-    background: url(../img/fallback/logo-static.png) no-repeat;
+  #logo-fallback {
+    background: url(../img/fallback/logo-google-static.png) no-repeat;
     text-indent: 100%;
     white-space: nowrap;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  .bounds-fallback {
+    position: absolute;
+  }
+
+  .logo-io-fallback {
+    width: 395px;
+    height: 299px;
+    background: url(../img/fallback/logo-io-static.png) no-repeat;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
   }
 }
 

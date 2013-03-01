@@ -1,4 +1,5 @@
-#nav {
+#nav,
+#nav-fallback {
   position: absolute;
   z-index: 1000;
   top: 25px;
@@ -12,7 +13,8 @@
     right: 20px;
   }
 }
-  #logo {
+  #logo,
+  #logo-fallback {
     position: absolute;
     top: 0;
     left: 0;
@@ -20,11 +22,13 @@
     height: 30px;
     cursor: pointer; }
 
-  #menu {
+  #menu,
+  #menu-fallback {
     display: none;
     opacity: 0; }
 
-  #nav-full {
+  #nav-full,
+  #nav-full-fallback {
     position: absolute;
     left: 0;
     right: 0;
@@ -65,7 +69,7 @@
           background-image: image-url('shared/dropdown-arrow-hover.png');
         }
 
-        &:hover  .nav-dropdown {
+        &:hover .nav-dropdown {
           display: block; }
       }
 
@@ -101,16 +105,20 @@
   }
 
   &.no-touch #nav-full .nav a:hover,
-  &.no-touch #nav-full .nav label:hover {
+  &.no-touch #nav-full .nav label:hover,
+  &.no-touch #nav-full-fallback .nav a:hover,
+  &.no-touch #nav-full-fallback .nav label:hover {
     color: #000;
     @include transition(color 200ms ease-out);
   }
 
   @include screen($break-medium) {
-    #nav-full {
+    #nav-full,
+    #nav-full-fallback {
       display: none; }
 
-    #menu {
+    #menu,
+    #menu-fallback {
       display: block;
       opacity: 1;
       position: absolute;
@@ -123,12 +131,22 @@
       background-repeat: no-repeat;
       background-position: 50% 50%;
       @include background-size(20px 17px); }
-    &.nav-visible #menu {
+
+    #menu-fallback {
+      background-image: image-url('fallback/menu-fallback.png');
+    }
+
+    &.nav-visible #menu,
+    &.nav-visible #menu-fallback {
       @include border-radius(2px);
       @include box-shadow(rgba(black, 0.15) 1px 1px 2px inset);
       background-color: #d1d1d1;
       background-image: image-url('shared/menu-down.svg');
       display: block; }
+
+    &.nav-visible #menu-fallback {
+      background-image: image-url('fallback/menu-down-fallback.png');
+    }
   }
 
 #pattern {
@@ -153,7 +171,8 @@
   }
 }
 
-#date {
+#date,
+#date-fallback {
   font-family: 'Open Sans';
   font-size: 17px;
   color: #acacac;
@@ -163,7 +182,8 @@
   bottom: 5%;
   text-align: center; }
 
-#modal {
+#modal,
+#modal-fallback {
   position: absolute;
   top: 0;
   right: 0;
@@ -171,10 +191,12 @@
   left: 0;
   z-index: 2000;
   display: none; }
-  &.nav-visible #modal {
+  &.nav-visible #modal,
+  &.nav-visible #modal-fallback {
     display: block; }
 
-  #dropdown {
+  #dropdown,
+  #dropdown-fallback {
     position: absolute;
     top: 50px;
     right: 10px;
@@ -198,5 +220,6 @@
     }
   }
 
-&.no-touch #dropdown .item:hover {
+&.no-touch #dropdown .item:hover,
+&.no-touch #dropdown-fallback .item:hover {
   color: #000; }

@@ -23,6 +23,24 @@ ww.app.Core = function() {
   if (!isSupported) {
     $(document.body).addClass('unsupported');
     // Show disabled page.
+
+    var upEvt = ww.util.getPointerEventNames('up', 'app');
+    var $menu = $('#menu-fallback');
+    var $modal = $('#modal-fallback');
+    var $dropdown = $('#dropdown-fallback');
+    $menu.bind(upEvt, function() {
+      $('#unsupported').addClass('nav-visible');
+    });
+
+    $modal.bind(upEvt, function() {
+      $('#unsupported').removeClass('nav-visible');
+    });
+
+    $dropdown.bind(upEvt, function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
     return;
   }
 
@@ -88,6 +106,18 @@ ww.app.Core.prototype.onResize_ = function() {
   $('#wrapper').css({
     'width': this.width_,
     'height': this.height_
+  });
+
+  this.fallbackCenterX_ = Math.floor(this.width_ / 2);
+  this.fallbackCenterY_ = Math.floor(this.height_ / 2);
+
+  this.fallbackX_ = this.fallbackCenterX_ - 197;
+  this.fallbackY_ = this.fallbackCenterY_ - 149;
+  $('.bounds-fallback').css({
+    'left': this.fallbackX_,
+    'top': this.fallbackY_,
+    'width': '395px',
+    'height': '299px'
   });
 
   // Update mode iframe sizes.
