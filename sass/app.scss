@@ -37,6 +37,15 @@ body {
   .unsupported & {
     display: block;
   }
+
+  h1 {
+    width: 395px;
+    height: 299px;
+    background: url(../img/fallback/logo-static.png) no-repeat;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 
 @import "mode";
