@@ -132,6 +132,10 @@ canvas {
   background-position: 50% 50%;
   background-repeat: no-repeat;
   @include background-size(auto 100%);
+
+  .no-svg & {
+    background-image: image-url('shared/slash+13.png');
+  }
 }
 
 .cat-mode {
