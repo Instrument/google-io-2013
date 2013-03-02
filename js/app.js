@@ -103,7 +103,7 @@ ww.app.Core.prototype.onResize_ = function() {
   this.height_ = this.$window_.height();
 
   // Update wrapper sizes
-  $('#wrapper').css({
+  $('#wrapper, #unsupported').css({
     'width': this.width_,
     'height': this.height_
   });
@@ -111,13 +111,27 @@ ww.app.Core.prototype.onResize_ = function() {
   this.fallbackCenterX_ = Math.floor(this.width_ / 2);
   this.fallbackCenterY_ = Math.floor(this.height_ / 2);
 
-  this.fallbackX_ = this.fallbackCenterX_ - 197;
-  this.fallbackY_ = this.fallbackCenterY_ - 149;
+  this.fallbackWidth_ = 395;
+  this.fallbackHeight_ = 299;
+
+  if ($('.logo-io-fallback').hasClass('mobile-logo')) {
+    $('.logo-io-fallback').removeClass('mobile-logo');
+  }
+
+  if (this.width_ < 495 || this.height_ < 399) {
+    this.fallbackWidth_ = 262;
+    this.fallbackHeight_ = 199;
+    $('.logo-io-fallback').addClass('mobile-logo');
+  }
+
+  this.fallbackX_ = this.fallbackCenterX_ - (this.fallbackWidth_ / 2);
+  this.fallbackY_ = this.fallbackCenterY_ - (this.fallbackHeight_ / 2);
+
   $('.bounds-fallback').css({
     'left': this.fallbackX_,
     'top': this.fallbackY_,
-    'width': '395px',
-    'height': '299px'
+    'width': this.fallbackWidth_ + 'px',
+    'height': this.fallbackHeight_ + 'px'
   });
 
   // Update mode iframe sizes.
