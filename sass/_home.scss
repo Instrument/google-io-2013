@@ -12,6 +12,12 @@
     left: 15px;
     right: 20px;
   }
+
+  & .plusone {
+    position: absolute;
+    top: 4px;
+    left: 103px;
+  }
 }
   #logo,
   #logo-fallback {
@@ -188,13 +194,22 @@
 #date,
 #date-fallback {
   font-family: 'Open Sans';
-  font-size: 17px;
-  color: #acacac;
+  font-weight: 100;
+  font-size: 18px;
+  color: #464646;
   position: absolute;
   left: 0;
   right: 0;
   bottom: 5%;
-  text-align: center; }
+  text-align: center;
+
+  & span {
+    display: block;
+    padding: 0 5%;
+    color: #acacac;
+    margin-top: 11px;
+  }
+}
 
 #modal,
 #modal-fallback {

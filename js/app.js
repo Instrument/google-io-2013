@@ -14,7 +14,8 @@ var DEBUG_MODE = false;
  */
 ww.app.Core = function() {
   // Detect invalid browser
-  var isSupported = Modernizr.svg && Modernizr.csstransforms && Modernizr.canvas;
+  var isSupported = Modernizr.svg && Modernizr.csstransforms &&
+    Modernizr.canvas;
 
   // Manually disable on given browser combos here:
   // if (oldAndroid) { isSupported = false; }
@@ -40,8 +41,6 @@ ww.app.Core = function() {
       e.preventDefault();
       e.stopPropagation();
     });
-
-    return;
   }
 
   // Save key for CSS3 transforms.
@@ -118,7 +117,10 @@ ww.app.Core.prototype.onResize_ = function() {
     $('.logo-io-fallback').removeClass('mobile-logo');
   }
 
-  if (this.width_ < 495 || this.height_ < 399) {
+  var pixelRatio = window.devicePixelRatio;
+
+
+  if (this.width_ / pixelRatio < 495 || this.height_ / pixelRatio < 399) {
     this.fallbackWidth_ = 262;
     this.fallbackHeight_ = 199;
     $('.logo-io-fallback').addClass('mobile-logo');
@@ -130,6 +132,11 @@ ww.app.Core.prototype.onResize_ = function() {
   $('.bounds-fallback').css({
     'left': this.fallbackX_,
     'top': this.fallbackY_,
+    'width': this.fallbackWidth_ + 'px',
+    'height': this.fallbackHeight_ + 'px'
+  });
+
+  $('.logo-io-fallback').css({
     'width': this.fallbackWidth_ + 'px',
     'height': this.fallbackHeight_ + 'px'
   });
