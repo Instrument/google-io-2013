@@ -258,6 +258,9 @@
     border-left: 1px solid #d1d1d1;
     @include box-shadow(rgba(black, 0.25) 0 0 10px);
     @include min-width(220px);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+
     .item {
       display: block;
       font-size: 17px;
@@ -274,12 +277,14 @@
       }
     }
 
-    @media screen and (max-height: 310px) {
-      bottom: 10px;
+    @media screen and (max-height: 330px) {
       max-height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
 
       .item {
-        padding: 4% 20px;
+        font-size: 130%;
+        padding: .5em .75em;
       }
     }
   }
