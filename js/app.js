@@ -110,8 +110,8 @@ ww.app.Core.prototype.onResize_ = function() {
   this.fallbackCenterX_ = Math.floor(this.width_ / 2);
   this.fallbackCenterY_ = Math.floor(this.height_ / 2);
 
-  this.fallbackWidth_ = 395;
-  this.fallbackHeight_ = 299;
+  this.fallbackWidth_ = 425;
+  this.fallbackHeight_ = 318;
 
   if ($('.logo-io-fallback').hasClass('mobile-logo')) {
     $('.logo-io-fallback').removeClass('mobile-logo');
@@ -120,9 +120,9 @@ ww.app.Core.prototype.onResize_ = function() {
   var pixelRatio = window.devicePixelRatio;
 
 
-  if (this.width_ / pixelRatio < 495 || this.height_ / pixelRatio < 399) {
-    this.fallbackWidth_ = 262;
-    this.fallbackHeight_ = 199;
+  if (this.width_ / pixelRatio < 525 || this.height_ / pixelRatio < 418) {
+    this.fallbackWidth_ = 318;
+    this.fallbackHeight_ = 238;
     $('.logo-io-fallback').addClass('mobile-logo');
   }
 
