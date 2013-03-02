@@ -209,6 +209,15 @@
     color: #acacac;
     margin-top: 11px;
   }
+
+  @include screen($break-medium) {
+    font-size: 19px;
+    z-index: 100;
+
+    & span {
+      font-size: 14px;
+    }
+  }
 }
 
 #modal,
@@ -246,6 +255,19 @@
       text-decoration: none;
       &:last-child {
         border-bottom: 0; }
+
+      @include screen($break-medium) {
+        font-size: 20px;
+      }
+    }
+
+    @media screen and (max-height: 310px) {
+      bottom: 10px;
+      max-height: 100%;
+
+      .item {
+        padding: 4% 20px;
+      }
     }
   }
 
