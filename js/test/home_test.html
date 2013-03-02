@@ -19,21 +19,10 @@
   <body>
     <div id="nav">
       <h2 id="logo">Google</h2>
-
-      <!-- Place this tag where you want the +1 button to render. -->
       
-      <div class="plusone">
+      <div class="plusone-main">
         <div class="g-plusone" data-size="medium"></div>
       </div>
-
-      <!-- Place this tag after the last +1 button tag. -->
-      <script type="text/javascript">
-        (function() {
-          var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-          po.src = 'https://apis.google.com/js/plusone.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-        })();
-      </script>
 
       <div id="menu" class="menu-modal"></div>
       <div id="nav-full">
@@ -102,10 +91,21 @@
         <a class="item" href="#">Travel</a>
         <a class="item" href="#">Registration</a>
         <a class="item" href="#">FAQ</a>
+        <div class="item plusone-menu">
+          <div class="g-plusone" data-size="medium"></div>
+        </div>
       </div>
     </div>
 
     <div class="bounds"></div>
+
+    <script type="text/javascript">
+      (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      })();
+    </script>
   
     <script>
       var modeIsReady = false;

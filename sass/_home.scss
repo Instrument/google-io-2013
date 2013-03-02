@@ -7,16 +7,29 @@
   right: 30px;
   height: 35px;
 
+  & .plusone-main {
+    position: absolute;
+    z-index: 1001;
+    top: 4px;
+    left: 103px;
+  }
+
+  & .plusone-menu {
+    display: none;
+  }
+
   @include screen($break-medium) {
     top: 15px;
     left: 15px;
     right: 20px;
-  }
 
-  & .plusone {
-    position: absolute;
-    top: 4px;
-    left: 103px;
+    .plusone-main {
+      display: none;
+    }
+
+    .plusone-menu {
+      display: block;
+    }
   }
 }
   #logo,
