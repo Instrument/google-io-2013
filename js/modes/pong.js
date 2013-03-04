@@ -9,8 +9,8 @@ var TWOPI = Math.PI * 2;
  * @param {String} assetPrefix The containing element.
  */
 ww.mode.PongMode = function(containerElem, assetPrefix) {
-  this.preloadSound('1.mp3');
-  this.preloadSound('2.mp3');
+  this.preloadSound('hitPaddle.mp3');
+  this.preloadSound('hitWall.mp3');
 
   goog.base(this, containerElem, assetPrefix, 'pong', true, true, true);
 
@@ -167,7 +167,7 @@ ww.mode.PongMode.prototype.didUnfocus = function() {
  * @param {String} wall Wall name.
  */
 ww.mode.PongMode.prototype.hitWall_ = function(wall) {
-  this.playSound('1.mp3');
+  this.playSound('hitPaddle.mp3');
 
   var key = wall + 'Opacity_';
 
@@ -193,7 +193,7 @@ ww.mode.PongMode.prototype.hitWall_ = function(wall) {
  * @private
  */
 ww.mode.PongMode.prototype.hitPaddle_ = function() {
-  this.playSound('2.mp3');
+  this.playSound('hitWall.mp3');
 
   var self = this;
   var newScore = this.score_ + 1;
