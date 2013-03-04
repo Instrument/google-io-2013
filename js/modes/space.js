@@ -28,12 +28,12 @@ ww.mode.SpaceMode = function(containerElem, assetPrefix_) {
      * @private
      */
     this.delay_ = new this.tuna_.Delay({
-      feedback: 0,
-      delayTime: 0,
-      wetLevel: 0,
-      dryLevel: 0,
-      cutoff: 20,
-      bypass: 0
+      'feedback': 0,
+      'delayTime': 0,
+      'wetLevel': 0,
+      'dryLevel': 0,
+      'cutoff': 20,
+      'bypass': 0
     });
   }
 };
