@@ -1,0 +1,123 @@
+<!doctype html>
+<html class="bowling-mode">
+  <head>
+    <title>IO</title>
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../vendor/modernizr-latest.js"></script>
+    <link rel="stylesheet" href="../../css/app.css">
+    <script src="../vendor/jquery-1.6.2.js"></script>
+    <script src="../vendor/Tween.js"></script>
+    <script src="../vendor/paper.js"></script>
+    <script src="../vendor/physics.js"></script>
+    <script src="../vendor/tuna.js"></script>
+    <script src="../app.test.js"></script>
+  </head>
+  <body>
+    <div class="bounds">
+      <svg version="1.1" id="bowling" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+         width="100%" height="100%" viewBox="0 0 425 318" enable-background="new 0 0 425 318" xml:space="preserve">
+        <path id="letter-i-center" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M87.296,158.398"/>
+        <g class="letter-i" id="letter-i" cx="87.296" cy="158.398">
+          <defs>
+            <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="135.5542" y1="1112.3291" x2="43.5849" y2="1112.3291" gradientTransform="matrix(1 0 0 1 0 -962.8398)">
+              <stop  offset="0" style="stop-color:#E0E0E0"/>
+              <stop  offset="1" style="stop-color:#FFFFFF"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#SVGID_1_)" d="M86.335,256.995c-7.149,0-14.333-4.147-14.636-4.323l-0.102-0.061l-0.064-0.098
+            c-12.905-19.619-20.609-43.007-20.609-62.56c0-14.604,5.08-27.562,10.458-41.276c4.816-12.284,9.797-24.987,11.495-39.849
+            c1.736-10.329,0.649-16.053-0.727-23.301c-1.211-6.381-2.584-13.635-2.584-25.954c0-9.688,7.906-17.591,17.623-17.591h0.208
+            c10.044,0,18.854,8.232,18.854,17.591c0,12.646-1.725,19.975-3.246,26.432c-1.672,7.095-2.992,12.703-1.299,22.765
+            c1.701,14.887,6.683,27.594,11.498,39.881c5.379,13.72,10.459,26.682,10.459,41.288c0,19.559-7.705,42.944-20.61,62.562
+            l-0.063,0.102l-0.102,0.061c-0.303,0.177-7.484,4.326-14.636,4.326L86.335,256.995L86.335,256.995z"/>
+          <path fill="#E0E0E0" d="M87.398,42.987c9.458,0,18.354,7.384,18.354,16.841c0,26.614-7.781,29.867-4.539,49.148
+            c3.602,31.511,21.953,53.456,21.953,81.023c0,17.435-6.334,40.685-20.529,62.263c0,0-7.286,4.244-14.383,4.244l-1.917-0.004
+            c-7.096,0-14.384-4.259-14.384-4.259c-14.193-21.578-20.527-44.853-20.527-62.283c0-27.569,18.35-49.557,21.95-81.069
+            c3.243-19.28-3.308-22.448-3.308-49.062c0-9.458,7.667-16.841,17.123-16.841h0.631 M87.398,41.987H87.19
+            c-9.993,0-18.123,7.878-18.123,17.841c0,12.365,1.378,19.508,2.593,25.911c1.367,7.199,2.447,12.828,0.729,23.042l-0.004-0.002
+            l-0.003,0.012c-1.69,14.797-6.659,27.462-11.464,39.716c-5.396,13.761-10.492,26.757-10.492,41.456
+            c0,19.646,7.735,43.131,20.691,62.828l0.129,0.193l0.202,0.117c0.307,0.181,7.605,4.394,14.888,4.394l1.919-0.004
+            c7.282,0,14.579-4.216,14.886-4.396l0.202-0.117l0.129-0.195c12.958-19.697,20.693-43.189,20.693-62.842
+            c0-14.698-5.098-27.701-10.494-41.466c-4.805-12.257-9.774-24.931-11.465-39.726l-0.002-0.026l-0.004-0.026
+            c-1.677-9.962-0.367-15.522,1.293-22.562c1.527-6.483,3.258-13.604,3.258-26.308C106.751,50.203,97.708,41.987,87.398,41.987
+            L87.398,41.987z"/>
+          <path fill="#E04A3F" d="M101.363,110.014c-0.049-0.384-0.104-0.765-0.15-1.152c-0.498-2.964-0.733-5.551-0.778-7.905
+            c0,0-9.86-0.288-13.138-0.288c-3.279,0-13.141,0.288-13.141,0.288c-0.043,2.363-0.879,8.682-0.927,9.058
+            c0,0,10.581-0.288,14.065-0.288C90.779,109.726,101.363,110.014,101.363,110.014z"/>
+          <path fill="#E04A3F" d="M106.126,130.847c-0.982-2.946-1.778-5.97-2.574-9.065c0,0-11.587-0.515-16.258-0.515
+            c-4.672,0-16.251,0.515-16.251,0.515c-0.795,3.095-1.594,6.119-2.577,9.065c0,0,12.98-0.522,18.828-0.522
+            C93.141,130.325,106.126,130.847,106.126,130.847z"/>
+          
+            <path opacity="0.75" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" enable-background="new    " d="
+            M79.888,62.086c0-5.399,4.376-9.745,9.773-9.745"/>
+          
+            <path opacity="0.75" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" enable-background="new    " d="
+            M77.694,224.334C70,212.639,66.568,200.021,66.568,190.573c0-10.599,5.339-19.675,9.139-30.151"/>
+        </g>
+        <path id="letter-o-center" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M295.751,158.398"/>
+        <g class="letter-o" id="letter-o" cx="295.751" cy="158.398">
+          <g class="letter-o-wrapper" id="letter-o-wrapper">
+            
+            <defs>
+              <linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="395.6475" y1="1121.2383" x2="199.7873" y2="1121.2384" gradientTransform="matrix(1 0 0 1 0 -962.8398)">
+                <stop  offset="0" style="stop-color:#3078F0"/>
+                <stop  offset="1" style="stop-color:#4387FD"/>
+              </linearGradient>
+            </defs>
+            <circle fill="url(#SVGID_2_)" cx="295.751" cy="158.398" r="95.841"/>
+            
+            <path opacity="0.1" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" enable-background="new    " d="
+              M249.939,215.391c-30.551-23.354-36.389-67.053-13.03-97.604"/>
+            <circle fill="#2364D7" cx="271.251" cy="104.474" r="9.085"/>
+            <circle fill="#2364D7" cx="320.252" cy="104.474" r="9.085"/>
+            <circle fill="#2364D7" cx="295.751" cy="152.278" r="9.085"/>
+            <path fill="#2364D7" d="M320.252,97.778c4.611,0,8.408,3.438,8.995,7.891c0.051-0.393,0.088-0.789,0.088-1.195
+              c0-5.017-4.062-9.085-9.087-9.085c-5.013,0-9.086,4.067-9.086,9.085c0,0.406,0.034,0.803,0.086,1.195
+              C311.841,101.217,315.642,97.778,320.252,97.778z"/>
+            <path fill="#2364D7" d="M271.251,95.389c-5.017,0-9.084,4.067-9.084,9.085c0,0.406,0.035,0.803,0.087,1.195
+              c0.585-4.452,4.389-7.891,8.994-7.891c4.611,0,8.41,3.438,8.995,7.891c0.052-0.393,0.088-0.789,0.088-1.195
+              C280.337,99.457,276.271,95.389,271.251,95.389z"/>
+            <path fill="#2364D7" d="M295.751,143.193c-5.017,0-9.084,4.066-9.084,9.085c0,0.406,0.034,0.803,0.087,1.195
+              c0.584-4.452,4.389-7.89,8.994-7.89c4.611,0,8.409,3.438,8.994,7.89c0.051-0.392,0.089-0.789,0.089-1.195
+              C304.836,147.26,300.771,143.193,295.751,143.193z"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="bowling_test.js"></script>
+  </body>
+</html?>

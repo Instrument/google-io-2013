@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+  <head>
+    <title>IO</title>
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../vendor/modernizr-latest.js"></script>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../../css/app.css">
+    <script src="../vendor/jquery-1.6.2.js"></script>
+    <script src="../vendor/Tween.js"></script>
+    <script src="../vendor/paper.js"></script>
+    <script src="../vendor/physics.js"></script>
+    <script src="../vendor/tuna.js"></script>
+    <script src="../app.test.js"></script>
+  </head>
+  <body>
+    <div class="bounds">
+      <div id="levels"></div>
+      <div id="status">Your turn</div>
+      <div id="play-again"></div>
+
+      <div id="simone">
+        <svg version="1.1" id="board" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+     width="100%" height="100%" viewBox="242.257 138.8 315.062 247.606"
+     enable-background="new 242.257 138.8 315.062 247.606" xml:space="preserve">
+          <g id="green">
+            <defs>
+              <radialGradient id="SVGID_1_" cx="471.8706" cy="676.5166" r="220.5947" gradientTransform="matrix(1 0 0 -1 0 801)" gradientUnits="userSpaceOnUse">
+                <stop  offset="0" style="stop-color:#0DA960"/>
+                <stop  offset="1" style="stop-color:#03914B"/>
+              </radialGradient>
+            </defs>
+            <path fill="url(#SVGID_1_)" d="M515.949,317.31c3.211,5.301,3.295,13.689,0.507,19.45l38.293-63.783
+              c3.427-5.716,3.427-15.032,0-20.724l-61.884-103.1c-3.438-5.68-11.678-10.353-18.322-10.353h-53.946
+              c-6.63,0-9.272,4.673-5.85,10.353l38.529,64.15c0.23,0.318,0.562,0.615,0.757,0.915L515.949,317.31z"/>
+          </g>
+          <g id="yellow">
+            <defs>
+              <radialGradient id="SVGID_2_" cx="479.2729" cy="538.2539" r="163.6231" gradientTransform="matrix(1 0 0 -1 0 801)" gradientUnits="userSpaceOnUse">
+                <stop  offset="0" style="stop-color:#FFCD4D"/>
+                <stop  offset="1" style="stop-color:#F6C338"/>
+              </radialGradient>
+            </defs>
+            <path fill="url(#SVGID_2_)" d="M420.597,386.405h53.946c6.645,0,14.886-4.649,18.322-10.363l23.591-39.282
+              c2.788-5.761,2.704-14.149-0.507-19.45l-39.287-65.057c3.419,5.691,3.419,15.008,0,20.724l-38.307,63.736
+              c-0.193,0.414-0.289,0.91-0.504,1.326l-23.508,39.138C411.938,382.324,414.416,386.405,420.597,386.405z"/>
+            <defs>
+              <linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="530.9941" y1="506.4951" x2="461.3259" y2="506.4951" gradientTransform="matrix(1 0 0 -1 0 801)">
+                <stop  offset="0" style="stop-color:#000000;stop-opacity:0.2"/>
+                <stop  offset="1" style="stop-color:#000000;stop-opacity:0"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#SVGID_3_)" d="M515.949,317.31l-39.287-65.057c3.419,5.691,3.419,15.008,0,20.724l-13.832,23.048l53.626,40.735
+              C519.244,330.999,519.16,322.61,515.949,317.31z"/>
+          </g>
+          <g id="blue">
+            <defs>
+              <radialGradient id="SVGID_4_" cx="179.0527" cy="997.6738" r="220.608" gradientTransform="matrix(-1 0 0 1 506.7754 -596.9512)" gradientUnits="userSpaceOnUse">
+                <stop  offset="0" style="stop-color:#4387FD"/>
+                <stop  offset="1" style="stop-color:#4683EA"/>
+              </radialGradient>
+            </defs>
+            <path fill="url(#SVGID_4_)" d="M283.624,207.892c-3.173-5.308-3.277-13.691-0.486-19.452l-38.317,63.79
+              c-3.418,5.715-3.418,15.031,0,20.722l61.923,103.091c3.412,5.69,11.666,10.363,18.29,10.363h53.946c6.661,0,9.3-4.673,5.882-10.363
+              l-38.562-64.151c-0.207-0.331-0.562-0.603-0.758-0.899L283.624,207.892z"/>
+          </g>
+          <g id="red">
+            <defs>
+              <radialGradient id="SVGID_5_" cx="186.4517" cy="859.4102" r="163.6213" gradientTransform="matrix(-1 0 0 1 506.7754 -596.9512)" gradientUnits="userSpaceOnUse">
+                <stop  offset="0" style="stop-color:#E04A3F"/>
+                <stop  offset="1" style="stop-color:#CD372D"/>
+              </radialGradient>
+            </defs>
+            <path fill="url(#SVGID_5_)" d="M378.979,138.801h-53.945c-6.624,0-14.878,4.645-18.29,10.353l-23.605,39.286
+              c-2.791,5.761-2.687,14.145,0.486,19.452l39.298,65.06c-3.419-5.69-3.419-15.007,0-20.722l38.299-63.741
+              c0.19-0.429,0.283-0.912,0.539-1.328l23.49-39.133C387.671,142.877,385.156,138.801,378.979,138.801z"/>
+            <defs>
+              <linearGradient id="SVGID_6_" gradientUnits="userSpaceOnUse" x1="238.1724" y1="827.6475" x2="168.5052" y2="827.6475" gradientTransform="matrix(-1 0 0 1 506.7754 -596.9512)">
+                <stop  offset="0" style="stop-color:#000000;stop-opacity:0.2"/>
+                <stop  offset="1" style="stop-color:#000000;stop-opacity:0"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#SVGID_6_)" d="M283.624,207.892l39.298,65.06c-3.419-5.69-3.419-15.007,0-20.722l13.844-23.042l-53.627-40.748
+              C280.347,194.2,280.451,202.584,283.624,207.892z"/>
+          </g>
+        </svg>
+
+        <div id="message"></div>
+      </div>
+    </div>
+  
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="simone_test.js"></script>
+  </body>
+</html>

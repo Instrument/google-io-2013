@@ -1,0 +1,206 @@
+@import "compass";
+@import "compass/css3/transition";
+@import "compass/css3/user-interface";
+@import "vendor/media-queries";
+
+$legacy-support-for-ie6: false;
+$legacy-support-for-ie7: false;
+$legacy-support-for-ie8: false;
+
+$break-small: 568px;
+$break-smallest: 320px;
+$break-medium: 768px;
+$break-large: 1024px;
+
+* {
+  @include box-sizing(border-box);
+}
+
+body {
+  background: #f9f9f9;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+  @include user-select(none);
+  -ms-touch-action: none;
+}
+
+%dark-mode {
+  .code, .back {
+    background-color: #262626;
+    border: 2px solid #393939;
+  }
+
+  .back {
+    background-image: image-url('shared/close-dark.svg'); }
+
+  .i {
+    background-image: image-url('shared/i-dark.svg'); }
+
+  .o {
+    background-image: image-url('shared/o-dark.svg'); }
+}
+
+.code, .back {
+  position: absolute;
+  top: 15px;
+  border: 1px solid #393939;
+  height: 35px;
+  @include border-radius(17px);
+  z-index: 1000;
+  background-color: #fff;
+  border: 2px solid #f3f3f3;
+}
+.code {
+  padding: 0 5px 0 10px;
+  line-height: 35px;
+  left: 15px;
+  pointer-events: none;
+}
+.back {
+  right: 15px;
+  width: 34px;
+  cursor: pointer;
+  @include background-size(16px 16px);
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-image: image-url('shared/close-light.svg');
+}
+.i {
+  width: 4px;
+  height: 16px;
+  display: inline-block;
+  @include background-size(100% 100%);
+  background-repeat: no-repeat;
+  margin-right: 5px;
+  background-image: image-url('shared/i-light.svg');
+  .failure &, .success & {
+    background-image: image-url('shared/i-active.svg'); }
+}
+.o {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  @include background-size(100% 100%);
+  background-repeat: no-repeat;
+  margin-right: 5px;
+  background-image: image-url('shared/o-light.svg');
+  .failure &, .success & {
+    background-image: image-url('shared/o-active.svg'); }
+}
+
+@mixin landscape()
+{
+  @media screen and (orientation:landscape)
+  {
+    @content;
+  }
+}
+
+%absolute-full {
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
+
+canvas {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+}
+
+.reload {
+  background-color: rgba(255,255,255,0.8);
+  background-image: image-url('shared/refresh.svg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(2em);
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  display: none;
+}
+
+.bounds {
+  background-image: image-url('shared/slash+13.svg');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  @include background-size(auto 100%);
+
+  .no-svg & {
+    background-image: image-url('shared/slash+13.png');
+  }
+}
+
+.cat-mode {
+  @import "cat";
+}
+
+.home-mode {
+  @import "home";
+  @import "draw-modes";
+}
+
+.pong-mode {
+  @import "pong";
+}
+
+.simone-mode {
+  @extend %dark-mode;
+  background: #2c2c2c;
+  color: #fff;
+  font-size: 90%;
+  position: relative;
+  @import "simone";
+
+  .bounds {
+    background-image: none;
+  }
+}
+
+.song-mode {
+  @import "song";
+  color: #959595;
+  font-size: 110%;
+
+  @include iphone() {
+    font-size: 90%;
+  }
+
+  .bounds {
+    background-image: none;
+  }
+}
+
+.space-mode {
+  @extend %dark-mode;
+  background: #000;
+  @import "space";
+}
+
+.synth-mode {
+  @import "synth";
+}
+
+.metaball-mode {
+  @import "metaball";
+}
+
+.ascii-mode {
+  @extend %dark-mode;
+  background: #000;
+  color: #fff;
+  @import "ascii";
+}
+
+.eightbit-mode {
+  @import "eightbit";
+}
+
+@import "fun-modes";

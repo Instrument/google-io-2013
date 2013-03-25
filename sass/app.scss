@@ -1,0 +1,62 @@
+@import "compass";
+@import "compass/css3/user-interface";
+
+body {
+  margin: 0;
+  padding: 0;
+  -ms-touch-action: none;
+}
+
+.mode {
+  border: 0;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  .bounds {
+    position: absolute;
+    @include user-select(none);
+  }
+}
+
+#wrapper {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  .unsupported & {
+    display: none;
+  }
+}
+
+#unsupported {
+  display: none;
+  background: #f9f9f9;
+
+  .unsupported & {
+    display: block;
+  }
+
+  .bounds-fallback {
+    position: absolute;
+  }
+
+  .logo-io-fallback {
+    background: image-url('fallback/logo-io-fallback.png') no-repeat;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-logo {
+    background: image-url('fallback/logo-io-fallback-mobile.png') no-repeat;
+  }
+}
+
+@import "mode";

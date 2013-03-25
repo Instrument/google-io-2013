@@ -1,0 +1,29 @@
+// long cat
+.letter-i {
+  background-image: image-url('cat/letter-i.png');
+  background-position: right center;
+  bottom: 20%; 
+  left: 0;
+  right: 66%;
+  top: 20%;
+}
+
+// hover cat
+.letter-o {
+  background-image: image-url('cat/letter-o.png');
+  bottom: 2%;
+  left: 47%;
+  right: 0;
+  top: 2%;
+}
+
+.letter-i, .letter-o {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  @include background-size(auto 100%);
+  cursor: pointer;
+  display: block;
+  position: absolute;
+  @include user-select(none);
+  -webkit-tap-highlight-color: transparent;
+}

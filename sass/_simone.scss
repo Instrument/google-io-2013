@@ -1,0 +1,98 @@
+.reload {
+  background-color: rgba(#000, 0.5);
+  @include background-size(3em);
+}
+
+#message {
+  left: 0;
+  line-height: 1.5em;
+  margin-top: -0.25em;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  right: 0;
+}
+
+#red, #blue, #yellow, #green {
+  cursor: pointer;
+}
+
+#simone {
+  @extend %absolute-full;
+  padding: 5%;
+  text-align: center;
+}
+
+#play-again {
+  background: transparent image-url('shared/refresh.svg') no-repeat 50% 50%;
+  @include background-size(25px);
+  bottom: 7%;
+  cursor: pointer;
+  display: none;
+  height: 2em;
+  left: 50%;
+  margin: 0 0 0 -1em;
+  position: absolute;
+  top: auto;
+  width: 2em;
+  z-index: 1000;
+
+  @include landscape() {
+    bottom: auto;
+    margin-top: -3.75em;
+    top: 50%;
+  }
+}
+
+#levels {
+  background: transparent;
+  @include border-radius(1.25em);
+  color: #fff;
+  left: 50%;
+  height: 2.5em;
+  line-height: 2.5em;
+  margin: -1.25em 0 0 -1.25em;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  width: 2.5em;
+  @include transition(all 190ms ease-out);
+  @include user-select(none);
+
+  &.started {
+    background: #424242;
+  }
+
+  &.showing {
+    margin-top: -2em;
+  }
+}
+
+#status {
+  @include hide-text;
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  color: #979797;
+  left: 35%;
+  line-height: 2em;
+  margin: 0;
+  position: absolute;
+  right: 35%;
+  text-align: center;
+  top: 56%;
+
+  &.your-turn {
+    text-indent: 0;
+  }
+
+  &.game-over {
+    background-image: image-url('simone/fail.svg');
+    @include background-size(20px);
+  }
+
+  &.success {
+    background-image: image-url('simone/success.svg');
+    @include background-size(25px);
+  }
+}

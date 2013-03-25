@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+  <head>
+    <title>IO</title>
+    <meta content="initial-scale=1.0, minimum-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../vendor/modernizr-latest.js"></script>
+    <link rel="stylesheet" href="../../css/app.css">
+    <script src="../vendor/jquery-1.6.2.js"></script>
+    <script src="../vendor/Tween.js"></script>
+    <script src="../vendor/paper.js"></script>
+    <script src="../vendor/physics.js"></script>
+    <script src="../vendor/tuna.js"></script>
+    <script src="../app.test.js"></script>
+  </head>
+  <body>
+    <div id="bacon-container" class="bounds">
+      <svg version="1.1" id="bacon-and-eggs" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+         y="0px" width="100%" height="100%" viewBox="0 0 425 318" enable-background="new 0 0 425 318" xml:space="preserve">
+        <g class="letter-i" id="letter-i">
+          <defs>
+            <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="88.2134" y1="2196.25" x2="88.2133" y2="2007.3027" gradientTransform="matrix(1 0 0 1 0 -1942.5195)">
+              <stop  offset="0" style="stop-color:#D63F2F"/>
+              <stop  offset="0.1718" style="stop-color:#CD382D"/>
+              <stop  offset="0.3124" style="stop-color:#D53E2F"/>
+              <stop  offset="0.3252" style="stop-color:#D63F2F"/>
+              <stop  offset="0.4172" style="stop-color:#CD382D"/>
+              <stop  offset="0.7975" style="stop-color:#D63F2F"/>
+              <stop  offset="1" style="stop-color:#CD382D"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#SVGID_1_)" d="M59.953,253.723c-3.635,0-3.635-2.357-3.635-5.099v-5.479c0-6.848,1.026-10.311,2.021-13.65
+            c0.992-3.348,2.02-6.803,2.02-13.524c0-6.805-1.044-10.397-2.055-13.887c-1.021-3.521-1.984-6.849-1.984-13.295
+            c0-6.489,1.019-10.126,2.004-13.646c1-3.563,2.035-7.258,2.035-13.854c0-6.483-1.007-10.192-1.98-13.778
+            c-1.012-3.729-2.059-7.585-2.059-14.681c0-7.004,1.025-10.383,2.019-13.65c0.993-3.271,2.021-6.653,2.021-13.55
+            c0-6.933-1.035-10.457-2.036-13.864c-0.985-3.353-2.003-6.819-2.003-13.636v-8.25c0-2.734,0-5.096,3.635-5.096h52.483
+            c3.633,0,3.633,2.362,3.633,5.096v8.251c0,6.977,1.045,10.494,2.055,13.896c1.021,3.435,1.982,6.679,1.982,13.284
+            c0,6.689-1.026,10.234-2.021,13.662c-0.991,3.42-2.017,6.956-2.017,13.519c0,6.601,1.035,10.291,2.035,13.859
+            c0.983,3.516,2.002,7.151,2.002,13.641c0,6.377-0.947,9.868-1.951,13.565c-1.025,3.774-2.086,7.688-2.086,14.894
+            c0,7.123,1.043,10.562,2.053,13.886c1.021,3.362,1.984,6.538,1.984,13.314c0,6.815-1.019,10.281-2.002,13.639
+            c-1,3.406-2.035,6.934-2.035,13.861v5.479c0,2.731,0,5.101-3.633,5.101H59.953V253.723z"/>
+          <path fill="#BC392D" d="M112.438,65.183c3.086,0,3.229,1.609,3.229,4.692v8.251c0,7.035,1.053,10.581,2.071,14.01
+            c1.011,3.406,1.965,6.623,1.965,13.169c0,6.632-1.018,10.148-2.004,13.549c-1,3.447-2.032,7.011-2.032,13.631
+            c0,6.656,1.042,10.373,2.049,13.968c1.022,3.65,1.987,7.098,1.987,13.531c0,6.32-0.939,9.791-1.937,13.461
+            c-1.032,3.807-2.102,7.742-2.102,14.998c0,7.185,1.052,10.646,2.069,14.002c1.013,3.334,1.967,6.479,1.967,13.199
+            c0,6.76-0.963,10.045-1.985,13.521c-1.008,3.437-2.051,6.985-2.051,13.979v5.479c0,3.083-0.144,4.691-3.229,4.691H59.953
+            c-3.088,0-3.231-1.608-3.231-4.691v-5.479c0-6.787,1.02-10.224,2.005-13.539c1-3.371,2.034-6.857,2.034-13.646
+            c0-6.855-1.052-10.484-2.069-13.995c-1.014-3.491-1.97-6.791-1.97-13.187c0-6.438,0.967-9.883,1.989-13.53
+            c1.008-3.595,2.05-7.312,2.05-13.97c0-6.538-1.014-10.271-1.993-13.883c-1.006-3.704-2.046-7.533-2.046-14.575
+            c0-6.944,0.973-10.145,2.002-13.533c1.002-3.299,2.037-6.71,2.037-13.667c0-6.991-1.043-10.543-2.052-13.978
+            c-1.021-3.479-1.987-6.764-1.987-13.522v-8.251c0-3.083,0.145-4.692,3.231-4.692h52.485 M112.438,64.376
+            c-4.037,0-48.447,0-52.484,0c-4.039,0-4.039,2.75-4.039,5.5s0,8.251,0,8.251c0,13.75,4.039,13.75,4.039,27.5
+            s-4.039,13.148-4.039,27.2c0,14.05,4.039,15.368,4.039,28.459c0,13.093-4.039,14.407-4.039,27.5
+            c0,13.092,4.039,13.771,4.039,27.181c0,13.411-4.039,13.45-4.039,27.186c0,0,0,2.729,0,5.479s0,5.5,4.039,5.5
+            c4.037,0,48.447,0,52.484,0s4.037-2.75,4.037-5.5s0-5.479,0-5.479c0-13.75,4.036-13.75,4.036-27.5s-4.036-13.147-4.036-27.198
+            c0-14.056,4.036-15.367,4.036-28.459c0-13.091-4.036-14.409-4.036-27.5c0-13.091,4.036-13.769,4.036-27.181
+            c0-13.411-4.036-13.43-4.036-27.18v-8.255C116.475,67.126,116.475,64.376,112.438,64.376L112.438,64.376z"/>
+          <g>
+              <g>
+                <g>
+                  <defs>
+                    <rect id="SVGID_2_" x="59.954" y="63.406" width="52.486" height="192.167"/>
+                  </defs>
+                  <defs>
+                    <clipPath id="SVGID_3_">
+                      <use xlink:href="#SVGID_2_"  overflow="visible"/>
+                    </clipPath>
+                  </defs>
+                  
+                    <path id="fat-1" clip-path="url(#SVGID_3_)" fill="none" stroke="#FFFFFF" stroke-width="6.0559" stroke-linecap="round" stroke-miterlimit="10" d="
+                    M76.102,64.376c0,2.75,0,8.251,0,8.251c0,13.75,4.036,13.75,4.036,27.5s-4.036,13.148-4.036,27.199
+                    c0,14.051,4.036,15.369,4.036,28.46c0,13.093-4.036,14.407-4.036,27.5c0,13.092,4.036,13.771,4.036,27.181
+                    c0,13.411-4.036,13.448-4.036,27.186c0,0,0,2.729,0,5.479"/>
+                </g>
+              </g>
+              <g>
+                <g>
+                  <defs>
+                    <rect id="SVGID_4_" x="59.954" y="63.406" width="52.486" height="192.167"/>
+                  </defs>
+                  <defs>
+                    <clipPath id="SVGID_5_">
+                      <use xlink:href="#SVGID_4_"  overflow="visible"/>
+                    </clipPath>
+                  </defs>
+                  
+                    <path id="fat-2" clip-path="url(#SVGID_5_)" fill="none" stroke="#FFFFFF" stroke-width="6.0559" stroke-linecap="round" stroke-miterlimit="10" d="
+                    M96.287,72.627c0,13.75,4.037,13.75,4.037,27.5"/>
+                </g>
+              </g>
+              <g>
+                <g>
+                  <defs>
+                    <rect id="SVGID_6_" x="59.954" y="63.406" width="52.486" height="192.167"/>
+                  </defs>
+                  <defs>
+                    <clipPath id="SVGID_7_">
+                      <use xlink:href="#SVGID_6_"  overflow="visible"/>
+                    </clipPath>
+                  </defs>
+                  
+                    <path id="fat-3" clip-path="url(#SVGID_7_)" fill="none" stroke="#FFFFFF" stroke-width="6.0559" stroke-linecap="round" stroke-miterlimit="10" d="
+                    M96.287,138.327c0,14.05,4.037,15.368,4.037,28.459c0,13.093-4.037,14.407-4.037,27.5c0,13.092,4.037,13.771,4.037,27.183
+                    c0,13.409-4.037,13.448-4.037,27.184c0,0,0,2.729,0,5.479"/>
+                </g>
+              </g>
+          </g>
+        </g>
+        <g class="letter-o" id="letter-o">
+          <g id="egg-whole">
+            <path fill="#E4A752" d="M378.891,166.145c0,54.244-37.068,97.146-82.798,97.146c-45.725,0-82.793-42.905-82.793-97.146
+              c0-54.239,37.068-111.053,82.793-111.053C341.82,55.092,378.891,111.903,378.891,166.145z"/>
+            <g id="crack-1" opacity="0">
+              <path fill="#FFFFFF" d="M231.368,98.278l15.112,25.857l0.332,0.569l-0.262,0.53l-8.517,17.486l-0.095-1.128l12.095,16.955
+                l0.286,0.402l-0.102,0.457l-7.5,33.521c-0.029,0.13-0.154,0.212-0.283,0.181c-0.125-0.024-0.207-0.147-0.184-0.271l5.79-33.858
+                l0.187,0.856l-12.094-16.954l-0.382-0.536l0.287-0.592l8.519-17.485l0.07,1.098l-17.984-23.948
+                c-0.938-1.253-0.688-3.033,0.565-3.975c1.253-0.941,3.032-0.688,3.974,0.567C231.253,98.094,231.312,98.187,231.368,98.278z"/>
+            </g>
+            <g id="crack-2" opacity="0">
+              <path fill="#FFFFFF" d="M246.148,123.998l4.338,4.919l-0.869-0.5h5.738h0.971l0.162,1.058l1.146,6.843l-0.472-0.723l5.929,5.156
+                c0.146,0.125,0.161,0.353,0.035,0.499c-0.112,0.127-0.294,0.159-0.438,0.08l-6.849-3.831l-0.381-0.213l-0.089-0.534l-1.148-6.894
+                l1.133,0.854h-5.738h-0.525l-0.343-0.294l-4.339-4.971c-0.412-0.479-0.357-1.178,0.117-1.593
+                C245.012,123.439,245.732,123.518,246.148,123.998z"/>
+            </g>
+            <g id="crack-3" opacity="0">
+              <polyline fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-miterlimit="10" points="249.133,161.561 277.038,177.684 
+                283.273,195.428       "/>
+            </g>
+            <g id="crack-4" opacity="0">
+              <polyline fill="#E4A752" points="278.881,182.993 306.377,195.018 315.812,208.65       "/>
+              <path fill="#FFFFFF" d="M279.143,182.396l27.465,12.099l0.019,0.009c0.095,0.041,0.168,0.11,0.222,0.189l8.97,13.957
+                l-9.904-13.312l0.24,0.197l-27.518-11.98c-0.317-0.14-0.466-0.511-0.325-0.83c0.137-0.318,0.51-0.468,0.832-0.33V182.396z"/>
+            </g>
+            
+              <path id="shell-highlight" opacity="0.2" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" enable-background="new    " d="
+              M289.277,78.061c12.832,0,24.598,4.551,33.771,12.131c11.787,9.734,19.297,24.462,19.297,40.941"/>
+          </g>
+          <g id="egg-cracked" opacity="0" cx="303.211" cy="159.49">
+            <path id="egg-whites" fill="#FFFFFF" stroke="#E0E0E0" stroke-miterlimit="10" d="M403.929,164.262
+              c0,33.692-21.846,57.422-46.859,76.211c-17.212,12.928-38.606,41.197-61.794,41.197c-25.559,0-48.94-30.934-66.943-46.347
+              c-22.063-18.89-36.047-45.923-36.047-77.241c0-56.879,46.109-102.991,102.99-102.991c40.21,0,61.826,23.041,78.787,56.644
+              C381.093,125.665,403.929,147.591,403.929,164.262z"/>
+            
+            <defs>
+              <radialGradient id="egg-yolk_1_" cx="-343.854" cy="2231.2139" r="95.6664" fx="-360.3991" fy="2186.1221" gradientTransform="matrix(0.4037 0 0 0.4037 419.5363 -760.5693)" gradientUnits="userSpaceOnUse">
+                <stop  offset="0" style="stop-color:#FFD24E"/>
+                <stop  offset="0.5444" style="stop-color:#FED14C"/>
+                <stop  offset="0.7997" style="stop-color:#FBCC44"/>
+                <stop  offset="0.9946" style="stop-color:#F5C338"/>
+                <stop  offset="1" style="stop-color:#F5C337"/>
+              </radialGradient>
+            </defs>
+            <circle id="egg-yolk" fill="url(#egg-yolk_1_)" cx="282.4" cy="145.206" r="38.621"/>
+            
+              <path opacity="0.75" fill="none" stroke="#FFFFFF" stroke-width="4.9548" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" enable-background="new    " d="
+              M254.079,145.207c0-6.847,2.428-13.126,6.473-18.023c5.194-6.291,13.058-10.299,21.849-10.299"/>
+          </g>
+        </g>
+        <path id="center-egg" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" d="M303.211,159.49"/>
+      </svg>
+    </div>
+  
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="bacon_test.js"></script>
+  </body>
+</html>

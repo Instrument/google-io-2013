@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JsUnit Test Suite</title>
+    <link rel="stylesheet" type="text/css" href="css/jsUnitStyle.css">
+    <script type="text/javascript" src="app/jsUnitCore.js"></script>
+    <script type="text/javascript">
+
+        function coreSuite() {
+            var result = new JsUnitTestSuite();
+            result.addTestPage("pattern_test.html");
+            result.addTestPage("cat_test.html");
+            result.addTestPage("simone_test.html");
+            result.addTestPage("bacon_test.html");
+            result.addTestPage("space_test.html");
+            result.addTestPage("song_test.html");
+            result.addTestPage("synth_test.html");
+            // result.addTestPage("metaball_test.html");
+            result.addTestPage("home_test.html");
+            // result.addTestPage("pinata_test.html");
+            result.addTestPage("bowling_test.html");
+            result.addTestPage("burger_test.html");
+            // result.addTestPage("donut_test.html");
+            result.addTestPage("rocket_test.html");
+            result.addTestPage("eightbit_test.html");
+            result.addTestPage("ascii_test.html");
+            result.addTestPage("pong_test.html");
+            // result.addTestPage("fireplace_test.html");
+            result.addTestPage("index_test.html");
+            return result;
+        }
+
+        function suite() {
+            var newsuite = new JsUnitTestSuite();
+            newsuite.addTestSuite(coreSuite());
+            return newsuite;
+        }
+    </script>
+</head>
+
+<body>
+<h1>JsUnit Test Suite</h1>
+
+<p>This page contains a suite of tests for testing JsUnit.</p>
+</body>
+</html>

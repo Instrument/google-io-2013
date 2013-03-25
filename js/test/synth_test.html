@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+    <head>
+    <title>IO</title>
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../vendor/modernizr-latest.js"></script>
+    <link rel="stylesheet" href="../../css/app.css">
+    <script src="../vendor/jquery-1.6.2.js"></script>
+    <script src="../vendor/Tween.js"></script>
+    <script src="../vendor/paper.js"></script>
+    <script src="../vendor/physics.js"></script>
+    <script src="../vendor/tuna.js"></script>
+    <script src="../app.test.js"></script>
+	</head>
+	<body>
+    <div class="bounds">
+      <svg version="1.1" id="io-synth" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   width="100%" height="100%" viewBox="0 0 776 622.512" enable-background="new 0 0 776 622.512" xml:space="preserve">
+        <rect style="opacity:0.9" id="synth-letter-i" y="111.256" fill="#11A861" width="190" height="400"/>
+        <circle style="opacity:0.9" id="synth-letter-o" fill="transparent" cx="564.5" cy="311.256" r="211.5"/>
+      </svg>
+      <ul id="waveforms">
+        <li class="square on">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96 42.334" enable-background="new 0 0 96 42.334" xml:space="preserve">
+            <line fill="none" stroke="#108241" stroke-miterlimit="10" x1="0" y1="20.797" x2="96" y2="20.797"/>
+            <polyline fill="none" stroke="#108241" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="87,2.797 78.5,2.797 78.5,40.797 61.5,40.797 61.5,2.797 45.5,2.797 45.5,40.797 29.5,40.797 29.5,2.797 13.5,2.797 13.5,20.297 "/>
+          </svg>
+        </li>
+        <li class="saw">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"  viewBox="0 0 96 39.25" enable-background="new 0 0 96 39.25" xml:space="preserve">
+            <line fill="none" stroke="#108241" stroke-miterlimit="10" x1="0" y1="20.042" x2="96" y2="20.042"/>
+            <polyline fill="none" stroke="#108241" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="81.257,18.949 64.237,37.711 64.237,1.539 32.292,37.711 32.292,1.539 14.869,20.824 "/>
+          </svg>
+        </li>
+        <li class="triangle">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96 42.334" enable-background="new 0 0 96 42.334" xml:space="preserve">
+            <line fill="none" stroke="#108241" stroke-miterlimit="10" x1="0" y1="21.932" x2="96" y2="21.932"/>
+            <polyline fill="none" stroke="#108241" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="82.97,21.168 74.481,40.795 57.504,1.541 57.489,1.541 40.512,40.795 23.535,1.541 14.312,22.045 "/>
+          </svg>
+        </li>
+        <li class="sine">
+          <svg version="1.1"" id="Layer_4"" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96 34.014" enable-background="new 0 0 96 34.014" xml:space="preserve">
+            <line fill="none" stroke="#108241" stroke-miterlimit="10" x1="0" y1="20.217" x2="96" y2="20.217"/>
+            <path fill="none" stroke="#108241" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M14.272,19.496c0,0,1.884-17.955,10.113-17.955c8.229,0,9.319,30.934,16.656,30.934c8.526,0,7.372-30.934,16.872-30.934 c8.229,0,9.32,30.934,16.657,30.934c3.804-0.002,5.681-6.16,7.438-12.98"/>
+          </svg>
+        </li>
+      </ul>
+    </div>
+  
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="synth_test.js"></script>
+  </body>
+</html>
