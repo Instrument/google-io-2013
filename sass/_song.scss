@@ -1,0 +1,131 @@
+& {
+  overflow:hidden;
+}
+
+#instruments {
+  @extend %absolute-full;
+  @include transform(translate3d(0, 0, 0));
+  @include user-select(none);
+
+  #instrument-notes {
+    height: 150%;
+    margin: -25% 0 0 -25%;
+    width: 150%;
+  }
+
+  .shape {
+    opacity: 0.75;
+    pointer-events: none;
+    @include transform-origin(50% 50%, false);
+    @include transition(opacity 190ms ease-out);
+  }
+
+  .instrument {
+    cursor: pointer;
+  }
+}
+
+#song-styles {
+  font-size: 21px;
+  left: 0;
+  height: 2.15em;
+  position: absolute;
+  right: 0;
+  text-align: center;
+
+  ul {
+    @include horizontal-list(0);
+    display: inline-block;
+    line-height: 1.5em;
+    overflow: visible;
+
+    li {
+      border-bottom: 0.25em solid transparent;
+      cursor: pointer;
+      margin-left: 25px;
+      @include transition(border-bottom 190ms ease-out);
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &.active {
+        border-bottom-color: #959595;
+      }
+
+      &#drumkit {
+        border-bottom: none;
+        @include border-radius(3px);
+        line-height: 1.75em;
+        margin-left: 2.15em;
+        position: relative;
+        top: -0.476em;
+        width: auto;
+
+        &.active {
+          #drum-number {
+            background-color: #ededed;
+            border-color: #e4e4e4;
+            border-style: solid;
+            border-width: 1px 0 1px 1px;
+          }
+
+          .drum-icon {
+            background-color: #dcdcdc;
+            @include border-radius(0 3px 3px 0);
+          }
+        }
+
+        &.tabbing {
+          .durm.icon {
+            background-color: darken(#dcdcdc, 5%);
+          }
+        }
+
+        .drum-icon {
+          background: transparent image-url('song/drums.svg') no-repeat center center;
+          @include background-size(1.6em auto);
+          @include border-radius(3px);
+          @include hide-text;
+        }
+
+        #drum-number {
+          background-color: transparent;
+          @include border-radius(3px 0 0 3px);
+        }
+
+        span {
+          display: inline-block;
+          float: left;
+          line-height: 2.15em;
+          height: 2.15em;
+          width: 2.15em;
+          @include transition(background-color 190ms ease-out);
+        }
+      }
+    }
+  }
+
+  @include screen($break-medium) {
+    font-size: 19px;
+
+    ul {
+      font-size: smaller;
+      width: 100%;
+
+      li {
+        margin: 0 20px 0 0;
+      }
+
+      li#drumkit {
+        float: right;
+        margin: 0;
+      }
+    }
+  }
+
+}
+
+&.no-touch #song-styles ul li#drumkit .drum-icon:hover {
+  background-color: darken(#dcdcdc, 5%);
+}

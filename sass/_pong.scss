@@ -1,0 +1,43 @@
+#stats {
+  bottom: 20px;
+  position: absolute;
+  right: 20px;
+
+  ul {
+    font-size: 17px;
+    height: 30px;
+    line-height: 30px;
+    margin: 0;
+    padding: 0;
+
+    li {
+      @include float-left;
+      background: #363636;
+      color: #d9d9d9;
+      margin: 0;
+      @include transform(translate3d(0,0,0));
+
+      &:first-child, &#score {
+        @include border-radius(15px 0 0 15px);
+      }
+
+      &#bonus {
+        background: #df493e;
+        color: #fff;
+        margin-right: -12px;
+        padding: 0 20px 0 10px;
+      }
+
+      &#score {
+        padding: 0 15px 0 15px;
+        @include border-radius(15px);
+      }
+
+      // &#lives {
+      //   border-left: 1px solid #5e5e5e;
+      //   @include border-radius(0 15px 15px 0);
+      //   padding: 0 15px 0 10px;
+      // }
+    }
+  }
+}

@@ -1,0 +1,91 @@
+<!doctype html>
+<html class="song-mode">
+  <head>
+    <title>IO</title>
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../vendor/modernizr-latest.js"></script>
+    <link rel="stylesheet" href="../../css/app.css">
+    <script src="../vendor/jquery-1.6.2.js"></script>
+    <script src="../vendor/Tween.js"></script>
+    <script src="../vendor/paper.js"></script>
+    <script src="../vendor/physics.js"></script>
+    <script src="../vendor/tuna.js"></script>
+    <script src="../app.test.js"></script>
+  </head>
+  <body>
+    <div id="instruments" class="bounds">
+      <svg version="1.1" id="instrument-notes" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="-119 -4 850 800" enable-background="new -119 -4 850 800" xml:space="preserve">
+        <g id="note-1" class="instrument">
+          <rect id="rectangle1" class="shape" y="209.518" fill="#11A861" width="122.917" height="258.773"/>
+          <rect id="rectangle2" class="shape" y="209.518" fill="#11A861" width="122.917" height="258.773"/>
+          <rect id="rectangle3" class="shape" y="209.518" fill="#11A861" width="122.917" height="258.773"/>
+          <rect y="209.518" fill="#11A861" width="122.917" height="258.773"/>
+        </g>
+        <g id="note-2" class="instrument">
+          <circle id="circle-yellow1" class="shape" fill="#F6C338" cx="252.951" cy="209.518" r="91.865"/>
+          <circle id="circle-yellow2" class="shape" fill="#F6C338" cx="252.951" cy="209.518" r="91.865"/>
+          <circle id="circle-yellow3" class="shape" fill="#F6C338" cx="252.951" cy="209.518" r="91.865"/>
+          <circle fill="#F6C338" cx="252.951" cy="209.518" r="91.865"/>
+        </g>
+        <g id="note-4" class="instrument">
+          <polygon id="polygon1" class="shape" fill="#DF493E" points="122.917,573.515 157.456,431.671 297.564,390.659 403.138,491.492 368.6,633.336 228.489,674.347"/>
+          <polygon id="polygon2" class="shape" fill="#DF493E" points="122.917,573.515 157.456,431.671 297.564,390.659 403.138,491.492 368.6,633.336 228.489,674.347"/>
+          <polygon id="polygon3" class="shape" fill="#DF493E" points="122.917,573.515 157.456,431.671 297.564,390.659 403.138,491.492 368.6,633.336 228.489,674.347"/>
+          <polygon fill="#DF493E" points="122.917,573.515 157.456,431.671 297.564,390.659 403.138,491.492 368.6,633.336 228.489,674.347"/>
+        </g>
+        <g id="note-3" class="instrument">
+          <circle id="circle-blue1" class="shape" fill="#3777E3" cx="475.174" cy="338.905" r="136.827"/>
+          <circle id="circle-blue2" class="shape" fill="#3777E3" cx="475.174" cy="338.905" r="136.827"/>
+          <circle id="circle-blue3" class="shape" fill="#3777E3" cx="475.174" cy="338.905" r="136.827"/>
+          <circle fill="#3777E3" cx="475.174" cy="338.905" r="136.827"/>
+        </g>
+      </svg>
+      <div id="song-styles">
+        <ul>
+          <li id="lute" class="song-style">Lute</li>
+          <li id="brass" class="song-style">Synth</li>
+          <li id="funky" class="song-style">Funky</li>
+          <li id="drumkit">
+            <span id="drum-number"></span>
+            <span class="drum-icon">Drums</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="song_test.js"></script>
+  </body>
+</html>

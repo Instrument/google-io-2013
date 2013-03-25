@@ -1,0 +1,28 @@
+canvas {
+  z-index: 0;
+}
+
+#waveforms {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  text-align: center;
+  pointer-events: none;
+
+  li {
+    // margin: 10% 0;
+  }
+    li:first-child {
+      // margin-top: 24%;
+    }
+    svg {
+      height: 15%;
+      width: 50%;
+    }
+    .on path, .on polyline, .on line {
+      stroke: #ffffff;
+    }
+
+
+}

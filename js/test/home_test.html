@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <title>IO</title>
+    <meta content="initial-scale=1.0, minimum-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../vendor/modernizr-latest.js"></script>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../../css/app.css">
+    <script src="../vendor/jquery-1.6.2.js"></script>
+    <script src="../vendor/Tween.js"></script>
+    <script src="../vendor/paper.js"></script>
+    <script src="../vendor/physics.js"></script>
+    <script src="../vendor/tuna.js"></script>
+    <script src="../app.test.js"></script>
+  </head>
+  <body>
+    <div id="nav">
+      <h2 id="logo">Google</h2>
+      
+      <div class="plusone-main">
+        <div class="g-plusone" data-size="medium"></div>
+      </div>
+
+      <div id="menu" class="menu-modal"></div>
+      <div id="nav-full">
+        <ul class="nav">
+          <li class="nav-item has-dropdown">
+            <label>Schedule</label>
+            <ol class="nav-dropdown">
+              <li class="dropdown-item">
+                <a href="#">Sessions</a>
+              </li>
+              <li class="dropdown-item">
+                <a href="#">Code Labs</a>
+              </li>
+              <li class="dropdown-item">
+                <a href="#">Agenda</a>
+              </li>
+            </ol>
+          </li>
+          <li class="nav-item">
+            <a href="#">Sandbox</a>
+          </li>
+          <li class="nav-item has-dropdown">
+            <label>Events</label>
+            <ol class="nav-dropdown">
+              <li class="dropdown-item">
+                <a href="#">I/O Extended</a>
+              </li>
+              <li class="dropdown-item">
+                <a href="#">I/O Live</a>
+              </li>
+              <li class="dropdown-item">
+                <a href="#">After Hours</a>
+              </li>
+              <li class="dropdown-item">
+                <a href="#">Community Events</a>
+              </li>
+            </ol>
+          </li>
+          <li class="nav-item has-dropdown">
+            <label>Info</label>
+            <ol class="nav-dropdown">
+              <li class="dropdown-item">
+                <a href="#">About</a>
+              </li>
+              <li class="dropdown-item">
+                <a href="#">Travel</a>
+              </li>
+              <li class="dropdown-item">
+                <a href="#">Registration</a>
+              </li>
+              <li class="dropdown-item">
+                <a href="#">FAQ</a>
+              </li>
+            </ol>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="pattern"></div>
+    <div id="date">May 15-17, 2013 <span>Registration opens on March 13, 2013 at 7:00 AM PDT (GMT-7).</span></div>
+
+    <div id="modal">
+      <div id="dropdown">
+        <a class="item" href="#">About</a>
+        <a class="item" href="#">Travel</a>
+        <a class="item" href="#">Registration</a>
+        <a class="item" href="#">FAQ</a>
+        <div class="item plusone-menu">
+          <div class="g-plusone" data-size="medium"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bounds"></div>
+
+    <script type="text/javascript">
+      (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      })();
+    </script>
+  
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="home_test.js"></script>
+  </body>
+</html>

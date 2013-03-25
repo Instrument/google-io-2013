@@ -1,0 +1,19 @@
+#ascii-canvas, #ascii-canvas2, #ascii-canvas3, .year-mark {
+  display: block;
+  white-space: pre;
+  letter-spacing: -2px;
+  font-family: "courier new";
+  font-size: 16px;
+  line-height: 16px;
+  text-align: left;
+  text-decoration: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  color: #00CC00;
+  cursor: default;
+  @include user-select(none);
+}

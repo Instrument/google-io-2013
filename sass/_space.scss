@@ -1,0 +1,11 @@
+canvas {
+  z-index: 2;
+}
+
+canvas#space-canvas {
+  z-index: 1 !important;
+}
+
+.bounds {
+	background-image: image-url('space/slash+13+space.svg');
+}

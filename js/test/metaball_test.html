@@ -1,0 +1,71 @@
+<!doctype html>
+<html class="metaball-mode">
+  <head>
+    <title>IO</title>
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../vendor/modernizr-latest.js"></script>
+    <link rel="stylesheet" href="../../css/app.css">
+    <script src="../vendor/jquery-1.6.2.js"></script>
+    <script src="../vendor/Tween.js"></script>
+    <script src="../vendor/paper.js"></script>
+    <script src="../vendor/physics.js"></script>
+    <script src="../vendor/tuna.js"></script>
+    <script src="../app.test.js"></script>
+  </head>
+  <body>
+    <canvas id="metaball-canvas"></canvas>
+    <div class="year-mark">
+      <svg version="1.1" id="Layer_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 86 66" enable-background="new 0 0 86 66" xml:space="preserve">
+      <g id="io_logo">
+        <g>
+          <path fill="#C7C7C7" d="M2.12,18.076L19.387,4.504h7.87v58.707h-9.436V25.305c0-4.524,0.106-8.111,0.321-10.762
+            c-0.616,0.643-1.373,1.352-2.27,2.128c-0.896,0.777-3.901,3.239-9.015,7.389L2.12,18.076z"/>
+          <path fill="#C7C7C7" d="M42.301,60.842v-8.393c2.49,1.231,5.126,2.183,7.911,2.852c2.783,0.669,5.461,1.004,8.03,1.004
+            c4.551,0,7.951-0.844,10.199-2.53c2.249-1.687,3.373-4.297,3.373-7.83c0-3.132-1.242-5.435-3.728-6.907
+            c-2.484-1.472-6.385-2.208-11.702-2.208h-5.089v-7.71h5.169c9.35,0,14.024-3.238,14.024-9.718c0-2.516-0.816-4.457-2.449-5.822
+            s-4.042-2.048-7.228-2.048c-2.223,0-4.364,0.315-6.425,0.943c-2.062,0.63-4.497,1.854-7.309,3.675l-4.617-6.576
+            c5.381-3.941,11.631-5.912,18.752-5.912c5.916,0,10.541,1.268,13.873,3.804c3.333,2.536,5,6.033,5,10.491
+            c0,3.726-1.085,6.828-3.253,9.307c-2.168,2.479-5.22,4.147-9.155,5.005v0.323c4.711,0.59,8.178,2.058,10.4,4.404
+            c2.222,2.346,3.333,5.463,3.333,9.351c0,5.648-1.935,10.006-5.803,13.07c-3.869,3.065-9.483,4.598-16.845,4.598
+            C52.26,64.014,46.771,62.957,42.301,60.842z"/>
+        </g>
+      </g>
+      </svg>
+    </div>
+  
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="metaball_test.js"></script>
+  </body>
+</html>

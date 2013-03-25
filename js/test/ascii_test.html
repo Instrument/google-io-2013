@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <title>IO</title>
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../vendor/modernizr-latest.js"></script>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../../css/app.css">
+    <script src="../vendor/jquery-1.6.2.js"></script>
+    <script src="../vendor/Tween.js"></script>
+    <script src="../vendor/paper.js"></script>
+    <script src="../vendor/physics.js"></script>
+    <script src="../vendor/tuna.js"></script>
+    <script src="../app.test.js"></script>
+  </head>
+  <body>
+    <div id="ascii-canvas"></div>
+    <div class="year-mark">13</div>
+  
+    <script>
+      var modeIsReady = false;
+
+      window.onModeReady = function(mode) {
+        modeIsReady = mode;
+      };
+
+      function whenModeIsReady(onReady) {
+        if (modeIsReady) {
+          onReady(modeIsReady);
+        } else {
+          setTimeout(function() {
+            whenModeIsReady(onReady);
+          }, 100);
+        }
+      }
+
+      function setUpPage() {
+        setUpPageStatus = 'running';
+
+        whenModeIsReady(function(m) {
+          mode = m;
+          setUpPageStatus = 'complete';
+        });
+      }
+
+      function tearDownPage() {
+        mode = null;
+      }
+    </script>
+    <script src="app/jsUnitCore.js"></script>
+    <script src="app_test.js"></script>
+    <script src="ascii_test.js"></script>
+  </body>
+</html>
