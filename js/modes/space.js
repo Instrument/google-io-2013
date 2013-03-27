@@ -653,7 +653,6 @@ ww.mode.SpaceMode.prototype.onFrame = function(delta) {
   goog.base(this, 'onFrame', delta);
 
   var i;
-  var ii;
 
   if (!this.canvas_) { return; }
 

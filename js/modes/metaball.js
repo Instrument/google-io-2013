@@ -109,7 +109,7 @@ ww.mode.MetaBallMode.prototype.getVector_ = function(radians, length) {
  * @param {Object} ball1 The first ball to compare.
  * @param {Object} ball2 The second ball to compare.
  * @param {Number} v The extremity of the curves generated.
- * @param {Number} handleLenRate I have no idea what this does.
+ * @param {Number} handleLenRate Affects drawing.
  * @param {Number} maxDistance The distance at which ball connections break.
  * @return {Object} path The path created between each ball.
  * @private
