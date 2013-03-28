@@ -1,3 +1,53 @@
+label {
+  font: 12px/22px "Arial";
+}
+
 .bounds {
   background-image: image-url('eightbit/slash+13+8bit.svg');
+}
+
+#pan-label {
+  position: absolute;
+  z-index: 1000;
+  top: 20px;
+  left: 20px;
+}
+
+#pan {
+	position: absolute;
+  z-index: 1000;
+  top: 40px;
+  left: 20px;
+  cursor: pointer;
+}
+
+#pixel-label {
+  position: absolute;
+  z-index: 1000;
+  top: 70px;
+  left: 20px;
+}
+
+#pixel {
+  position: absolute;
+  z-index: 1000;
+  top: 90px;
+  left: 20px;
+  cursor: pointer;
+}
+
+#demo-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 500;
+}
+
+#canvas-wrapper {
+  position: absolute;
+  height: 100%;
+  overflow: hidden;
+  border-right: 1px solid #5096ff;
 }

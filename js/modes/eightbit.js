@@ -15,7 +15,7 @@ ww.mode.EightBitMode = function(containerElem, assetPrefix) {
     false);
 
   // Prep paperjs
-  this.getPaperCanvas_(true);
+  this.getPaperCanvas_();
 
   this.frontmostRequestsRetina_ = (window.devicePixelRatio > 1);
   this.frontmostWantsRetina_ = this.frontmostRequestsRetina_;
@@ -169,6 +169,8 @@ ww.mode.EightBitMode.prototype.init = function() {
   // Create physics world to support stepPhysics.
   this.world_ = this.getPhysicsWorld_();
 
+  this.pixelScale_ = $('#pixel')[0].value / 100;
+
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
     new paper['Point'](this.oX, this.oY);
@@ -188,20 +190,23 @@ ww.mode.EightBitMode.prototype.init = function() {
 ww.mode.EightBitMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
+  $('.code, .back').css('display', 'none');
+
   this.$canvas_ = $(this.canvas_);
+  var demo = $("#demo-wrapper");
 
   var self = this;
 
   // Check to see if the I or O were clicked.
   var evt = ww.util.getPointerEventNames('down', this.name_);
-  this.$canvas_.bind(evt, function(e) {
+  demo.bind(evt, function(e) {
     e.preventDefault();
     e.stopPropagation();
 
     self.lastClick_ = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
 
-    if (self.lastClick_['getDistance'](self.paperO_['position']) < self.oRad) {
+    if (self.lastClick_['getDistance'](self.paperO_['position']) < self.oRad * .75) {
       if (self.hasFocus) {
         self.activateO();
       }
@@ -220,24 +225,36 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
 
   // Check to see if the I or O were moused over.
   var evt2 = ww.util.getPointerEventNames('move', this.name_);
-  this.$canvas_.bind(evt2, function(e) {
+  demo.bind(evt2, function(e) {
     e.preventDefault();
     e.stopPropagation();
 
     var lastPos = new paper['Point'](self.getCoords(e)['x'],
       self.getCoords(e)['y']);
 
-    if (lastPos['getDistance'](self.paperO_['position']) < self.oRad ||
+    if (lastPos['getDistance'](self.paperO_['position']) < self.oRad * .75 ||
       Math.abs(lastPos['x'] - self.paperI_['position']['x']) <
       self.iWidth / 2 && Math.abs(lastPos['y'] -
       self.paperI_['position']['y']) <
       self.iHeight / 2) {
       if (self.hasFocus) {
         self.canvas_.style.cursor = 'pointer';
+        demo[0].style.cursor = 'pointer';
       }
     } else {
       self.canvas_.style.cursor = 'default';
+      demo[0].style.cursor = 'default';
     }
+  });
+
+  $("#pan").bind('change', function(e) {
+    $("#canvas-wrapper").css({
+      "width": self.width_ * ($(this)[0].value / 100) + "px"
+    });
+  });
+
+  $("#pixel").bind('change', function(e) {
+    self.pixelScale_ = $(this)[0].value / 100;
   });
 };
 
@@ -270,9 +287,9 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   // Draw O.
   this.drawO_();
 
-  if (this.height_ * 6 < this.width_) {
+  /*if (this.height_ * 6 < this.width_) {
     this.playSound('error.mp3');
-  }
+  }*/
 
   var scale = 1;
   if (this.frontmostWantsRetina_) {
@@ -285,6 +302,10 @@ ww.mode.EightBitMode.prototype.onResize = function(redraw) {
   $(this.canvas_).css({
     'width': this.width_,
     'height': this.height_
+  });
+
+  $("#canvas-wrapper").css({
+    "width": this.width_ * ($("#pan")[0].value / 100) + "px"
   });
 
   if (redraw) {
@@ -392,11 +413,13 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
 
   var size = ~~(this.width_ * 0.0625);
 
-  if (this.height_ * 6 < this.width_) {
+  /*if (this.height_ * 6 < this.width_) {
     size /= 8;
-  }
+  }*/
 
   var increment = Math.min(Math.round(size * 80) / 4, 980);
+
+  size *= this.pixelScale_;
 
   paper = this.paperScope_;
 

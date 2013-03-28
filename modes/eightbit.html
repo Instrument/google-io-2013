@@ -15,6 +15,17 @@
   </head>
   <body>
     <div class="bounds"></div>
-    <canvas id="eightbit-canvas"></canvas>
+
+    <div id="demo-wrapper">
+      <div id="canvas-wrapper">
+        <canvas id="eightbit-canvas"></canvas>
+      </div>
+    </div>
+
+    <label id="pan-label" for="pan">Mask</label>
+    <input id="pan" type="range" value="65" min="0" max="100" />
+
+    <label id="pixel-label" for="pixel">Pixel scale</label>
+    <input id="pixel" type="range" value="100" min="75" max="300" />
   </body>
 </html>
