@@ -10,13 +10,16 @@ label {
   background-image: image-url('eightbit/slash+13+8bit.svg');
 }
 
-.group-sliders {
-  background: rgba(249, 249, 249, 0.75);
+#group-sliders {
   position: absolute;
   z-index: 1000;
   left: 0;
   top: 0;
   padding: 20px;
+
+  .kill-on & {
+    background: rgba(249, 249, 249, 0.75);
+  }
 }
 
 #pan-label, #pixel-label, #pan, #pixel {
@@ -37,7 +40,10 @@ label {
   top: 0;
   right: 0;
   padding: 20px;
-  background: rgba(249, 249, 249, 0.75);
+  
+  .kill-on & {
+    background: rgba(249, 249, 249, 0.75);
+  }
 }
 
 #demo-wrapper {

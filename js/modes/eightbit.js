@@ -256,6 +256,8 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   });
 
   $("#killscreen").bind('change', function(e) {
+    $("body").toggleClass('kill-on');
+
     if ($(this)[0].checked) {
       self.playSound('error.mp3');
     }
