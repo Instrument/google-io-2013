@@ -254,6 +254,12 @@ ww.mode.EightBitMode.prototype.didFocus = function() {
   $("#pixel").bind('change', function(e) {
     self.pixelScale_ = $(this)[0].value / 100;
   });
+
+  $("#killscreen").bind('change', function(e) {
+    if ($(this)[0].checked) {
+      self.playSound('error.mp3');
+    }
+  });
 };
 
 /**
@@ -414,6 +420,10 @@ ww.mode.EightBitMode.prototype.drawPixels_ = function() {
   /*if (this.height_ * 6 < this.width_) {
     size /= 8;
   }*/
+
+  if ($('#killscreen')[0].checked) {
+    size /= 8;
+  }
 
   var increment = Math.min(Math.round(size * 80) / 4, 980);
 

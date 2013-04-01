@@ -992,31 +992,30 @@ canvas {
 .eightbit-mode .bounds {
   background-image: url('../img/eightbit/slash+13+8bit.svg'); }
 /* line 13, ../sass/_eightbit.scss */
-.eightbit-mode #pan-label {
+.eightbit-mode .group-sliders {
+  background: rgba(249, 249, 249, 0.75);
   position: absolute;
   z-index: 1000;
-  top: 20px;
-  left: 20px; }
-/* line 20, ../sass/_eightbit.scss */
-.eightbit-mode #pan {
-  position: absolute;
-  z-index: 1000;
-  top: 40px;
-  left: 20px;
+  left: 0;
+  top: 0;
+  padding: 20px; }
+/* line 22, ../sass/_eightbit.scss */
+.eightbit-mode #pan-label, .eightbit-mode #pixel-label, .eightbit-mode #pan, .eightbit-mode #pixel {
+  display: block; }
+/* line 26, ../sass/_eightbit.scss */
+.eightbit-mode #pan, .eightbit-mode #pixel {
   cursor: pointer; }
-/* line 28, ../sass/_eightbit.scss */
+/* line 30, ../sass/_eightbit.scss */
 .eightbit-mode #pixel-label {
+  margin-top: 10px; }
+/* line 34, ../sass/_eightbit.scss */
+.eightbit-mode #group-killscreen {
   position: absolute;
   z-index: 1000;
-  top: 70px;
-  left: 20px; }
-/* line 35, ../sass/_eightbit.scss */
-.eightbit-mode #pixel {
-  position: absolute;
-  z-index: 1000;
-  top: 90px;
-  left: 20px;
-  cursor: pointer; }
+  top: 0;
+  right: 0;
+  padding: 20px;
+  background: rgba(249, 249, 249, 0.75); }
 /* line 43, ../sass/_eightbit.scss */
 .eightbit-mode #demo-wrapper {
   position: absolute;

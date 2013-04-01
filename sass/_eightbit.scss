@@ -10,34 +10,34 @@ label {
   background-image: image-url('eightbit/slash+13+8bit.svg');
 }
 
-#pan-label {
+.group-sliders {
+  background: rgba(249, 249, 249, 0.75);
   position: absolute;
   z-index: 1000;
-  top: 20px;
-  left: 20px;
+  left: 0;
+  top: 0;
+  padding: 20px;
 }
 
-#pan {
-	position: absolute;
-  z-index: 1000;
-  top: 40px;
-  left: 20px;
+#pan-label, #pixel-label, #pan, #pixel {
+  display: block;
+}
+
+#pan, #pixel {
   cursor: pointer;
 }
 
 #pixel-label {
-  position: absolute;
-  z-index: 1000;
-  top: 70px;
-  left: 20px;
+  margin-top: 10px;
 }
 
-#pixel {
+#group-killscreen {
   position: absolute;
   z-index: 1000;
-  top: 90px;
-  left: 20px;
-  cursor: pointer;
+  top: 0;
+  right: 0;
+  padding: 20px;
+  background: rgba(249, 249, 249, 0.75);
 }
 
 #demo-wrapper {
