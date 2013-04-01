@@ -1,0 +1,21 @@
+label {
+  font: 12px/22px "Arial";
+}
+
+.code, .back {
+  display: none;
+}
+
+#mask-group, #gradient-group {
+	position: absolute;
+  z-index: 1000;
+  left: 20px
+}
+
+#mask-group {
+  top: 20px;
+}
+
+#gradient-group {
+  top: 40px;
+}

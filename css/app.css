@@ -938,6 +938,24 @@ canvas {
   .synth-mode #waveforms .on path, .synth-mode #waveforms .on polyline, .synth-mode #waveforms .on line {
     stroke: #ffffff; }
 
+/* line 1, ../sass/_metaball.scss */
+.metaball-mode label {
+  font: 12px/22px "Arial"; }
+/* line 5, ../sass/_metaball.scss */
+.metaball-mode .code, .metaball-mode .back {
+  display: none; }
+/* line 9, ../sass/_metaball.scss */
+.metaball-mode #mask-group, .metaball-mode #gradient-group {
+  position: absolute;
+  z-index: 1000;
+  left: 20px; }
+/* line 15, ../sass/_metaball.scss */
+.metaball-mode #mask-group {
+  top: 20px; }
+/* line 19, ../sass/_metaball.scss */
+.metaball-mode #gradient-group {
+  top: 40px; }
+
 /* line 195, ../sass/_mode.scss */
 .ascii-mode {
   background: #000;
@@ -968,35 +986,38 @@ canvas {
 .eightbit-mode label {
   font: 12px/22px "Arial"; }
 /* line 5, ../sass/_eightbit.scss */
+.eightbit-mode .code, .eightbit-mode .back {
+  display: none; }
+/* line 9, ../sass/_eightbit.scss */
 .eightbit-mode .bounds {
   background-image: url('../img/eightbit/slash+13+8bit.svg'); }
-/* line 9, ../sass/_eightbit.scss */
+/* line 13, ../sass/_eightbit.scss */
 .eightbit-mode #pan-label {
   position: absolute;
   z-index: 1000;
   top: 20px;
   left: 20px; }
-/* line 16, ../sass/_eightbit.scss */
+/* line 20, ../sass/_eightbit.scss */
 .eightbit-mode #pan {
   position: absolute;
   z-index: 1000;
   top: 40px;
   left: 20px;
   cursor: pointer; }
-/* line 24, ../sass/_eightbit.scss */
+/* line 28, ../sass/_eightbit.scss */
 .eightbit-mode #pixel-label {
   position: absolute;
   z-index: 1000;
   top: 70px;
   left: 20px; }
-/* line 31, ../sass/_eightbit.scss */
+/* line 35, ../sass/_eightbit.scss */
 .eightbit-mode #pixel {
   position: absolute;
   z-index: 1000;
   top: 90px;
   left: 20px;
   cursor: pointer; }
-/* line 39, ../sass/_eightbit.scss */
+/* line 43, ../sass/_eightbit.scss */
 .eightbit-mode #demo-wrapper {
   position: absolute;
   top: 0;
@@ -1004,7 +1025,7 @@ canvas {
   width: 100%;
   height: 100%;
   z-index: 500; }
-/* line 48, ../sass/_eightbit.scss */
+/* line 52, ../sass/_eightbit.scss */
 .eightbit-mode #canvas-wrapper {
   position: absolute;
   height: 100%;

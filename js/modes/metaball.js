@@ -38,18 +38,9 @@ goog.inherits(ww.mode.MetaBallMode, ww.mode.Core);
  * @private
  */
 ww.mode.MetaBallMode.prototype.drawI_ = function() {
-    // Set I's initial dimensions.
-  this.iWidth_ = this.ratioParent_ * 0.175;
-  this.iHeight_ = this.iWidth_ * 2.12698413;
-
-  // Set coordinates for I's upper left corner.
-  this.iX_ = this.screenCenterX_ - this.iWidth_ -
-    (this.ratioParent_ * 0.15833333);
-  this.iY_ = this.screenCenterY_ - this.iHeight_ / 2;
-
   this.ctx_.beginPath();
 
-  this.ctx_.fillRect(this.iX_, this.iY_, this.iWidth_, this.iHeight_);
+  this.ctx_.fillRect(this.iX, this.iY, this.iWidth, this.iHeight);
 
   this.ctx_.stroke();
 };
@@ -61,9 +52,9 @@ ww.mode.MetaBallMode.prototype.drawI_ = function() {
  */
 ww.mode.MetaBallMode.prototype.drawGradients_ = function(target) {
   if (target != this.world_.particles[0]) {
-    target.radius = this.oRad_ / 2;
+    target.radius = this.oRad / 2;
   } else {
-    target.radius = this.oRad_;
+    target.radius = this.oRad;
   }
 
   this.gctx_.save();
@@ -212,43 +203,6 @@ ww.mode.MetaBallMode.prototype.drawConnections_ = function(paths) {
   }
 };
 
-/**
- * Function to create and draw Slash.
- * @private
- */
-ww.mode.MetaBallMode.prototype.drawSlash_ = function() {
-  // Determine the slash's start and end coordinates based on I and O sizes.
-  this.slashStartX_ = this.screenCenterX_ + (this.ratioParent_ * 0.02777778);
-  this.slashStartY_ = this.screenCenterY_ - (this.iHeight_ / 2) -
-    (this.iHeight_ * 0.09722222);
-
-  this.slashEndX_ = this.iX_ + this.iWidth_;
-  this.slashEndY_ = this.screenCenterY_ + (this.iHeight_ / 2) +
-    (this.iHeight_ * 0.09722222);
-
-  this.ctx_.lineWidth = this.ratioParent_ * 0.01388889;
-
-  this.ctx_.beginPath();
-
-  this.ctx_.moveTo(this.slashStartX_, this.slashStartY_);
-  this.ctx_.lineTo(this.slashEndX_, this.slashEndY_);
-
-  this.ctx_.stroke();
-};
-
-/**
- * Function to size the '13' svg respective to the O size.
- * @param {Object} el The dom element containing the '13' svg.
- * @private
- */
-ww.mode.MetaBallMode.prototype.draw13_ = function(el) {
-  el.css({
-    'width': this.oRad_ * 0.33333333,
-    'height': this.oRad_ * 0.25555556,
-    'left': this.oX_ + (this.oRad_ * 0.38888889),
-    'top': this.oY_ - this.oRad_ - (this.oRad_ * 0.37777778)
-  });
-};
 
 /**
  * Function to initialize the current mode.
@@ -256,6 +210,8 @@ ww.mode.MetaBallMode.prototype.draw13_ = function(el) {
  */
 ww.mode.MetaBallMode.prototype.init = function() {
   goog.base(this, 'init');
+
+  this.setPaperShapeData();
 
   this.sources_ = [];
   this.gainNodes_ = [];
@@ -270,8 +226,7 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.ballCount_ = this.world_.particles.length;
 
   // Set O's radius.
-  this.oRad_ = this.ratioParent_ * 0.1944444444;
-  this.world_.particles[0].radius = this.oRad_;
+  this.world_.particles[0].radius = this.oRad;
 
   // If paper objects already exist, remove them.
   if (this.oPaths_) {
@@ -286,13 +241,7 @@ ww.mode.MetaBallMode.prototype.init = function() {
 
   this.oPaths_ = [];
 
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
-
-  this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
-
-  this.oPaths_.push(new paper['Path']['Circle'](this.oCenter_, this.oRad_));
+  this.oPaths_.push(new paper['Path']['Circle'](this.oCenter, this.oRad));
   // Create an array of colors.
   this.colors_ = [
     'rgba(210, 59, 48,',
@@ -368,8 +317,8 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
         if (activeBall === self.world_.particles[0] && self.ballCount_ < 4) {
           self.world_.particles.push(new Particle());
 
-          self.oPaths_.push(new paper['Path']['Circle'](self.oCenter_,
-            self.oRad_ / 2));
+          self.oPaths_.push(new paper['Path']['Circle'](self.oCenter,
+            self.oRad / 2));
 
           var newBall = self.world_.particles[self.world_.particles.length - 1];
           activeBall = newBall;
@@ -387,7 +336,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
           self.ballCount_ = self.world_.particles.length;
 
-          if (self.wantsAudio_) {
+          /*if (self.wantsAudio_) {
             var aCtx = self.getAudioContext_();
 
             self.sources_.push(aCtx.createOscillator());
@@ -400,7 +349,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
 
             self.sources_[self.sources_.length - 1].noteOn(0);
             self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
-          }
+          }*/
         } else if (activeBall != self.world_.particles[0]) {
           // If any other existing ball is clicked, reset it's velocity.
           activeBall['fixed'] = true;
@@ -472,39 +421,22 @@ ww.mode.MetaBallMode.prototype.onResize = function(redraw) {
     this.gcanvas_.height = this.height_;
   }
 
-  this.ratioParent_ = Math.min(this.width_, this.height_);
+  this.setPaperShapeData();
 
-  // Recalculate the center of the screen based on the new window size.
-  this.screenCenterX_ = this.width_ / 2;
-  this.screenCenterY_ = this.height_ / 2;
+  this.world_.particles[0].radius = this.oRad;
+  this.oPaths_[0]['remove']();
+  this.oPaths_[0] = new paper['Path']['Circle'](this.oCenter, this.oRad);
 
-  // Set O's radius.
-  this.oRad_ = this.ratioParent_ * 0.1944444444;
-
-  if (this.oPaths_[0]) {
-    this.oPaths_[0]['scale'](this.oRad_ * 2 /
-    this.oPaths_[0]['bounds']['height']);
-
+  if (this.oPaths_.length > 1) {
     for (var i = 1; i < this.oPaths_.length; i++) {
-      if (this.oPaths_[i]) {
-        this.oPaths_[i]['scale']((this.oRad_ * 2 /
-          this.oPaths_[i]['bounds']['height']) / 2);
-      }
+      this.oPaths_[i]['remove']();
+      this.oPaths_[i] =
+        new paper['Path']['Circle'](this.oCenter, this.oRad / 2);
     }
   }
 
-  // Set O's coordinates.
-  this.oX_ = this.screenCenterX_ + this.oRad_;
-  this.oY_ = this.screenCenterY_;
-
-  this.oCenter_ = new paper['Point'](this.oX_, this.oY_);
-
   // Set the size of the ball radial gradients.
-  this.gradSize_ = this.oRad_ * 4;
-
-  if ($('.year-mark')) {
-   this.draw13_($('.year-mark'));
-  }
+  this.gradSize_ = this.oRad * 4;
 
   this.redraw();
 };
@@ -517,8 +449,8 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
   goog.base(this, 'stepPhysics', delta);
 
   // Make sure the O does not move.
-  this.world_.particles[0].pos.x = this.oX_;
-  this.world_.particles[0].pos.y = this.oY_;
+  this.world_.particles[0].pos.x = this.oX;
+  this.world_.particles[0].pos.y = this.oY;
 
   var i;
 
@@ -572,7 +504,7 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
     }
   }
 
-  if (this.wantsAudio_) {
+  /*if (this.wantsAudio_) {
     // Play each note if its corresponding ball exists.
     for (i = 0; i < this.sources_.length; i++) {
       if (this.world_.particles[i + 1]) {
@@ -581,14 +513,18 @@ ww.mode.MetaBallMode.prototype.stepPhysics = function(delta) {
         this.sources_[i].detune.value = this.notes_[i]['detune'];
       }
     }
-  }
+  }*/
 
   // Draw the paper objects to the same positions as the coffee physics objects.
   for (i = 0; i < this.oPaths_.length; i++) {
     if (this.oPaths_[i] && this.world_.particles[i]) {
       this.oPaths_[i]['position']['x'] = this.world_.particles[i].pos.x;
       this.oPaths_[i]['position']['y'] = this.world_.particles[i].pos.y;
-      this.oPaths_[i]['fillColor'] = 'white';
+      if (!$("#mask-check")[0].checked && !$("#gradient-check")[0].checked) {
+        this.oPaths_[i]['fillColor'] = 'black';
+      } else {
+        this.oPaths_[i]['fillColor'] = 'white';
+      }
     }
   }
 
@@ -610,8 +546,7 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
   this.ctx_.clearRect(0, 0, this.canvas_.width + 1, this.canvas_.height + 1);
   this.gctx_.clearRect(0, 0, this.gcanvas_.width + 1, this.gcanvas_.height + 1);
 
-  this.ctx_.fillStyle = '#e5e5e5';
-  this.ctx_.strokeStyle = '#e5e5e5';
+  this.ctx_.fillStyle = '#d9d9d9';
 
   this.drawI_();
 
@@ -620,12 +555,12 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
     this.drawGradients_(this.world_.particles[i]);
   }
 
-  this.drawSlash_();
-
   this.pctx_.save();
 
   // Make the ball canvas the source of the mask.
-  this.pctx_.globalCompositeOperation = 'source-atop';
+  if ($("#mask-check")[0].checked) {
+    this.pctx_.globalCompositeOperation = 'source-atop';
+  }
 
   // Set the blend mode for the gradients to lighter to make it look cool.
   // this.gctx_.globalCompositeOperation = 'lighter';
@@ -633,11 +568,23 @@ ww.mode.MetaBallMode.prototype.onFrame = function(delta) {
 
   // Draw the ball canvas onto the gradient canvas to complete the mask.
   if (0 < this.gcanvas_.height) {
-    this.pctx_.drawImage(this.gcanvas_, 0, 0);
+    if ($("#gradient-check")[0].checked) {
+      this.pctx_.drawImage(this.gcanvas_, 0, 0);
+    } else {
+      // this.ctx_.drawImage(this.gcanvas_, 0, 0);
+    }
   }
 
   if (0 < this.paperCanvas_.height) {
-    this.ctx_.drawImage(this.paperCanvas_, 0, 0);
+    if ($("#mask-check")[0].checked) {
+      this.ctx_.drawImage(this.paperCanvas_, 0, 0);
+    } else if (!$("#mask-check")[0].checked &&
+      $("#gradient-check")[0].checked) {
+      
+      this.ctx_.drawImage(this.gcanvas_, 0, 0);
+    } else {
+      this.ctx_.drawImage(this.paperCanvas_, 0, 0);
+    }
   }
 
   this.pctx_.restore();

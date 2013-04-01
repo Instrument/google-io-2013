@@ -190,8 +190,6 @@ ww.mode.EightBitMode.prototype.init = function() {
 ww.mode.EightBitMode.prototype.didFocus = function() {
   goog.base(this, 'didFocus');
 
-  $('.code, .back').css('display', 'none');
-
   this.$canvas_ = $(this.canvas_);
   var demo = $("#demo-wrapper");
 
