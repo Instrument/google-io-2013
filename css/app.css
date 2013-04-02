@@ -245,8 +245,9 @@ canvas {
   display: block; }
 /* line 18, ../sass/_home.scss */
 .home-mode #group-sliders input {
-  margin-bottom: 5px; }
-/* line 22, ../sass/_home.scss */
+  margin-bottom: 5px;
+  cursor: pointer; }
+/* line 23, ../sass/_home.scss */
 .home-mode #group-checks {
   left: auto;
   right: 0; }
