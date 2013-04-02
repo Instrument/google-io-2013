@@ -15,7 +15,7 @@ label {
   z-index: 1000;
   left: 0;
   top: 0;
-  padding: 20px;
+  padding: 10px 20px;
 
   .kill-on & {
     background: rgba(249, 249, 249, 0.75);
@@ -31,7 +31,7 @@ label {
 }
 
 #pixel-label {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 #group-killscreen {
@@ -39,8 +39,8 @@ label {
   z-index: 1000;
   top: 0;
   right: 0;
-  padding: 20px;
-  
+  padding: 10px 20px;
+
   .kill-on & {
     background: rgba(249, 249, 249, 0.75);
   }

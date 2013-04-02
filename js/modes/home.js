@@ -135,9 +135,10 @@ ww.mode.HomeMode.prototype.goToMode_ = function(key) {
 
 /**
  * Function to create and draw I.
+ * @param {Boolean} selected Checks if path points should be displayed.
  * @private
  */
-ww.mode.HomeMode.prototype.drawI_ = function() {
+ww.mode.HomeMode.prototype.drawI_ = function(selected) {
   if (this.paperI_) {
     this.paperI_['remove']();
   }
@@ -148,6 +149,10 @@ ww.mode.HomeMode.prototype.drawI_ = function() {
   this.paperI_ = new paper['Path']['Rectangle'](letterI);
 
   this.paperI_['closed'] = true;
+
+  if (selected) {
+    this.paperI_['fullySelected'] = true;
+  }
 
   this.paperI_['vectors'] = [];
 
@@ -187,22 +192,36 @@ ww.mode.HomeMode.prototype.fillI_ = function() {
   // Create the gradient color:
   var gradientColor = new paper['GradientColor'](gradient, from, to);
 
-  this.paperI_['fillColor'] = gradientColor;
+  if (this.fillShapes_) {
+    this.paperI_['fillColor'] = gradientColor;
+  } else {
+    this.paperI_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
+    if (!this.showPoints_) {
+      this.paperI_['strokeColor'] = 'black';
+    }
+  }
 };
 
 /**
  * Function to create and draw O.
+ * @param {Boolean} selected Checks if path points should be displayed.
  * @private
  */
-ww.mode.HomeMode.prototype.drawO_ = function() {
+ww.mode.HomeMode.prototype.drawO_ = function(selected) {
   if (this.paperO_) {
     this.paperO_['remove']();
   }
 
-  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter, 6,
+  this.paperO_ = new paper['Path']['RegularPolygon'](this.oCenter, this.totalPoints_,
     this.oRad);
 
-  this.paperO_['smooth']();
+  if (this.smoothOn_) {
+    this.paperO_['smooth']();
+  }
+
+  if (selected) {
+    this.paperO_['fullySelected'] = true;
+  }
 
   this.paperO_['vectors'] = [];
 
@@ -242,7 +261,14 @@ ww.mode.HomeMode.prototype.fillO_ = function() {
   // Create the gradient color:
   var gradientColor = new paper['GradientColor'](gradient, from, to);
 
-  this.paperO_['fillColor'] = gradientColor;
+  if (this.fillShapes_) {
+    this.paperO_['fillColor'] = gradientColor;
+  } else {
+    this.paperO_['fillColor'] = new paper['RgbColor'](0, 0, 0, 0);
+    if (!this.showPoints_) {
+      this.paperO_['strokeColor'] = 'black';
+    }
+  }
 };
 
 /**
@@ -260,6 +286,12 @@ ww.mode.HomeMode.prototype.init = function() {
 
   // Prep paperjs
   this.getPaperCanvas_();
+
+  this.totalPoints_ = $("#points")[0].value;
+  this.bounceDistance_ = $("#bounce")[0].value;
+  this.smoothOn_ = true;
+  this.showPoints_ = false;
+  this.fillShapes_ = true;
 
   // Variable to store the screen coordinates of the last click/tap/touch.
   this.lastClick_ =
@@ -355,6 +387,45 @@ ww.mode.HomeMode.prototype.didFocus = function() {
       document.body.style.cursor = 'default';
     }
   });
+
+  $("#points").bind('change', function(e) {
+    self.totalPoints_ = $(this)[0].value;
+    self.drawO_(self.showPoints_);
+  });
+
+  $("#bounce").bind('change', function(e) {
+    self.bounceDistance_ = $(this)[0].value;
+  });
+
+  $("#smooth-paths").bind('change', function(e) {
+    if ($(this)[0].checked) {
+      self.smoothOn_ = true;
+    } else {
+      self.smoothOn_ = false;
+    }
+
+    self.drawO_(self.showPoints_);
+  });
+
+  $("#show-points").bind('change', function(e) {
+    if ($(this)[0].checked) {
+      self.showPoints_ = true;
+    } else {
+      self.showPoints_ = false;
+    }
+    self.drawO_(self.showPoints_);
+    self.drawI_(self.showPoints_);
+  });
+
+  $("#fill-shapes").bind('change', function(e) {
+    if ($(this)[0].checked) {
+      self.fillShapes_ = true;
+    } else {
+      self.fillShapes_ = false;
+    }
+    self.drawO_(self.showPoints_);
+    self.drawI_(self.showPoints_);
+  });
 };
 
 /**
@@ -416,8 +487,10 @@ ww.mode.HomeMode.prototype.pushPoints_ = function(path, clickPoint, speed) {
       distance = Math.max(0, this.iWidth - vector['length']);
     }
 
-    point['length'] += Math.max(distance, 20);
+    point['length'] += Math.max(distance * this.bounceDistance_,
+      this.bounceDistance_ * 10);
     point['velocity'] += speed;
+    point['velocity'] = Math.min(this.bounceDistance_, point['velocity']);
   }
 };
 
@@ -457,7 +530,9 @@ ww.mode.HomeMode.prototype.updatePoints_ = function(path) {
 
     if (path === this.paperO_) {
       this.paperO_['segments'][i]['point'] = newPoint['add'](this.oCenter);
-      this.paperO_['smooth']();
+      if (this.smoothOn_) {
+        this.paperO_['smooth']();
+      }
     } else {
       this.paperI_['segments'][i]['point'] = newPoint['add'](this.iCenter);
     }
