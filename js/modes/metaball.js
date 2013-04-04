@@ -221,12 +221,21 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.world_ = this.getPhysicsWorld_();
   this.world_.viscosity = 0;
 
-  this.world_.particles.push(new Particle());
+  this.world_.particles.push(new Particle(), new Particle(), new Particle());
 
   this.ballCount_ = this.world_.particles.length;
 
+  var attraction = new Attraction(this.world_.particles[0].pos);
+  this.world_.particles[1].behaviours.push(attraction);
+  this.world_.particles[2].behaviours.push(attraction);
+
+  this.world_.particles[1].mass = Math.random() * (255 - 1) + 1;
+  this.world_.particles[2].mass = Math.random() * (255 - 1) + 1;
+
   // Set O's radius.
   this.world_.particles[0].radius = this.oRad;
+  this.world_.particles[1].radius = this.oRad / 2;
+  this.world_.particles[2].radius = this.oRad / 2;
 
   // If paper objects already exist, remove them.
   if (this.oPaths_) {
@@ -242,6 +251,12 @@ ww.mode.MetaBallMode.prototype.init = function() {
   this.oPaths_ = [];
 
   this.oPaths_.push(new paper['Path']['Circle'](this.oCenter, this.oRad));
+  this.oPaths_.push(new paper['Path']['Circle'](this.iCenter, this.oRad / 2));
+
+  var tempPoint =
+    new paper['Point'](this.iCenter['x'] + 100, this.iCenter['y'] - 100);
+  this.oPaths_.push(new paper['Path']['Circle'](tempPoint, this.oRad / 2));
+
   // Create an array of colors.
   this.colors_ = [
     'rgba(210, 59, 48,',
@@ -252,6 +267,15 @@ ww.mode.MetaBallMode.prototype.init = function() {
 
   // Set the main O color.
   this.world_.particles[0]['color'] = this.colors_[0];
+  this.world_.particles[1]['color'] = this.colors_[1];
+  this.world_.particles[2]['color'] = this.colors_[2];
+
+  this.world_.particles[1].pos.x = this.iCenter['x'];
+  this.world_.particles[1].pos.y = this.iCenter['y'];
+
+  this.world_.particles[2].pos.x = tempPoint['x'];
+  this.world_.particles[2].pos.y = tempPoint['y'];
+
 
   // Gets the centerpoint of the viewport.
   this.screenCenterX_ = this.width_ / 2;
@@ -287,7 +311,7 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
   this.gctx_ = this.gcanvas_.getContext('2d');
 
   // Make sure the ball count is at 1 when focused/refocused.
-  this.ballCount_ = 1;
+  this.ballCount_ = 3;
 
   var self = this;
 
