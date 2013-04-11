@@ -22,7 +22,7 @@ rake compile
 
 * [Thomas Reynolds](https://github.com/tdreyno)
 * Brian Hefter
-* Stefanie Hatcher
+* [Stefanie Hatcher](https://github.com/stefhatcher)
 * Paul Farning
 
 
