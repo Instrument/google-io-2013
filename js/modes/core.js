@@ -638,7 +638,7 @@ ww.mode.Core.prototype.fetchSoundBufferFromURL_ = function(url, gotSound) {
     audioContext.decodeAudioData(request.response, function(buffer) {
       self.soundBuffersFromURL_[url] = buffer;
       gotSound(self.soundBuffersFromURL_[url]);
-    });
+    }, function() {self.wantsAudio_ = false; gotSound();});
   };
   request.send();
 };
