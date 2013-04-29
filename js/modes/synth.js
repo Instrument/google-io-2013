@@ -36,7 +36,6 @@ ww.mode.SynthMode.prototype.init = function() {
   this.isPlaying = false;
 
   this.buildEffects_();
-  this.createSound_();
 
   this.count = 360 * (this.width_ % 360);
 
@@ -46,6 +45,7 @@ ww.mode.SynthMode.prototype.init = function() {
   this.waveType = 1;
   this.lastFreq = 80;
   this.lastDetune = 650;
+  this.createSound_();
   this.lastHue = 0;
   this.lastXPercent = 0.5;
   this.lastYPercent = 0.5;
