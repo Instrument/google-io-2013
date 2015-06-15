@@ -1,5 +1,13 @@
 goog.require('ww.mode.Core');
 goog.provide('ww.mode.SynthMode');
+
+var waveLookup = [
+  'square',
+  'sawtooth',
+  'triangle',
+  'sine'
+];
+
 /**
  * @constructor
  * @param {Element} containerElem The containing element.
@@ -21,7 +29,7 @@ ww.mode.SynthMode.prototype.init = function() {
 
   var aCtx = this.getAudioContext_();
   this.source = aCtx.createOscillator();
-  this.gain = aCtx.createGainNode();
+  this.gain = aCtx.createGain();
   this.gain.gain.value = 0.01;
   this.tuna_ = new Tuna(aCtx);
   this.analyser = aCtx.createAnalyser();
@@ -347,7 +355,7 @@ ww.mode.SynthMode.prototype.buildEffects_ = function() {
  * @private
  */
 ww.mode.SynthMode.prototype.createSound_ = function() {
-  this.source.type = this.waveType;
+  this.source.type = waveLookup[this.waveType];
   this.source.frequency.value = this.lastFreq;
   this.source.detune.value = this.lastDetune;
 };
@@ -374,7 +382,7 @@ ww.mode.SynthMode.prototype.playSound_ = function() {
   this.effects['delay'].connect(this.analyser);
   this.analyser.connect(this.gain);
   this.gain.connect(aCtx.destination);
-  this.source.noteOn(0);
+  this.source.start(0);
 };
 
 /**

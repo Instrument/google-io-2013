@@ -63,14 +63,14 @@ ww.mode.SpaceMode.prototype.playSound = function(filename, onPlay, loop) {
 
   var buffer = this.getLoadedSoundBufferFromURL_(url);
   var source = audioContext.createBufferSource();
-  var gain = audioContext.createGainNode();
+  var gain = audioContext.createGain();
   gain.gain.value = 0.1;
   source.buffer = buffer;
   source.loop = loop || false;
   source.connect(gain);
   gain.connect(this.chorus_.input);
   this.chorus_.connect(audioContext.destination);
-  source.noteOn(0);
+  source.start(0);
 
   if ('function' === typeof onPlay) {
     onPlay(source);

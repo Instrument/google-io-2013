@@ -73,7 +73,7 @@ AudioContext.prototype.createBufferSource = function() {};
  * @param {number} numberOfOuputs
  * @return {JavaScriptAudioNode}
  */
-AudioContext.prototype.createJavaScriptNode = function(bufferSize,
+AudioContext.prototype.createScriptProcessor = function(bufferSize,
     numberOfInputs, numberOfOuputs) {};
 
 /**
@@ -89,13 +89,13 @@ AudioContext.prototype.createAnalyser = function() {};
 /**
  * @return {AudioGainNode}
  */
-AudioContext.prototype.createGainNode = function() {};
+AudioContext.prototype.createGain = function() {};
 
 /**
  * @param {number=} maxDelayTime
  * @return {DelayNode}
  */
-AudioContext.prototype.createDelayNode = function(maxDelayTime) {};
+AudioContext.prototype.createDelay = function(maxDelayTime) {};
 
 /**
  * @return {BiquadFilterNode}
@@ -306,7 +306,7 @@ AudioBufferSourceNode.prototype.loop;
 /**
  * @param {number} when
  */
-AudioBufferSourceNode.prototype.noteOn = function(when) {};
+AudioBufferSourceNode.prototype.start = function(when) {};
 
 /**
  * @param {number} when
@@ -319,7 +319,7 @@ AudioBufferSourceNode.prototype.noteGrainOn = function(when, grainOffset,
 /**
  * @param {number} when
  */
-AudioBufferSourceNode.prototype.noteOff = function(when) {};
+AudioBufferSourceNode.prototype.stop = function(when) {};
 
 /**
  * @constructor

@@ -84,12 +84,11 @@ ww.mode.SimoneMode.prototype.init = function() {
   // Set up audio
   if (this.wantsAudio_) {
     var aCtx = this.getAudioContext_();
-    this.source = aCtx.createOscillator();
     this.analyser = aCtx.createAnalyser();
     this.analyser.fftSize = 512;
     this.analyser.smoothingTimeConstant = 0.85;
 
-    this.gainNode = aCtx.createGainNode();
+    this.gainNode = aCtx.createGain();
     this.gainNode.gain.value = 0.01;
 
     this.notes = [
@@ -97,25 +96,25 @@ ww.mode.SimoneMode.prototype.init = function() {
         // red
         'frequency': 1806,
         'detune': -3663,
-        'type': 1
+        'type': 'sawtooth'
       },
       {
         // green
         'frequency': 1806,
         'detune': -4758,
-        'type': 1
+        'type': 'sawtooth'
       },
       {
         // blue
         'frequency': 229,
         'detune': 1053,
-        'type': 1
+        'type': 'sawtooth'
       },
       {
         // yellow
         'frequency': 580,
         'detune': -1137,
-        'type': 2
+        'type': 'triangle'
       }
     ];
   }
@@ -229,6 +228,8 @@ ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
     if (this.wantsAudio_) {
       this.log('Playing note: ', note);
 
+      var aCtx = this.getAudioContext_();
+      this.source = aCtx.createOscillator();
       this.source.type = note['type'];
       this.source.frequency.value = note['frequency'];
       this.source.detune.value = note['detune'];
@@ -242,7 +243,7 @@ ww.mode.SimoneMode.prototype.startCheck_ = function(noteNum) {
         self.source.connect(self.analyser);
         self.analyser.connect(self.gainNode);
         self.gainNode.connect(self.audioContext_.destination);
-        self.source.noteOn(0);
+        self.source.start(0);
       });
     }
 
@@ -407,6 +408,10 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
         if (self.wantsAudio_) {
           var note = self.notes[noteIdx];
         }
+
+        var aCtx = self.getAudioContext_();
+        var loopSource = aCtx.createOscillator();
+
         var fadeIn = new TWEEN.Tween({ 'opacity': 0.5 });
             fadeIn.to({ 'opacity': 1}, 200);
             fadeIn.delay(delay);
@@ -417,14 +422,14 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
 
               if (self.wantsAudio_) {
                 self.log(i + ' now playing: ', note);
-                self.source['type'] = note['type'];
-                self.source['frequency']['value'] = note['frequency'];
-                self.source['detune']['value'] = note['detune'];
+                loopSource['type'] = note['type'];
+                loopSource['frequency']['value'] = note['frequency'];
+                loopSource['detune']['value'] = note['detune'];
 
-                self.source.connect(self.analyser);
+                loopSource.connect(self.analyser);
                 self.analyser.connect(self.gainNode);
                 self.gainNode.connect(self.audioContext_.destination);
-                self.source.noteOn(0);
+                loopSource.start(0);
               }
             });
             fadeIn.onUpdate(function() {
@@ -445,7 +450,7 @@ ww.mode.SimoneMode.prototype.displayNext_ = function() {
               }
 
               if (self.wantsAudio_) {
-                self.source['disconnect']();
+                loopSource['disconnect']();
               }
 
               if (self.plays === 1 || self.plays > 1 && self.stepIndex === 0) {

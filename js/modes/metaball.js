@@ -15,19 +15,19 @@ ww.mode.MetaBallMode = function(containerElem, assetPrefix) {
       // ball 1
       'frequency': 0,
       'detune': 0,
-      'type': 0
+      'type': 'square'
     },
     {
       // ball 2
       'frequency': 0,
       'detune': 0,
-      'type': 0
+      'type': 'square'
     },
     {
       // ball 3
       'frequency': 0,
       'detune': 0,
-      'type': 0
+      'type': 'square'
     }
   ];
 };
@@ -391,14 +391,14 @@ ww.mode.MetaBallMode.prototype.didFocus = function() {
             var aCtx = self.getAudioContext_();
 
             self.sources_.push(aCtx.createOscillator());
-            self.gainNodes_.push(aCtx.createGainNode());
+            self.gainNodes_.push(aCtx.createGain());
 
             self.sources_[self.sources_.length - 1].connect(
               self.gainNodes_[self.sources_.length - 1]);
             self.gainNodes_[self.sources_.length - 1].connect(
               aCtx.destination);
 
-            self.sources_[self.sources_.length - 1].noteOn(0);
+            self.sources_[self.sources_.length - 1].start(0);
             self.gainNodes_[self.gainNodes_.length - 1].gain.value = 0.1;
           }
         } else if (activeBall != self.world_.particles[0]) {
