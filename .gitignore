@@ -1,7 +1,6 @@
 .sass-cache
 .DS_Store
 .bundle
-js/*.min.js
 js/*.test.js
 *.pyc
 js-instrumented

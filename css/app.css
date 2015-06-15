@@ -15,8 +15,9 @@ body {
   /* line 17, ../sass/app.scss */
   .mode .bounds {
     position: absolute;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none; }
 
 /* line 23, ../sass/app.scss */
@@ -56,16 +57,17 @@ body {
 
 /* line 15, ../sass/_mode.scss */
 * {
-  -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
 /* line 19, ../sass/_mode.scss */
 body {
   background: #f9f9f9;
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
   user-select: none;
   -ms-touch-action: none; }
 
@@ -89,10 +91,8 @@ body {
   top: 15px;
   border: 1px solid #393939;
   height: 35px;
-  -webkit-border-radius: 17px;
   -moz-border-radius: 17px;
-  -ms-border-radius: 17px;
-  -o-border-radius: 17px;
+  -webkit-border-radius: 17px;
   border-radius: 17px;
   z-index: 1000;
   background-color: #fff;
@@ -110,9 +110,9 @@ body {
   right: 15px;
   width: 34px;
   cursor: pointer;
-  -webkit-background-size: 16px 16px;
   -moz-background-size: 16px 16px;
   -o-background-size: 16px 16px;
+  -webkit-background-size: 16px 16px;
   background-size: 16px 16px;
   background-position: 50% 50%;
   background-repeat: no-repeat;
@@ -123,9 +123,9 @@ body {
   width: 4px;
   height: 16px;
   display: inline-block;
-  -webkit-background-size: 100% 100%;
   -moz-background-size: 100% 100%;
   -o-background-size: 100% 100%;
+  -webkit-background-size: 100% 100%;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   margin-right: 5px;
@@ -139,9 +139,9 @@ body {
   width: 16px;
   height: 16px;
   display: inline-block;
-  -webkit-background-size: 100% 100%;
   -moz-background-size: 100% 100%;
   -o-background-size: 100% 100%;
+  -webkit-background-size: 100% 100%;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   margin-right: 5px;
@@ -172,9 +172,9 @@ canvas {
   background-image: url('../img/shared/refresh.svg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
-  -webkit-background-size: 2em;
   -moz-background-size: 2em;
   -o-background-size: 2em;
+  -webkit-background-size: 2em;
   background-size: 2em;
   cursor: pointer;
   position: absolute;
@@ -190,9 +190,9 @@ canvas {
   background-image: url('../img/shared/slash+13.svg');
   background-position: 50% 50%;
   background-repeat: no-repeat;
-  -webkit-background-size: auto 100%;
   -moz-background-size: auto 100%;
   -o-background-size: auto 100%;
+  -webkit-background-size: auto 100%;
   background-size: auto 100%; }
   /* line 136, ../sass/_mode.scss */
   .no-svg .bounds {
@@ -217,19 +217,20 @@ canvas {
 .cat-mode .letter-i, .cat-mode .letter-o {
   background-color: transparent;
   background-repeat: no-repeat;
-  -webkit-background-size: auto 100%;
   -moz-background-size: auto 100%;
   -o-background-size: auto 100%;
+  -webkit-background-size: auto 100%;
   background-size: auto 100%;
   cursor: pointer;
   display: block;
   position: absolute;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent; }
 
-/* line 2, ../sass/_home.scss */
+/* line 1, ../sass/_home.scss */
 .home-mode #nav,
 .home-mode #nav-fallback {
   position: absolute;
@@ -250,7 +251,7 @@ canvas {
   .home-mode #nav-fallback .plusone-menu {
     display: none; }
   @media screen and (max-width: 768px) {
-    /* line 2, ../sass/_home.scss */
+    /* line 1, ../sass/_home.scss */
     .home-mode #nav,
     .home-mode #nav-fallback {
       top: 15px;
@@ -264,7 +265,7 @@ canvas {
       .home-mode #nav .plusone-menu,
       .home-mode #nav-fallback .plusone-menu {
         display: block; } }
-/* line 36, ../sass/_home.scss */
+/* line 35, ../sass/_home.scss */
 .home-mode #logo,
 .home-mode #logo-fallback {
   position: absolute;
@@ -283,16 +284,16 @@ canvas {
   .svg .home-mode #logo, .svg
   .home-mode #logo-fallback {
     background-image: url('../img/shared/logo-google.svg');
-    -webkit-background-size: 85px 30px;
     -moz-background-size: 85px 30px;
     -o-background-size: 85px 30px;
+    -webkit-background-size: 85px 30px;
     background-size: 85px 30px; }
-/* line 57, ../sass/_home.scss */
+/* line 56, ../sass/_home.scss */
 .home-mode #menu,
 .home-mode #menu-fallback {
   display: none;
   opacity: 0; }
-/* line 62, ../sass/_home.scss */
+/* line 61, ../sass/_home.scss */
 .home-mode #nav-full,
 .home-mode #nav-full-fallback {
   position: absolute;
@@ -303,12 +304,11 @@ canvas {
   /* line 69, ../sass/_home.scss */
   .home-mode #nav-full .nav,
   .home-mode #nav-full-fallback .nav {
-    display: inline;
     float: right;
     list-style: none;
     margin: 0;
     padding: 0; }
-    /* line 11, ../../../../../usr/local/opt/rbenv/versions/1.9.3-p362/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/typography/lists/_bullets.scss */
+    /* line 11, ../../../.rvm/gems/ruby-2.2.2/gems/compass-core-1.0.3/stylesheets/compass/typography/lists/_bullets.scss */
     .home-mode #nav-full .nav li,
     .home-mode #nav-full-fallback .nav li {
       list-style-image: none;
@@ -327,7 +327,6 @@ canvas {
     /* line 82, ../sass/_home.scss */
     .home-mode #nav-full .nav .nav-item,
     .home-mode #nav-full-fallback .nav .nav-item {
-      display: inline;
       float: left;
       position: relative;
       margin: 0 0 0 30px; }
@@ -343,12 +342,12 @@ canvas {
       display: block;
       margin: 0 0 30px 0;
       padding: 0 21px 0 0; }
-    /* line 100, ../sass/_home.scss */
+    /* line 99, ../sass/_home.scss */
     .no-touch .home-mode #nav-full .nav .has-dropdown:hover label, .touch .home-mode #nav-full .nav .has-dropdown.dropdown-visible label, .no-touch
     .home-mode #nav-full-fallback .nav .has-dropdown:hover label, .touch
     .home-mode #nav-full-fallback .nav .has-dropdown.dropdown-visible label {
       background-image: url('../img/shared/dropdown-arrow-hover.png'); }
-    /* line 105, ../sass/_home.scss */
+    /* line 104, ../sass/_home.scss */
     .no-touch .home-mode #nav-full .nav .has-dropdown:hover .nav-dropdown, .touch .home-mode #nav-full .nav .has-dropdown.dropdown-visible .nav-dropdown, .no-touch
     .home-mode #nav-full-fallback .nav .has-dropdown:hover .nav-dropdown, .touch
     .home-mode #nav-full-fallback .nav .has-dropdown.dropdown-visible .nav-dropdown {
@@ -361,8 +360,8 @@ canvas {
       border-right: 1px solid #d1d1d1;
       border-bottom: 1px solid #d1d1d1;
       border-left: 1px solid #d1d1d1;
-      -webkit-box-shadow: rgba(0, 0, 0, 0.25) 0 0 10px;
       -moz-box-shadow: rgba(0, 0, 0, 0.25) 0 0 10px;
+      -webkit-box-shadow: rgba(0, 0, 0, 0.25) 0 0 10px;
       box-shadow: rgba(0, 0, 0, 0.25) 0 0 10px;
       display: none;
       min-width: 220px;
@@ -386,19 +385,19 @@ canvas {
         .home-mode #nav-full-fallback .nav .nav-dropdown .dropdown-item a {
           display: block;
           padding: 8px 15px; }
-/* line 143, ../sass/_home.scss */
+/* line 140, ../sass/_home.scss */
 .home-mode.no-touch #nav-full .nav a:hover, .home-mode.no-touch #nav-full .nav label:hover, .home-mode.no-touch #nav-full-fallback .nav a:hover, .home-mode.no-touch #nav-full-fallback .nav label:hover {
   color: #000;
-  -webkit-transition: color 200ms ease-out;
   -moz-transition: color 200ms ease-out;
   -o-transition: color 200ms ease-out;
+  -webkit-transition: color 200ms ease-out;
   transition: color 200ms ease-out; }
 @media screen and (max-width: 768px) {
-  /* line 150, ../sass/_home.scss */
+  /* line 149, ../sass/_home.scss */
   .home-mode #nav-full,
   .home-mode #nav-full-fallback {
     display: none; }
-  /* line 154, ../sass/_home.scss */
+  /* line 153, ../sass/_home.scss */
   .home-mode #menu,
   .home-mode #menu-fallback {
     display: block;
@@ -412,23 +411,21 @@ canvas {
     background-image: url('../img/shared/menu-fallback.png');
     background-repeat: no-repeat;
     background-position: 50% 50%;
-    -webkit-background-size: 20px 17px;
     -moz-background-size: 20px 17px;
     -o-background-size: 20px 17px;
+    -webkit-background-size: 20px 17px;
     background-size: 20px 17px; }
     /* line 168, ../sass/_home.scss */
     .svg .home-mode #menu, .svg
     .home-mode #menu-fallback {
       background-image: url('../img/shared/menu.svg'); }
-  /* line 174, ../sass/_home.scss */
+  /* line 173, ../sass/_home.scss */
   .home-mode.modal-visible #menu, .home-mode.modal-visible #menu-fallback {
-    -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
-    -ms-border-radius: 2px;
-    -o-border-radius: 2px;
+    -webkit-border-radius: 2px;
     border-radius: 2px;
-    -webkit-box-shadow: rgba(0, 0, 0, 0.15) 1px 1px 2px inset;
     -moz-box-shadow: rgba(0, 0, 0, 0.15) 1px 1px 2px inset;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.15) 1px 1px 2px inset;
     box-shadow: rgba(0, 0, 0, 0.15) 1px 1px 2px inset;
     background-color: #d1d1d1;
     background-image: url('../img/shared/menu-down-fallback.png');
@@ -441,10 +438,8 @@ canvas {
   display: none;
   border: 1px solid #393939;
   height: 34px;
-  -webkit-border-radius: 17px;
   -moz-border-radius: 17px;
-  -ms-border-radius: 17px;
-  -o-border-radius: 17px;
+  -webkit-border-radius: 17px;
   border-radius: 17px;
   background-color: #fff;
   border: 2px solid #f3f3f3;
@@ -461,7 +456,7 @@ canvas {
   /* line 204, ../sass/_home.scss */
   .home-mode #pattern.failure {
     background: #D64036; }
-/* line 210, ../sass/_home.scss */
+/* line 209, ../sass/_home.scss */
 .home-mode #date,
 .home-mode #date-fallback {
   font-family: 'Open Sans';
@@ -481,7 +476,7 @@ canvas {
     color: #acacac;
     margin-top: 11px; }
   @media screen and (max-width: 768px) {
-    /* line 210, ../sass/_home.scss */
+    /* line 209, ../sass/_home.scss */
     .home-mode #date,
     .home-mode #date-fallback {
       font-size: 19px;
@@ -490,7 +485,7 @@ canvas {
       .home-mode #date span,
       .home-mode #date-fallback span {
         font-size: 14px; } }
-/* line 239, ../sass/_home.scss */
+/* line 238, ../sass/_home.scss */
 .home-mode #modal,
 .home-mode #modal-fallback {
   position: absolute;
@@ -500,10 +495,10 @@ canvas {
   left: 0;
   z-index: 2000;
   display: none; }
-/* line 248, ../sass/_home.scss */
+/* line 247, ../sass/_home.scss */
 .home-mode.modal-visible #modal, .home-mode.modal-visible #modal-fallback {
   display: block; }
-/* line 252, ../sass/_home.scss */
+/* line 251, ../sass/_home.scss */
 .home-mode #dropdown,
 .home-mode #dropdown-fallback {
   position: absolute;
@@ -514,8 +509,8 @@ canvas {
   border-right: 1px solid #d1d1d1;
   border-bottom: 1px solid #d1d1d1;
   border-left: 1px solid #d1d1d1;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.25) 0 0 10px;
   -moz-box-shadow: rgba(0, 0, 0, 0.25) 0 0 10px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.25) 0 0 10px;
   box-shadow: rgba(0, 0, 0, 0.25) 0 0 10px;
   min-width: 220px;
   overflow: auto;
@@ -540,7 +535,7 @@ canvas {
       .home-mode #dropdown-fallback .item {
         font-size: 20px; } }
   @media screen and (max-height: 330px) {
-    /* line 252, ../sass/_home.scss */
+    /* line 251, ../sass/_home.scss */
     .home-mode #dropdown,
     .home-mode #dropdown-fallback {
       max-height: 100%;
@@ -551,10 +546,10 @@ canvas {
       .home-mode #dropdown-fallback .item {
         font-size: 130%;
         padding: .5em .75em; } }
-/* line 295, ../sass/_home.scss */
+/* line 294, ../sass/_home.scss */
 .home-mode.nav-visible #dropdown, .home-mode.nav-visible #dropdown-fallback {
   display: none; }
-/* line 300, ../sass/_home.scss */
+/* line 299, ../sass/_home.scss */
 .home-mode.no-touch #dropdown .item:hover, .home-mode.no-touch #dropdown-fallback .item:hover {
   color: #000; }
 /* line 1, ../sass/_draw-modes.scss */
@@ -576,22 +571,18 @@ canvas {
     padding: 0; }
     /* line 13, ../sass/_pong.scss */
     .pong-mode #stats ul li {
-      display: inline;
       float: left;
       background: #363636;
       color: #d9d9d9;
       margin: 0;
-      -webkit-transform: translate3d(0, 0, 0);
       -moz-transform: translate3d(0, 0, 0);
       -ms-transform: translate3d(0, 0, 0);
-      -o-transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0); }
       /* line 20, ../sass/_pong.scss */
       .pong-mode #stats ul li:first-child, .pong-mode #stats ul li#score {
-        -webkit-border-radius: 15px 0 0 15px;
         -moz-border-radius: 15px 0 0 15px;
-        -ms-border-radius: 15px 0 0 15px;
-        -o-border-radius: 15px 0 0 15px;
+        -webkit-border-radius: 15px;
         border-radius: 15px 0 0 15px; }
       /* line 24, ../sass/_pong.scss */
       .pong-mode #stats ul li#bonus {
@@ -602,10 +593,8 @@ canvas {
       /* line 31, ../sass/_pong.scss */
       .pong-mode #stats ul li#score {
         padding: 0 15px 0 15px;
-        -webkit-border-radius: 15px;
         -moz-border-radius: 15px;
-        -ms-border-radius: 15px;
-        -o-border-radius: 15px;
+        -webkit-border-radius: 15px;
         border-radius: 15px; }
 
 /* line 154, ../sass/_mode.scss */
@@ -617,9 +606,9 @@ canvas {
   /* line 1, ../sass/_simone.scss */
   .simone-mode .reload {
     background-color: rgba(0, 0, 0, 0.5);
-    -webkit-background-size: 3em;
     -moz-background-size: 3em;
     -o-background-size: 3em;
+    -webkit-background-size: 3em;
     background-size: 3em; }
   /* line 6, ../sass/_simone.scss */
   .simone-mode #message {
@@ -640,9 +629,9 @@ canvas {
   /* line 26, ../sass/_simone.scss */
   .simone-mode #play-again {
     background: transparent url('../img/shared/refresh.svg') no-repeat 50% 50%;
-    -webkit-background-size: 25px;
     -moz-background-size: 25px;
     -o-background-size: 25px;
+    -webkit-background-size: 25px;
     background-size: 25px;
     bottom: 7%;
     cursor: pointer;
@@ -663,10 +652,8 @@ canvas {
   /* line 47, ../sass/_simone.scss */
   .simone-mode #levels {
     background: transparent;
-    -webkit-border-radius: 1.25em;
     -moz-border-radius: 1.25em;
-    -ms-border-radius: 1.25em;
-    -o-border-radius: 1.25em;
+    -webkit-border-radius: 1.25em;
     border-radius: 1.25em;
     color: #fff;
     left: 50%;
@@ -677,12 +664,13 @@ canvas {
     text-align: center;
     top: 50%;
     width: 2.5em;
-    -webkit-transition: all 190ms ease-out;
     -moz-transition: all 190ms ease-out;
     -o-transition: all 190ms ease-out;
+    -webkit-transition: all 190ms ease-out;
     transition: all 190ms ease-out;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none; }
     /* line 62, ../sass/_simone.scss */
     .simone-mode #levels.started {
@@ -695,6 +683,7 @@ canvas {
     text-indent: -119988px;
     overflow: hidden;
     text-align: left;
+    text-transform: capitalize;
     background-color: transparent;
     background-position: center center;
     background-repeat: no-repeat;
@@ -712,16 +701,16 @@ canvas {
     /* line 89, ../sass/_simone.scss */
     .simone-mode #status.game-over {
       background-image: url('../img/simone/fail.svg');
-      -webkit-background-size: 20px;
       -moz-background-size: 20px;
       -o-background-size: 20px;
+      -webkit-background-size: 20px;
       background-size: 20px; }
     /* line 94, ../sass/_simone.scss */
     .simone-mode #status.success {
       background-image: url('../img/simone/success.svg');
-      -webkit-background-size: 25px;
       -moz-background-size: 25px;
       -o-background-size: 25px;
+      -webkit-background-size: 25px;
       background-size: 25px; }
   /* line 162, ../sass/_mode.scss */
   .simone-mode .bounds {
@@ -736,13 +725,13 @@ canvas {
     overflow: hidden; }
   /* line 5, ../sass/_song.scss */
   .song-mode #instruments {
-    -webkit-transform: translate3d(0, 0, 0);
     -moz-transform: translate3d(0, 0, 0);
     -ms-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none; }
     /* line 10, ../sass/_song.scss */
     .song-mode #instruments #instrument-notes {
@@ -753,14 +742,13 @@ canvas {
     .song-mode #instruments .shape {
       opacity: 0.75;
       pointer-events: none;
-      -webkit-transform-origin: 50% 50%;
       -moz-transform-origin: 50% 50%;
       -ms-transform-origin: 50% 50%;
-      -o-transform-origin: 50% 50%;
+      -webkit-transform-origin: 50% 50%;
       transform-origin: 50% 50%;
-      -webkit-transition: opacity 190ms ease-out;
       -moz-transition: opacity 190ms ease-out;
       -o-transition: opacity 190ms ease-out;
+      -webkit-transition: opacity 190ms ease-out;
       transition: opacity 190ms ease-out; }
     /* line 23, ../sass/_song.scss */
     .song-mode #instruments .instrument {
@@ -779,26 +767,26 @@ canvas {
       padding: 0;
       border: 0;
       overflow: hidden;
+      *zoom: 1;
       display: inline-block;
       line-height: 1.5em;
       overflow: visible; }
-      /* line 60, ../../../../../usr/local/opt/rbenv/versions/1.9.3-p362/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/typography/lists/_horizontal-list.scss */
+      /* line 62, ../../../.rvm/gems/ruby-2.2.2/gems/compass-core-1.0.3/stylesheets/compass/typography/lists/_horizontal-list.scss */
       .song-mode #song-styles ul li {
         list-style-image: none;
         list-style-type: none;
         margin-left: 0;
         white-space: nowrap;
-        display: inline;
         float: left;
         padding-left: 0;
         padding-right: 0; }
-        /* line 48, ../../../../../usr/local/opt/rbenv/versions/1.9.3-p362/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/typography/lists/_horizontal-list.scss */
-        .song-mode #song-styles ul li:first-child, .song-mode #song-styles ul li.first {
+        /* line 49, ../../../.rvm/gems/ruby-2.2.2/gems/compass-core-1.0.3/stylesheets/compass/typography/lists/_horizontal-list.scss */
+        .song-mode #song-styles ul li:first-child {
           padding-left: 0; }
-        /* line 49, ../../../../../usr/local/opt/rbenv/versions/1.9.3-p362/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/typography/lists/_horizontal-list.scss */
+        /* line 50, ../../../.rvm/gems/ruby-2.2.2/gems/compass-core-1.0.3/stylesheets/compass/typography/lists/_horizontal-list.scss */
         .song-mode #song-styles ul li:last-child {
           padding-right: 0; }
-        /* line 50, ../../../../../usr/local/opt/rbenv/versions/1.9.3-p362/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/typography/lists/_horizontal-list.scss */
+        /* line 52, ../../../.rvm/gems/ruby-2.2.2/gems/compass-core-1.0.3/stylesheets/compass/typography/lists/_horizontal-list.scss */
         .song-mode #song-styles ul li.last {
           padding-right: 0; }
       /* line 42, ../sass/_song.scss */
@@ -806,9 +794,9 @@ canvas {
         border-bottom: 0.25em solid transparent;
         cursor: pointer;
         margin-left: 25px;
-        -webkit-transition: border-bottom 190ms ease-out;
         -moz-transition: border-bottom 190ms ease-out;
         -o-transition: border-bottom 190ms ease-out;
+        -webkit-transition: border-bottom 190ms ease-out;
         transition: border-bottom 190ms ease-out; }
         /* line 48, ../sass/_song.scss */
         .song-mode #song-styles ul li:first-child {
@@ -819,10 +807,8 @@ canvas {
         /* line 56, ../sass/_song.scss */
         .song-mode #song-styles ul li#drumkit {
           border-bottom: none;
-          -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
-          -ms-border-radius: 3px;
-          -o-border-radius: 3px;
+          -webkit-border-radius: 3px;
           border-radius: 3px;
           line-height: 1.75em;
           margin-left: 2.15em;
@@ -838,10 +824,8 @@ canvas {
           /* line 73, ../sass/_song.scss */
           .song-mode #song-styles ul li#drumkit.active .drum-icon {
             background-color: #dcdcdc;
-            -webkit-border-radius: 0 3px 3px 0;
             -moz-border-radius: 0 3px 3px 0;
-            -ms-border-radius: 0 3px 3px 0;
-            -o-border-radius: 0 3px 3px 0;
+            -webkit-border-radius: 0;
             border-radius: 0 3px 3px 0; }
           /* line 80, ../sass/_song.scss */
           .song-mode #song-styles ul li#drumkit.tabbing .durm.icon {
@@ -849,25 +833,22 @@ canvas {
           /* line 85, ../sass/_song.scss */
           .song-mode #song-styles ul li#drumkit .drum-icon {
             background: transparent url('../img/song/drums.svg') no-repeat center center;
-            -webkit-background-size: 1.6em auto;
             -moz-background-size: 1.6em auto;
             -o-background-size: 1.6em auto;
+            -webkit-background-size: 1.6em auto;
             background-size: 1.6em auto;
-            -webkit-border-radius: 3px;
             -moz-border-radius: 3px;
-            -ms-border-radius: 3px;
-            -o-border-radius: 3px;
+            -webkit-border-radius: 3px;
             border-radius: 3px;
             text-indent: -119988px;
             overflow: hidden;
-            text-align: left; }
+            text-align: left;
+            text-transform: capitalize; }
           /* line 92, ../sass/_song.scss */
           .song-mode #song-styles ul li#drumkit #drum-number {
             background-color: transparent;
-            -webkit-border-radius: 3px 0 0 3px;
             -moz-border-radius: 3px 0 0 3px;
-            -ms-border-radius: 3px 0 0 3px;
-            -o-border-radius: 3px 0 0 3px;
+            -webkit-border-radius: 3px;
             border-radius: 3px 0 0 3px; }
           /* line 97, ../sass/_song.scss */
           .song-mode #song-styles ul li#drumkit span {
@@ -876,9 +857,9 @@ canvas {
             line-height: 2.15em;
             height: 2.15em;
             width: 2.15em;
-            -webkit-transition: background-color 190ms ease-out;
             -moz-transition: background-color 190ms ease-out;
             -o-transition: background-color 190ms ease-out;
+            -webkit-transition: background-color 190ms ease-out;
             transition: background-color 190ms ease-out; }
     @media screen and (max-width: 768px) {
       /* line 28, ../sass/_song.scss */
@@ -960,8 +941,9 @@ canvas {
     overflow: hidden;
     color: #00CC00;
     cursor: default;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none; }
 
 /* line 1, ../sass/_eightbit.scss */
